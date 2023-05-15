@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["applier","finalizer","reflector","scheduler","watcher"],"mod":["controller","events","finalizer","reflector","scheduler","utils","wait","watcher"],"struct":["Controller"],"trait":["WatchStreamExt"]};

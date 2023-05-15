@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["Icmpv6Codes"],"struct":["EchoRequest","EchoRequestIterable","EchoRequestPacket","Identifier","MutableEchoRequestPacket","SequenceNumber"]};

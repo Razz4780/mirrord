@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["StartExecResults"],"struct":["CreateExecOptions","CreateExecResults","ResizeExecOptions","StartExecOptions"]};

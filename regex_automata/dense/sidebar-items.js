@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["DenseDFA"],"struct":["Builder","ByteClass","Premultiplied","PremultipliedByteClass","Standard"]};

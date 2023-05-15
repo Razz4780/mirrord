@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["MIRRORD_PROGRESS_ENV"],"enum":["MessageKind","ProgressMessage","ProgressMode"],"fn":["get_report","init_from_env"],"static":["PROGRESS","TASK_COUNT"],"struct":["FinishedTaskMessage","NewTaskMessage","NoProgress","ProgressReport","TaskProgress","WarningMessage"],"trait":["Progress"]};

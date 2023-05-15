@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"opaque":[""],"static":["LICENSE_SERVER"],"struct":["License","LicenseCheckRequest","LicenseCheckResponse"]};

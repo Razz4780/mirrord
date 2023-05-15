@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["MutPacketData","PacketData"],"trait":["FromPacket","MutablePacket","Packet","PacketSize","PrimitiveValues"]};

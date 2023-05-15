@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["API_DEFAULT_VERSION"],"mod":["auth","container","errors","exec","image","models","network","secret","service","system","volume"],"struct":["ClientVersion","Docker"]};

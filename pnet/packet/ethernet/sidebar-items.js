@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["EtherTypes"],"struct":["EtherType","Ethernet","EthernetIterable","EthernetPacket","MutableEthernetPacket"]};

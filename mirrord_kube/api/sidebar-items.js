@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["BRANCHES","CONNECTION_CHANNEL_SIZE"],"fn":["get_k8s_resource_api","wrap_raw_connection"],"mod":["container","kubernetes","runtime"],"opaque":[""],"static":["CALLSITE","META"],"struct":["Connection"],"trait":["AgentManagment"]};

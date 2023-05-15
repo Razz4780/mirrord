@@ -1,0 +1,73 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Mirrord Config Derive"><title>MirrordConfig in mirrord_config_derive - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="mirrord_config_derive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc derive"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../mirrord_config_derive/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../mirrord_config_derive/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><div class="sidebar-elems"><h2><a href="index.html">In mirrord_config_derive</a></h2></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Derive Macro <a href="index.html">mirrord_config_derive</a>::<wbr><a class="derive" href="#">MirrordConfig</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../src/mirrord_config_derive/lib.rs.html#10-17">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><pre class="rust item-decl"><code>#[derive(MirrordConfig)]
+{
+    // Attributes available to this derive:
+    #[config]
+}
+</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><h2 id="mirrord-config-derive"><a href="#mirrord-config-derive">Mirrord Config Derive</a></h2>
+<p>This crate implements the derive macro <code>MirrordConfig</code>, which introduces the <code>config</code> attribute:</p>
+<ul>
+<li>
+<p>On a struct:</p>
+<ul>
+<li><code>map_to = &amp;str</code> set the name of the new generated struct (defaults to <code>format!(&quot;File{}&quot;, &lt;struct name&gt;)</code>).</li>
+<li><code>derive = &amp;str</code> extend <code>derive</code> statement with extra values.</li>
+<li><code>generator = &amp;str</code> set the <code>type Generator</code> for <code>FromMirrordConfig</code>.</li>
+</ul>
+</li>
+<li>
+<p>On struct fields:</p>
+<ul>
+<li><code>nested</code> to use a value of a type that itself implement <code>MirrordConfig</code>. The value used is its <code>Generated</code> type.</li>
+<li><code>toggleable</code> wrap field with <code>ToggleableConfig</code> so will be allowed to pass bool instead of entire field</li>
+<li><code>env = &amp;str</code> to load the value from the specified environment variable, if it’s populated.</li>
+<li><code>default = &amp;str</code> to set a default value to the field. This also implicitly <code>unwrap</code>s it.</li>
+<li><code>unstable</code> mark field as unstable and print an error message to the user.</li>
+<li><code>deprecated | deprecated = &amp;str</code> mark field as deprecated and print either a default message or a custom one.</li>
+<li><code>rename = &amp;str</code> pass <code>#[serde(rename = &amp;str)]</code> to generated struct.</li>
+</ul>
+</li>
+</ul>
+<p>Example</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="doccomment">/// MyConfig Comments
+</span><span class="attr">#[derive(MirrordConfig, Default)]
+#[config(map_to = <span class="string">&quot;MyFileConfig&quot;</span>, derive = <span class="string">&quot;Eq,PartialEq&quot;</span>)] </span><span class="comment">// If map_to isn&#39;t given, it will default to FileMyConfig
+</span><span class="kw">pub struct </span>MyConfig {
+    <span class="doccomment">/// Value 1 Comment
+    </span><span class="attr">#[config(env = <span class="string">&quot;VALUE_1&quot;</span>)]
+    </span><span class="kw">pub </span>value_1: <span class="prelude-ty">Option</span>&lt;String&gt;,
+
+    <span class="doccomment">/// Value 2 Comment
+    </span><span class="attr">#[config(env = <span class="string">&quot;VALUE_2&quot;</span>, default = <span class="string">&quot;2&quot;</span>)]
+    </span><span class="kw">pub </span>value_2: i32,
+
+    <span class="doccomment">/// Value 3 Comment
+    </span><span class="attr">#[config(env = <span class="string">&quot;VALUE_3&quot;</span>, rename = <span class="string">&quot;foobar&quot;</span>)]
+    </span><span class="kw">pub </span>value_3: String,
+
+    <span class="doccomment">/// Value 4 Comment
+    </span><span class="attr">#[config(nested)]
+    </span><span class="kw">pub </span>value_4: OtherConfig,
+}
+</code></pre></div>
+<p>The following struct will be generated:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="doccomment">/// MyConfig Comments
+</span><span class="attr">#[derive(Clone, Debug, Default, serde::Deserialize, Eq, PartialEq)]
+#[serde(deny_unknown_fields)]
+</span><span class="kw">pub struct </span>MyFileConfig {
+    <span class="doccomment">/// Value 1 Comment
+    </span><span class="kw">pub </span>value_1: <span class="prelude-ty">Option</span>&lt;String&gt;,
+
+    <span class="doccomment">/// Value 2 Comment
+    </span><span class="kw">pub </span>value_2: <span class="prelude-ty">Option</span>&lt;i32&gt;,
+
+    <span class="doccomment">/// Value 3 Comment
+    </span><span class="attr">#[serde(rename = <span class="string">&quot;foobar&quot;</span>)]
+    </span><span class="kw">pub </span>value_3: <span class="prelude-ty">Option</span>&lt;String&gt;,
+
+    <span class="doccomment">/// Value 4 Comment
+    </span><span class="kw">pub </span>value_4: <span class="prelude-ty">Option</span>&lt;&lt;OtherConfig <span class="kw">as </span>FromMirrordConfig&gt;::Generator&gt;,
+}
+</code></pre></div>
+</div></details></section></div></main></body></html>

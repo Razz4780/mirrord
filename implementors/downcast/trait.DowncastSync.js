@@ -1,0 +1,4 @@
+(function() {var implementors = {
+"downcast":[],
+"termspin":[["impl&lt;_T&gt; <a class=\"trait\" href=\"downcast/trait.DowncastSync.html\" title=\"trait downcast::DowncastSync\">DowncastSync</a>&lt;_T&gt; for dyn <a class=\"trait\" href=\"termspin/trait.Frames.html\" title=\"trait termspin::Frames\">Frames</a><span class=\"where fmt-newline\">where\n    _T: <a class=\"trait\" href=\"downcast/trait.AnySync.html\" title=\"trait downcast::AnySync\">AnySync</a>,</span>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

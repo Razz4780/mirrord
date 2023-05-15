@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ToggleableConfig","VecOrSingle"],"fn":["string_or_struct_option"],"struct":["StringOrStruct"],"trait":["MirrordToggleableConfig"]};

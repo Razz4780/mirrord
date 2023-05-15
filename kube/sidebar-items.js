@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"derive":["CustomResource"],"enum":["Error"],"mod":["api","client","config","core","discovery","error","runtime"],"struct":["Api","Client","Config","Discovery"],"trait":["CustomResourceExt","Resource","ResourceExt"],"type":["Result"]};

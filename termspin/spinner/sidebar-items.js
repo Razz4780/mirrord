@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["dots","empty","from_array","from_iter"],"struct":["Empty","FromArray","FromIter"]};

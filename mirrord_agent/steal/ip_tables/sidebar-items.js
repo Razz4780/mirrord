@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["IPTABLES_TABLE_NAME"],"enum":["Redirects"],"mod":["chain","flush_connections","mesh","redirect"],"opaque":[""],"static":["CALLSITE","IPTABLE_MESH","IPTABLE_MESH_ENV","IPTABLE_PREROUTING","IPTABLE_PREROUTING_ENV","META"],"struct":["SafeIpTables"],"trait":["IPTables"]};

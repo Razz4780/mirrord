@@ -1,0 +1,179 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="crates.io license circle-ci appveyor docs"><title>bollard - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="bollard" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../bollard/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../bollard/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2 class="location"><a href="#">Crate bollard</a></h2><div class="sidebar-elems"><ul class="block"><li class="version">Version 0.14.0</li><li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#constants">Constants</a></li></ul></section></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">bollard</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../src/bollard/lib.rs.html#1-300">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p><a href="https://crates.io/crates/bollard"><img src="https://img.shields.io/crates/v/bollard.svg" alt="crates.io" /></a>
+<a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="license" /></a>
+<a href="https://circleci.com/gh/fussybeaver/bollard/tree/master"><img src="https://circleci.com/gh/fussybeaver/bollard/tree/master.svg?style=svg" alt="circle-ci" /></a>
+<a href="https://ci.appveyor.com/project/fussybeaver/boondock"><img src="https://ci.appveyor.com/api/projects/status/n5khebyfae0u1sbv/branch/master?svg=true" alt="appveyor" /></a>
+<a href="https://docs.rs/bollard/"><img src="https://docs.rs/bollard/badge.svg" alt="docs" /></a></p>
+<h2 id="bollard-an-asynchronous-rust-client-library-for-the-docker-api"><a href="#bollard-an-asynchronous-rust-client-library-for-the-docker-api">Bollard: an asynchronous rust client library for the docker API</a></h2>
+<p>Bollard leverages the latest <a href="https://github.com/hyperium/hyper">Hyper</a> and
+<a href="https://github.com/tokio-rs/tokio">Tokio</a> improvements for an asynchronous API containing
+futures, streams and the async/await paradigm.</p>
+<p>This library features Windows support through <a href="https://learn.microsoft.com/en-us/windows/win32/ipc/named-pipes">Named
+Pipes</a> and HTTPS support through optional
+<a href="https://github.com/rustls/rustls">Rustls</a> bindings. Serialization types for interfacing with
+<a href="https://github.com/moby/moby">Docker</a> and <a href="https://github.com/moby/buildkit">Buildkit</a> are
+generated through OpenAPI, protobuf and upstream documentation.</p>
+<h2 id="install"><a href="#install">Install</a></h2>
+<p>Add the following to your <code>Cargo.toml</code> file</p>
+<div class="example-wrap"><pre class="language-nocompile"><code>[dependencies]
+bollard = &quot;*&quot;
+</code></pre></div><h2 id="api"><a href="#api">API</a></h2><h3 id="documentation"><a href="#documentation">Documentation</a></h3>
+<p><a href="https://docs.rs/bollard/">API docs</a>.</p>
+<h4 id="latest"><a href="#latest">Latest</a></h4>
+<p>Version <code>0.14</code> enables a <code>buildkit</code> feature for builds using public images (check the
+<a href="https://github.com/fussybeaver/bollard/blob/v0.14.0/examples/build_buildkit.rs">buildkit example</a>
+for details on how to configure).</p>
+<h3 id="feature-flags"><a href="#feature-flags">Feature flags</a></h3>
+<ul>
+<li><code>ssl</code>: enable SSL support through <a href="https://github.com/rustls/rustls">Rustls</a></li>
+<li><code>chrono</code>: enable <a href="https://github.com/chronotope/chrono">Chrono</a> for <code>DateTime</code> types.</li>
+<li><code>time</code>: enable <a href="https://github.com/time-rs/time">Time 0.3</a> for <code>DateTime</code> types.</li>
+<li><code>buildkit</code>: use <a href="https://github.com/moby/buildkit">Buildkit</a> instead of
+<a href="https://github.com/moby/moby">Docker</a> when building images.</li>
+<li><code>json_data_content</code>: Add JSON to errors on serialization failures.</li>
+<li><code>ct_logs</code>: <a href="https://certificate.transparency.dev/howctworks/">Certificate transparency</a>
+verification (requires <code>ssl</code>).</li>
+</ul>
+<h3 id="version"><a href="#version">Version</a></h3>
+<p>The <a href="https://docs.docker.com/engine/api/v1.41/">Docker API</a> used by Bollard is using the latest
+<code>1.41</code> documentation schema published by the <a href="https://github.com/moby/moby">moby</a> project to
+generate its serialization interface.</p>
+<p>This library also supports <a href="https://docs.rs/bollard/latest/bollard/struct.Docker.html#method.negotiate_version">version
+negotiation</a>,
+to allow downgrading to an older API version.</p>
+<h2 id="usage"><a href="#usage">Usage</a></h2><h3 id="connecting-with-the-docker-daemon"><a href="#connecting-with-the-docker-daemon">Connecting with the docker daemon</a></h3>
+<p>Connect to the docker server according to your architecture and security remit.</p>
+<h4 id="socket"><a href="#socket">Socket</a></h4>
+<p>The client will connect to the standard unix socket location <code>/var/run/docker.sock</code> or Windows
+named pipe location <code>//./pipe/docker_engine</code>.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>bollard::Docker;
+<span class="attr">#[cfg(unix)]
+</span>Docker::connect_with_socket_defaults();</code></pre></div>
+<p>Use the <code>Docker::connect_with_socket</code> method API to parameterise this interface.</p>
+<h4 id="local"><a href="#local">Local</a></h4>
+<p>The client will connect to the OS specific handler it is compiled for.</p>
+<p>This is a convenience for localhost environment that should run on multiple
+operating systems.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>bollard::Docker;
+Docker::connect_with_local_defaults();</code></pre></div>
+<p>Use the <code>Docker::connect_with_local</code> method API to parameterise this interface.</p>
+<h4 id="http"><a href="#http">HTTP</a></h4>
+<p>The client will connect to the location pointed to by <code>DOCKER_HOST</code> environment variable, or
+<code>localhost:2375</code> if missing.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>bollard::Docker;
+Docker::connect_with_http_defaults();</code></pre></div>
+<p>Use the <code>Docker::connect_with_http</code> method API to parameterise the interface.</p>
+<h4 id="ssl-via-rustls"><a href="#ssl-via-rustls">SSL via Rustls</a></h4>
+<p>The client will connect to the location pointed to by <code>DOCKER_HOST</code> environment variable, or
+<code>localhost:2375</code> if missing.</p>
+<p>The location pointed to by the <code>DOCKER_CERT_PATH</code> environment variable is searched for
+certificates - <code>key.pem</code> for the private key, <code>cert.pem</code> for the server certificate and
+<code>ca.pem</code> for the certificate authority chain.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>bollard::Docker;
+<span class="attr">#[cfg(feature = <span class="string">&quot;ssl&quot;</span>)]
+</span>Docker::connect_with_ssl_defaults();</code></pre></div>
+<p>Use the <code>Docker::connect_with_ssl</code> method API to parameterise the interface.</p>
+<h3 id="examples"><a href="#examples">Examples</a></h3>
+<p>Note: all these examples need a <a href="https://tokio.rs/">Tokio
+Runtime</a>.</p>
+<h4 id="version-1"><a href="#version-1">Version</a></h4>
+<p>First, check that the API is working with your server:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>bollard::Docker;
+
+<span class="kw">use </span>futures_util::future::FutureExt;
+
+<span class="comment">// Use a connection function described above
+// let docker = Docker::connect_...;
+
+</span><span class="kw">async move </span>{
+    <span class="kw">let </span>version = docker.version().<span class="kw">await</span>.unwrap();
+    <span class="macro">println!</span>(<span class="string">&quot;{:?}&quot;</span>, version);
+};</code></pre></div>
+<h4 id="listing-images"><a href="#listing-images">Listing images</a></h4>
+<p>To list docker images available on the Docker server:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>bollard::Docker;
+<span class="kw">use </span>bollard::image::ListImagesOptions;
+
+<span class="kw">use </span>futures_util::future::FutureExt;
+
+<span class="kw">use </span>std::default::Default;
+
+<span class="comment">// Use a connection function described above
+// let docker = Docker::connect_...;
+
+</span><span class="kw">async move </span>{
+    <span class="kw">let </span>images = <span class="kw-2">&amp;</span>docker.list_images(<span class="prelude-val">Some</span>(ListImagesOptions::&lt;String&gt; {
+        all: <span class="bool-val">true</span>,
+        ..Default::default()
+    })).<span class="kw">await</span>.unwrap();
+
+    <span class="kw">for </span>image <span class="kw">in </span>images {
+        <span class="macro">println!</span>(<span class="string">&quot;-&gt; {:?}&quot;</span>, image);
+    }
+};</code></pre></div>
+<h3 id="streaming-stats"><a href="#streaming-stats">Streaming Stats</a></h3>
+<p>To receive a stream of stats for a running container.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>bollard::Docker;
+<span class="kw">use </span>bollard::container::StatsOptions;
+
+<span class="kw">use </span>futures_util::stream::TryStreamExt;
+
+<span class="kw">use </span>std::default::Default;
+
+<span class="comment">// Use a connection function described above
+// let docker = Docker::connect_...;
+
+</span><span class="kw">async move </span>{
+    <span class="kw">let </span>stats = <span class="kw-2">&amp;</span>docker.stats(<span class="string">&quot;postgres&quot;</span>, <span class="prelude-val">Some</span>(StatsOptions {
+       stream: <span class="bool-val">true</span>,
+       ..Default::default()
+    })).try_collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;().<span class="kw">await</span>.unwrap();
+
+    <span class="kw">for </span>stat <span class="kw">in </span>stats {
+        <span class="macro">println!</span>(<span class="string">&quot;{} - mem total: {:?} | mem usage: {:?}&quot;</span>,
+            stat.name,
+            stat.memory_stats.max_usage,
+            stat.memory_stats.usage);
+    }
+};</code></pre></div>
+<h2 id="examples-1"><a href="#examples-1">Examples</a></h2>
+<p>Further examples are available in the <a href="https://github.com/fussybeaver/bollard/tree/master/examples">examples
+folder</a>, or the <a href="https://github.com/fussybeaver/bollard/tree/master/tests">integration/unit
+tests</a>.</p>
+<h2 id="development"><a href="#development">Development</a></h2>
+<p>Contributions are welcome, please observe the following.</p>
+<h3 id="building-the-proto-models"><a href="#building-the-proto-models">Building the proto models</a></h3>
+<p>Serialization models for the buildkit feature are generated through the <a href="https://github.com/hyperium/tonic/">Tonic
+library</a>. To generate these files, use the
+following in the <code>codegen/proto</code> folder:</p>
+<div class="example-wrap"><pre class="language-bash"><code>cargo run --bin gen --features build
+</code></pre></div><h3 id="building-the-swagger-models"><a href="#building-the-swagger-models">Building the swagger models</a></h3>
+<p>Serialization models are generated through the <a href="https://github.com/swagger-api/swagger-codegen/">Swagger
+library</a>. To generate these files, use the
+following in the <code>codegen/swagger</code> folder:</p>
+<div class="example-wrap"><pre class="language-bash"><code>mvn -D org.slf4j.simpleLogger.defaultLogLevel=error compiler:compile generate-resources
+</code></pre></div><h2 id="integration-tests"><a href="#integration-tests">Integration tests</a></h2>
+<p>Running the integration tests by default requires a running docker registry, with images tagged
+and pushed there. To disable this behaviour, set the <code>DISABLE_REGISTRY</code> environment variable.</p>
+<div class="example-wrap"><pre class="language-bash"><code>docker run -d --restart always --name registry -p 5000:5000 registry:2
+docker pull hello-world:linux
+docker pull fussybeaver/uhttpd
+docker pull alpine
+docker tag hello-world:linux localhost:5000/hello-world:linux
+docker tag fussybeaver/uhttpd localhost:5000/fussybeaver/uhttpd
+docker tag alpine localhost:5000/alpine
+docker push localhost:5000/hello-world:linux
+docker push localhost:5000/fussybeaver/uhttpd
+docker push localhost:5000/alpine
+docker swarm init
+REGISTRY_HTTP_ADDR=localhost:5000 cargo test -- --test-threads 1
+</code></pre></div></div></details><h2 id="modules" class="small-section-header"><a href="#modules">Modules</a></h2><ul class="item-table"><li><div class="item-name"><a class="mod" href="auth/index.html" title="mod bollard::auth">auth</a></div><div class="desc docblock-short">Credentials management, for access to the Docker Hub or a custom Registry.</div></li><li><div class="item-name"><a class="mod" href="container/index.html" title="mod bollard::container">container</a></div><div class="desc docblock-short">Container API: run docker containers and manage their lifecycle</div></li><li><div class="item-name"><a class="mod" href="errors/index.html" title="mod bollard::errors">errors</a></div><div class="desc docblock-short">Errors for this module.</div></li><li><div class="item-name"><a class="mod" href="exec/index.html" title="mod bollard::exec">exec</a></div><div class="desc docblock-short">Exec API: Run new commands inside running containers</div></li><li><div class="item-name"><a class="mod" href="image/index.html" title="mod bollard::image">image</a></div><div class="desc docblock-short">Image API: creating, manipulating and pushing docker images</div></li><li><div class="item-name"><a class="mod" href="models/index.html" title="mod bollard::models">models</a></div></li><li><div class="item-name"><a class="mod" href="network/index.html" title="mod bollard::network">network</a></div><div class="desc docblock-short">Network API: Networks are user-defined networks that containers can be attached to.</div></li><li><div class="item-name"><a class="mod" href="secret/index.html" title="mod bollard::secret">secret</a></div><div class="desc docblock-short">Secret API: manage and inspect docker secrets within a swarm</div></li><li><div class="item-name"><a class="mod" href="service/index.html" title="mod bollard::service">service</a></div><div class="desc docblock-short">Service API: manage and inspect docker services within a swarm</div></li><li><div class="item-name"><a class="mod" href="system/index.html" title="mod bollard::system">system</a></div><div class="desc docblock-short">System API: interface for interacting with the Docker server and/or Registry.</div></li><li><div class="item-name"><a class="mod" href="volume/index.html" title="mod bollard::volume">volume</a></div><div class="desc docblock-short">Volume API: Create and manage persistent storage that can be attached to containers.</div></li></ul><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.ClientVersion.html" title="struct bollard::ClientVersion">ClientVersion</a></div><div class="desc docblock-short">Advisory version stub to use for communicating with the Server. The docker server will error if
+a higher client version is used than is compatible with the server. Beware also, that the
+docker server will return stubs for a higher version than the version set when communicating.</div></li><li><div class="item-name"><a class="struct" href="struct.Docker.html" title="struct bollard::Docker">Docker</a></div><div class="desc docblock-short"><hr />
+</div></li></ul><h2 id="constants" class="small-section-header"><a href="#constants">Constants</a></h2><ul class="item-table"><li><div class="item-name"><a class="constant" href="constant.API_DEFAULT_VERSION.html" title="constant bollard::API_DEFAULT_VERSION">API_DEFAULT_VERSION</a></div><div class="desc docblock-short">Default Client Version to communicate with the server.</div></li></ul></section></div></main></body></html>

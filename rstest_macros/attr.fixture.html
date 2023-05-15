@@ -1,0 +1,203 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Define a fixture that you can use in all `rstest`’s test arguments. You should just mark your function as `#[fixture]` and then use it as a test’s argument. Fixture functions can also use other fixtures."><title>fixture in rstest_macros - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="rstest_macros" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc attr"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../rstest_macros/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../rstest_macros/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><div class="sidebar-elems"><h2><a href="index.html">In rstest_macros</a></h2></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Attribute Macro <a href="index.html">rstest_macros</a>::<wbr><a class="attr" href="#">fixture</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../src/rstest_macros/lib.rs.html#310-331">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><pre class="rust item-decl"><code>#[fixture]</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Define a fixture that you can use in all <code>rstest</code>’s test arguments. You should just mark your
+function as <code>#[fixture]</code> and then use it as a test’s argument. Fixture functions can also
+use other fixtures.</p>
+<p>Let’s see a trivial example:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>rstest::<span class="kw-2">*</span>;
+
+<span class="attr">#[fixture]
+</span><span class="kw">fn </span>twenty_one() -&gt; i32 { <span class="number">21 </span>}
+
+<span class="attr">#[fixture]
+</span><span class="kw">fn </span>two() -&gt; i32 { <span class="number">2 </span>}
+
+<span class="attr">#[fixture]
+</span><span class="kw">fn </span>injected(twenty_one: i32, two: i32) -&gt; i32 { twenty_one * two }
+
+<span class="attr">#[rstest]
+</span><span class="kw">fn </span>the_test(injected: i32) {
+    <span class="macro">assert_eq!</span>(<span class="number">42</span>, injected)
+}</code></pre></div>
+<p>If the fixture function is an <a href="#async"><code>async</code> function</a> your fixture become an <code>async</code>
+fixture.</p>
+<h2 id="default-values"><a href="#default-values">Default values</a></h2>
+<p>If you need to define argument default value you can use <code>#[default(expression)]</code>
+argument’s attribute:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>rstest::<span class="kw-2">*</span>;
+
+<span class="attr">#[fixture]
+</span><span class="kw">fn </span>injected(
+    <span class="attr">#[default(<span class="number">21</span>)]
+    </span>twenty_one: i32,
+    <span class="attr">#[default(<span class="number">1 </span>+ <span class="number">1</span>)]
+    </span>two: i32
+) -&gt; i32 { twenty_one * two }
+
+<span class="attr">#[rstest]
+</span><span class="kw">fn </span>the_test(injected: i32) {
+    <span class="macro">assert_eq!</span>(<span class="number">42</span>, injected)
+}</code></pre></div>
+<p>The <code>expression</code> could be any valid rust expression, even an <code>async</code> block if you need.
+Moreover, if the type implements <code>FromStr</code> trait you can use a literal string to build it.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="attr">#[fixture]
+</span><span class="kw">fn </span>db_connection(
+    <span class="attr">#[default(<span class="string">&quot;127.0.0.1:9000&quot;</span>)]
+    </span>addr: SocketAddr
+) -&gt; DbConnection {
+    <span class="comment">// create connection
+</span>}</code></pre></div>
+<h2 id="async"><a href="#async">Async</a></h2>
+<p>If you need you can write <code>async</code> fixtures to use in your <code>async</code> tests. Simply use <code>async</code>
+keyword for your function and the fixture become an <code>async</code> fixture.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>rstest::<span class="kw-2">*</span>;
+
+<span class="attr">#[fixture]
+</span><span class="kw">async fn </span>async_fixture() -&gt; i32 { <span class="number">42 </span>}
+
+
+<span class="attr">#[rstest]
+</span><span class="kw">async fn </span>the_test(<span class="attr">#[future] </span>async_fixture: i32) {
+    <span class="macro">assert_eq!</span>(<span class="number">42</span>, async_fixture.<span class="kw">await</span>)
+}</code></pre></div>
+<p>The <code>#[future]</code> argument attribute helps to remove the <code>impl Future&lt;Output = T&gt;</code> boilerplate.
+In this case the macro expands it in:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="attr">#[rstest]
+</span><span class="kw">async fn </span>the_test(async_fixture: <span class="kw">impl </span>std::future::Future&lt;Output = i32&gt;) {
+    <span class="macro">assert_eq!</span>(<span class="number">42</span>, async_fixture.<span class="kw">await</span>)
+}</code></pre></div>
+<p>If you need, you can use <code>#[future]</code> attribute also with an implicit lifetime reference
+because the macro will replace the implicit lifetime with an explicit one.</p>
+<h2 id="rename"><a href="#rename">Rename</a></h2>
+<p>Sometimes you want to have long and descriptive name for your fixture but you prefer to use a much
+shorter name for argument that represent it in your fixture or test. You can rename the fixture
+using <code>#[from(short_name)]</code> attribute like following example:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>rstest::<span class="kw-2">*</span>;
+
+<span class="attr">#[fixture]
+</span><span class="kw">fn </span>long_and_boring_descriptive_name() -&gt; i32 { <span class="number">42 </span>}
+
+<span class="attr">#[rstest]
+</span><span class="kw">fn </span>the_test(<span class="attr">#[from(long_and_boring_descriptive_name)] </span>short: i32) {
+    <span class="macro">assert_eq!</span>(<span class="number">42</span>, short)
+}</code></pre></div>
+<h2 id="once-fixture"><a href="#once-fixture"><code>#[once]</code> Fixture</a></h2>
+<p>Expecially in integration tests there are cases where you need a fixture that is called just once
+for every tests. <code>rstest</code> provides <code>#[once]</code> attribute for these cases.</p>
+<p>If you mark your fixture with this attribute, then <code>rstest</code> will compute a static reference to your
+fixture result and return this reference to all your tests that need this fixture.</p>
+<p>In follow example all tests share the same reference to the <code>42</code> static value.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>rstest::<span class="kw-2">*</span>;
+
+<span class="attr">#[fixture]
+#[once]
+</span><span class="kw">fn </span>once_fixture() -&gt; i32 { <span class="number">42 </span>}
+
+<span class="comment">// Take care!!! You need to use a reference to the fixture value
+
+</span><span class="attr">#[rstest]
+#[case(<span class="number">1</span>)]
+#[case(<span class="number">2</span>)]
+</span><span class="kw">fn </span>cases_tests(once_fixture: <span class="kw-2">&amp;</span>i32, <span class="attr">#[case] </span>v: i32) {
+    <span class="comment">// Take care!!! You need to use a reference to the fixture value
+    </span><span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span><span class="number">42</span>, once_fixture)
+}
+
+<span class="attr">#[rstest]
+</span><span class="kw">fn </span>single(once_fixture: <span class="kw-2">&amp;</span>i32) {
+    <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span><span class="number">42</span>, once_fixture)
+}</code></pre></div>
+<p>There are some limitations when you use <code>#[once]</code> fixture. <code>rstest</code> forbid to use once fixture
+for:</p>
+<ul>
+<li><code>async</code> function</li>
+<li>Generic function (both with generic types or use <code>impl</code> trait)</li>
+</ul>
+<p>Take care that the <code>#[once]</code> fixture value will <strong>never be dropped</strong>.</p>
+<h2 id="partial-injection"><a href="#partial-injection">Partial Injection</a></h2>
+<p>You can also partialy inject fixture dependency using <code>#[with(v1, v2, ..)]</code> attribute:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>rstest::<span class="kw-2">*</span>;
+
+<span class="attr">#[fixture]
+</span><span class="kw">fn </span>base() -&gt; i32 { <span class="number">1 </span>}
+
+<span class="attr">#[fixture]
+</span><span class="kw">fn </span>first(base: i32) -&gt; i32 { <span class="number">1 </span>* base }
+
+<span class="attr">#[fixture]
+</span><span class="kw">fn </span>second(base: i32) -&gt; i32 { <span class="number">2 </span>* base }
+
+<span class="attr">#[fixture]
+</span><span class="kw">fn </span>injected(first: i32, <span class="attr">#[with(<span class="number">3</span>)] </span>second: i32) -&gt; i32 { first * second }
+
+<span class="attr">#[rstest]
+</span><span class="kw">fn </span>the_test(injected: i32) {
+    <span class="macro">assert_eq!</span>(-<span class="number">6</span>, injected)
+}</code></pre></div>
+<p>Note that injected value can be an arbitrary rust expression. <code>#[with(v1, ..., vn)]</code>
+attribute will inject <code>v1, ..., vn</code> expression as fixture arguments: all remaining arguments
+will be resolved as fixtures.</p>
+<p>Sometimes the return type cannot be infered so you must define it: For the few times you may
+need to do it, you can use the <code>#[default(type)]</code>, <code>#[partial_n(type)]</code> function attribute
+to define it:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>rstest::<span class="kw-2">*</span>;
+
+<span class="attr">#[fixture]
+</span><span class="kw">pub fn </span>i() -&gt; u32 {
+    <span class="number">42
+</span>}
+
+<span class="attr">#[fixture]
+</span><span class="kw">pub fn </span>j() -&gt; i32 {
+    -<span class="number">42
+</span>}
+
+<span class="attr">#[fixture]
+#[default(<span class="kw">impl </span>Iterator&lt;Item=(u32, i32)&gt;)]
+#[partial_1(<span class="kw">impl </span>Iterator&lt;Item=(I,i32)&gt;)]
+</span><span class="kw">pub fn </span>fx&lt;I, J&gt;(i: I, j: J) -&gt; <span class="kw">impl </span>Iterator&lt;Item=(I, J)&gt; {
+    std::iter::once((i, j))
+}
+
+<span class="attr">#[rstest]
+</span><span class="kw">fn </span>resolve_by_default(<span class="kw-2">mut </span>fx: <span class="kw">impl </span>Iterator&lt;Item=(u32, i32)&gt;) {
+    <span class="macro">assert_eq!</span>((<span class="number">42</span>, -<span class="number">42</span>), fx.next().unwrap())
+}
+
+<span class="attr">#[rstest]
+</span><span class="kw">fn </span>resolve_partial(<span class="attr">#[with(<span class="number">42.0</span>)] </span><span class="kw-2">mut </span>fx: <span class="kw">impl </span>Iterator&lt;Item=(f32, i32)&gt;) {
+    <span class="macro">assert_eq!</span>((<span class="number">42.0</span>, -<span class="number">42</span>), fx.next().unwrap())
+}</code></pre></div>
+<p><code>partial_i</code> is the fixture used when you inject the first <code>i</code> arguments in test call.</p>
+<h2 id="old-compact-syntax"><a href="#old-compact-syntax">Old <em>compact</em> syntax</a></h2>
+<p>There is also a compact form for all previous features. This will mantained for a long time
+but for <code>fixture</code> I strongly recomand to migrate your code because you’ll pay a little
+verbosity but get back a more readable code.</p>
+<p>Follow the previous examples in old <em>compact</em> syntax.</p>
+<h3 id="default"><a href="#default">Default</a></h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="attr">#[fixture(twenty_one=<span class="number">21</span>, two=<span class="number">2</span>)]
+</span><span class="kw">fn </span>injected(twenty_one: i32, two: i32) -&gt; i32 { twenty_one * two }</code></pre></div>
+<h3 id="rename-1"><a href="#rename-1">Rename</a></h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="attr">#[fixture]
+</span><span class="kw">fn </span>long_and_boring_descriptive_name() -&gt; i32 { <span class="number">42 </span>}
+
+<span class="attr">#[rstest(long_and_boring_descriptive_name <span class="kw">as </span>short)]
+</span><span class="kw">fn </span>the_test(short: i32) {
+    <span class="macro">assert_eq!</span>(<span class="number">42</span>, short)
+}</code></pre></div>
+<h3 id="partial-injection-1"><a href="#partial-injection-1">Partial Injection</a></h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="attr">#[fixture(second(-<span class="number">3</span>))]
+</span><span class="kw">fn </span>injected(first: i32, second: i32) -&gt; i32 { first * second }</code></pre></div>
+<h3 id="partial-type-injection"><a href="#partial-type-injection">Partial Type Injection</a></h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="attr">#[fixture(::default&lt;<span class="kw">impl </span>Iterator&lt;Item=(u32, i32)&gt;&gt;::partial_1&lt;<span class="kw">impl </span>Iterator&lt;Item=(I,i32)&gt;&gt;)]
+</span><span class="kw">pub fn </span>fx&lt;I, J&gt;(i: I, j: J) -&gt; <span class="kw">impl </span>Iterator&lt;Item=(I, J)&gt; {
+    std::iter::once((i, j))
+}</code></pre></div>
+</div></details></section></div></main></body></html>

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["TCP","UDP"],"fn":["accept","bind","connect","connect_outgoing","dup","fcntl","getaddrinfo","gethostname","getpeername","getsockname","listen","recv_from","remote_hostname_string","socket"],"static":["CALLSITE","HOSTNAME","META"],"struct":["ConnectResult"],"type":["ConnectType"]};

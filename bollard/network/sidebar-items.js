@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["ConnectNetworkOptions","CreateNetworkOptions","DisconnectNetworkOptions","InspectNetworkOptions","ListNetworksOptions","PruneNetworksOptions"]};

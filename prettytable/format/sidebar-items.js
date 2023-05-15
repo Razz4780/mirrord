@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Alignment","ColumnPosition","LinePosition"],"mod":["consts"],"struct":["FormatBuilder","LineSeparator","TableFormat"]};

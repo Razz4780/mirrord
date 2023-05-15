@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["interceptor","interceptor_fn"],"mod":["interceptor"],"trait":["Interceptor"]};

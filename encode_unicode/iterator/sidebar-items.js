@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["Utf16CharDecoder","Utf16CharIndices","Utf16CharMerger","Utf16CharSplitter","Utf16Chars","Utf16Iterator","Utf8CharDecoder","Utf8CharIndices","Utf8CharMerger","Utf8CharSplitter","Utf8Chars","Utf8Iterator"]};

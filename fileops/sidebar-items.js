@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["ffunctions","main","pwrite"],"static":["FILE_PATH"]};

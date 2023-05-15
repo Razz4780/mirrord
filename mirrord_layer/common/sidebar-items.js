@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["HookMessage"],"fn":["blocking_send_hook_message"],"static":["CALLSITE","META"],"trait":["CheckedInto"],"type":["ResponseChannel","ResponseDeque"]};

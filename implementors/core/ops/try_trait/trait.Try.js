@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"mirrord_layer":[["impl&lt;S&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/ops/try_trait/trait.Try.html\" title=\"trait core::ops::try_trait::Try\">Try</a> for <a class=\"enum\" href=\"mirrord_layer/detour/enum.Detour.html\" title=\"enum mirrord_layer::detour::Detour\">Detour</a>&lt;S&gt;"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

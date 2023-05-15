@@ -1,0 +1,87 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="libpnet"><title>pnet - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="pnet" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../pnet/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../pnet/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2 class="location"><a href="#">Crate pnet</a></h2><div class="sidebar-elems"><ul class="block"><li class="version">Version 0.33.0</li><li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#reexports">Re-exports</a></li><li><a href="#modules">Modules</a></li></ul></section></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">pnet</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../src/pnet/lib.rs.html#9-154">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><h2 id="libpnet"><a href="#libpnet">libpnet</a></h2>
+<p><code>libpnet</code> provides a cross-platform API for low level networking using Rust.</p>
+<p>There are four key components:</p>
+<ul>
+<li>The <code>packet</code> module, allowing safe construction and manipulation of packets;</li>
+<li>The <code>pnet_packet</code> crate, providing infrastructure for the packet module;</li>
+<li>The <code>transport</code> module, which allows implementation of transport protocols;</li>
+<li>The <code>datalink</code> module, which allows sending and receiving data link
+packets directly.</li>
+</ul>
+<h3 id="terminology"><a href="#terminology">Terminology</a></h3>
+<p>The documentation uses the following terms interchangably:</p>
+<ul>
+<li>Layer 2, datalink layer;</li>
+<li>Layer 3, network layer;</li>
+<li>Layer 4, transport layer.</li>
+</ul>
+<p>Unless otherwise stated, all interactions with libpnet are in host-byte
+order - any platform specific variations are handled internally.</p>
+<h3 id="examples"><a href="#examples">Examples</a></h3>
+<p>More examples, including a packet logger, and a version of the echo server
+written at the transport layer, can be found in the <code>examples/</code> directory.</p>
+<h4 id="ethernet-echo-server"><a href="#ethernet-echo-server">Ethernet echo server</a></h4>
+<p>This (fairly useless) code implements an Ethernet echo server. Whenever a
+packet is received on an interface, it echo’s the packet back; reversing the
+source and destination addresses.</p>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">extern crate </span>pnet;
+
+<span class="kw">use </span>pnet::datalink::{<span class="self">self</span>, NetworkInterface};
+<span class="kw">use </span>pnet::datalink::Channel::Ethernet;
+<span class="kw">use </span>pnet::packet::{Packet, MutablePacket};
+<span class="kw">use </span>pnet::packet::ethernet::{EthernetPacket, MutableEthernetPacket};
+
+<span class="kw">use </span>std::env;
+
+<span class="comment">// Invoke as echo &lt;interface name&gt;
+</span><span class="kw">fn </span>main() {
+    <span class="kw">let </span>interface_name = env::args().nth(<span class="number">1</span>).unwrap();
+    <span class="kw">let </span>interface_names_match =
+        |iface: <span class="kw-2">&amp;</span>NetworkInterface| iface.name == interface_name;
+
+    <span class="comment">// Find the network interface with the provided name
+    </span><span class="kw">let </span>interfaces = datalink::interfaces();
+    <span class="kw">let </span>interface = interfaces.into_iter()
+                              .filter(interface_names_match)
+                              .next()
+                              .unwrap();
+
+    <span class="comment">// Create a new channel, dealing with layer 2 packets
+    </span><span class="kw">let </span>(<span class="kw-2">mut </span>tx, <span class="kw-2">mut </span>rx) = <span class="kw">match </span>datalink::channel(<span class="kw-2">&amp;</span>interface, Default::default()) {
+        <span class="prelude-val">Ok</span>(Ethernet(tx, rx)) =&gt; (tx, rx),
+        <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; <span class="macro">panic!</span>(<span class="string">&quot;Unhandled channel type&quot;</span>),
+        <span class="prelude-val">Err</span>(e) =&gt; <span class="macro">panic!</span>(<span class="string">&quot;An error occurred when creating the datalink channel: {}&quot;</span>, e)
+    };
+
+    <span class="kw">loop </span>{
+        <span class="kw">match </span>rx.next() {
+            <span class="prelude-val">Ok</span>(packet) =&gt; {
+                <span class="kw">let </span>packet = EthernetPacket::new(packet).unwrap();
+
+                <span class="comment">// Constructs a single packet, the same length as the the one received,
+                // using the provided closure. This allows the packet to be constructed
+                // directly in the write buffer, without copying. If copying is not a
+                // problem, you could also use send_to.
+                //
+                // The packet is sent once the closure has finished executing.
+                </span>tx.build_and_send(<span class="number">1</span>, packet.packet().len(),
+                    <span class="kw-2">&amp;mut </span>|<span class="kw-2">mut </span>new_packet| {
+                        <span class="kw">let </span><span class="kw-2">mut </span>new_packet = MutableEthernetPacket::new(new_packet).unwrap();
+
+                        <span class="comment">// Create a clone of the original packet
+                        </span>new_packet.clone_from(<span class="kw-2">&amp;</span>packet);
+
+                        <span class="comment">// Switch the source and destination
+                        </span>new_packet.set_source(packet.get_destination());
+                        new_packet.set_destination(packet.get_source());
+                });
+            },
+            <span class="prelude-val">Err</span>(e) =&gt; {
+                <span class="comment">// If an error occurs, we can handle it here
+                </span><span class="macro">panic!</span>(<span class="string">&quot;An error occurred while reading: {}&quot;</span>, e);
+            }
+        }
+    }
+}</code></pre></div>
+</div></details><h2 id="reexports" class="small-section-header"><a href="#reexports">Re-exports</a></h2><ul class="item-table"><li><div class="item-name"><code>pub extern crate <a class="mod" href="../ipnetwork/index.html" title="mod ipnetwork">ipnetwork</a>;</code></div></li></ul><h2 id="modules" class="small-section-header"><a href="#modules">Modules</a></h2><ul class="item-table"><li><div class="item-name"><a class="mod" href="datalink/index.html" title="mod pnet::datalink">datalink</a></div><div class="desc docblock-short">Support for sending and receiving data link layer packets.</div></li><li><div class="item-name"><a class="mod" href="packet/index.html" title="mod pnet::packet">packet</a></div><div class="desc docblock-short">Support for packet parsing and manipulation.</div></li><li><div class="item-name"><a class="mod" href="transport/index.html" title="mod pnet::transport">transport</a></div><div class="desc docblock-short">Support for sending and receiving transport layer packets.</div></li><li><div class="item-name"><a class="mod" href="util/index.html" title="mod pnet::util">util</a></div><div class="desc docblock-short">Miscellaneous utilities for low-level networking.</div></li></ul></section></div></main></body></html>

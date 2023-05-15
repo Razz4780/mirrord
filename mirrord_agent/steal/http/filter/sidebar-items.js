@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["DEFAULT_HTTP_VERSION_DETECTION_TIMEOUT","H2_PREFACE","MINIMAL_HEADER_SIZE"],"fn":["close_connection","filter_task"],"opaque":[""],"static":["CALLSITE","META"],"struct":["TokioExecutor"]};

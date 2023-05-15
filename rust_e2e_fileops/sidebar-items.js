@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["create_test_file","fgets","main","open_read_contents","open_read_only","open_read_write","pread","pwrite"],"static":["FILE_CONTENTS","FILE_PATH"]};

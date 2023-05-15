@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["ETHER_ADDR_LEN"],"enum":["ParseMacAddrErr"],"struct":["MacAddr"]};

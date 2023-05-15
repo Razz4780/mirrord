@@ -1,0 +1,41 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Helper macro to declare integers at compile-time"><title>oid in asn1_rs - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="asn1_rs" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc macro"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../asn1_rs/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../asn1_rs/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><div class="sidebar-elems"><h2><a href="index.html">In asn1_rs</a></h2></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Macro <a href="index.html">asn1_rs</a>::<wbr><a class="macro" href="#">oid</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../src/asn1_rs/asn1_types/oid.rs.html#453-467">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><pre class="rust item-decl"><span class="macro">macro_rules! </span>oid {
+    (raw <span class="macro-nonterminal">$items</span>:expr) =&gt; { ... };
+    (rel <span class="macro-nonterminal">$items</span>:expr) =&gt; { ... };
+    (<span class="macro-nonterminal">$items</span>:expr) =&gt; { ... };
+}</pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Helper macro to declare integers at compile-time</p>
+<p>Since the DER encoded oids are not very readable we provide a
+procedural macro <code>oid!</code>. The macro can be used the following ways:</p>
+<ul>
+<li><code>oid!(1.4.42.23)</code>: Create a const expression for the corresponding <code>Oid&lt;'static&gt;</code></li>
+<li><code>oid!(rel 42.23)</code>: Create a const expression for the corresponding relative <code>Oid&lt;'static&gt;</code></li>
+<li><code>oid!(raw 1.4.42.23)</code>/<code>oid!(raw rel 42.23)</code>: Obtain the DER encoded form as a byte array.</li>
+</ul>
+<h2 id="comparing-oids"><a href="#comparing-oids">Comparing oids</a></h2>
+<p>Comparing a parsed oid to a static oid is probably the most common
+thing done with oids in your code. The <code>oid!</code> macro can be used in expression positions for
+this purpose. For example</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>asn1_rs::{oid, Oid};
+
+<span class="kw">const </span>SOME_STATIC_OID: Oid&lt;<span class="lifetime">&#39;static</span>&gt; = <span class="macro">oid!</span>(<span class="number">1.2</span>.<span class="number">456</span>);
+<span class="macro">assert_eq!</span>(some_oid, SOME_STATIC_OID)</code></pre></div>
+<p>To get a relative Oid use <code>oid!(rel 1.2)</code>.</p>
+<p>Because of limitations for procedural macros (<a href="https://github.com/rust-lang/rust/issues/54727">rust issue</a>)
+and constants used in patterns (<a href="https://github.com/rust-lang/rust/issues/31434">rust issue</a>)
+the <code>oid</code> macro can not directly be used in patterns, also not through constants.
+You can do this, though:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">const </span>SOME_OID: Oid&lt;<span class="lifetime">&#39;static</span>&gt; = <span class="macro">oid!</span>(<span class="number">1.2</span>.<span class="number">456</span>);
+<span class="kw">if </span>some_oid == SOME_OID || some_oid == <span class="macro">oid!</span>(<span class="number">1.2</span>.<span class="number">456</span>) {
+    <span class="macro">println!</span>(<span class="string">&quot;match&quot;</span>);
+}
+
+<span class="comment">// Alternatively, compare the DER encoded form directly:
+</span><span class="kw">const </span>SOME_OID_RAW: <span class="kw-2">&amp;</span>[u8] = <span class="kw-2">&amp;</span><span class="macro">oid!</span>(raw <span class="number">1.2</span>.<span class="number">456</span>);
+<span class="kw">match </span>some_oid.as_bytes() {
+    SOME_OID_RAW =&gt; <span class="macro">println!</span>(<span class="string">&quot;match&quot;</span>),
+    <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(<span class="string">&quot;no match&quot;</span>),
+}</code></pre></div>
+<p><em>Attention</em>, be aware that the latter version might not handle the case of a relative oid correctly. An
+extra check might be necessary.</p>
+</div></details></section></div></main></body></html>

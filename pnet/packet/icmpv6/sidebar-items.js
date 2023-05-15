@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["checksum"],"mod":["Icmpv6Types","echo_reply","echo_request","ndp"],"struct":["Icmpv6","Icmpv6Code","Icmpv6Iterable","Icmpv6Packet","Icmpv6Type","MutableIcmpv6Packet"]};

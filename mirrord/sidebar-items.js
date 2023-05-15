@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["CURRENT_VERSION","PAUSE_WITHOUT_STEAL_WARNING","WAITLIST_API"],"fn":["cli_progress","exec","get_kube_pods","login","main","print_pod_targets","prompt_outdated_version","register_to_waitlist"],"mod":["config","connection","error","execution","extension","extract","internal_proxy","operator"],"opaque":[""],"static":["CALLSITE","META"]};

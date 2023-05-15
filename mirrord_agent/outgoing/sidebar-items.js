@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["BRANCHES"],"fn":["layer_recv"],"mod":["socket_stream","udp"],"opaque":[""],"static":["CALLSITE","META"],"struct":["TcpOutgoingApi"],"type":["Daemon","Layer"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"static":["OPERATOR_STATUS_NAME"],"struct":["MirrordOperatorCrd","MirrordOperatorSpec","MirrordOperatorStatus","Session","TargetCrd","TargetSpec"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ReadCronJobResponse","ReadCronJobStatusResponse"],"struct":["CronJob","CronJobSpec","CronJobStatus","JobTemplateSpec"]};

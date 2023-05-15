@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["CodepointError","FromStrError","Utf16ArrayError","Utf16PairError","Utf16SliceError","Utf16TupleError","Utf8ErrorKind"],"struct":["EmptyStrError","NonAsciiError","NonBmpError","Utf16FirstUnitError","Utf8Error"]};
