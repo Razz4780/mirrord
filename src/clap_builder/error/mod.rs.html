@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/clap_builder-4.2.2/src/error/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="clap_builder" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../clap_builder/index.html"><img src="https://raw.githubusercontent.com/clap-rs/clap/master/assets/clap.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/clap_builder-4.2.7/src/error/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="clap_builder" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../clap_builder/index.html"><img src="https://raw.githubusercontent.com/clap-rs/clap/master/assets/clap.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -879,6 +879,38 @@
 <a href="#879" id="879">879</a>
 <a href="#880" id="880">880</a>
 <a href="#881" id="881">881</a>
+<a href="#882" id="882">882</a>
+<a href="#883" id="883">883</a>
+<a href="#884" id="884">884</a>
+<a href="#885" id="885">885</a>
+<a href="#886" id="886">886</a>
+<a href="#887" id="887">887</a>
+<a href="#888" id="888">888</a>
+<a href="#889" id="889">889</a>
+<a href="#890" id="890">890</a>
+<a href="#891" id="891">891</a>
+<a href="#892" id="892">892</a>
+<a href="#893" id="893">893</a>
+<a href="#894" id="894">894</a>
+<a href="#895" id="895">895</a>
+<a href="#896" id="896">896</a>
+<a href="#897" id="897">897</a>
+<a href="#898" id="898">898</a>
+<a href="#899" id="899">899</a>
+<a href="#900" id="900">900</a>
+<a href="#901" id="901">901</a>
+<a href="#902" id="902">902</a>
+<a href="#903" id="903">903</a>
+<a href="#904" id="904">904</a>
+<a href="#905" id="905">905</a>
+<a href="#906" id="906">906</a>
+<a href="#907" id="907">907</a>
+<a href="#908" id="908">908</a>
+<a href="#909" id="909">909</a>
+<a href="#910" id="910">910</a>
+<a href="#911" id="911">911</a>
+<a href="#912" id="912">912</a>
+<a href="#913" id="913">913</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Error reporting
 
 </span><span class="attr">#![cfg_attr(not(feature = <span class="string">&quot;error-context&quot;</span>), allow(dead_code))]
@@ -899,6 +931,7 @@
 
 <span class="comment">// Internal
 </span><span class="kw">use </span><span class="kw">crate</span>::builder::StyledStr;
+<span class="kw">use </span><span class="kw">crate</span>::builder::Styles;
 <span class="kw">use </span><span class="kw">crate</span>::output::fmt::Colorizer;
 <span class="kw">use </span><span class="kw">crate</span>::output::fmt::Stream;
 <span class="kw">use </span><span class="kw">crate</span>::parser::features::suggestions;
@@ -950,6 +983,7 @@
     message: <span class="prelude-ty">Option</span>&lt;Message&gt;,
     source: <span class="prelude-ty">Option</span>&lt;Box&lt;<span class="kw">dyn </span>error::Error + Send + Sync&gt;&gt;,
     help_flag: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str&gt;,
+    styles: Styles,
     color_when: ColorChoice,
     color_help_when: ColorChoice,
     backtrace: <span class="prelude-ty">Option</span>&lt;Backtrace&gt;,
@@ -1013,6 +1047,7 @@
                 message: <span class="prelude-val">None</span>,
                 source: <span class="prelude-val">None</span>,
                 help_flag: <span class="prelude-val">None</span>,
+                styles: Styles::plain(),
                 color_when: ColorChoice::Never,
                 color_help_when: ColorChoice::Never,
                 backtrace: Backtrace::new(),
@@ -1025,7 +1060,8 @@
     ///
     /// Generally, this is used with [`Error::new`]
     </span><span class="kw">pub fn </span>with_cmd(<span class="self">self</span>, cmd: <span class="kw-2">&amp;</span>Command) -&gt; <span class="self">Self </span>{
-        <span class="self">self</span>.set_color(cmd.get_color())
+        <span class="self">self</span>.set_styles(cmd.get_styles().clone())
+            .set_color(cmd.get_color())
             .set_colored_help(cmd.color_help())
             .set_help_flag(format::get_help_flag(cmd))
     }
@@ -1176,6 +1212,11 @@
         <span class="self">self
     </span>}
 
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>set_styles(<span class="kw-2">mut </span><span class="self">self</span>, styles: Styles) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.inner.styles = styles;
+        <span class="self">self
+    </span>}
+
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>set_color(<span class="kw-2">mut </span><span class="self">self</span>, color_when: ColorChoice) -&gt; <span class="self">Self </span>{
         <span class="self">self</span>.inner.color_when = color_when;
         <span class="self">self
@@ -1315,18 +1356,23 @@
         name: String,
         usage: <span class="prelude-ty">Option</span>&lt;StyledStr&gt;,
     ) -&gt; <span class="self">Self </span>{
+        <span class="kw">use </span>std::fmt::Write <span class="kw">as _</span>;
+        <span class="kw">let </span>styles = cmd.get_styles();
+        <span class="kw">let </span>invalid = <span class="kw-2">&amp;</span>styles.get_invalid();
+        <span class="kw">let </span>valid = <span class="kw-2">&amp;</span>styles.get_valid();
         <span class="kw">let </span><span class="kw-2">mut </span>err = <span class="self">Self</span>::new(ErrorKind::InvalidSubcommand).with_cmd(cmd);
 
         <span class="attr">#[cfg(feature = <span class="string">&quot;error-context&quot;</span>)]
         </span>{
             <span class="kw">let </span><span class="kw-2">mut </span>styled_suggestion = StyledStr::new();
-            styled_suggestion.none(<span class="string">&quot;to pass &#39;&quot;</span>);
-            styled_suggestion.warning(<span class="kw-2">&amp;</span>subcmd);
-            styled_suggestion.none(<span class="string">&quot;&#39; as a value, use &#39;&quot;</span>);
-            styled_suggestion.good(name);
-            styled_suggestion.good(<span class="string">&quot; -- &quot;</span>);
-            styled_suggestion.good(<span class="kw-2">&amp;</span>subcmd);
-            styled_suggestion.none(<span class="string">&quot;&#39;&quot;</span>);
+            <span class="kw">let _ </span>= <span class="macro">write!</span>(
+                styled_suggestion,
+                <span class="string">&quot;to pass &#39;{}{subcmd}{}&#39; as a value, use &#39;{}{name} -- {subcmd}{}&#39;&quot;</span>,
+                invalid.render(),
+                invalid.render_reset(),
+                valid.render(),
+                valid.render_reset()
+            );
 
             err = err.extend_context_unchecked([
                 (ContextKind::InvalidSubcommand, ContextValue::String(subcmd)),
@@ -1542,6 +1588,10 @@
         suggested_trailing_arg: bool,
         usage: <span class="prelude-ty">Option</span>&lt;StyledStr&gt;,
     ) -&gt; <span class="self">Self </span>{
+        <span class="kw">use </span>std::fmt::Write <span class="kw">as _</span>;
+        <span class="kw">let </span>styles = cmd.get_styles();
+        <span class="kw">let </span>invalid = <span class="kw-2">&amp;</span>styles.get_invalid();
+        <span class="kw">let </span>valid = <span class="kw-2">&amp;</span>styles.get_valid();
         <span class="kw">let </span><span class="kw-2">mut </span>err = <span class="self">Self</span>::new(ErrorKind::UnknownArgument).with_cmd(cmd);
 
         <span class="attr">#[cfg(feature = <span class="string">&quot;error-context&quot;</span>)]
@@ -1549,12 +1599,14 @@
             <span class="kw">let </span><span class="kw-2">mut </span>suggestions = <span class="macro">vec!</span>[];
             <span class="kw">if </span>suggested_trailing_arg {
                 <span class="kw">let </span><span class="kw-2">mut </span>styled_suggestion = StyledStr::new();
-                styled_suggestion.none(<span class="string">&quot;to pass &#39;&quot;</span>);
-                styled_suggestion.warning(<span class="kw-2">&amp;</span>arg);
-                styled_suggestion.none(<span class="string">&quot;&#39; as a value, use &#39;&quot;</span>);
-                styled_suggestion.good(<span class="string">&quot;-- &quot;</span>);
-                styled_suggestion.good(<span class="kw-2">&amp;</span>arg);
-                styled_suggestion.none(<span class="string">&quot;&#39;&quot;</span>);
+                <span class="kw">let _ </span>= <span class="macro">write!</span>(
+                    styled_suggestion,
+                    <span class="string">&quot;to pass &#39;{}{arg}{}&#39; as a value, use &#39;{}-- {arg}{}&#39;&quot;</span>,
+                    invalid.render(),
+                    invalid.render_reset(),
+                    valid.render(),
+                    valid.render_reset()
+                );
                 suggestions.push(styled_suggestion);
             }
 
@@ -1567,12 +1619,12 @@
             <span class="kw">match </span>did_you_mean {
                 <span class="prelude-val">Some</span>((flag, <span class="prelude-val">Some</span>(sub))) =&gt; {
                     <span class="kw">let </span><span class="kw-2">mut </span>styled_suggestion = StyledStr::new();
-                    styled_suggestion.none(<span class="string">&quot;&#39;&quot;</span>);
-                    styled_suggestion.good(sub);
-                    styled_suggestion.none(<span class="string">&quot; &quot;</span>);
-                    styled_suggestion.good(<span class="string">&quot;--&quot;</span>);
-                    styled_suggestion.good(flag);
-                    styled_suggestion.none(<span class="string">&quot;&#39; exists&quot;</span>);
+                    <span class="kw">let _ </span>= <span class="macro">write!</span>(
+                        styled_suggestion,
+                        <span class="string">&quot;&#39;{}{sub} --{flag}{}&#39; exists&quot;</span>,
+                        valid.render(),
+                        valid.render_reset()
+                    );
                     suggestions.push(styled_suggestion);
                 }
                 <span class="prelude-val">Some</span>((flag, <span class="prelude-val">None</span>)) =&gt; {
@@ -1599,16 +1651,23 @@
         arg: String,
         usage: <span class="prelude-ty">Option</span>&lt;StyledStr&gt;,
     ) -&gt; <span class="self">Self </span>{
+        <span class="kw">use </span>std::fmt::Write <span class="kw">as _</span>;
+        <span class="kw">let </span>styles = cmd.get_styles();
+        <span class="kw">let </span>invalid = <span class="kw-2">&amp;</span>styles.get_invalid();
+        <span class="kw">let </span>valid = <span class="kw-2">&amp;</span>styles.get_valid();
         <span class="kw">let </span><span class="kw-2">mut </span>err = <span class="self">Self</span>::new(ErrorKind::UnknownArgument).with_cmd(cmd);
 
         <span class="attr">#[cfg(feature = <span class="string">&quot;error-context&quot;</span>)]
         </span>{
             <span class="kw">let </span><span class="kw-2">mut </span>styled_suggestion = StyledStr::new();
-            styled_suggestion.none(<span class="string">&quot;subcommand &#39;&quot;</span>);
-            styled_suggestion.good(<span class="kw-2">&amp;</span>arg);
-            styled_suggestion.none(<span class="string">&quot;&#39; exists; to use it, remove the &#39;&quot;</span>);
-            styled_suggestion.warning(<span class="string">&quot;--&quot;</span>);
-            styled_suggestion.none(<span class="string">&quot;&#39; before it&quot;</span>);
+            <span class="kw">let _ </span>= <span class="macro">write!</span>(
+                styled_suggestion,
+                <span class="string">&quot;subcommand &#39;{}{arg}{}&#39; exists; to use it, remove the &#39;{}--{}&#39; before it&quot;</span>,
+                valid.render(),
+                valid.render_reset(),
+                invalid.render(),
+                invalid.render_reset()
+            );
 
             err = err.extend_context_unchecked([
                 (ContextKind::InvalidArg, ContextValue::String(arg)),
@@ -1628,7 +1687,7 @@
 
     <span class="kw">fn </span>formatted(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Cow&lt;<span class="lifetime">&#39;_</span>, StyledStr&gt; {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(message) = <span class="self">self</span>.inner.message.as_ref() {
-            message.formatted()
+            message.formatted(<span class="kw-2">&amp;</span><span class="self">self</span>.inner.styles)
         } <span class="kw">else </span>{
             <span class="kw">let </span>styled = F::format_error(<span class="self">self</span>);
             Cow::Owned(styled)
@@ -1687,7 +1746,12 @@
                 <span class="kw">let </span><span class="kw-2">mut </span>message = String::new();
                 std::mem::swap(s, <span class="kw-2">&amp;mut </span>message);
 
-                <span class="kw">let </span>styled = format::format_error_message(<span class="kw-2">&amp;</span>message, <span class="prelude-val">Some</span>(cmd), usage.as_ref());
+                <span class="kw">let </span>styled = format::format_error_message(
+                    <span class="kw-2">&amp;</span>message,
+                    cmd.get_styles(),
+                    <span class="prelude-val">Some</span>(cmd),
+                    usage.as_ref(),
+                );
 
                 <span class="kw-2">*</span><span class="self">self </span>= <span class="self">Self</span>::Formatted(styled);
             }
@@ -1695,10 +1759,10 @@
         }
     }
 
-    <span class="kw">fn </span>formatted(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Cow&lt;StyledStr&gt; {
+    <span class="kw">fn </span>formatted(<span class="kw-2">&amp;</span><span class="self">self</span>, styles: <span class="kw-2">&amp;</span>Styles) -&gt; Cow&lt;StyledStr&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             Message::Raw(s) =&gt; {
-                <span class="kw">let </span>styled = format::format_error_message(s, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>);
+                <span class="kw">let </span>styled = format::format_error_message(s, styles, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>);
 
                 Cow::Owned(styled)
             }

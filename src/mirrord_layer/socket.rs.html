@@ -256,6 +256,35 @@
 <a href="#256" id="256">256</a>
 <a href="#257" id="257">257</a>
 <a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
 </pre><pre class="rust"><code><span class="doccomment">//! We implement each hook function in a safe function as much as possible, having the unsafe do the
 //! absolute minimum
 </span><span class="kw">use </span>std::{
@@ -304,6 +333,7 @@
 </span><span class="kw">pub struct </span>SocketInformation {
     <span class="doccomment">/// Address of the incoming peer
     </span><span class="kw">pub </span>remote_address: SocketAddr,
+
     <span class="doccomment">/// Address of the local peer (our IP)
     </span><span class="kw">pub </span>local_address: SocketAddr,
 }
@@ -352,16 +382,44 @@
 
 <span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span>Connected {
-    <span class="doccomment">/// Remote address we&#39;re connected to
+    <span class="doccomment">/// Remote address we&#39;re connected to.
     </span>remote_address: SocketAddress,
+
     <span class="doccomment">/// Local address (pod-wise)
+    ///
+    /// ## Example
+    ///
+    /// ```sh
+    /// $ kubectl get pod -o wide
+    ///
+    /// NAME             READY   STATUS    IP       
+    /// impersonated-pod 0/1     Running   1.2.3.4
+    /// ```
+    ///
+    /// We would set this ip as `1.2.3.4:{port}` in [`bind`], where `{port}` is the user requested
+    /// port.
     </span>local_address: SocketAddress,
 }
 
-<span class="attr">#[derive(Debug, Clone, Copy)]
+<span class="doccomment">/// Represents a [`SocketState`] where the user made a [`libc::bind`] call, and we intercepted it.
+///
+/// ## Details
+///
+/// Our [`ops::bind`] hook doesn&#39;t bind the address that the user passed to us, instead we call
+/// [`hooks::FN_BIND`] with `localhost:0` (or `unspecified:0` for ipv6), and use
+/// [`hooks::FN_GETSOCKNAME`] to retrieve this bound address which we assign to `Bound::address`.
+///
+/// The original user requested address is assigned to `Bound::requested_address`, and used as an
+/// illusion for when the user calls [`libc::getsockname`], as if this address was the actual local
+/// bound address.
+</span><span class="attr">#[derive(Debug, Clone, Copy)]
 </span><span class="kw">pub struct </span>Bound {
-    requested_address: SocketAddr,
-    address: SocketAddr,
+    <span class="doccomment">/// Address originally requested by the user for [`bind`].
+    </span>requested_address: SocketAddr,
+
+    <span class="doccomment">/// Actual bound address that we use to communicate between the user&#39;s listener socket and our
+    /// interceptor socket.
+    </span>address: SocketAddr,
 }
 
 <span class="attr">#[derive(Debug, Default)]

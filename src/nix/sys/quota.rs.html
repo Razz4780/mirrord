@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/nix-0.25.1/src/sys/quota.rs`."><title>quota.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="nix" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../nix/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/nix-0.26.2/src/sys/quota.rs`."><title>quota.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="nix" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../nix/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -275,6 +275,67 @@
 <a href="#275" id="275">275</a>
 <a href="#276" id="276">276</a>
 <a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Set and configure disk quotas for users, groups, or projects.
 //!
 //! # Examples
@@ -289,11 +350,11 @@
 //! dqblk.set_blocks_soft_limit(8000);
 //! quotactl_set(QuotaType::USRQUOTA, &quot;/dev/sda1&quot;, 50, &amp;dqblk, QuotaValidFlags::QIF_BLIMITS).unwrap();
 //! ```
-</span><span class="kw">use </span>std::default::Default;
+</span><span class="kw">use </span><span class="kw">crate</span>::errno::Errno;
+<span class="kw">use crate</span>::{NixPath, <span class="prelude-ty">Result</span>};
+<span class="kw">use </span>libc::{<span class="self">self</span>, c_char, c_int};
+<span class="kw">use </span>std::default::Default;
 <span class="kw">use </span>std::{mem, ptr};
-<span class="kw">use </span>libc::{<span class="self">self</span>, c_int, c_char};
-<span class="kw">use crate</span>::{<span class="prelude-ty">Result</span>, NixPath};
-<span class="kw">use </span><span class="kw">crate</span>::errno::Errno;
 
 <span class="kw">struct </span>QuotaCmd(QuotaSubCmd, QuotaType);
 
@@ -305,7 +366,7 @@
 }
 
 <span class="comment">// linux quota version &gt;= 2
-</span><span class="macro">libc_enum!</span>{
+</span><span class="macro">libc_enum! </span>{
     <span class="attr">#[repr(i32)]
     </span><span class="kw">enum </span>QuotaSubCmd {
         Q_SYNC,
@@ -316,7 +377,7 @@
     }
 }
 
-<span class="macro">libc_enum!</span>{
+<span class="macro">libc_enum! </span>{
     <span class="doccomment">/// The scope of the quota.
     </span><span class="attr">#[repr(i32)]
     #[non_exhaustive]
@@ -328,7 +389,7 @@
     }
 }
 
-<span class="macro">libc_enum!</span>{
+<span class="macro">libc_enum! </span>{
     <span class="doccomment">/// The type of quota format to use.
     </span><span class="attr">#[repr(i32)]
     #[non_exhaustive]
@@ -397,7 +458,8 @@
 <span class="kw">impl </span>Dqblk {
     <span class="doccomment">/// The absolute limit on disk quota blocks allocated.
     </span><span class="kw">pub fn </span>blocks_hard_limit(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
-        <span class="kw">let </span>valid_fields = QuotaValidFlags::from_bits_truncate(<span class="self">self</span>.<span class="number">0</span>.dqb_valid);
+        <span class="kw">let </span>valid_fields =
+            QuotaValidFlags::from_bits_truncate(<span class="self">self</span>.<span class="number">0</span>.dqb_valid);
         <span class="kw">if </span>valid_fields.contains(QuotaValidFlags::QIF_BLIMITS) {
             <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="number">0</span>.dqb_bhardlimit)
         } <span class="kw">else </span>{
@@ -412,7 +474,8 @@
 
     <span class="doccomment">/// Preferred limit on disk quota blocks
     </span><span class="kw">pub fn </span>blocks_soft_limit(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
-        <span class="kw">let </span>valid_fields = QuotaValidFlags::from_bits_truncate(<span class="self">self</span>.<span class="number">0</span>.dqb_valid);
+        <span class="kw">let </span>valid_fields =
+            QuotaValidFlags::from_bits_truncate(<span class="self">self</span>.<span class="number">0</span>.dqb_valid);
         <span class="kw">if </span>valid_fields.contains(QuotaValidFlags::QIF_BLIMITS) {
             <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="number">0</span>.dqb_bsoftlimit)
         } <span class="kw">else </span>{
@@ -427,7 +490,8 @@
 
     <span class="doccomment">/// Current occupied space (bytes).
     </span><span class="kw">pub fn </span>occupied_space(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
-        <span class="kw">let </span>valid_fields = QuotaValidFlags::from_bits_truncate(<span class="self">self</span>.<span class="number">0</span>.dqb_valid);
+        <span class="kw">let </span>valid_fields =
+            QuotaValidFlags::from_bits_truncate(<span class="self">self</span>.<span class="number">0</span>.dqb_valid);
         <span class="kw">if </span>valid_fields.contains(QuotaValidFlags::QIF_SPACE) {
             <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="number">0</span>.dqb_curspace)
         } <span class="kw">else </span>{
@@ -437,7 +501,8 @@
 
     <span class="doccomment">/// Maximum number of allocated inodes.
     </span><span class="kw">pub fn </span>inodes_hard_limit(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
-        <span class="kw">let </span>valid_fields = QuotaValidFlags::from_bits_truncate(<span class="self">self</span>.<span class="number">0</span>.dqb_valid);
+        <span class="kw">let </span>valid_fields =
+            QuotaValidFlags::from_bits_truncate(<span class="self">self</span>.<span class="number">0</span>.dqb_valid);
         <span class="kw">if </span>valid_fields.contains(QuotaValidFlags::QIF_ILIMITS) {
             <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="number">0</span>.dqb_ihardlimit)
         } <span class="kw">else </span>{
@@ -452,7 +517,8 @@
 
     <span class="doccomment">/// Preferred inode limit
     </span><span class="kw">pub fn </span>inodes_soft_limit(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
-        <span class="kw">let </span>valid_fields = QuotaValidFlags::from_bits_truncate(<span class="self">self</span>.<span class="number">0</span>.dqb_valid);
+        <span class="kw">let </span>valid_fields =
+            QuotaValidFlags::from_bits_truncate(<span class="self">self</span>.<span class="number">0</span>.dqb_valid);
         <span class="kw">if </span>valid_fields.contains(QuotaValidFlags::QIF_ILIMITS) {
             <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="number">0</span>.dqb_isoftlimit)
         } <span class="kw">else </span>{
@@ -467,7 +533,8 @@
 
     <span class="doccomment">/// Current number of allocated inodes.
     </span><span class="kw">pub fn </span>allocated_inodes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
-        <span class="kw">let </span>valid_fields = QuotaValidFlags::from_bits_truncate(<span class="self">self</span>.<span class="number">0</span>.dqb_valid);
+        <span class="kw">let </span>valid_fields =
+            QuotaValidFlags::from_bits_truncate(<span class="self">self</span>.<span class="number">0</span>.dqb_valid);
         <span class="kw">if </span>valid_fields.contains(QuotaValidFlags::QIF_INODES) {
             <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="number">0</span>.dqb_curinodes)
         } <span class="kw">else </span>{
@@ -477,7 +544,8 @@
 
     <span class="doccomment">/// Time limit for excessive disk use.
     </span><span class="kw">pub fn </span>block_time_limit(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
-        <span class="kw">let </span>valid_fields = QuotaValidFlags::from_bits_truncate(<span class="self">self</span>.<span class="number">0</span>.dqb_valid);
+        <span class="kw">let </span>valid_fields =
+            QuotaValidFlags::from_bits_truncate(<span class="self">self</span>.<span class="number">0</span>.dqb_valid);
         <span class="kw">if </span>valid_fields.contains(QuotaValidFlags::QIF_BTIME) {
             <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="number">0</span>.dqb_btime)
         } <span class="kw">else </span>{
@@ -492,7 +560,8 @@
 
     <span class="doccomment">/// Time limit for excessive files.
     </span><span class="kw">pub fn </span>inode_time_limit(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
-        <span class="kw">let </span>valid_fields = QuotaValidFlags::from_bits_truncate(<span class="self">self</span>.<span class="number">0</span>.dqb_valid);
+        <span class="kw">let </span>valid_fields =
+            QuotaValidFlags::from_bits_truncate(<span class="self">self</span>.<span class="number">0</span>.dqb_valid);
         <span class="kw">if </span>valid_fields.contains(QuotaValidFlags::QIF_ITIME) {
             <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="number">0</span>.dqb_itime)
         } <span class="kw">else </span>{
@@ -506,11 +575,18 @@
     }
 }
 
-<span class="kw">fn </span>quotactl&lt;P: <span class="question-mark">?</span>Sized + NixPath&gt;(cmd: QuotaCmd, special: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>P&gt;, id: c_int, addr: <span class="kw-2">*mut </span>c_char) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+<span class="kw">fn </span>quotactl&lt;P: <span class="question-mark">?</span>Sized + NixPath&gt;(
+    cmd: QuotaCmd,
+    special: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>P&gt;,
+    id: c_int,
+    addr: <span class="kw-2">*mut </span>c_char,
+) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="kw">unsafe </span>{
         Errno::clear();
         <span class="kw">let </span>res = <span class="kw">match </span>special {
-            <span class="prelude-val">Some</span>(dev) =&gt; dev.with_nix_path(|path| libc::quotactl(cmd.as_int(), path.as_ptr(), id, addr)),
+            <span class="prelude-val">Some</span>(dev) =&gt; dev.with_nix_path(|path| {
+                libc::quotactl(cmd.as_int(), path.as_ptr(), id, addr)
+            }),
             <span class="prelude-val">None </span>=&gt; <span class="prelude-val">Ok</span>(libc::quotactl(cmd.as_int(), ptr::null(), id, addr)),
         }<span class="question-mark">?</span>;
 
@@ -519,37 +595,83 @@
 }
 
 <span class="doccomment">/// Turn on disk quotas for a block device.
-</span><span class="kw">pub fn </span>quotactl_on&lt;P: <span class="question-mark">?</span>Sized + NixPath&gt;(which: QuotaType, special: <span class="kw-2">&amp;</span>P, format: QuotaFmt, quota_file: <span class="kw-2">&amp;</span>P) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+</span><span class="kw">pub fn </span>quotactl_on&lt;P: <span class="question-mark">?</span>Sized + NixPath&gt;(
+    which: QuotaType,
+    special: <span class="kw-2">&amp;</span>P,
+    format: QuotaFmt,
+    quota_file: <span class="kw-2">&amp;</span>P,
+) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     quota_file.with_nix_path(|path| {
         <span class="kw">let </span><span class="kw-2">mut </span>path_copy = path.to_bytes_with_nul().to_owned();
         <span class="kw">let </span>p: <span class="kw-2">*mut </span>c_char = path_copy.as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>c_char;
-        quotactl(QuotaCmd(QuotaSubCmd::Q_QUOTAON, which), <span class="prelude-val">Some</span>(special), format <span class="kw">as </span>c_int, p)
+        quotactl(
+            QuotaCmd(QuotaSubCmd::Q_QUOTAON, which),
+            <span class="prelude-val">Some</span>(special),
+            format <span class="kw">as </span>c_int,
+            p,
+        )
     })<span class="question-mark">?
 </span>}
 
 <span class="doccomment">/// Disable disk quotas for a block device.
-</span><span class="kw">pub fn </span>quotactl_off&lt;P: <span class="question-mark">?</span>Sized + NixPath&gt;(which: QuotaType, special: <span class="kw-2">&amp;</span>P) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-    quotactl(QuotaCmd(QuotaSubCmd::Q_QUOTAOFF, which), <span class="prelude-val">Some</span>(special), <span class="number">0</span>, ptr::null_mut())
+</span><span class="kw">pub fn </span>quotactl_off&lt;P: <span class="question-mark">?</span>Sized + NixPath&gt;(
+    which: QuotaType,
+    special: <span class="kw-2">&amp;</span>P,
+) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    quotactl(
+        QuotaCmd(QuotaSubCmd::Q_QUOTAOFF, which),
+        <span class="prelude-val">Some</span>(special),
+        <span class="number">0</span>,
+        ptr::null_mut(),
+    )
 }
 
 <span class="doccomment">/// Update the on-disk copy of quota usages for a filesystem.
 ///
 /// If `special` is `None`, then all file systems with active quotas are sync&#39;d.
-</span><span class="kw">pub fn </span>quotactl_sync&lt;P: <span class="question-mark">?</span>Sized + NixPath&gt;(which: QuotaType, special: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>P&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-    quotactl(QuotaCmd(QuotaSubCmd::Q_SYNC, which), special, <span class="number">0</span>, ptr::null_mut())
+</span><span class="kw">pub fn </span>quotactl_sync&lt;P: <span class="question-mark">?</span>Sized + NixPath&gt;(
+    which: QuotaType,
+    special: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>P&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    quotactl(
+        QuotaCmd(QuotaSubCmd::Q_SYNC, which),
+        special,
+        <span class="number">0</span>,
+        ptr::null_mut(),
+    )
 }
 
 <span class="doccomment">/// Get disk quota limits and current usage for the given user/group id.
-</span><span class="kw">pub fn </span>quotactl_get&lt;P: <span class="question-mark">?</span>Sized + NixPath&gt;(which: QuotaType, special: <span class="kw-2">&amp;</span>P, id: c_int) -&gt; <span class="prelude-ty">Result</span>&lt;Dqblk&gt; {
+</span><span class="kw">pub fn </span>quotactl_get&lt;P: <span class="question-mark">?</span>Sized + NixPath&gt;(
+    which: QuotaType,
+    special: <span class="kw-2">&amp;</span>P,
+    id: c_int,
+) -&gt; <span class="prelude-ty">Result</span>&lt;Dqblk&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>dqblk = mem::MaybeUninit::uninit();
-    quotactl(QuotaCmd(QuotaSubCmd::Q_GETQUOTA, which), <span class="prelude-val">Some</span>(special), id, dqblk.as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>c_char)<span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>(<span class="kw">unsafe</span>{ Dqblk(dqblk.assume_init())})
+    quotactl(
+        QuotaCmd(QuotaSubCmd::Q_GETQUOTA, which),
+        <span class="prelude-val">Some</span>(special),
+        id,
+        dqblk.as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>c_char,
+    )<span class="question-mark">?</span>;
+    <span class="prelude-val">Ok</span>(<span class="kw">unsafe </span>{ Dqblk(dqblk.assume_init()) })
 }
 
 <span class="doccomment">/// Configure quota values for the specified fields for a given user/group id.
-</span><span class="kw">pub fn </span>quotactl_set&lt;P: <span class="question-mark">?</span>Sized + NixPath&gt;(which: QuotaType, special: <span class="kw-2">&amp;</span>P, id: c_int, dqblk: <span class="kw-2">&amp;</span>Dqblk, fields: QuotaValidFlags) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+</span><span class="kw">pub fn </span>quotactl_set&lt;P: <span class="question-mark">?</span>Sized + NixPath&gt;(
+    which: QuotaType,
+    special: <span class="kw-2">&amp;</span>P,
+    id: c_int,
+    dqblk: <span class="kw-2">&amp;</span>Dqblk,
+    fields: QuotaValidFlags,
+) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>dqblk_copy = <span class="kw-2">*</span>dqblk;
     dqblk_copy.<span class="number">0</span>.dqb_valid = fields.bits();
-    quotactl(QuotaCmd(QuotaSubCmd::Q_SETQUOTA, which), <span class="prelude-val">Some</span>(special), id, <span class="kw-2">&amp;mut </span>dqblk_copy <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_ as </span><span class="kw-2">*mut </span>c_char)
+    quotactl(
+        QuotaCmd(QuotaSubCmd::Q_SETQUOTA, which),
+        <span class="prelude-val">Some</span>(special),
+        id,
+        <span class="kw-2">&amp;mut </span>dqblk_copy <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_ as </span><span class="kw-2">*mut </span>c_char,
+    )
 }
 </code></pre></div></section></main></body></html>

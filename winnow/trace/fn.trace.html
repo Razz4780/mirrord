@@ -9,7 +9,7 @@
 
 <span class="kw">fn </span>short_alpha(s: <span class="kw-2">&amp;</span>[u8]) -&gt; IResult&lt;<span class="kw-2">&amp;</span>[u8], <span class="kw-2">&amp;</span>[u8]&gt; {
   trace(<span class="string">&quot;short_alpha&quot;</span>,
-    take_while_m_n(<span class="number">3</span>, <span class="number">6</span>, AsChar::is_alpha)
+    take_while(<span class="number">3</span>..=<span class="number">6</span>, AsChar::is_alpha)
   ).parse_next(s)
 }
 

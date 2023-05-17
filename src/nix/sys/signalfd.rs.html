@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/nix-0.25.1/src/sys/signalfd.rs`."><title>signalfd.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="nix" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../nix/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/nix-0.26.2/src/sys/signalfd.rs`."><title>signalfd.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="nix" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../nix/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -169,6 +169,10 @@
 <a href="#169" id="169">169</a>
 <a href="#170" id="170">170</a>
 <a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Interface for the `signalfd` syscall.
 //!
 //! # Signal discarding
@@ -186,17 +190,16 @@
 //!
 //! Please note that signal discarding is not specific to `signalfd`, but also happens with regular
 //! signal handlers.
-</span><span class="kw">use </span><span class="kw">crate</span>::unistd;
-<span class="kw">use </span><span class="kw">crate</span>::Result;
-<span class="kw">use </span><span class="kw">crate</span>::errno::Errno;
+</span><span class="kw">use </span><span class="kw">crate</span>::errno::Errno;
 <span class="kw">pub use </span><span class="kw">crate</span>::sys::signal::{<span class="self">self</span>, SigSet};
+<span class="kw">use </span><span class="kw">crate</span>::unistd;
+<span class="kw">use </span><span class="kw">crate</span>::Result;
 <span class="kw">pub use </span>libc::signalfd_siginfo <span class="kw">as </span>siginfo;
 
-<span class="kw">use </span>std::os::unix::io::{RawFd, AsRawFd};
 <span class="kw">use </span>std::mem;
+<span class="kw">use </span>std::os::unix::io::{AsRawFd, RawFd};
 
-
-<span class="macro">libc_bitflags!</span>{
+<span class="macro">libc_bitflags! </span>{
     <span class="kw">pub struct </span>SfdFlags: libc::c_int {
         SFD_NONBLOCK;
         SFD_CLOEXEC;
@@ -220,7 +223,11 @@
 /// See [the signalfd man page for more information](https://man7.org/linux/man-pages/man2/signalfd.2.html)
 </span><span class="kw">pub fn </span>signalfd(fd: RawFd, mask: <span class="kw-2">&amp;</span>SigSet, flags: SfdFlags) -&gt; <span class="prelude-ty">Result</span>&lt;RawFd&gt; {
     <span class="kw">unsafe </span>{
-        Errno::result(libc::signalfd(fd <span class="kw">as </span>libc::c_int, mask.as_ref(), flags.bits()))
+        Errno::result(libc::signalfd(
+            fd <span class="kw">as </span>libc::c_int,
+            mask.as_ref(),
+            flags.bits(),
+        ))
     }
 }
 
@@ -274,12 +281,13 @@
         <span class="kw">let </span>size = mem::size_of_val(<span class="kw-2">&amp;</span>buffer);
         <span class="kw">let </span>res = Errno::result(<span class="kw">unsafe </span>{
             libc::read(<span class="self">self</span>.<span class="number">0</span>, buffer.as_mut_ptr() <span class="kw">as </span><span class="kw-2">*mut </span>libc::c_void, size)
-        }).map(|r| r <span class="kw">as </span>usize);
+        })
+        .map(|r| r <span class="kw">as </span>usize);
         <span class="kw">match </span>res {
             <span class="prelude-val">Ok</span>(x) <span class="kw">if </span>x == size =&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="kw">unsafe </span>{ buffer.assume_init() })),
             <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; <span class="macro">unreachable!</span>(<span class="string">&quot;partial read on signalfd&quot;</span>),
             <span class="prelude-val">Err</span>(Errno::EAGAIN) =&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
-            <span class="prelude-val">Err</span>(error) =&gt; <span class="prelude-val">Err</span>(error)
+            <span class="prelude-val">Err</span>(error) =&gt; <span class="prelude-val">Err</span>(error),
         }
     }
 }
@@ -310,7 +318,6 @@
     }
 }
 
-
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
@@ -334,7 +341,8 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>read_empty_signalfd() {
         <span class="kw">let </span>mask = SigSet::empty();
-        <span class="kw">let </span><span class="kw-2">mut </span>fd = SignalFd::with_flags(<span class="kw-2">&amp;</span>mask, SfdFlags::SFD_NONBLOCK).unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>fd =
+            SignalFd::with_flags(<span class="kw-2">&amp;</span>mask, SfdFlags::SFD_NONBLOCK).unwrap();
 
         <span class="kw">let </span>res = fd.read_signal();
         <span class="macro">assert!</span>(res.unwrap().is_none());

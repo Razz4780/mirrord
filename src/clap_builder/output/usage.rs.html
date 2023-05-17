@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/clap_builder-4.2.2/src/output/usage.rs`."><title>usage.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="clap_builder" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../clap_builder/index.html"><img src="https://raw.githubusercontent.com/clap-rs/clap/master/assets/clap.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/clap_builder-4.2.7/src/output/usage.rs`."><title>usage.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="clap_builder" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../clap_builder/index.html"><img src="https://raw.githubusercontent.com/clap-rs/clap/master/assets/clap.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -439,6 +439,57 @@
 <a href="#439" id="439">439</a>
 <a href="#440" id="440">440</a>
 <a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
+<a href="#447" id="447">447</a>
+<a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
+<a href="#450" id="450">450</a>
+<a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
+<a href="#453" id="453">453</a>
+<a href="#454" id="454">454</a>
+<a href="#455" id="455">455</a>
+<a href="#456" id="456">456</a>
+<a href="#457" id="457">457</a>
+<a href="#458" id="458">458</a>
+<a href="#459" id="459">459</a>
+<a href="#460" id="460">460</a>
+<a href="#461" id="461">461</a>
+<a href="#462" id="462">462</a>
+<a href="#463" id="463">463</a>
+<a href="#464" id="464">464</a>
+<a href="#465" id="465">465</a>
+<a href="#466" id="466">466</a>
+<a href="#467" id="467">467</a>
+<a href="#468" id="468">468</a>
+<a href="#469" id="469">469</a>
+<a href="#470" id="470">470</a>
+<a href="#471" id="471">471</a>
+<a href="#472" id="472">472</a>
+<a href="#473" id="473">473</a>
+<a href="#474" id="474">474</a>
+<a href="#475" id="475">475</a>
+<a href="#476" id="476">476</a>
+<a href="#477" id="477">477</a>
+<a href="#478" id="478">478</a>
+<a href="#479" id="479">479</a>
+<a href="#480" id="480">480</a>
+<a href="#481" id="481">481</a>
+<a href="#482" id="482">482</a>
+<a href="#483" id="483">483</a>
+<a href="#484" id="484">484</a>
+<a href="#485" id="485">485</a>
+<a href="#486" id="486">486</a>
+<a href="#487" id="487">487</a>
+<a href="#488" id="488">488</a>
+<a href="#489" id="489">489</a>
+<a href="#490" id="490">490</a>
+<a href="#491" id="491">491</a>
+<a href="#492" id="492">492</a>
 </pre><pre class="rust"><code><span class="attr">#![cfg_attr(not(feature = <span class="string">&quot;usage&quot;</span>), allow(unused_imports))]
 #![cfg_attr(not(feature = <span class="string">&quot;usage&quot;</span>), allow(unused_variables))]
 #![cfg_attr(not(feature = <span class="string">&quot;usage&quot;</span>), allow(clippy::manual_map))]
@@ -446,6 +497,7 @@
 
 </span><span class="comment">// Internal
 </span><span class="kw">use </span><span class="kw">crate</span>::builder::StyledStr;
+<span class="kw">use </span><span class="kw">crate</span>::builder::Styles;
 <span class="kw">use </span><span class="kw">crate</span>::builder::{ArgPredicate, Command};
 <span class="kw">use </span><span class="kw">crate</span>::parser::ArgMatcher;
 <span class="kw">use </span><span class="kw">crate</span>::util::ChildGraph;
@@ -456,6 +508,7 @@
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>Usage&lt;<span class="lifetime">&#39;cmd</span>&gt; {
     cmd: <span class="kw-2">&amp;</span><span class="lifetime">&#39;cmd </span>Command,
+    styles: <span class="kw-2">&amp;</span><span class="lifetime">&#39;cmd </span>Styles,
     required: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;cmd </span>ChildGraph&lt;Id&gt;&gt;,
 }
 
@@ -463,6 +516,7 @@
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(cmd: <span class="kw-2">&amp;</span><span class="lifetime">&#39;cmd </span>Command) -&gt; <span class="self">Self </span>{
         Usage {
             cmd,
+            styles: cmd.get_styles(),
             required: <span class="prelude-val">None</span>,
         }
     }
@@ -478,9 +532,14 @@
         <span class="macro">debug!</span>(<span class="string">&quot;Usage::create_usage_with_title&quot;</span>);
         <span class="kw">let </span>usage = <span class="macro">some!</span>(<span class="self">self</span>.create_usage_no_title(used));
 
+        <span class="kw">use </span>std::fmt::Write <span class="kw">as _</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>styled = StyledStr::new();
-        styled.header(<span class="string">&quot;Usage:&quot;</span>);
-        styled.none(<span class="string">&quot; &quot;</span>);
+        <span class="kw">let _ </span>= <span class="macro">write!</span>(
+            styled,
+            <span class="string">&quot;{}Usage:{} &quot;</span>,
+            <span class="self">self</span>.styles.get_usage().render(),
+            <span class="self">self</span>.styles.get_usage().render_reset()
+        );
         styled.push_styled(<span class="kw-2">&amp;</span>usage);
         <span class="prelude-val">Some</span>(styled)
     }
@@ -513,16 +572,33 @@
     <span class="comment">// Creates a usage string for display in help messages (i.e. not for errors)
     </span><span class="kw">fn </span>create_help_usage(<span class="kw-2">&amp;</span><span class="self">self</span>, incl_reqs: bool) -&gt; StyledStr {
         <span class="macro">debug!</span>(<span class="string">&quot;Usage::create_help_usage; incl_reqs={:?}&quot;</span>, incl_reqs);
+        <span class="kw">use </span>std::fmt::Write <span class="kw">as _</span>;
+        <span class="kw">let </span>literal = <span class="kw-2">&amp;</span><span class="self">self</span>.styles.get_literal();
+        <span class="kw">let </span>placeholder = <span class="kw-2">&amp;</span><span class="self">self</span>.styles.get_placeholder();
         <span class="kw">let </span><span class="kw-2">mut </span>styled = StyledStr::new();
+
         <span class="kw">let </span>name = <span class="self">self
             </span>.cmd
             .get_usage_name()
             .or_else(|| <span class="self">self</span>.cmd.get_bin_name())
             .unwrap_or_else(|| <span class="self">self</span>.cmd.get_name());
-        styled.literal(name);
+        <span class="kw">if </span>!name.is_empty() {
+            <span class="comment">// the trim won&#39;t properly remove a leading space due to the formatting
+            </span><span class="kw">let _ </span>= <span class="macro">write!</span>(
+                styled,
+                <span class="string">&quot;{}{name}{}&quot;</span>,
+                literal.render(),
+                literal.render_reset()
+            );
+        }
 
         <span class="kw">if </span><span class="self">self</span>.needs_options_tag() {
-            styled.placeholder(<span class="string">&quot; [OPTIONS]&quot;</span>);
+            <span class="kw">let _ </span>= <span class="macro">write!</span>(
+                styled,
+                <span class="string">&quot;{} [OPTIONS]{}&quot;</span>,
+                placeholder.render(),
+                placeholder.render_reset()
+            );
         }
 
         <span class="self">self</span>.write_args(<span class="kw-2">&amp;</span>[], !incl_reqs, <span class="kw-2">&amp;mut </span>styled);
@@ -531,32 +607,45 @@
         </span><span class="kw">if </span><span class="self">self</span>.cmd.has_visible_subcommands() &amp;&amp; incl_reqs
             || <span class="self">self</span>.cmd.is_allow_external_subcommands_set()
         {
-            <span class="kw">let </span>placeholder = <span class="self">self
+            <span class="kw">let </span>value_name = <span class="self">self
                 </span>.cmd
                 .get_subcommand_value_name()
                 .unwrap_or(DEFAULT_SUB_VALUE_NAME);
             <span class="kw">if </span><span class="self">self</span>.cmd.is_subcommand_negates_reqs_set()
                 || <span class="self">self</span>.cmd.is_args_conflicts_with_subcommands_set()
             {
-                styled.none(<span class="string">&quot;\n&quot;</span>);
-                styled.none(<span class="string">&quot;       &quot;</span>);
+                <span class="kw">let _ </span>= <span class="macro">write!</span>(styled, <span class="string">&quot;\n       &quot;</span>);
                 <span class="kw">if </span><span class="self">self</span>.cmd.is_args_conflicts_with_subcommands_set() {
                     <span class="comment">// Short-circuit full usage creation since no args will be relevant
-                    </span>styled.literal(name);
+                    </span><span class="kw">let _ </span>= <span class="macro">write!</span>(
+                        styled,
+                        <span class="string">&quot;{}{name}{}&quot;</span>,
+                        literal.render(),
+                        literal.render_reset()
+                    );
                 } <span class="kw">else </span>{
                     styled.push_styled(<span class="kw-2">&amp;</span><span class="self">self</span>.create_help_usage(<span class="bool-val">false</span>));
                 }
-                styled.placeholder(<span class="string">&quot; &lt;&quot;</span>);
-                styled.placeholder(placeholder);
-                styled.placeholder(<span class="string">&quot;&gt;&quot;</span>);
+                <span class="kw">let _ </span>= <span class="macro">write!</span>(
+                    styled,
+                    <span class="string">&quot; {}&lt;{value_name}&gt;{}&quot;</span>,
+                    placeholder.render(),
+                    placeholder.render_reset()
+                );
             } <span class="kw">else if </span><span class="self">self</span>.cmd.is_subcommand_required_set() {
-                styled.placeholder(<span class="string">&quot; &lt;&quot;</span>);
-                styled.placeholder(placeholder);
-                styled.placeholder(<span class="string">&quot;&gt;&quot;</span>);
+                <span class="kw">let _ </span>= <span class="macro">write!</span>(
+                    styled,
+                    <span class="string">&quot; {}&lt;{value_name}&gt;{}&quot;</span>,
+                    placeholder.render(),
+                    placeholder.render_reset()
+                );
             } <span class="kw">else </span>{
-                styled.placeholder(<span class="string">&quot; [&quot;</span>);
-                styled.placeholder(placeholder);
-                styled.placeholder(<span class="string">&quot;]&quot;</span>);
+                <span class="kw">let _ </span>= <span class="macro">write!</span>(
+                    styled,
+                    <span class="string">&quot; {}[{value_name}]{}&quot;</span>,
+                    placeholder.render(),
+                    placeholder.render_reset()
+                );
             }
         }
         styled.trim();
@@ -568,25 +657,36 @@
     // args, and requirements
     </span><span class="kw">fn </span>create_smart_usage(<span class="kw-2">&amp;</span><span class="self">self</span>, used: <span class="kw-2">&amp;</span>[Id]) -&gt; StyledStr {
         <span class="macro">debug!</span>(<span class="string">&quot;Usage::create_smart_usage&quot;</span>);
+        <span class="kw">use </span>std::fmt::Write;
+        <span class="kw">let </span>literal = <span class="kw-2">&amp;</span><span class="self">self</span>.styles.get_literal();
+        <span class="kw">let </span>placeholder = <span class="kw-2">&amp;</span><span class="self">self</span>.styles.get_placeholder();
         <span class="kw">let </span><span class="kw-2">mut </span>styled = StyledStr::new();
 
-        styled.literal(
-            <span class="self">self</span>.cmd
-                .get_usage_name()
-                .or_else(|| <span class="self">self</span>.cmd.get_bin_name())
-                .unwrap_or_else(|| <span class="self">self</span>.cmd.get_name()),
+        <span class="kw">let </span>bin_name = <span class="self">self
+            </span>.cmd
+            .get_usage_name()
+            .or_else(|| <span class="self">self</span>.cmd.get_bin_name())
+            .unwrap_or_else(|| <span class="self">self</span>.cmd.get_name());
+        <span class="kw">let _ </span>= <span class="macro">write!</span>(
+            styled,
+            <span class="string">&quot;{}{bin_name}{}&quot;</span>,
+            literal.render(),
+            literal.render_reset()
         );
 
         <span class="self">self</span>.write_args(used, <span class="bool-val">false</span>, <span class="kw-2">&amp;mut </span>styled);
 
         <span class="kw">if </span><span class="self">self</span>.cmd.is_subcommand_required_set() {
-            styled.placeholder(<span class="string">&quot; &lt;&quot;</span>);
-            styled.placeholder(
-                <span class="self">self</span>.cmd
-                    .get_subcommand_value_name()
-                    .unwrap_or(DEFAULT_SUB_VALUE_NAME),
+            <span class="kw">let </span>value_name = <span class="self">self
+                </span>.cmd
+                .get_subcommand_value_name()
+                .unwrap_or(DEFAULT_SUB_VALUE_NAME);
+            <span class="kw">let _ </span>= <span class="macro">write!</span>(
+                styled,
+                <span class="string">&quot; {}&lt;{value_name}&gt;{}&quot;</span>,
+                placeholder.render(),
+                placeholder.render_reset()
             );
-            styled.placeholder(<span class="string">&quot;&gt;&quot;</span>);
         }
         styled
     }
@@ -630,13 +730,15 @@
     <span class="comment">// Returns the required args in usage string form by fully unrolling all groups
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>write_args(<span class="kw-2">&amp;</span><span class="self">self</span>, incls: <span class="kw-2">&amp;</span>[Id], force_optional: bool, styled: <span class="kw-2">&amp;mut </span>StyledStr) {
         <span class="kw">for </span>required <span class="kw">in </span><span class="self">self</span>.get_args(incls, force_optional) {
-            styled.none(<span class="string">&quot; &quot;</span>);
+            styled.push_str(<span class="string">&quot; &quot;</span>);
             styled.push_styled(<span class="kw-2">&amp;</span>required);
         }
     }
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>get_args(<span class="kw-2">&amp;</span><span class="self">self</span>, incls: <span class="kw-2">&amp;</span>[Id], force_optional: bool) -&gt; Vec&lt;StyledStr&gt; {
         <span class="macro">debug!</span>(<span class="string">&quot;Usage::get_args: incls={:?}&quot;</span>, incls,);
+        <span class="kw">use </span>std::fmt::Write <span class="kw">as _</span>;
+        <span class="kw">let </span>literal = <span class="kw-2">&amp;</span><span class="self">self</span>.styles.get_literal();
 
         <span class="kw">let </span>required_owned;
         <span class="kw">let </span>required = <span class="kw">if let </span><span class="prelude-val">Some</span>(required) = <span class="self">self</span>.required {
@@ -688,7 +790,7 @@
                     <span class="kw">continue</span>;
                 }
 
-                <span class="kw">let </span>stylized = arg.stylized(<span class="prelude-val">Some</span>(!force_optional));
+                <span class="kw">let </span>stylized = arg.stylized(<span class="self">self</span>.styles, <span class="prelude-val">Some</span>(!force_optional));
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(index) = arg.get_index() {
                     <span class="kw">let </span>new_len = index + <span class="number">1</span>;
                     <span class="kw">if </span>required_positionals.len() &lt; new_len {
@@ -720,7 +822,7 @@
                 <span class="kw">if </span>pos.is_last_set() {
                     <span class="kw">let </span>styled = required_positionals[index].take().unwrap();
                     <span class="kw">let </span><span class="kw-2">mut </span>new = StyledStr::new();
-                    new.literal(<span class="string">&quot;-- &quot;</span>);
+                    <span class="kw">let _ </span>= <span class="macro">write!</span>(new, <span class="string">&quot;{}--{} &quot;</span>, literal.render(), literal.render_reset());
                     new.push_styled(<span class="kw-2">&amp;</span>styled);
                     required_positionals[index] = <span class="prelude-val">Some</span>(new);
                 }
@@ -728,11 +830,11 @@
                 <span class="kw">let </span><span class="kw-2">mut </span>styled;
                 <span class="kw">if </span>pos.is_last_set() {
                     styled = StyledStr::new();
-                    styled.literal(<span class="string">&quot;[-- &quot;</span>);
-                    styled.push_styled(<span class="kw-2">&amp;</span>pos.stylized(<span class="prelude-val">Some</span>(<span class="bool-val">true</span>)));
-                    styled.literal(<span class="string">&quot;]&quot;</span>);
+                    <span class="kw">let _ </span>= <span class="macro">write!</span>(styled, <span class="string">&quot;{}[--{} &quot;</span>, literal.render(), literal.render_reset());
+                    styled.push_styled(<span class="kw-2">&amp;</span>pos.stylized(<span class="self">self</span>.styles, <span class="prelude-val">Some</span>(<span class="bool-val">true</span>)));
+                    <span class="kw">let _ </span>= <span class="macro">write!</span>(styled, <span class="string">&quot;{}]{}&quot;</span>, literal.render(), literal.render_reset());
                 } <span class="kw">else </span>{
-                    styled = pos.stylized(<span class="prelude-val">Some</span>(<span class="bool-val">false</span>));
+                    styled = pos.stylized(<span class="self">self</span>.styles, <span class="prelude-val">Some</span>(<span class="bool-val">false</span>));
                 }
                 required_positionals[index] = <span class="prelude-val">Some</span>(styled);
             }
@@ -829,7 +931,7 @@
                 required_groups.insert(elem);
                 required_groups_members.extend(group_members);
             } <span class="kw">else </span>{
-                <span class="macro">debug_assert!</span>(<span class="self">self</span>.cmd.find(req).is_some());
+                <span class="macro">debug_assert!</span>(<span class="self">self</span>.cmd.find(req).is_some(), <span class="string">&quot;`{req}` must exist&quot;</span>);
             }
         }
 
@@ -852,7 +954,7 @@
                     <span class="kw">continue</span>;
                 }
 
-                <span class="kw">let </span>stylized = arg.stylized(<span class="prelude-val">Some</span>(<span class="bool-val">true</span>));
+                <span class="kw">let </span>stylized = arg.stylized(<span class="self">self</span>.styles, <span class="prelude-val">Some</span>(<span class="bool-val">true</span>));
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(index) = arg.get_index() {
                     <span class="kw">if </span>!arg.is_last_set() || incl_last {
                         <span class="kw">let </span>new_len = index + <span class="number">1</span>;

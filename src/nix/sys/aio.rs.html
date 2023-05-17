@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/nix-0.25.1/src/sys/aio.rs`."><title>aio.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="nix" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../nix/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/nix-0.26.2/src/sys/aio.rs`."><title>aio.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="nix" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../nix/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1239,9 +1239,6 @@
 <a href="#1239" id="1239">1239</a>
 <a href="#1240" id="1240">1240</a>
 <a href="#1241" id="1241">1241</a>
-<a href="#1242" id="1242">1242</a>
-<a href="#1243" id="1243">1243</a>
-<a href="#1244" id="1244">1244</a>
 </pre><pre class="rust"><code><span class="comment">// vim: tw=80
 </span><span class="doccomment">//! POSIX Asynchronous I/O
 //!
@@ -1276,8 +1273,7 @@
     mem,
     os::unix::io::RawFd,
     pin::Pin,
-    ptr,
-    thread,
+    ptr, thread,
 };
 
 <span class="kw">use </span>libc::{c_void, off_t};
@@ -1351,7 +1347,7 @@
 // polymorphism is at the level of `Futures`.
 </span><span class="attr">#[repr(C)]
 </span><span class="kw">struct </span>AioCb {
-    aiocb:       LibcAiocb,
+    aiocb: LibcAiocb,
     <span class="doccomment">/// Could this `AioCb` potentially have any in-kernel state?
     </span><span class="comment">// It would be really nice to perform the in-progress check entirely at
     // compile time.  But I can&#39;t figure out how, because:
@@ -1397,7 +1393,7 @@
         a.aio_reqprio = prio;
         a.aio_sigevent = SigEvent::new(sigev_notify).sigevent();
         AioCb {
-            aiocb:       LibcAiocb(a),
+            aiocb: LibcAiocb(a),
             in_progress: <span class="bool-val">false</span>,
         }
     }
@@ -1676,7 +1672,7 @@
 #[repr(transparent)]
 </span><span class="kw">pub struct </span>AioFsync {
     aiocb: AioCb,
-    _pin:  PhantomPinned,
+    _pin: PhantomPinned,
 }
 
 <span class="kw">impl </span>AioFsync {
@@ -1790,7 +1786,7 @@
 </span><span class="kw">pub struct </span>AioRead&lt;<span class="lifetime">&#39;a</span>&gt; {
     aiocb: AioCb,
     _data: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8]&gt;,
-    _pin:  PhantomPinned,
+    _pin: PhantomPinned,
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; AioRead&lt;<span class="lifetime">&#39;a</span>&gt; {
@@ -1911,7 +1907,7 @@
 </span><span class="kw">pub struct </span>AioReadv&lt;<span class="lifetime">&#39;a</span>&gt; {
     aiocb: AioCb,
     _data: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8]]&gt;,
-    _pin:  PhantomPinned,
+    _pin: PhantomPinned,
 }
 
 <span class="attr">#[cfg(target_os = <span class="string">&quot;freebsd&quot;</span>)]
@@ -2022,7 +2018,7 @@
 </span><span class="kw">pub struct </span>AioWrite&lt;<span class="lifetime">&#39;a</span>&gt; {
     aiocb: AioCb,
     _data: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8]&gt;,
-    _pin:  PhantomPinned,
+    _pin: PhantomPinned,
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; AioWrite&lt;<span class="lifetime">&#39;a</span>&gt; {
@@ -2140,7 +2136,7 @@
 </span><span class="kw">pub struct </span>AioWritev&lt;<span class="lifetime">&#39;a</span>&gt; {
     aiocb: AioCb,
     _data: PhantomData&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8]]&gt;,
-    _pin:  PhantomPinned,
+    _pin: PhantomPinned,
 }
 
 <span class="attr">#[cfg(target_os = <span class="string">&quot;freebsd&quot;</span>)]
@@ -2297,8 +2293,7 @@
     timeout: <span class="prelude-ty">Option</span>&lt;TimeSpec&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="kw">let </span>p = list <span class="kw">as </span><span class="kw-2">*const </span>[<span class="kw-2">&amp;</span><span class="kw">dyn </span>AsRef&lt;libc::aiocb&gt;]
-        <span class="kw">as </span><span class="kw-2">*const </span>[<span class="kw-2">*const </span>libc::aiocb]
-        <span class="kw">as </span><span class="kw-2">*const *const </span>libc::aiocb;
+        <span class="kw">as </span><span class="kw-2">*const </span>[<span class="kw-2">*const </span>libc::aiocb] <span class="kw">as </span><span class="kw-2">*const *const </span>libc::aiocb;
     <span class="kw">let </span>timep = <span class="kw">match </span>timeout {
         <span class="prelude-val">None </span>=&gt; ptr::null::&lt;libc::timespec&gt;(),
         <span class="prelude-val">Some</span>(x) =&gt; x.as_ref() <span class="kw">as </span><span class="kw-2">*const </span>libc::timespec,
@@ -2424,8 +2419,7 @@
     sigev_notify: SigevNotify,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="kw">let </span>p = list <span class="kw">as </span><span class="kw-2">*mut </span>[Pin&lt;<span class="kw-2">&amp;mut </span><span class="kw">dyn </span>AsMut&lt;libc::aiocb&gt;&gt;]
-        <span class="kw">as </span><span class="kw-2">*mut </span>[<span class="kw-2">*mut </span>libc::aiocb]
-        <span class="kw">as </span><span class="kw-2">*mut *mut </span>libc::aiocb;
+        <span class="kw">as </span><span class="kw-2">*mut </span>[<span class="kw-2">*mut </span>libc::aiocb] <span class="kw">as </span><span class="kw-2">*mut *mut </span>libc::aiocb;
     <span class="kw">let </span>sigev = SigEvent::new(sigev_notify);
     <span class="kw">let </span>sigevp = <span class="kw-2">&amp;mut </span>sigev.sigevent() <span class="kw">as </span><span class="kw-2">*mut </span>libc::sigevent;
     Errno::result(<span class="kw">unsafe </span>{

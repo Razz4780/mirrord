@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/clap_builder-4.2.2/src/builder/arg.rs`."><title>arg.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="clap_builder" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../clap_builder/index.html"><img src="https://raw.githubusercontent.com/clap-rs/clap/master/assets/clap.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/clap_builder-4.2.7/src/builder/arg.rs`."><title>arg.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="clap_builder" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../clap_builder/index.html"><img src="https://raw.githubusercontent.com/clap-rs/clap/master/assets/clap.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -4777,6 +4777,23 @@
 <a href="#4777" id="4777">4777</a>
 <a href="#4778" id="4778">4778</a>
 <a href="#4779" id="4779">4779</a>
+<a href="#4780" id="4780">4780</a>
+<a href="#4781" id="4781">4781</a>
+<a href="#4782" id="4782">4782</a>
+<a href="#4783" id="4783">4783</a>
+<a href="#4784" id="4784">4784</a>
+<a href="#4785" id="4785">4785</a>
+<a href="#4786" id="4786">4786</a>
+<a href="#4787" id="4787">4787</a>
+<a href="#4788" id="4788">4788</a>
+<a href="#4789" id="4789">4789</a>
+<a href="#4790" id="4790">4790</a>
+<a href="#4791" id="4791">4791</a>
+<a href="#4792" id="4792">4792</a>
+<a href="#4793" id="4793">4793</a>
+<a href="#4794" id="4794">4794</a>
+<a href="#4795" id="4795">4795</a>
+<a href="#4796" id="4796">4796</a>
 </pre><pre class="rust"><code><span class="comment">// Std
 </span><span class="attr">#[cfg(feature = <span class="string">&quot;env&quot;</span>)]
 </span><span class="kw">use </span>std::env;
@@ -4796,7 +4813,9 @@
 <span class="kw">use </span><span class="kw">crate</span>::builder::PossibleValue;
 <span class="kw">use </span><span class="kw">crate</span>::builder::Str;
 <span class="kw">use </span><span class="kw">crate</span>::builder::StyledStr;
+<span class="kw">use </span><span class="kw">crate</span>::builder::Styles;
 <span class="kw">use </span><span class="kw">crate</span>::builder::ValueRange;
+<span class="kw">use </span><span class="kw">crate</span>::util::AnyValueId;
 <span class="kw">use </span><span class="kw">crate</span>::ArgAction;
 <span class="kw">use </span><span class="kw">crate</span>::Id;
 <span class="kw">use </span><span class="kw">crate</span>::ValueHint;
@@ -8783,7 +8802,7 @@
         <span class="self">self</span>.value_hint.unwrap_or_else(|| {
             <span class="kw">if </span><span class="self">self</span>.is_takes_value_set() {
                 <span class="kw">let </span>type_id = <span class="self">self</span>.get_value_parser().type_id();
-                <span class="kw">if </span>type_id == <span class="kw">crate</span>::parser::AnyValueId::of::&lt;std::path::PathBuf&gt;() {
+                <span class="kw">if </span>type_id == AnyValueId::of::&lt;std::path::PathBuf&gt;() {
                     ValueHint::AnyPath
                 } <span class="kw">else </span>{
                     ValueHint::default()
@@ -9049,49 +9068,74 @@
         }
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>stylized(<span class="kw-2">&amp;</span><span class="self">self</span>, required: <span class="prelude-ty">Option</span>&lt;bool&gt;) -&gt; StyledStr {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>stylized(<span class="kw-2">&amp;</span><span class="self">self</span>, styles: <span class="kw-2">&amp;</span>Styles, required: <span class="prelude-ty">Option</span>&lt;bool&gt;) -&gt; StyledStr {
+        <span class="kw">use </span>std::fmt::Write <span class="kw">as _</span>;
+        <span class="kw">let </span>literal = styles.get_literal();
+
         <span class="kw">let </span><span class="kw-2">mut </span>styled = StyledStr::new();
         <span class="comment">// Write the name such --long or -l
         </span><span class="kw">if let </span><span class="prelude-val">Some</span>(l) = <span class="self">self</span>.get_long() {
-            styled.literal(<span class="string">&quot;--&quot;</span>);
-            styled.literal(l);
+            <span class="kw">let _ </span>= <span class="macro">write!</span>(
+                styled,
+                <span class="string">&quot;{}--{l}{}&quot;</span>,
+                literal.render(),
+                literal.render_reset()
+            );
         } <span class="kw">else if let </span><span class="prelude-val">Some</span>(s) = <span class="self">self</span>.get_short() {
-            styled.literal(<span class="string">&quot;-&quot;</span>);
-            styled.literal(s);
+            <span class="kw">let _ </span>= <span class="macro">write!</span>(styled, <span class="string">&quot;{}-{s}{}&quot;</span>, literal.render(), literal.render_reset());
         }
-        styled.push_styled(<span class="kw-2">&amp;</span><span class="self">self</span>.stylize_arg_suffix(required));
+        styled.push_styled(<span class="kw-2">&amp;</span><span class="self">self</span>.stylize_arg_suffix(styles, required));
         styled
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>stylize_arg_suffix(<span class="kw-2">&amp;</span><span class="self">self</span>, required: <span class="prelude-ty">Option</span>&lt;bool&gt;) -&gt; StyledStr {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>stylize_arg_suffix(<span class="kw-2">&amp;</span><span class="self">self</span>, styles: <span class="kw-2">&amp;</span>Styles, required: <span class="prelude-ty">Option</span>&lt;bool&gt;) -&gt; StyledStr {
+        <span class="kw">use </span>std::fmt::Write <span class="kw">as _</span>;
+        <span class="kw">let </span>literal = styles.get_literal();
+        <span class="kw">let </span>placeholder = styles.get_placeholder();
         <span class="kw">let </span><span class="kw-2">mut </span>styled = StyledStr::new();
 
         <span class="kw">let </span><span class="kw-2">mut </span>need_closing_bracket = <span class="bool-val">false</span>;
         <span class="kw">if </span><span class="self">self</span>.is_takes_value_set() &amp;&amp; !<span class="self">self</span>.is_positional() {
             <span class="kw">let </span>is_optional_val = <span class="self">self</span>.get_min_vals() == <span class="number">0</span>;
-            <span class="kw">if </span><span class="self">self</span>.is_require_equals_set() {
+            <span class="kw">let </span>(style, start) = <span class="kw">if </span><span class="self">self</span>.is_require_equals_set() {
                 <span class="kw">if </span>is_optional_val {
                     need_closing_bracket = <span class="bool-val">true</span>;
-                    styled.placeholder(<span class="string">&quot;[=&quot;</span>);
+                    (placeholder, <span class="string">&quot;[=&quot;</span>)
                 } <span class="kw">else </span>{
-                    styled.literal(<span class="string">&quot;=&quot;</span>);
+                    (literal, <span class="string">&quot;=&quot;</span>)
                 }
             } <span class="kw">else if </span>is_optional_val {
                 need_closing_bracket = <span class="bool-val">true</span>;
-                styled.placeholder(<span class="string">&quot; [&quot;</span>);
+                (placeholder, <span class="string">&quot; [&quot;</span>)
             } <span class="kw">else </span>{
-                styled.placeholder(<span class="string">&quot; &quot;</span>);
-            }
+                (placeholder, <span class="string">&quot; &quot;</span>)
+            };
+            <span class="kw">let _ </span>= <span class="macro">write!</span>(styled, <span class="string">&quot;{}{start}{}&quot;</span>, style.render(), style.render_reset());
         }
         <span class="kw">if </span><span class="self">self</span>.is_takes_value_set() || <span class="self">self</span>.is_positional() {
             <span class="kw">let </span>required = required.unwrap_or_else(|| <span class="self">self</span>.is_required_set());
             <span class="kw">let </span>arg_val = <span class="self">self</span>.render_arg_val(required);
-            styled.placeholder(arg_val);
+            <span class="kw">let _ </span>= <span class="macro">write!</span>(
+                styled,
+                <span class="string">&quot;{}{arg_val}{}&quot;</span>,
+                placeholder.render(),
+                placeholder.render_reset()
+            );
         } <span class="kw">else if </span><span class="macro">matches!</span>(<span class="kw-2">*</span><span class="self">self</span>.get_action(), ArgAction::Count) {
-            styled.placeholder(<span class="string">&quot;...&quot;</span>);
+            <span class="kw">let _ </span>= <span class="macro">write!</span>(
+                styled,
+                <span class="string">&quot;{}...{}&quot;</span>,
+                placeholder.render(),
+                placeholder.render_reset()
+            );
         }
         <span class="kw">if </span>need_closing_bracket {
-            styled.placeholder(<span class="string">&quot;]&quot;</span>);
+            <span class="kw">let _ </span>= <span class="macro">write!</span>(
+                styled,
+                <span class="string">&quot;{}]{}&quot;</span>,
+                placeholder.render(),
+                placeholder.render_reset()
+            );
         }
 
         styled
@@ -9179,7 +9223,8 @@
 
 <span class="kw">impl </span>Display <span class="kw">for </span>Arg {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter) -&gt; fmt::Result {
-        <span class="self">self</span>.stylized(<span class="prelude-val">None</span>).fmt(f)
+        <span class="kw">let </span>plain = Styles::plain();
+        <span class="self">self</span>.stylized(<span class="kw-2">&amp;</span>plain, <span class="prelude-val">None</span>).fmt(f)
     }
 }
 
@@ -9540,17 +9585,6 @@
             .index(<span class="number">1</span>)
             .value_names([<span class="string">&quot;file1&quot;</span>, <span class="string">&quot;file2&quot;</span>])
             .required(<span class="bool-val">true</span>);
-        p._build();
-
-        <span class="macro">assert_eq!</span>(p.to_string(), <span class="string">&quot;&lt;file1&gt; &lt;file2&gt;&quot;</span>);
-    }
-
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>positional_display_val_names_req() {
-        <span class="kw">let </span><span class="kw-2">mut </span>p = Arg::new(<span class="string">&quot;pos&quot;</span>)
-            .index(<span class="number">1</span>)
-            .required(<span class="bool-val">true</span>)
-            .value_names([<span class="string">&quot;file1&quot;</span>, <span class="string">&quot;file2&quot;</span>]);
         p._build();
 
         <span class="macro">assert_eq!</span>(p.to_string(), <span class="string">&quot;&lt;file1&gt; &lt;file2&gt;&quot;</span>);

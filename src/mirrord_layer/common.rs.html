@@ -131,11 +131,44 @@
 <a href="#131" id="131">131</a>
 <a href="#132" id="132">132</a>
 <a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Shared place for a few types and functions that are used everywhere by the layer.
 </span><span class="kw">use </span>std::{collections::VecDeque, ffi::CStr, path::PathBuf};
 
 <span class="kw">use </span>libc::c_char;
 <span class="kw">use </span>mirrord_protocol::{file::OpenOptionsInternal, RemoteResult};
+<span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
+</span><span class="kw">use </span>mirrord_sip::{CURRENT_EXE, MIRRORD_TEMP_BIN_DIR};
 <span class="kw">use </span>tokio::sync::oneshot;
 <span class="kw">use </span>tracing::warn;
 
@@ -253,9 +286,38 @@
     }
 }
 
+<span class="doccomment">/// For a given str, return whether it&#39;s the path of the current running executable.
+///
+/// Also returns false if determining the current executable failed, or if its path is non-unicode.
+</span><span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
+</span><span class="kw">fn </span>is_current_exe(path: <span class="kw-2">&amp;</span>str) -&gt; bool {
+    CURRENT_EXE
+        .as_deref()
+        .map(|exe_string| exe_string == path)
+        .unwrap_or_default()
+}
+
 <span class="kw">impl </span>CheckedInto&lt;PathBuf&gt; <span class="kw">for </span><span class="kw-2">*const </span>c_char {
-    <span class="kw">fn </span>checked_into(<span class="self">self</span>) -&gt; Detour&lt;PathBuf&gt; {
-        CheckedInto::&lt;<span class="kw-2">&amp;</span>str&gt;::checked_into(<span class="self">self</span>).map(From::from)
+    <span class="doccomment">/// Do the checked conversion to str, bypass if the str starts with temp dir&#39;s path, construct
+    /// a `PathBuf` out of the str.
+    </span><span class="kw">fn </span>checked_into(<span class="self">self</span>) -&gt; Detour&lt;PathBuf&gt; {
+        <span class="kw">let </span>str_det = CheckedInto::&lt;<span class="kw-2">&amp;</span>str&gt;::checked_into(<span class="self">self</span>);
+        <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
+        </span><span class="kw">let </span>str_det = str_det.and_then(|path_str| {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(stripped_path) = path_str.strip_prefix(MIRRORD_TEMP_BIN_DIR.as_str())
+                &amp;&amp; !is_current_exe(path_str) {
+                <span class="comment">// actually stripped, so bypass and provide a pointer to after the temp dir.
+                // `stripped_path` is a reference to a later character in the same string as
+                // `path_str`, `stripped_path.as_ptr()` returns a pointer to a later index
+                // in the same string owned by the caller (the hooked program).
+                </span>Detour::Bypass(Bypass::FileOperationInMirrordBinTempDir(
+                    stripped_path.as_ptr() <span class="kw">as _</span>,
+                ))
+            } <span class="kw">else </span>{
+                Detour::Success(path_str) <span class="comment">// strip is None, path not in temp dir.
+            </span>}
+        });
+        str_det.map(From::from)
     }
 }
 

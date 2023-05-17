@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/axum-0.6.15/src/routing/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="axum" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../axum/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/axum-0.6.18/src/routing/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="axum" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../axum/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -507,6 +507,31 @@
 <a href="#507" id="507">507</a>
 <a href="#508" id="508">508</a>
 <a href="#509" id="509">509</a>
+<a href="#510" id="510">510</a>
+<a href="#511" id="511">511</a>
+<a href="#512" id="512">512</a>
+<a href="#513" id="513">513</a>
+<a href="#514" id="514">514</a>
+<a href="#515" id="515">515</a>
+<a href="#516" id="516">516</a>
+<a href="#517" id="517">517</a>
+<a href="#518" id="518">518</a>
+<a href="#519" id="519">519</a>
+<a href="#520" id="520">520</a>
+<a href="#521" id="521">521</a>
+<a href="#522" id="522">522</a>
+<a href="#523" id="523">523</a>
+<a href="#524" id="524">524</a>
+<a href="#525" id="525">525</a>
+<a href="#526" id="526">526</a>
+<a href="#527" id="527">527</a>
+<a href="#528" id="528">528</a>
+<a href="#529" id="529">529</a>
+<a href="#530" id="530">530</a>
+<a href="#531" id="531">531</a>
+<a href="#532" id="532">532</a>
+<a href="#533" id="533">533</a>
+<a href="#534" id="534">534</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Routing between [`Service`]s and handlers.
 
 </span><span class="kw">use </span><span class="self">self</span>::{future::RouteFuture, not_found::NotFound, path_router::PathRouter};
@@ -566,9 +591,10 @@
 <span class="doccomment">/// The router type for composing handlers and services.
 </span><span class="attr">#[must_use]
 </span><span class="kw">pub struct </span>Router&lt;S = (), B = Body&gt; {
-    path_router: PathRouter&lt;S, B&gt;,
-    fallback_router: PathRouter&lt;S, B&gt;,
+    path_router: PathRouter&lt;S, B, <span class="bool-val">false</span>&gt;,
+    fallback_router: PathRouter&lt;S, B, <span class="bool-val">true</span>&gt;,
     default_fallback: bool,
+    catch_all_fallback: Fallback&lt;S, B&gt;,
 }
 
 <span class="kw">impl</span>&lt;S, B&gt; Clone <span class="kw">for </span>Router&lt;S, B&gt; {
@@ -577,6 +603,7 @@
             path_router: <span class="self">self</span>.path_router.clone(),
             fallback_router: <span class="self">self</span>.fallback_router.clone(),
             default_fallback: <span class="self">self</span>.default_fallback,
+            catch_all_fallback: <span class="self">self</span>.catch_all_fallback.clone(),
         }
     }
 }
@@ -597,6 +624,7 @@
             .field(<span class="string">&quot;path_router&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.path_router)
             .field(<span class="string">&quot;fallback_router&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.fallback_router)
             .field(<span class="string">&quot;default_fallback&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.default_fallback)
+            .field(<span class="string">&quot;catch_all_fallback&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.catch_all_fallback)
             .finish()
     }
 }
@@ -615,14 +643,12 @@
     /// Unless you add additional routes this will respond with `404 Not Found` to
     /// all requests.
     </span><span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span><span class="kw-2">mut </span>this = <span class="self">Self </span>{
+        <span class="self">Self </span>{
             path_router: Default::default(),
-            fallback_router: Default::default(),
+            fallback_router: PathRouter::new_fallback(),
             default_fallback: <span class="bool-val">true</span>,
-        };
-        this = this.fallback_service(NotFound);
-        this.default_fallback = <span class="bool-val">true</span>;
-        this
+            catch_all_fallback: Fallback::Default(Route::new(NotFound)),
+        }
     }
 
     <span class="attr">#[doc = <span class="macro">include_str!</span>(<span class="string">&quot;../docs/routing/route.md&quot;</span>)]
@@ -660,6 +686,10 @@
             path_router,
             fallback_router,
             default_fallback,
+            <span class="comment">// we don&#39;t need to inherit the catch-all fallback. It is only used for CONNECT
+            // requests with an empty path. If we were to inherit the catch-all fallback
+            // it would end up matching `/{path}/*` which doesn&#39;t match empty paths.
+            </span>catch_all_fallback: <span class="kw">_</span>,
         } = router;
 
         <span class="macro">panic_on_err!</span>(<span class="self">self</span>.path_router.nest(path, path_router));
@@ -693,6 +723,7 @@
             path_router,
             fallback_router: other_fallback,
             default_fallback,
+            catch_all_fallback,
         } = other.into();
 
         <span class="macro">panic_on_err!</span>(<span class="self">self</span>.path_router.merge(path_router));
@@ -717,6 +748,11 @@
             }
         };
 
+        <span class="self">self</span>.catch_all_fallback = <span class="self">self
+            </span>.catch_all_fallback
+            .merge(catch_all_fallback)
+            .unwrap_or_else(|| <span class="macro">panic!</span>(<span class="string">&quot;Cannot merge two `Router`s that both have a fallback&quot;</span>));
+
         <span class="self">self
     </span>}
 
@@ -732,8 +768,9 @@
     {
         Router {
             path_router: <span class="self">self</span>.path_router.layer(layer.clone()),
-            fallback_router: <span class="self">self</span>.fallback_router.layer(layer),
+            fallback_router: <span class="self">self</span>.fallback_router.layer(layer.clone()),
             default_fallback: <span class="self">self</span>.default_fallback,
+            catch_all_fallback: <span class="self">self</span>.catch_all_fallback.map(|route| route.layer(layer)),
         }
     }
 
@@ -751,36 +788,38 @@
             path_router: <span class="self">self</span>.path_router.route_layer(layer),
             fallback_router: <span class="self">self</span>.fallback_router,
             default_fallback: <span class="self">self</span>.default_fallback,
+            catch_all_fallback: <span class="self">self</span>.catch_all_fallback,
         }
     }
 
     <span class="attr">#[track_caller]
     #[doc = <span class="macro">include_str!</span>(<span class="string">&quot;../docs/routing/fallback.md&quot;</span>)]
-    </span><span class="kw">pub fn </span>fallback&lt;H, T&gt;(<span class="self">self</span>, handler: H) -&gt; <span class="self">Self
+    </span><span class="kw">pub fn </span>fallback&lt;H, T&gt;(<span class="kw-2">mut </span><span class="self">self</span>, handler: H) -&gt; <span class="self">Self
     </span><span class="kw">where
         </span>H: Handler&lt;T, S, B&gt;,
         T: <span class="lifetime">&#39;static</span>,
     {
-        <span class="kw">let </span>endpoint = Endpoint::MethodRouter(any(handler));
-        <span class="self">self</span>.fallback_endpoint(endpoint)
+        <span class="self">self</span>.catch_all_fallback =
+            Fallback::BoxedHandler(BoxedIntoRoute::from_handler(handler.clone()));
+        <span class="self">self</span>.fallback_endpoint(Endpoint::MethodRouter(any(handler)))
     }
 
     <span class="doccomment">/// Add a fallback [`Service`] to the router.
     ///
     /// See [`Router::fallback`] for more details.
-    </span><span class="kw">pub fn </span>fallback_service&lt;T&gt;(<span class="self">self</span>, service: T) -&gt; <span class="self">Self
+    </span><span class="kw">pub fn </span>fallback_service&lt;T&gt;(<span class="kw-2">mut </span><span class="self">self</span>, service: T) -&gt; <span class="self">Self
     </span><span class="kw">where
         </span>T: Service&lt;Request&lt;B&gt;, Error = Infallible&gt; + Clone + Send + <span class="lifetime">&#39;static</span>,
         T::Response: IntoResponse,
         T::Future: Send + <span class="lifetime">&#39;static</span>,
     {
-        <span class="self">self</span>.fallback_endpoint(Endpoint::Route(Route::new(service)))
+        <span class="kw">let </span>route = Route::new(service);
+        <span class="self">self</span>.catch_all_fallback = Fallback::Service(route.clone());
+        <span class="self">self</span>.fallback_endpoint(Endpoint::Route(route))
     }
 
     <span class="kw">fn </span>fallback_endpoint(<span class="kw-2">mut </span><span class="self">self</span>, endpoint: Endpoint&lt;S, B&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">self</span>.fallback_router.replace_endpoint(<span class="string">&quot;/&quot;</span>, endpoint.clone());
-        <span class="self">self</span>.fallback_router
-            .replace_endpoint(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;/*{FALLBACK_PARAM}&quot;</span>), endpoint);
+        <span class="self">self</span>.fallback_router.set_fallback(endpoint);
         <span class="self">self</span>.default_fallback = <span class="bool-val">false</span>;
         <span class="self">self
     </span>}
@@ -789,8 +828,9 @@
     </span><span class="kw">pub fn </span>with_state&lt;S2&gt;(<span class="self">self</span>, state: S) -&gt; Router&lt;S2, B&gt; {
         Router {
             path_router: <span class="self">self</span>.path_router.with_state(state.clone()),
-            fallback_router: <span class="self">self</span>.fallback_router.with_state(state),
+            fallback_router: <span class="self">self</span>.fallback_router.with_state(state.clone()),
             default_fallback: <span class="self">self</span>.default_fallback,
+            catch_all_fallback: <span class="self">self</span>.catch_all_fallback.with_state(state),
         }
     }
 
@@ -816,19 +856,17 @@
                     .map(|SuperFallback(path_router)| path_router.into_inner());
 
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>super_fallback) = super_fallback {
-                    <span class="kw">return </span>super_fallback
-                        .call_with_state(req, state)
-                        .unwrap_or_else(|<span class="kw">_</span>| <span class="macro">unreachable!</span>());
+                    <span class="kw">match </span>super_fallback.call_with_state(req, state) {
+                        <span class="prelude-val">Ok</span>(future) =&gt; <span class="kw">return </span>future,
+                        <span class="prelude-val">Err</span>((req, state)) =&gt; {
+                            <span class="kw">return </span><span class="self">self</span>.catch_all_fallback.call_with_state(req, state);
+                        }
+                    }
                 }
 
                 <span class="kw">match </span><span class="self">self</span>.fallback_router.call_with_state(req, state) {
                     <span class="prelude-val">Ok</span>(future) =&gt; future,
-                    <span class="prelude-val">Err</span>((_req, _state)) =&gt; {
-                        <span class="macro">unreachable!</span>(
-                            <span class="string">&quot;the default fallback added in `Router::new` \
-                             matches everything&quot;
-                        </span>)
-                    }
+                    <span class="prelude-val">Err</span>((req, state)) =&gt; <span class="self">self</span>.catch_all_fallback.call_with_state(req, state),
                 }
             }
         }
@@ -937,6 +975,18 @@
             Fallback::BoxedHandler(handler) =&gt; Fallback::Service(handler.into_route(state)),
         }
     }
+
+    <span class="kw">fn </span>call_with_state(<span class="kw-2">&amp;mut </span><span class="self">self</span>, req: Request&lt;B&gt;, state: S) -&gt; RouteFuture&lt;B, E&gt; {
+        <span class="kw">match </span><span class="self">self </span>{
+            Fallback::Default(route) | Fallback::Service(route) =&gt; {
+                RouteFuture::from_future(route.oneshot_inner(req))
+            }
+            Fallback::BoxedHandler(handler) =&gt; {
+                <span class="kw">let </span><span class="kw-2">mut </span>route = handler.clone().into_route(state);
+                RouteFuture::from_future(route.oneshot_inner(req))
+            }
+        }
+    }
 }
 
 <span class="kw">impl</span>&lt;S, B, E&gt; Clone <span class="kw">for </span>Fallback&lt;S, B, E&gt; {
@@ -1008,7 +1058,7 @@
     }
 }
 
-<span class="kw">struct </span>SuperFallback&lt;S, B&gt;(SyncWrapper&lt;PathRouter&lt;S, B&gt;&gt;);
+<span class="kw">struct </span>SuperFallback&lt;S, B&gt;(SyncWrapper&lt;PathRouter&lt;S, B, <span class="bool-val">true</span>&gt;&gt;);
 
 <span class="attr">#[test]
 #[allow(warnings)]

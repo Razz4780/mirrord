@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/git/checkouts/webpki-55a3de7718041b3c/53a0215/src/der.rs`."><title>der.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="webpki" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../webpki/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/webpki-0.22.0/src/der.rs`."><title>der.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="webpki" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../webpki/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -196,7 +196,7 @@
     input: <span class="kw-2">&amp;mut </span>untrusted::Reader&lt;<span class="lifetime">&#39;a</span>&gt;,
     tag: Tag,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;untrusted::Input&lt;<span class="lifetime">&#39;a</span>&gt;, Error&gt; {
-    ring::io::der::expect_tag_and_get_value(input, tag).map_err(|<span class="kw">_</span>| Error::BadDER)
+    ring::io::der::expect_tag_and_get_value(input, tag).map_err(|<span class="kw">_</span>| Error::BadDer)
 }
 
 <span class="kw">pub struct </span>Value&lt;<span class="lifetime">&#39;a</span>&gt; {
@@ -212,7 +212,7 @@
 <span class="kw">pub fn </span>expect_tag&lt;<span class="lifetime">&#39;a</span>&gt;(input: <span class="kw-2">&amp;mut </span>untrusted::Reader&lt;<span class="lifetime">&#39;a</span>&gt;, tag: Tag) -&gt; <span class="prelude-ty">Result</span>&lt;Value&lt;<span class="lifetime">&#39;a</span>&gt;, Error&gt; {
     <span class="kw">let </span>(actual_tag, value) = read_tag_and_get_value(input)<span class="question-mark">?</span>;
     <span class="kw">if </span>usize::from(tag) != usize::from(actual_tag) {
-        <span class="kw">return </span><span class="prelude-val">Err</span>(Error::BadDER);
+        <span class="kw">return </span><span class="prelude-val">Err</span>(Error::BadDer);
     }
 
     <span class="prelude-val">Ok</span>(Value { value })
@@ -222,7 +222,7 @@
 </span><span class="kw">pub fn </span>read_tag_and_get_value&lt;<span class="lifetime">&#39;a</span>&gt;(
     input: <span class="kw-2">&amp;mut </span>untrusted::Reader&lt;<span class="lifetime">&#39;a</span>&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(u8, untrusted::Input&lt;<span class="lifetime">&#39;a</span>&gt;), Error&gt; {
-    ring::io::der::read_tag_and_get_value(input).map_err(|<span class="kw">_</span>| Error::BadDER)
+    ring::io::der::read_tag_and_get_value(input).map_err(|<span class="kw">_</span>| Error::BadDer)
 }
 
 <span class="comment">// TODO: investigate taking decoder as a reference to reduce generated code
@@ -251,10 +251,10 @@
 <span class="kw">pub fn </span>bit_string_with_no_unused_bits&lt;<span class="lifetime">&#39;a</span>&gt;(
     input: <span class="kw-2">&amp;mut </span>untrusted::Reader&lt;<span class="lifetime">&#39;a</span>&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;untrusted::Input&lt;<span class="lifetime">&#39;a</span>&gt;, Error&gt; {
-    nested(input, Tag::BitString, Error::BadDER, |value| {
-        <span class="kw">let </span>unused_bits_at_end = value.read_byte().map_err(|<span class="kw">_</span>| Error::BadDER)<span class="question-mark">?</span>;
+    nested(input, Tag::BitString, Error::BadDer, |value| {
+        <span class="kw">let </span>unused_bits_at_end = value.read_byte().map_err(|<span class="kw">_</span>| Error::BadDer)<span class="question-mark">?</span>;
         <span class="kw">if </span>unused_bits_at_end != <span class="number">0 </span>{
-            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::BadDER);
+            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::BadDer);
         }
         <span class="prelude-val">Ok</span>(value.read_bytes_to_end())
     })
@@ -266,21 +266,21 @@
     <span class="kw">if </span>!input.peek(Tag::Boolean.into()) {
         <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="bool-val">false</span>);
     }
-    nested(input, Tag::Boolean, Error::BadDER, |input| {
+    nested(input, Tag::Boolean, Error::BadDer, |input| {
         <span class="kw">match </span>input.read_byte() {
             <span class="prelude-val">Ok</span>(<span class="number">0xff</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>),
             <span class="prelude-val">Ok</span>(<span class="number">0x00</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>),
-            <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(Error::BadDER),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(Error::BadDer),
         }
     })
 }
 
 <span class="kw">pub fn </span>positive_integer&lt;<span class="lifetime">&#39;a</span>&gt;(input: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>untrusted::Reader) -&gt; <span class="prelude-ty">Result</span>&lt;Positive&lt;<span class="lifetime">&#39;a</span>&gt;, Error&gt; {
-    ring::io::der::positive_integer(input).map_err(|<span class="kw">_</span>| Error::BadDER)
+    ring::io::der::positive_integer(input).map_err(|<span class="kw">_</span>| Error::BadDer)
 }
 
 <span class="kw">pub fn </span>small_nonnegative_integer(input: <span class="kw-2">&amp;mut </span>untrusted::Reader) -&gt; <span class="prelude-ty">Result</span>&lt;u8, Error&gt; {
-    ring::io::der::small_nonnegative_integer(input).map_err(|<span class="kw">_</span>| Error::BadDER)
+    ring::io::der::small_nonnegative_integer(input).map_err(|<span class="kw">_</span>| Error::BadDer)
 }
 
 <span class="kw">pub fn </span>time_choice(input: <span class="kw-2">&amp;mut </span>untrusted::Reader) -&gt; <span class="prelude-ty">Result</span>&lt;time::Time, Error&gt; {
@@ -293,11 +293,11 @@
 
     <span class="kw">fn </span>read_digit(inner: <span class="kw-2">&amp;mut </span>untrusted::Reader) -&gt; <span class="prelude-ty">Result</span>&lt;u64, Error&gt; {
         <span class="kw">const </span>DIGIT: core::ops::RangeInclusive&lt;u8&gt; = <span class="string">b&#39;0&#39;</span>..=<span class="string">b&#39;9&#39;</span>;
-        <span class="kw">let </span>b = inner.read_byte().map_err(|<span class="kw">_</span>| Error::BadDERTime)<span class="question-mark">?</span>;
+        <span class="kw">let </span>b = inner.read_byte().map_err(|<span class="kw">_</span>| Error::BadDerTime)<span class="question-mark">?</span>;
         <span class="kw">if </span>DIGIT.contains(<span class="kw-2">&amp;</span>b) {
             <span class="kw">return </span><span class="prelude-val">Ok</span>(u64::from(b - DIGIT.start()));
         }
-        <span class="prelude-val">Err</span>(Error::BadDERTime)
+        <span class="prelude-val">Err</span>(Error::BadDerTime)
     }
 
     <span class="kw">fn </span>read_two_digits(inner: <span class="kw-2">&amp;mut </span>untrusted::Reader, min: u64, max: u64) -&gt; <span class="prelude-ty">Result</span>&lt;u64, Error&gt; {
@@ -305,12 +305,12 @@
         <span class="kw">let </span>lo = read_digit(inner)<span class="question-mark">?</span>;
         <span class="kw">let </span>value = (hi * <span class="number">10</span>) + lo;
         <span class="kw">if </span>value &lt; min || value &gt; max {
-            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::BadDERTime);
+            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::BadDerTime);
         }
         <span class="prelude-val">Ok</span>(value)
     }
 
-    nested(input, expected_tag, Error::BadDER, |value| {
+    nested(input, expected_tag, Error::BadDer, |value| {
         <span class="kw">let </span>(year_hi, year_lo) = <span class="kw">if </span>is_utc_time {
             <span class="kw">let </span>lo = read_two_digits(value, <span class="number">0</span>, <span class="number">99</span>)<span class="question-mark">?</span>;
             <span class="kw">let </span>hi = <span class="kw">if </span>lo &gt;= <span class="number">50 </span>{ <span class="number">19 </span>} <span class="kw">else </span>{ <span class="number">20 </span>};
@@ -329,9 +329,9 @@
         <span class="kw">let </span>minutes = read_two_digits(value, <span class="number">0</span>, <span class="number">59</span>)<span class="question-mark">?</span>;
         <span class="kw">let </span>seconds = read_two_digits(value, <span class="number">0</span>, <span class="number">59</span>)<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>time_zone = value.read_byte().map_err(|<span class="kw">_</span>| Error::BadDERTime)<span class="question-mark">?</span>;
+        <span class="kw">let </span>time_zone = value.read_byte().map_err(|<span class="kw">_</span>| Error::BadDerTime)<span class="question-mark">?</span>;
         <span class="kw">if </span>time_zone != <span class="string">b&#39;Z&#39; </span>{
-            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::BadDERTime);
+            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::BadDerTime);
         }
 
         calendar::time_from_ymdhms_utc(year, month, day_of_month, hours, minutes, seconds)

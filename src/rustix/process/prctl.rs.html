@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/rustix-0.37.11/src/process/prctl.rs`."><title>prctl.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="rustix" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../rustix/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/rustix-0.37.19/src/process/prctl.rs`."><title>prctl.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="rustix" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../rustix/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1136,9 +1136,8 @@
 </span><span class="attr">#![allow(unsafe_code)]
 
 </span><span class="kw">use </span>core::convert::{TryFrom, TryInto};
-<span class="kw">use </span>core::mem::MaybeUninit;
-<span class="kw">use </span>core::ptr::NonNull;
-<span class="kw">use </span>core::{mem, ptr};
+<span class="kw">use </span>core::mem::{size_of, MaybeUninit};
+<span class="kw">use </span>core::ptr::{null, null_mut, NonNull};
 
 <span class="kw">use </span>bitflags::bitflags;
 
@@ -1149,6 +1148,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::ffi::CStr;
 <span class="kw">use </span><span class="kw">crate</span>::io;
 <span class="kw">use </span><span class="kw">crate</span>::process::{Pid, RawPid};
+<span class="kw">use </span><span class="kw">crate</span>::utils::{as_mut_ptr, as_ptr};
 
 <span class="comment">//
 // Helper functions.
@@ -1156,13 +1156,13 @@
 
 </span><span class="attr">#[inline]
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe fn </span>prctl_1arg(option: c_int) -&gt; io::Result&lt;c_int&gt; {
-    <span class="kw">const </span>NULL: <span class="kw-2">*mut </span>c_void = ptr::null_mut();
+    <span class="kw">const </span>NULL: <span class="kw-2">*mut </span>c_void = null_mut();
     syscalls::prctl(option, NULL, NULL, NULL, NULL)
 }
 
 <span class="attr">#[inline]
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe fn </span>prctl_2args(option: c_int, arg2: <span class="kw-2">*mut </span>c_void) -&gt; io::Result&lt;c_int&gt; {
-    <span class="kw">const </span>NULL: <span class="kw-2">*mut </span>c_void = ptr::null_mut();
+    <span class="kw">const </span>NULL: <span class="kw-2">*mut </span>c_void = null_mut();
     syscalls::prctl(option, arg2, NULL, NULL, NULL)
 }
 
@@ -1172,7 +1172,7 @@
     arg2: <span class="kw-2">*mut </span>c_void,
     arg3: <span class="kw-2">*mut </span>c_void,
 ) -&gt; io::Result&lt;c_int&gt; {
-    syscalls::prctl(option, arg2, arg3, ptr::null_mut(), ptr::null_mut())
+    syscalls::prctl(option, arg2, arg3, null_mut(), null_mut())
 }
 
 <span class="attr">#[inline]
@@ -1189,7 +1189,7 @@
     T: TryFrom&lt;P, Error = io::Errno&gt;,
 {
     <span class="kw">let </span><span class="kw-2">mut </span>value: P = Default::default();
-    prctl_2args(option, ((<span class="kw-2">&amp;mut </span>value) <span class="kw">as </span><span class="kw-2">*mut </span>P).cast())<span class="question-mark">?</span>;
+    prctl_2args(option, as_mut_ptr(<span class="kw-2">&amp;mut </span>value).cast())<span class="question-mark">?</span>;
     TryFrom::try_from(value)
 }
 
@@ -1708,7 +1708,7 @@
     <span class="kw">let </span>(sub_operation, policy) = <span class="kw">if let </span><span class="prelude-val">Some</span>(policy) = policy {
         (PR_MCE_KILL_SET, policy <span class="kw">as </span>usize <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>)
     } <span class="kw">else </span>{
-        (PR_MCE_KILL_CLEAR, ptr::null_mut())
+        (PR_MCE_KILL_CLEAR, null_mut())
     };
 
     <span class="kw">unsafe </span>{ prctl_3args(PR_MCE_KILL, sub_operation <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>, policy) }.map(|_r| ())
@@ -1784,7 +1784,7 @@
     option: VirtualMemoryMapAddress,
     address: <span class="prelude-ty">Option</span>&lt;NonNull&lt;c_void&gt;&gt;,
 ) -&gt; io::Result&lt;()&gt; {
-    <span class="kw">let </span>address = address.map_or_else(ptr::null_mut, NonNull::as_ptr);
+    <span class="kw">let </span>address = address.map_or_else(null_mut, NonNull::as_ptr);
     prctl_3args(PR_SET_MM, option <span class="kw">as </span>usize <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>, address).map(|_r| ())
 }
 
@@ -1819,7 +1819,7 @@
         PR_SET_MM_AUXV <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>,
         auxv.as_ptr() <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>,
         auxv.len() <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>,
-        ptr::null_mut(),
+        null_mut(),
     )
     .map(|_r| ())
 }
@@ -1833,7 +1833,7 @@
 </span><span class="attr">#[inline]
 </span><span class="kw">pub fn </span>virtual_memory_map_config_struct_size() -&gt; io::Result&lt;usize&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>value: c_uint = <span class="number">0</span>;
-    <span class="kw">let </span>value_ptr = (<span class="kw-2">&amp;mut </span>value) <span class="kw">as </span><span class="kw-2">*mut </span>c_uint;
+    <span class="kw">let </span>value_ptr = as_mut_ptr(<span class="kw-2">&amp;mut </span>value);
     <span class="kw">unsafe </span>{ prctl_3args(PR_SET_MM, PR_SET_MM_MAP_SIZE <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>, value_ptr.cast())<span class="question-mark">? </span>};
     <span class="prelude-val">Ok</span>(value <span class="kw">as </span>usize)
 }
@@ -1892,9 +1892,9 @@
     syscalls::prctl(
         PR_SET_MM,
         PR_SET_MM_MAP <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>,
-        config <span class="kw">as </span><span class="kw-2">*const </span>PrctlMmMap <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>,
-        mem::size_of::&lt;PrctlMmMap&gt;() <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>,
-        ptr::null_mut(),
+        as_ptr(config) <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>,
+        size_of::&lt;PrctlMmMap&gt;() <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>,
+        null_mut(),
     )
     .map(|_r| ())
 }
@@ -1928,7 +1928,7 @@
 </span><span class="attr">#[inline]
 </span><span class="kw">pub fn </span>set_ptracer(tracer: PTracer) -&gt; io::Result&lt;()&gt; {
     <span class="kw">let </span>pid = <span class="kw">match </span>tracer {
-        PTracer::None =&gt; ptr::null_mut(),
+        PTracer::None =&gt; null_mut(),
         PTracer::Any =&gt; PR_SET_PTRACER_ANY <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>,
         PTracer::ProcessID(pid) =&gt; pid.as_raw_nonzero().get() <span class="kw">as </span>usize <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>,
     };
@@ -2253,7 +2253,7 @@
             PR_SET_VMA_ANON_NAME <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>,
             region.as_ptr() <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>,
             region.len() <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>,
-            name.map_or_else(ptr::null, CStr::as_ptr) <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>,
+            name.map_or_else(null, CStr::as_ptr) <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>,
         )
         .map(|_r| ())
     }

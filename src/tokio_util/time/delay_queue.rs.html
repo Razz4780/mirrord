@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tokio-util-0.7.7/src/time/delay_queue.rs`."><title>delay_queue.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="tokio_util" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../tokio_util/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tokio-util-0.7.8/src/time/delay_queue.rs`."><title>delay_queue.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="tokio_util" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../tokio_util/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1269,6 +1269,45 @@
 <a href="#1269" id="1269">1269</a>
 <a href="#1270" id="1270">1270</a>
 <a href="#1271" id="1271">1271</a>
+<a href="#1272" id="1272">1272</a>
+<a href="#1273" id="1273">1273</a>
+<a href="#1274" id="1274">1274</a>
+<a href="#1275" id="1275">1275</a>
+<a href="#1276" id="1276">1276</a>
+<a href="#1277" id="1277">1277</a>
+<a href="#1278" id="1278">1278</a>
+<a href="#1279" id="1279">1279</a>
+<a href="#1280" id="1280">1280</a>
+<a href="#1281" id="1281">1281</a>
+<a href="#1282" id="1282">1282</a>
+<a href="#1283" id="1283">1283</a>
+<a href="#1284" id="1284">1284</a>
+<a href="#1285" id="1285">1285</a>
+<a href="#1286" id="1286">1286</a>
+<a href="#1287" id="1287">1287</a>
+<a href="#1288" id="1288">1288</a>
+<a href="#1289" id="1289">1289</a>
+<a href="#1290" id="1290">1290</a>
+<a href="#1291" id="1291">1291</a>
+<a href="#1292" id="1292">1292</a>
+<a href="#1293" id="1293">1293</a>
+<a href="#1294" id="1294">1294</a>
+<a href="#1295" id="1295">1295</a>
+<a href="#1296" id="1296">1296</a>
+<a href="#1297" id="1297">1297</a>
+<a href="#1298" id="1298">1298</a>
+<a href="#1299" id="1299">1299</a>
+<a href="#1300" id="1300">1300</a>
+<a href="#1301" id="1301">1301</a>
+<a href="#1302" id="1302">1302</a>
+<a href="#1303" id="1303">1303</a>
+<a href="#1304" id="1304">1304</a>
+<a href="#1305" id="1305">1305</a>
+<a href="#1306" id="1306">1306</a>
+<a href="#1307" id="1307">1307</a>
+<a href="#1308" id="1308">1308</a>
+<a href="#1309" id="1309">1309</a>
+<a href="#1310" id="1310">1310</a>
 </pre><pre class="rust"><code><span class="doccomment">//! A queue of delayed elements.
 //!
 //! See [`DelayQueue`] for more details.
@@ -1333,7 +1372,7 @@
 /// performance and scalability benefits.
 ///
 /// State associated with each entry is stored in a [`slab`]. This amortizes the cost of allocation,
-/// and allows reuse of the memory allocated for expired entires.
+/// and allows reuse of the memory allocated for expired entries.
 ///
 /// Capacity can be checked using [`capacity`] and allocated preemptively by using
 /// the [`reserve`] method.
@@ -2145,6 +2184,41 @@
         <span class="self">self</span>.slab.compact();
     }
 
+    <span class="doccomment">/// Gets the [`Key`] that [`poll_expired`] will pull out of the queue next, without
+    /// pulling it out or waiting for the deadline to expire.
+    ///
+    /// Entries that have already expired may be returned in any order, but it is
+    /// guaranteed that this method returns them in the same order as when items
+    /// are popped from the `DelayQueue`.
+    ///
+    /// # Examples
+    ///
+    /// Basic usage
+    ///
+    /// ```rust
+    /// use tokio_util::time::DelayQueue;
+    /// use std::time::Duration;
+    ///
+    /// # #[tokio::main]
+    /// # async fn main() {
+    /// let mut delay_queue = DelayQueue::new();
+    ///
+    /// let key1 = delay_queue.insert(&quot;foo&quot;, Duration::from_secs(10));
+    /// let key2 = delay_queue.insert(&quot;bar&quot;, Duration::from_secs(5));
+    /// let key3 = delay_queue.insert(&quot;baz&quot;, Duration::from_secs(15));
+    ///
+    /// assert_eq!(delay_queue.peek().unwrap(), key2);
+    /// # }
+    /// ```
+    ///
+    /// [`Key`]: struct@Key
+    /// [`poll_expired`]: method@Self::poll_expired
+    </span><span class="kw">pub fn </span>peek(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Key&gt; {
+        <span class="kw">use </span><span class="self">self</span>::wheel::Stack;
+
+        <span class="self">self</span>.expired.peek().or_else(|| <span class="self">self</span>.wheel.peek())
+    }
+
     <span class="doccomment">/// Returns the next time to poll as determined by the wheel
     </span><span class="kw">fn </span>next_deadline(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Instant&gt; {
         <span class="self">self</span>.wheel
@@ -2435,6 +2509,10 @@
         } <span class="kw">else </span>{
             <span class="prelude-val">None
         </span>}
+    }
+
+    <span class="kw">fn </span>peek(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Owned&gt; {
+        <span class="self">self</span>.head
     }
 
     <span class="attr">#[track_caller]

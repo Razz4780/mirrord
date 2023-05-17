@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/clap_builder-4.2.2/src/output/help_template.rs`."><title>help_template.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="clap_builder" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../clap_builder/index.html"><img src="https://raw.githubusercontent.com/clap-rs/clap/master/assets/clap.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/clap_builder-4.2.7/src/output/help_template.rs`."><title>help_template.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="clap_builder" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../clap_builder/index.html"><img src="https://raw.githubusercontent.com/clap-rs/clap/master/assets/clap.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1060,7 +1060,73 @@
 <a href="#1060" id="1060">1060</a>
 <a href="#1061" id="1061">1061</a>
 <a href="#1062" id="1062">1062</a>
-</pre><pre class="rust"><code><span class="comment">// Std
+<a href="#1063" id="1063">1063</a>
+<a href="#1064" id="1064">1064</a>
+<a href="#1065" id="1065">1065</a>
+<a href="#1066" id="1066">1066</a>
+<a href="#1067" id="1067">1067</a>
+<a href="#1068" id="1068">1068</a>
+<a href="#1069" id="1069">1069</a>
+<a href="#1070" id="1070">1070</a>
+<a href="#1071" id="1071">1071</a>
+<a href="#1072" id="1072">1072</a>
+<a href="#1073" id="1073">1073</a>
+<a href="#1074" id="1074">1074</a>
+<a href="#1075" id="1075">1075</a>
+<a href="#1076" id="1076">1076</a>
+<a href="#1077" id="1077">1077</a>
+<a href="#1078" id="1078">1078</a>
+<a href="#1079" id="1079">1079</a>
+<a href="#1080" id="1080">1080</a>
+<a href="#1081" id="1081">1081</a>
+<a href="#1082" id="1082">1082</a>
+<a href="#1083" id="1083">1083</a>
+<a href="#1084" id="1084">1084</a>
+<a href="#1085" id="1085">1085</a>
+<a href="#1086" id="1086">1086</a>
+<a href="#1087" id="1087">1087</a>
+<a href="#1088" id="1088">1088</a>
+<a href="#1089" id="1089">1089</a>
+<a href="#1090" id="1090">1090</a>
+<a href="#1091" id="1091">1091</a>
+<a href="#1092" id="1092">1092</a>
+<a href="#1093" id="1093">1093</a>
+<a href="#1094" id="1094">1094</a>
+<a href="#1095" id="1095">1095</a>
+<a href="#1096" id="1096">1096</a>
+<a href="#1097" id="1097">1097</a>
+<a href="#1098" id="1098">1098</a>
+<a href="#1099" id="1099">1099</a>
+<a href="#1100" id="1100">1100</a>
+<a href="#1101" id="1101">1101</a>
+<a href="#1102" id="1102">1102</a>
+<a href="#1103" id="1103">1103</a>
+<a href="#1104" id="1104">1104</a>
+<a href="#1105" id="1105">1105</a>
+<a href="#1106" id="1106">1106</a>
+<a href="#1107" id="1107">1107</a>
+<a href="#1108" id="1108">1108</a>
+<a href="#1109" id="1109">1109</a>
+<a href="#1110" id="1110">1110</a>
+<a href="#1111" id="1111">1111</a>
+<a href="#1112" id="1112">1112</a>
+<a href="#1113" id="1113">1113</a>
+<a href="#1114" id="1114">1114</a>
+<a href="#1115" id="1115">1115</a>
+<a href="#1116" id="1116">1116</a>
+<a href="#1117" id="1117">1117</a>
+<a href="#1118" id="1118">1118</a>
+<a href="#1119" id="1119">1119</a>
+<a href="#1120" id="1120">1120</a>
+<a href="#1121" id="1121">1121</a>
+<a href="#1122" id="1122">1122</a>
+<a href="#1123" id="1123">1123</a>
+</pre><pre class="rust"><code><span class="comment">// HACK: for rust 1.64 (1.68 doesn&#39;t need this since this is in lib.rs)
+//
+// Wanting consistency in our calls
+</span><span class="attr">#![allow(clippy::write_with_newline)]
+
+</span><span class="comment">// Std
 </span><span class="kw">use </span>std::borrow::Cow;
 <span class="kw">use </span>std::cmp;
 <span class="kw">use </span>std::usize;
@@ -1069,6 +1135,7 @@
 </span><span class="kw">use </span><span class="kw">crate</span>::builder::PossibleValue;
 <span class="kw">use </span><span class="kw">crate</span>::builder::Str;
 <span class="kw">use </span><span class="kw">crate</span>::builder::StyledStr;
+<span class="kw">use </span><span class="kw">crate</span>::builder::Styles;
 <span class="kw">use </span><span class="kw">crate</span>::builder::{Arg, Command};
 <span class="kw">use </span><span class="kw">crate</span>::output::display_width;
 <span class="kw">use </span><span class="kw">crate</span>::output::wrap;
@@ -1136,6 +1203,7 @@
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>HelpTemplate&lt;<span class="lifetime">&#39;cmd</span>, <span class="lifetime">&#39;writer</span>&gt; {
     writer: <span class="kw-2">&amp;</span><span class="lifetime">&#39;writer </span><span class="kw-2">mut </span>StyledStr,
     cmd: <span class="kw-2">&amp;</span><span class="lifetime">&#39;cmd </span>Command,
+    styles: <span class="kw-2">&amp;</span><span class="lifetime">&#39;cmd </span>Styles,
     usage: <span class="kw-2">&amp;</span><span class="lifetime">&#39;cmd </span>Usage&lt;<span class="lifetime">&#39;cmd</span>&gt;,
     next_line_help: bool,
     term_w: usize,
@@ -1174,6 +1242,7 @@
         HelpTemplate {
             writer,
             cmd,
+            styles: cmd.get_styles(),
             usage,
             next_line_help,
             term_w,
@@ -1188,10 +1257,11 @@
     /// [`Command::help_template`]: Command::help_template()
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>write_templated_help(<span class="kw-2">&amp;mut </span><span class="self">self</span>, template: <span class="kw-2">&amp;</span>str) {
         <span class="macro">debug!</span>(<span class="string">&quot;HelpTemplate::write_templated_help&quot;</span>);
+        <span class="kw">use </span>std::fmt::Write <span class="kw">as _</span>;
 
         <span class="kw">let </span><span class="kw-2">mut </span>parts = template.split(<span class="string">&#39;{&#39;</span>);
         <span class="kw">if let </span><span class="prelude-val">Some</span>(first) = parts.next() {
-            <span class="self">self</span>.none(first);
+            <span class="self">self</span>.writer.push_str(first);
         }
         <span class="kw">for </span>part <span class="kw">in </span>parts {
             <span class="kw">if let </span><span class="prelude-val">Some</span>((tag, rest)) = part.split_once(<span class="string">&#39;}&#39;</span>) {
@@ -1225,7 +1295,12 @@
                         <span class="self">self</span>.write_about(<span class="bool-val">true</span>, <span class="bool-val">true</span>);
                     }
                     <span class="string">&quot;usage-heading&quot; </span>=&gt; {
-                        <span class="self">self</span>.header(<span class="string">&quot;Usage:&quot;</span>);
+                        <span class="kw">let _ </span>= <span class="macro">write!</span>(
+                            <span class="self">self</span>.writer,
+                            <span class="string">&quot;{}Usage:{}&quot;</span>,
+                            <span class="self">self</span>.styles.get_usage().render(),
+                            <span class="self">self</span>.styles.get_usage().render_reset()
+                        );
                     }
                     <span class="string">&quot;usage&quot; </span>=&gt; {
                         <span class="self">self</span>.writer.push_styled(
@@ -1255,7 +1330,7 @@
                         <span class="self">self</span>.write_subcommands(<span class="self">self</span>.cmd);
                     }
                     <span class="string">&quot;tab&quot; </span>=&gt; {
-                        <span class="self">self</span>.none(TAB);
+                        <span class="self">self</span>.writer.push_str(TAB);
                     }
                     <span class="string">&quot;after-help&quot; </span>=&gt; {
                         <span class="self">self</span>.write_after_help();
@@ -1264,12 +1339,10 @@
                         <span class="self">self</span>.write_before_help();
                     }
                     <span class="kw">_ </span>=&gt; {
-                        <span class="self">self</span>.none(<span class="string">&quot;{&quot;</span>);
-                        <span class="self">self</span>.none(tag);
-                        <span class="self">self</span>.none(<span class="string">&quot;}&quot;</span>);
+                        <span class="kw">let _ </span>= <span class="macro">write!</span>(<span class="self">self</span>.writer, <span class="string">&quot;{{{tag}}}&quot;</span>);
                     }
                 }
-                <span class="self">self</span>.none(rest);
+                <span class="self">self</span>.writer.push_str(rest);
             }
         }
     }
@@ -1289,7 +1362,7 @@
                 .replace(<span class="string">&quot;{n}&quot;</span>, <span class="string">&quot;\n&quot;</span>),
             <span class="self">self</span>.term_w,
         );
-        <span class="self">self</span>.none(<span class="kw-2">&amp;</span>display_name);
+        <span class="self">self</span>.writer.push_string(display_name);
     }
 
     <span class="doccomment">/// Writes binary name of a Parser Object to the wrapped stream.
@@ -1307,7 +1380,7 @@
         } <span class="kw">else </span>{
             wrap(<span class="kw-2">&amp;</span><span class="self">self</span>.cmd.get_name().replace(<span class="string">&quot;{n}&quot;</span>, <span class="string">&quot;\n&quot;</span>), <span class="self">self</span>.term_w)
         };
-        <span class="self">self</span>.none(<span class="kw-2">&amp;</span>bin_name);
+        <span class="self">self</span>.writer.push_string(bin_name);
     }
 
     <span class="kw">fn </span>write_version(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
@@ -1316,18 +1389,18 @@
             .get_version()
             .or_else(|| <span class="self">self</span>.cmd.get_long_version());
         <span class="kw">if let </span><span class="prelude-val">Some</span>(output) = version {
-            <span class="self">self</span>.none(wrap(output, <span class="self">self</span>.term_w));
+            <span class="self">self</span>.writer.push_string(wrap(output, <span class="self">self</span>.term_w));
         }
     }
 
     <span class="kw">fn </span>write_author(<span class="kw-2">&amp;mut </span><span class="self">self</span>, before_new_line: bool, after_new_line: bool) {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(author) = <span class="self">self</span>.cmd.get_author() {
             <span class="kw">if </span>before_new_line {
-                <span class="self">self</span>.none(<span class="string">&quot;\n&quot;</span>);
+                <span class="self">self</span>.writer.push_str(<span class="string">&quot;\n&quot;</span>);
             }
-            <span class="self">self</span>.none(wrap(author, <span class="self">self</span>.term_w));
+            <span class="self">self</span>.writer.push_string(wrap(author, <span class="self">self</span>.term_w));
             <span class="kw">if </span>after_new_line {
-                <span class="self">self</span>.none(<span class="string">&quot;\n&quot;</span>);
+                <span class="self">self</span>.writer.push_str(<span class="string">&quot;\n&quot;</span>);
             }
         }
     }
@@ -1340,14 +1413,14 @@
         };
         <span class="kw">if let </span><span class="prelude-val">Some</span>(output) = about {
             <span class="kw">if </span>before_new_line {
-                <span class="self">self</span>.none(<span class="string">&quot;\n&quot;</span>);
+                <span class="self">self</span>.writer.push_str(<span class="string">&quot;\n&quot;</span>);
             }
             <span class="kw">let </span><span class="kw-2">mut </span>output = output.clone();
             output.replace_newline_var();
             output.wrap(<span class="self">self</span>.term_w);
             <span class="self">self</span>.writer.push_styled(<span class="kw-2">&amp;</span>output);
             <span class="kw">if </span>after_new_line {
-                <span class="self">self</span>.none(<span class="string">&quot;\n&quot;</span>);
+                <span class="self">self</span>.writer.push_str(<span class="string">&quot;\n&quot;</span>);
             }
         }
     }
@@ -1366,7 +1439,7 @@
             output.replace_newline_var();
             output.wrap(<span class="self">self</span>.term_w);
             <span class="self">self</span>.writer.push_styled(<span class="kw-2">&amp;</span>output);
-            <span class="self">self</span>.none(<span class="string">&quot;\n\n&quot;</span>);
+            <span class="self">self</span>.writer.push_str(<span class="string">&quot;\n\n&quot;</span>);
         }
     }
 
@@ -1380,7 +1453,7 @@
             <span class="self">self</span>.cmd.get_after_help()
         };
         <span class="kw">if let </span><span class="prelude-val">Some</span>(output) = after_help {
-            <span class="self">self</span>.none(<span class="string">&quot;\n\n&quot;</span>);
+            <span class="self">self</span>.writer.push_str(<span class="string">&quot;\n\n&quot;</span>);
             <span class="kw">let </span><span class="kw-2">mut </span>output = output.clone();
             output.replace_newline_var();
             output.wrap(<span class="self">self</span>.term_w);
@@ -1395,6 +1468,9 @@
     /// including titles of a Parser Object to the wrapped stream.
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>write_all_args(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
         <span class="macro">debug!</span>(<span class="string">&quot;HelpTemplate::write_all_args&quot;</span>);
+        <span class="kw">use </span>std::fmt::Write <span class="kw">as _</span>;
+        <span class="kw">let </span>header = <span class="kw-2">&amp;</span><span class="self">self</span>.styles.get_header();
+
         <span class="kw">let </span>pos = <span class="self">self
             </span>.cmd
             .get_positionals()
@@ -1419,39 +1495,52 @@
 
         <span class="kw">if </span>subcmds {
             <span class="kw">if </span>!first {
-                <span class="self">self</span>.none(<span class="string">&quot;\n\n&quot;</span>);
+                <span class="self">self</span>.writer.push_str(<span class="string">&quot;\n\n&quot;</span>);
             }
             first = <span class="bool-val">false</span>;
             <span class="kw">let </span>default_help_heading = Str::from(<span class="string">&quot;Commands&quot;</span>);
-            <span class="self">self</span>.header(
-                <span class="self">self</span>.cmd
-                    .get_subcommand_help_heading()
-                    .unwrap_or(<span class="kw-2">&amp;</span>default_help_heading),
+            <span class="kw">let </span>help_heading = <span class="self">self
+                </span>.cmd
+                .get_subcommand_help_heading()
+                .unwrap_or(<span class="kw-2">&amp;</span>default_help_heading);
+            <span class="kw">let _ </span>= <span class="macro">write!</span>(
+                <span class="self">self</span>.writer,
+                <span class="string">&quot;{}{help_heading}:{}\n&quot;</span>,
+                header.render(),
+                header.render_reset()
             );
-            <span class="self">self</span>.header(<span class="string">&quot;:&quot;</span>);
-            <span class="self">self</span>.none(<span class="string">&quot;\n&quot;</span>);
 
             <span class="self">self</span>.write_subcommands(<span class="self">self</span>.cmd);
         }
 
         <span class="kw">if </span>!pos.is_empty() {
             <span class="kw">if </span>!first {
-                <span class="self">self</span>.none(<span class="string">&quot;\n\n&quot;</span>);
+                <span class="self">self</span>.writer.push_str(<span class="string">&quot;\n\n&quot;</span>);
             }
             first = <span class="bool-val">false</span>;
             <span class="comment">// Write positional args if any
-            </span><span class="self">self</span>.header(<span class="string">&quot;Arguments:&quot;</span>);
-            <span class="self">self</span>.none(<span class="string">&quot;\n&quot;</span>);
+            </span><span class="kw">let </span>help_heading = <span class="string">&quot;Arguments&quot;</span>;
+            <span class="kw">let _ </span>= <span class="macro">write!</span>(
+                <span class="self">self</span>.writer,
+                <span class="string">&quot;{}{help_heading}:{}\n&quot;</span>,
+                header.render(),
+                header.render_reset()
+            );
             <span class="self">self</span>.write_args(<span class="kw-2">&amp;</span>pos, <span class="string">&quot;Arguments&quot;</span>, positional_sort_key);
         }
 
         <span class="kw">if </span>!non_pos.is_empty() {
             <span class="kw">if </span>!first {
-                <span class="self">self</span>.none(<span class="string">&quot;\n\n&quot;</span>);
+                <span class="self">self</span>.writer.push_str(<span class="string">&quot;\n\n&quot;</span>);
             }
             first = <span class="bool-val">false</span>;
-            <span class="self">self</span>.header(<span class="string">&quot;Options:&quot;</span>);
-            <span class="self">self</span>.none(<span class="string">&quot;\n&quot;</span>);
+            <span class="kw">let </span>help_heading = <span class="string">&quot;Options&quot;</span>;
+            <span class="kw">let _ </span>= <span class="macro">write!</span>(
+                <span class="self">self</span>.writer,
+                <span class="string">&quot;{}{help_heading}:{}\n&quot;</span>,
+                header.render(),
+                header.render_reset()
+            );
             <span class="self">self</span>.write_args(<span class="kw-2">&amp;</span>non_pos, <span class="string">&quot;Options&quot;</span>, option_sort_key);
         }
         <span class="kw">if </span>!custom_headings.is_empty() {
@@ -1470,12 +1559,15 @@
 
                 <span class="kw">if </span>!args.is_empty() {
                     <span class="kw">if </span>!first {
-                        <span class="self">self</span>.none(<span class="string">&quot;\n\n&quot;</span>);
+                        <span class="self">self</span>.writer.push_str(<span class="string">&quot;\n\n&quot;</span>);
                     }
                     first = <span class="bool-val">false</span>;
-                    <span class="self">self</span>.header(heading);
-                    <span class="self">self</span>.header(<span class="string">&quot;:&quot;</span>);
-                    <span class="self">self</span>.none(<span class="string">&quot;\n&quot;</span>);
+                    <span class="kw">let _ </span>= <span class="macro">write!</span>(
+                        <span class="self">self</span>.writer,
+                        <span class="string">&quot;{}{heading}:{}\n&quot;</span>,
+                        header.render(),
+                        header.render_reset()
+                    );
                     <span class="self">self</span>.write_args(<span class="kw-2">&amp;</span>args, heading, option_sort_key);
                 }
             }
@@ -1513,9 +1605,9 @@
 
         <span class="kw">for </span>(i, (<span class="kw">_</span>, arg)) <span class="kw">in </span>ord_v.iter().enumerate() {
             <span class="kw">if </span>i != <span class="number">0 </span>{
-                <span class="self">self</span>.none(<span class="string">&quot;\n&quot;</span>);
+                <span class="self">self</span>.writer.push_str(<span class="string">&quot;\n&quot;</span>);
                 <span class="kw">if </span>next_line_help &amp;&amp; <span class="self">self</span>.use_long {
-                    <span class="self">self</span>.none(<span class="string">&quot;\n&quot;</span>);
+                    <span class="self">self</span>.writer.push_str(<span class="string">&quot;\n&quot;</span>);
                 }
             }
             <span class="self">self</span>.write_arg(arg, next_line_help, longest);
@@ -1526,10 +1618,11 @@
     </span><span class="kw">fn </span>write_arg(<span class="kw-2">&amp;mut </span><span class="self">self</span>, arg: <span class="kw-2">&amp;</span>Arg, next_line_help: bool, longest: usize) {
         <span class="kw">let </span>spec_vals = <span class="kw-2">&amp;</span><span class="self">self</span>.spec_vals(arg);
 
-        <span class="self">self</span>.none(TAB);
+        <span class="self">self</span>.writer.push_str(TAB);
         <span class="self">self</span>.short(arg);
         <span class="self">self</span>.long(arg);
-        <span class="self">self</span>.writer.push_styled(<span class="kw-2">&amp;</span>arg.stylize_arg_suffix(<span class="prelude-val">None</span>));
+        <span class="self">self</span>.writer
+            .push_styled(<span class="kw-2">&amp;</span>arg.stylize_arg_suffix(<span class="self">self</span>.styles, <span class="prelude-val">None</span>));
         <span class="self">self</span>.align_to_about(arg, next_line_help, longest);
 
         <span class="kw">let </span>about = <span class="kw">if </span><span class="self">self</span>.use_long {
@@ -1548,22 +1641,37 @@
     <span class="doccomment">/// Writes argument&#39;s short command to the wrapped stream.
     </span><span class="kw">fn </span>short(<span class="kw-2">&amp;mut </span><span class="self">self</span>, arg: <span class="kw-2">&amp;</span>Arg) {
         <span class="macro">debug!</span>(<span class="string">&quot;HelpTemplate::short&quot;</span>);
+        <span class="kw">use </span>std::fmt::Write <span class="kw">as _</span>;
+        <span class="kw">let </span>literal = <span class="kw-2">&amp;</span><span class="self">self</span>.styles.get_literal();
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(s) = arg.get_short() {
-            <span class="self">self</span>.literal(<span class="macro">format!</span>(<span class="string">&quot;-{s}&quot;</span>));
+            <span class="kw">let _ </span>= <span class="macro">write!</span>(
+                <span class="self">self</span>.writer,
+                <span class="string">&quot;{}-{s}{}&quot;</span>,
+                literal.render(),
+                literal.render_reset()
+            );
         } <span class="kw">else if </span>arg.get_long().is_some() {
-            <span class="self">self</span>.none(<span class="string">&quot;    &quot;</span>);
+            <span class="self">self</span>.writer.push_str(<span class="string">&quot;    &quot;</span>);
         }
     }
 
     <span class="doccomment">/// Writes argument&#39;s long command to the wrapped stream.
     </span><span class="kw">fn </span>long(<span class="kw-2">&amp;mut </span><span class="self">self</span>, arg: <span class="kw-2">&amp;</span>Arg) {
         <span class="macro">debug!</span>(<span class="string">&quot;HelpTemplate::long&quot;</span>);
+        <span class="kw">use </span>std::fmt::Write <span class="kw">as _</span>;
+        <span class="kw">let </span>literal = <span class="kw-2">&amp;</span><span class="self">self</span>.styles.get_literal();
+
         <span class="kw">if let </span><span class="prelude-val">Some</span>(long) = arg.get_long() {
             <span class="kw">if </span>arg.get_short().is_some() {
-                <span class="self">self</span>.none(<span class="string">&quot;, &quot;</span>);
+                <span class="self">self</span>.writer.push_str(<span class="string">&quot;, &quot;</span>);
             }
-            <span class="self">self</span>.literal(<span class="macro">format!</span>(<span class="string">&quot;--{long}&quot;</span>));
+            <span class="kw">let _ </span>= <span class="macro">write!</span>(
+                <span class="self">self</span>.writer,
+                <span class="string">&quot;{}--{long}{}&quot;</span>,
+                literal.render(),
+                literal.render_reset()
+            );
         }
     }
 
@@ -1575,10 +1683,11 @@
             next_line_help,
             longest
         );
-        <span class="kw">if </span><span class="self">self</span>.use_long || next_line_help {
+        <span class="kw">let </span>padding = <span class="kw">if </span><span class="self">self</span>.use_long || next_line_help {
             <span class="comment">// long help prints messages on the next line so it doesn&#39;t need to align text
             </span><span class="macro">debug!</span>(<span class="string">&quot;HelpTemplate::align_to_about: printing long help so skip alignment&quot;</span>);
-        } <span class="kw">else if </span>!arg.is_positional() {
+            <span class="number">0
+        </span>} <span class="kw">else if </span>!arg.is_positional() {
             <span class="kw">let </span>self_len = display_width(<span class="kw-2">&amp;</span>arg.to_string());
             <span class="comment">// Since we&#39;re writing spaces from the tab point we first need to know if we
             // had a long and short, or just short
@@ -1595,7 +1704,7 @@
                 self_len, spcs
             );
 
-            <span class="self">self</span>.spaces(spcs);
+            spcs
         } <span class="kw">else </span>{
             <span class="kw">let </span>self_len = display_width(<span class="kw-2">&amp;</span>arg.to_string());
             <span class="kw">let </span>padding = TAB_WIDTH;
@@ -1605,8 +1714,10 @@
                 self_len, spcs
             );
 
-            <span class="self">self</span>.spaces(spcs);
-        }
+            spcs
+        };
+
+        <span class="self">self</span>.write_padding(padding);
     }
 
     <span class="doccomment">/// Writes argument&#39;s help to the wrapped stream.
@@ -1619,13 +1730,15 @@
         longest: usize,
     ) {
         <span class="macro">debug!</span>(<span class="string">&quot;HelpTemplate::help&quot;</span>);
+        <span class="kw">use </span>std::fmt::Write <span class="kw">as _</span>;
+        <span class="kw">let </span>literal = <span class="kw-2">&amp;</span><span class="self">self</span>.styles.get_literal();
 
         <span class="comment">// Is help on next line, if so then indent
         </span><span class="kw">if </span>next_line_help {
             <span class="macro">debug!</span>(<span class="string">&quot;HelpTemplate::help: Next Line...{:?}&quot;</span>, next_line_help);
-            <span class="self">self</span>.none(<span class="string">&quot;\n&quot;</span>);
-            <span class="self">self</span>.none(TAB);
-            <span class="self">self</span>.none(NEXT_LINE_INDENT);
+            <span class="self">self</span>.writer.push_str(<span class="string">&quot;\n&quot;</span>);
+            <span class="self">self</span>.writer.push_str(TAB);
+            <span class="self">self</span>.writer.push_str(NEXT_LINE_INDENT);
         }
 
         <span class="kw">let </span>spaces = <span class="kw">if </span>next_line_help {
@@ -1647,9 +1760,9 @@
                 </span>} <span class="kw">else </span>{
                     <span class="string">&quot; &quot;
                 </span>};
-                help.none(sep);
+                help.push_str(sep);
             }
-            help.none(spec_vals);
+            help.push_str(spec_vals);
         }
         <span class="kw">let </span>avail_chars = <span class="self">self</span>.term_w.saturating_sub(spaces);
         <span class="macro">debug!</span>(
@@ -1674,11 +1787,6 @@
                     <span class="string">&quot;HelpTemplate::help: Found possible vals...{:?}&quot;</span>,
                     possible_vals
                 );
-                <span class="kw">if </span>!help_is_empty {
-                    <span class="self">self</span>.none(<span class="string">&quot;\n\n&quot;</span>);
-                    <span class="self">self</span>.spaces(spaces);
-                }
-                <span class="self">self</span>.none(<span class="string">&quot;Possible values:&quot;</span>);
                 <span class="kw">let </span>longest = possible_vals
                     .iter()
                     .filter_map(|f| f.get_visible_quoted_name().map(|name| display_width(<span class="kw-2">&amp;</span>name)))
@@ -1703,21 +1811,29 @@
                 };
                 <span class="kw">let </span>trailing_indent = <span class="self">self</span>.get_spaces(trailing_indent);
 
+                <span class="kw">if </span>!help_is_empty {
+                    <span class="kw">let _ </span>= <span class="macro">write!</span>(<span class="self">self</span>.writer, <span class="string">&quot;\n\n{:spaces$}&quot;</span>, <span class="string">&quot;&quot;</span>);
+                }
+                <span class="self">self</span>.writer.push_str(<span class="string">&quot;Possible values:&quot;</span>);
                 <span class="kw">for </span>pv <span class="kw">in </span>possible_vals.iter().filter(|pv| !pv.is_hide_set()) {
-                    <span class="self">self</span>.none(<span class="string">&quot;\n&quot;</span>);
-                    <span class="self">self</span>.spaces(spaces);
-                    <span class="self">self</span>.none(<span class="string">&quot;- &quot;</span>);
-                    <span class="self">self</span>.literal(pv.get_name());
+                    <span class="kw">let </span>name = pv.get_name();
+                    <span class="kw">let _ </span>= <span class="macro">write!</span>(
+                        <span class="self">self</span>.writer,
+                        <span class="string">&quot;\n{:spaces$}- {}{name}{}&quot;</span>,
+                        <span class="string">&quot;&quot;</span>,
+                        literal.render(),
+                        literal.render_reset()
+                    );
                     <span class="kw">if let </span><span class="prelude-val">Some</span>(help) = pv.get_help() {
                         <span class="macro">debug!</span>(<span class="string">&quot;HelpTemplate::help: Possible Value help&quot;</span>);
 
                         <span class="kw">if </span>possible_value_new_line {
-                            <span class="self">self</span>.none(<span class="string">&quot;:\n&quot;</span>);
-                            <span class="self">self</span>.spaces(trailing_indent.len());
+                            <span class="kw">let </span>padding = trailing_indent.len();
+                            <span class="kw">let _ </span>= <span class="macro">write!</span>(<span class="self">self</span>.writer, <span class="string">&quot;:\n{:padding$}&quot;</span>, <span class="string">&quot;&quot;</span>);
                         } <span class="kw">else </span>{
-                            <span class="self">self</span>.none(<span class="string">&quot;: &quot;</span>);
                             <span class="comment">// To align help messages
-                            </span><span class="self">self</span>.spaces(longest - display_width(pv.get_name()));
+                            </span><span class="kw">let </span>padding = longest - display_width(pv.get_name());
+                            <span class="kw">let _ </span>= <span class="macro">write!</span>(<span class="self">self</span>.writer, <span class="string">&quot;: {:padding$}&quot;</span>, <span class="string">&quot;&quot;</span>);
                         }
 
                         <span class="kw">let </span>avail_chars = <span class="kw">if </span><span class="self">self</span>.term_w &gt; trailing_indent.len() {
@@ -1863,24 +1979,13 @@
         spec_vals.join(connector)
     }
 
-    <span class="kw">fn </span>header&lt;T: Into&lt;String&gt;&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg: T) {
-        <span class="self">self</span>.writer.header(msg);
-    }
-
-    <span class="kw">fn </span>literal&lt;T: Into&lt;String&gt;&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg: T) {
-        <span class="self">self</span>.writer.literal(msg);
-    }
-
-    <span class="kw">fn </span>none&lt;T: Into&lt;String&gt;&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg: T) {
-        <span class="self">self</span>.writer.none(msg);
-    }
-
     <span class="kw">fn </span>get_spaces(<span class="kw-2">&amp;</span><span class="self">self</span>, n: usize) -&gt; String {
         <span class="string">&quot; &quot;</span>.repeat(n)
     }
 
-    <span class="kw">fn </span>spaces(<span class="kw-2">&amp;mut </span><span class="self">self</span>, n: usize) {
-        <span class="self">self</span>.none(<span class="self">self</span>.get_spaces(n));
+    <span class="kw">fn </span>write_padding(<span class="kw-2">&amp;mut </span><span class="self">self</span>, amount: usize) {
+        <span class="kw">use </span>std::fmt::Write <span class="kw">as _</span>;
+        <span class="kw">let _ </span>= <span class="macro">write!</span>(<span class="self">self</span>.writer, <span class="string">&quot;{:amount$}&quot;</span>, <span class="string">&quot;&quot;</span>);
     }
 }
 
@@ -1889,6 +1994,9 @@
     <span class="doccomment">/// Writes help for subcommands of a Parser Object to the wrapped stream.
     </span><span class="kw">fn </span>write_subcommands(<span class="kw-2">&amp;mut </span><span class="self">self</span>, cmd: <span class="kw-2">&amp;</span>Command) {
         <span class="macro">debug!</span>(<span class="string">&quot;HelpTemplate::write_subcommands&quot;</span>);
+        <span class="kw">use </span>std::fmt::Write <span class="kw">as _</span>;
+        <span class="kw">let </span>literal = <span class="kw-2">&amp;</span><span class="self">self</span>.styles.get_literal();
+
         <span class="comment">// The shortest an arg can legally be is 2 (i.e. &#39;-x&#39;)
         </span><span class="kw">let </span><span class="kw-2">mut </span>longest = <span class="number">2</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>ord_v = Vec::new();
@@ -1897,14 +2005,28 @@
             .filter(|subcommand| should_show_subcommand(subcommand))
         {
             <span class="kw">let </span><span class="kw-2">mut </span>styled = StyledStr::new();
-            styled.literal(subcommand.get_name());
+            <span class="kw">let </span>name = subcommand.get_name();
+            <span class="kw">let _ </span>= <span class="macro">write!</span>(
+                styled,
+                <span class="string">&quot;{}{name}{}&quot;</span>,
+                literal.render(),
+                literal.render_reset()
+            );
             <span class="kw">if let </span><span class="prelude-val">Some</span>(short) = subcommand.get_short_flag() {
-                styled.none(<span class="string">&quot;, &quot;</span>);
-                styled.literal(<span class="macro">format!</span>(<span class="string">&quot;-{short}&quot;</span>));
+                <span class="kw">let _ </span>= <span class="macro">write!</span>(
+                    styled,
+                    <span class="string">&quot;, {}-{short}{}&quot;</span>,
+                    literal.render(),
+                    literal.render_reset()
+                );
             }
             <span class="kw">if let </span><span class="prelude-val">Some</span>(long) = subcommand.get_long_flag() {
-                styled.none(<span class="string">&quot;, &quot;</span>);
-                styled.literal(<span class="macro">format!</span>(<span class="string">&quot;--{long}&quot;</span>));
+                <span class="kw">let _ </span>= <span class="macro">write!</span>(
+                    styled,
+                    <span class="string">&quot;, {}--{long}{}&quot;</span>,
+                    literal.render(),
+                    literal.render_reset()
+                );
             }
             longest = longest.max(styled.display_width());
             ord_v.push((subcommand.get_display_order(), styled, subcommand));
@@ -1920,7 +2042,7 @@
             <span class="kw">if </span>first {
                 first = <span class="bool-val">false</span>;
             } <span class="kw">else </span>{
-                <span class="self">self</span>.none(<span class="string">&quot;\n&quot;</span>);
+                <span class="self">self</span>.writer.push_str(<span class="string">&quot;\n&quot;</span>);
             }
             <span class="self">self</span>.write_subcommand(sc_str, sc, next_line_help, longest);
         }
@@ -2004,12 +2126,12 @@
 
     <span class="doccomment">/// Writes subcommand to the wrapped stream.
     </span><span class="kw">fn </span>subcmd(<span class="kw-2">&amp;mut </span><span class="self">self</span>, sc_str: StyledStr, next_line_help: bool, longest: usize) {
-        <span class="kw">let </span>width = sc_str.display_width();
-
-        <span class="self">self</span>.none(TAB);
+        <span class="self">self</span>.writer.push_str(TAB);
         <span class="self">self</span>.writer.push_styled(<span class="kw-2">&amp;</span>sc_str);
         <span class="kw">if </span>!next_line_help {
-            <span class="self">self</span>.spaces(longest + TAB_WIDTH - width);
+            <span class="kw">let </span>width = sc_str.display_width();
+            <span class="kw">let </span>padding = longest + TAB_WIDTH - width;
+            <span class="self">self</span>.write_padding(padding);
         }
     }
 }
