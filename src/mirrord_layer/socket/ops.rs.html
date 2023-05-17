@@ -761,6 +761,20 @@
 <a href="#761" id="761">761</a>
 <a href="#762" id="762">762</a>
 <a href="#763" id="763">763</a>
+<a href="#764" id="764">764</a>
+<a href="#765" id="765">765</a>
+<a href="#766" id="766">766</a>
+<a href="#767" id="767">767</a>
+<a href="#768" id="768">768</a>
+<a href="#769" id="769">769</a>
+<a href="#770" id="770">770</a>
+<a href="#771" id="771">771</a>
+<a href="#772" id="772">772</a>
+<a href="#773" id="773">773</a>
+<a href="#774" id="774">774</a>
+<a href="#775" id="775">775</a>
+<a href="#776" id="776">776</a>
+<a href="#777" id="777">777</a>
 </pre><pre class="rust"><code><span class="kw">use </span>alloc::ffi::CString;
 <span class="kw">use </span>core::{ffi::CStr, mem};
 <span class="kw">use </span>std::{
@@ -792,7 +806,7 @@
     outgoing::{tcp::TcpOutgoing, udp::UdpOutgoing, Connect, RemoteConnection},
     tcp::{Listen, TcpIncoming},
     ENABLED_TCP_OUTGOING, ENABLED_UDP_OUTGOING, INCOMING_IGNORE_LOCALHOST,
-    OUTGOING_IGNORE_LOCALHOST, REMOTE_UNIX_STREAMS,
+    OUTGOING_IGNORE_LOCALHOST, REMOTE_UNIX_STREAMS, TARGETLESS,
 };
 
 <span class="doccomment">/// Hostname initialized from the agent with [`gethostname`].
@@ -912,6 +926,20 @@
             .contains(<span class="kw-2">&amp;</span>requested_port)
     {
         <span class="prelude-val">Err</span>(Bypass::Port(requested_address.port()))<span class="question-mark">?</span>;
+    }
+
+    <span class="kw">if </span>TARGETLESS
+        .get()
+        .copied()
+        .expect(<span class="string">&quot;Should be set during initialization!&quot;</span>)
+    {
+        <span class="macro">warn!</span>(
+            <span class="string">&quot;Binding a port ({}) while running targetless. A targetless agent is not exposed by \
+            any service. Therefore, letting this port bind happen locally instead of on the \
+            cluster.&quot;</span>,
+            requested_address.port()
+        );
+        <span class="kw">return </span>Detour::Bypass(Bypass::BindWhenTargetless);
     }
 
     <span class="kw">let </span>unbound_address = <span class="kw">match </span>socket.domain {

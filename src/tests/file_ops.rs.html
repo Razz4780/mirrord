@@ -220,6 +220,9 @@
 <a href="#220" id="220">220</a>
 <a href="#221" id="221">221</a>
 <a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
 </pre><pre class="rust"><code><span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>file_ops {
 
@@ -227,7 +230,7 @@
 
     <span class="kw">use </span>rstest::<span class="kw-2">*</span>;
 
-    <span class="kw">use </span><span class="kw">crate</span>::utils::{run_exec, service, Agent, FileOps, KubeService};
+    <span class="kw">use </span><span class="kw">crate</span>::utils::{run_exec_with_target, service, Agent, FileOps, KubeService};
 
     <span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
     #[rstest]
@@ -252,7 +255,7 @@
         }
 
         <span class="kw">let </span>env = <span class="macro">vec!</span>[(<span class="string">&quot;MIRRORD_FILE_READ_WRITE_PATTERN&quot;</span>, <span class="string">&quot;/tmp/**&quot;</span>)];
-        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec(
+        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec_with_target(
             command,
             <span class="kw-2">&amp;</span>service.target,
             <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>service.namespace),
@@ -281,7 +284,7 @@
         <span class="kw">let </span>args = <span class="macro">vec!</span>[<span class="string">&quot;--fs-mode&quot;</span>, <span class="string">&quot;read&quot;</span>];
         <span class="kw">let </span>env = <span class="macro">vec!</span>[(<span class="string">&quot;MIRRORD_FILE_READ_WRITE_PATTERN&quot;</span>, <span class="string">&quot;/tmp**&quot;</span>)];
 
-        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec(
+        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec_with_target(
             python_command,
             <span class="kw-2">&amp;</span>service.target,
             <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>service.namespace),
@@ -314,7 +317,7 @@
             <span class="string">&quot;python-e2e/files_ro.py&quot;</span>,
         ];
 
-        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec(
+        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec_with_target(
             python_command,
             <span class="kw-2">&amp;</span>service.target,
             <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>service.namespace),
@@ -346,7 +349,7 @@
             <span class="string">&quot;python-e2e/statfs.py&quot;</span>,
         ];
 
-        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec(
+        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec_with_target(
             python_command,
             <span class="kw-2">&amp;</span>service.target,
             <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>service.namespace),
@@ -369,7 +372,8 @@
     </span><span class="kw">pub async fn </span>bash_file_exists(<span class="attr">#[future] </span>service: KubeService) {
         <span class="kw">let </span>service = service.<span class="kw">await</span>;
         <span class="kw">let </span>bash_command = <span class="macro">vec!</span>[<span class="string">&quot;bash&quot;</span>, <span class="string">&quot;bash-e2e/file.sh&quot;</span>, <span class="string">&quot;exists&quot;</span>];
-        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec(bash_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>process =
+            run_exec_with_target(bash_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
 
         <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
         <span class="macro">assert!</span>(res.success());
@@ -386,7 +390,8 @@
     </span><span class="kw">pub async fn </span>bash_file_read(<span class="attr">#[future] </span>service: KubeService) {
         <span class="kw">let </span>service = service.<span class="kw">await</span>;
         <span class="kw">let </span>bash_command = <span class="macro">vec!</span>[<span class="string">&quot;bash&quot;</span>, <span class="string">&quot;bash-e2e/file.sh&quot;</span>, <span class="string">&quot;read&quot;</span>];
-        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec(bash_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>process =
+            run_exec_with_target(bash_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
 
         <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
         <span class="macro">assert!</span>(res.success());
@@ -401,7 +406,8 @@
         <span class="kw">let </span>service = service.<span class="kw">await</span>;
         <span class="kw">let </span>bash_command = <span class="macro">vec!</span>[<span class="string">&quot;bash&quot;</span>, <span class="string">&quot;bash-e2e/file.sh&quot;</span>, <span class="string">&quot;write&quot;</span>];
         <span class="kw">let </span>args = <span class="macro">vec!</span>[<span class="string">&quot;--rw&quot;</span>];
-        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec(bash_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(args), <span class="prelude-val">None</span>).<span class="kw">await</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>process =
+            run_exec_with_target(bash_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(args), <span class="prelude-val">None</span>).<span class="kw">await</span>;
 
         <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
         <span class="macro">assert!</span>(res.success());
@@ -430,7 +436,7 @@
             args.extend(ephemeral_flag);
         }
 
-        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec(
+        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec_with_target(
             command,
             <span class="kw-2">&amp;</span>service.target,
             <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>service.namespace),

@@ -406,6 +406,10 @@
 <a href="#406" id="406">406</a>
 <a href="#407" id="407">407</a>
 <a href="#408" id="408">408</a>
+<a href="#409" id="409">409</a>
+<a href="#410" id="410">410</a>
+<a href="#411" id="411">411</a>
+<a href="#412" id="412">412</a>
 </pre><pre class="rust"><code><span class="doccomment">//! The layer uses features from this module to check if it should bypass one of its hooks, and call
 //! the original [`libc`] function.
 //!
@@ -608,6 +612,10 @@
 
     <span class="doccomment">/// Socket is connecting to localhots and we&#39;re asked to ignore it.
     </span>IgnoreLocalhost(u16),
+
+    <span class="doccomment">/// Application is binding a port, while mirrord is running targetless. A targetless agent does
+    /// is not exposed by a service, so bind locally.
+    </span>BindWhenTargetless,
 
     <span class="doccomment">/// Hooked connect from a bound mirror socket.
     </span>MirrorConnect,

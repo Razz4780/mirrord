@@ -939,6 +939,46 @@
 <a href="#939" id="939">939</a>
 <a href="#940" id="940">940</a>
 <a href="#941" id="941">941</a>
+<a href="#942" id="942">942</a>
+<a href="#943" id="943">943</a>
+<a href="#944" id="944">944</a>
+<a href="#945" id="945">945</a>
+<a href="#946" id="946">946</a>
+<a href="#947" id="947">947</a>
+<a href="#948" id="948">948</a>
+<a href="#949" id="949">949</a>
+<a href="#950" id="950">950</a>
+<a href="#951" id="951">951</a>
+<a href="#952" id="952">952</a>
+<a href="#953" id="953">953</a>
+<a href="#954" id="954">954</a>
+<a href="#955" id="955">955</a>
+<a href="#956" id="956">956</a>
+<a href="#957" id="957">957</a>
+<a href="#958" id="958">958</a>
+<a href="#959" id="959">959</a>
+<a href="#960" id="960">960</a>
+<a href="#961" id="961">961</a>
+<a href="#962" id="962">962</a>
+<a href="#963" id="963">963</a>
+<a href="#964" id="964">964</a>
+<a href="#965" id="965">965</a>
+<a href="#966" id="966">966</a>
+<a href="#967" id="967">967</a>
+<a href="#968" id="968">968</a>
+<a href="#969" id="969">969</a>
+<a href="#970" id="970">970</a>
+<a href="#971" id="971">971</a>
+<a href="#972" id="972">972</a>
+<a href="#973" id="973">973</a>
+<a href="#974" id="974">974</a>
+<a href="#975" id="975">975</a>
+<a href="#976" id="976">976</a>
+<a href="#977" id="977">977</a>
+<a href="#978" id="978">978</a>
+<a href="#979" id="979">979</a>
+<a href="#980" id="980">980</a>
+<a href="#981" id="981">981</a>
 </pre><pre class="rust"><code><span class="attr">#![feature(stmt_expr_attributes)]
 #![warn(clippy::indexing_slicing)]
 
@@ -947,6 +987,7 @@
 <span class="kw">mod </span>http;
 <span class="kw">mod </span>pause;
 <span class="kw">mod </span>target;
+<span class="kw">mod </span>targetless;
 <span class="kw">mod </span>traffic;
 
 <span class="attr">#[cfg(test)]
@@ -1036,6 +1077,7 @@
         Go18HTTP,
         Go19HTTP,
         Go20HTTP,
+        CurlToKubeApi,
     }
 
     <span class="attr">#[derive(Debug)]
@@ -1178,8 +1220,20 @@
                 Application::Go18HTTP =&gt; <span class="macro">vec!</span>[<span class="string">&quot;go-e2e/18&quot;</span>],
                 Application::Go19HTTP =&gt; <span class="macro">vec!</span>[<span class="string">&quot;go-e2e/19&quot;</span>],
                 Application::Go20HTTP =&gt; <span class="macro">vec!</span>[<span class="string">&quot;go-e2e/20&quot;</span>],
+                Application::CurlToKubeApi =&gt; {
+                    <span class="macro">vec!</span>[<span class="string">&quot;curl&quot;</span>, <span class="string">&quot;https://kubernetes/api&quot;</span>, <span class="string">&quot;--insecure&quot;</span>]
+                }
             }
         }
+
+        <span class="kw">pub async fn </span>run_targetless(
+            <span class="kw-2">&amp;</span><span class="self">self</span>,
+            namespace: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
+            args: <span class="prelude-ty">Option</span>&lt;Vec&lt;<span class="kw-2">&amp;</span>str&gt;&gt;,
+            env: <span class="prelude-ty">Option</span>&lt;Vec&lt;(<span class="kw-2">&amp;</span>str, <span class="kw-2">&amp;</span>str)&gt;&gt;,
+        ) -&gt; TestProcess {
+            run_exec_targetless(<span class="self">self</span>.get_cmd(), namespace, args, env).<span class="kw">await
+        </span>}
 
         <span class="kw">pub async fn </span>run(
             <span class="kw-2">&amp;</span><span class="self">self</span>,
@@ -1188,7 +1242,7 @@
             args: <span class="prelude-ty">Option</span>&lt;Vec&lt;<span class="kw-2">&amp;</span>str&gt;&gt;,
             env: <span class="prelude-ty">Option</span>&lt;Vec&lt;(<span class="kw-2">&amp;</span>str, <span class="kw-2">&amp;</span>str)&gt;&gt;,
         ) -&gt; TestProcess {
-            run_exec(<span class="self">self</span>.get_cmd(), target, namespace, args, env).<span class="kw">await
+            run_exec_with_target(<span class="self">self</span>.get_cmd(), target, namespace, args, env).<span class="kw">await
         </span>}
 
         <span class="kw">pub fn </span>assert(<span class="kw-2">&amp;</span><span class="self">self</span>, process: <span class="kw-2">&amp;</span>TestProcess) {
@@ -1266,9 +1320,32 @@
         }
     }
 
-    <span class="kw">pub async fn </span>run_exec(
+    <span class="doccomment">/// Run `mirrord exec` without specifying a target, to run in targetless mode.
+    </span><span class="kw">pub async fn </span>run_exec_targetless(
+        process_cmd: Vec&lt;<span class="kw-2">&amp;</span>str&gt;,
+        namespace: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
+        args: <span class="prelude-ty">Option</span>&lt;Vec&lt;<span class="kw-2">&amp;</span>str&gt;&gt;,
+        env: <span class="prelude-ty">Option</span>&lt;Vec&lt;(<span class="kw-2">&amp;</span>str, <span class="kw-2">&amp;</span>str)&gt;&gt;,
+    ) -&gt; TestProcess {
+        run_exec(process_cmd, <span class="prelude-val">None</span>, namespace, args, env).<span class="kw">await
+    </span>}
+
+    <span class="doccomment">/// See [`run_exec`].
+    </span><span class="kw">pub async fn </span>run_exec_with_target(
         process_cmd: Vec&lt;<span class="kw-2">&amp;</span>str&gt;,
         target: <span class="kw-2">&amp;</span>str,
+        namespace: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
+        args: <span class="prelude-ty">Option</span>&lt;Vec&lt;<span class="kw-2">&amp;</span>str&gt;&gt;,
+        env: <span class="prelude-ty">Option</span>&lt;Vec&lt;(<span class="kw-2">&amp;</span>str, <span class="kw-2">&amp;</span>str)&gt;&gt;,
+    ) -&gt; TestProcess {
+        run_exec(process_cmd, <span class="prelude-val">Some</span>(target), namespace, args, env).<span class="kw">await
+    </span>}
+
+    <span class="doccomment">/// Run `mirrord exec` with the given cmd, optional target (`None` for targetless), namespace,
+    /// mirrord args, and env vars.
+    </span><span class="kw">pub async fn </span>run_exec(
+        process_cmd: Vec&lt;<span class="kw-2">&amp;</span>str&gt;,
+        target: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
         namespace: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
         args: <span class="prelude-ty">Option</span>&lt;Vec&lt;<span class="kw-2">&amp;</span>str&gt;&gt;,
         env: <span class="prelude-ty">Option</span>&lt;Vec&lt;(<span class="kw-2">&amp;</span>str, <span class="kw-2">&amp;</span>str)&gt;&gt;,
@@ -1278,7 +1355,10 @@
             <span class="prelude-val">Some</span>(binary_path) =&gt; binary_path,
         };
         <span class="kw">let </span>temp_dir = tempdir().unwrap();
-        <span class="kw">let </span><span class="kw-2">mut </span>mirrord_args = <span class="macro">vec!</span>[<span class="string">&quot;exec&quot;</span>, <span class="string">&quot;--target&quot;</span>, target, <span class="string">&quot;-c&quot;</span>];
+        <span class="kw">let </span><span class="kw-2">mut </span>mirrord_args = <span class="macro">vec!</span>[<span class="string">&quot;exec&quot;</span>, <span class="string">&quot;-c&quot;</span>];
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(target) = target {
+            mirrord_args.extend([<span class="string">&quot;--target&quot;</span>, target].into_iter());
+        }
         <span class="kw">if let </span><span class="prelude-val">Some</span>(namespace) = namespace {
             mirrord_args.extend([<span class="string">&quot;--target-namespace&quot;</span>, namespace].into_iter());
         }

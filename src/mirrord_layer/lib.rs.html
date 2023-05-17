@@ -958,6 +958,14 @@
 <a href="#958" id="958">958</a>
 <a href="#959" id="959">959</a>
 <a href="#960" id="960">960</a>
+<a href="#961" id="961">961</a>
+<a href="#962" id="962">962</a>
+<a href="#963" id="963">963</a>
+<a href="#964" id="964">964</a>
+<a href="#965" id="965">965</a>
+<a href="#966" id="966">966</a>
+<a href="#967" id="967">967</a>
+<a href="#968" id="968">968</a>
 </pre><pre class="rust"><code><span class="attr">#![feature(c_variadic)]
 #![feature(once_cell)]
 #![feature(result_option_inspect)]
@@ -1192,6 +1200,10 @@
 /// When true, localhost connections will stay local - wont mirror or steal.
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">static </span>INCOMING_IGNORE_LOCALHOST: OnceLock&lt;bool&gt; = OnceLock::new();
 
+<span class="doccomment">/// Indicates this is a targetless run, so that users can be warned if their application is
+/// mirroring/stealing from a targetless agent.
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">static </span>TARGETLESS: OnceLock&lt;bool&gt; = OnceLock::new();
+
 <span class="doccomment">/// Ports to ignore on listening for mirroring/stealing.
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">static </span>INCOMING_IGNORE_PORTS: OnceLock&lt;HashSet&lt;u16&gt;&gt; = OnceLock::new();
 
@@ -1385,6 +1397,10 @@
     INCOMING_IGNORE_LOCALHOST
         .set(config.feature.network.incoming.ignore_localhost)
         .expect(<span class="string">&quot;Setting INCOMING_IGNORE_LOCALHOST singleton&quot;</span>);
+
+    TARGETLESS
+        .set(config.target.is_none())
+        .expect(<span class="string">&quot;Setting TARGETLESS singleton&quot;</span>);
 
     INCOMING_IGNORE_PORTS
         .set(config.feature.network.incoming.ignore_ports.clone())

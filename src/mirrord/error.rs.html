@@ -199,6 +199,8 @@
 <a href="#199" id="199">199</a>
 <a href="#200" id="200">200</a>
 <a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::path::PathBuf;
 
 <span class="kw">use </span>miette::Diagnostic;
@@ -399,5 +401,7 @@
     <span class="attr">#[error(<span class="string">&quot;Waitlist registration failed.&quot;</span>)]
     #[diagnostic(help(<span class="string">&quot;Please check the email provided and internet connection.{GENERAL_HELP}&quot;</span>))]
     </span>WaitlistError(reqwest::Error),
+    <span class="attr">#[error(<span class="string">&quot;{0} is not compatible with a targetless agent, please either disable this option or specify a target.&quot;</span>)]
+    </span>IncompatibleWithTargetless(String),
 }
 </code></pre></div></section></main></body></html>

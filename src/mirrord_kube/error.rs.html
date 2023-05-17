@@ -63,6 +63,10 @@
 <a href="#63" id="63">63</a>
 <a href="#64" id="64">64</a>
 <a href="#65" id="65">65</a>
+<a href="#66" id="66">66</a>
+<a href="#67" id="67">67</a>
+<a href="#68" id="68">68</a>
+<a href="#69" id="69">69</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::net::AddrParseError;
 
 <span class="kw">use </span>thiserror::Error;
@@ -127,5 +131,9 @@
 
     <span class="attr">#[error(<span class="string">&quot;Invaild Address Conversion: {0}&quot;</span>)]
     </span>InvalidAddress(<span class="attr">#[from] </span>AddrParseError),
+
+    <span class="doccomment">/// This error should never happen, but has to exist if we don&#39;t want to unwrap.
+    </span><span class="attr">#[error(<span class="string">&quot;mirrord-layer: None runtime data for non-targetless agent. This is a bug.&quot;</span>)]
+    </span>MissingRuntimeData,
 }
 </code></pre></div></section></main></body></html>

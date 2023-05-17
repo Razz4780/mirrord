@@ -202,6 +202,32 @@
 <a href="#202" id="202">202</a>
 <a href="#203" id="203">203</a>
 <a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::{
     collections::{HashMap, HashSet},
     time::Duration,
@@ -221,7 +247,7 @@
 
 <span class="kw">use crate</span>::{
     connection::{create_and_connect, AgentConnectInfo},
-    error::CliError,
+    error::{CliError, CliError::IncompatibleWithTargetless},
     extract::extract_library,
     <span class="prelude-ty">Result</span>,
 };
@@ -256,6 +282,7 @@
     <span class="kw">where
         </span>P: Progress + Send + Sync,
     {
+        <span class="self">Self</span>::check_config_for_targetless_agent(config)<span class="question-mark">?</span>;
         <span class="kw">let </span>lib_path = extract_library(<span class="prelude-val">None</span>, progress, <span class="bool-val">true</span>)<span class="question-mark">?</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>env_vars = HashMap::new();
         <span class="kw">let </span>(connect_info, <span class="kw-2">mut </span>connection) = create_and_connect(config, progress).<span class="kw">await</span><span class="question-mark">?</span>;
@@ -391,6 +418,31 @@
             child: proxy_process,
             patched_path,
         })
+    }
+
+    <span class="doccomment">/// Some features are incompatible with targetless agents, return error if they are set and
+    /// there is no target.
+    ///
+    /// # Errors
+    ///
+    /// [`IncompatibleWithTargetless`]
+    </span><span class="kw">fn </span>check_config_for_targetless_agent(config: <span class="kw-2">&amp;</span>LayerConfig) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="kw">if </span>config.target.is_none() {
+            <span class="kw">if </span>config.feature.network.incoming.is_steal() {
+                <span class="prelude-val">Err</span>(IncompatibleWithTargetless(<span class="string">&quot;Steal mode&quot;</span>.into()))<span class="question-mark">?
+            </span>}
+            <span class="kw">if </span>config.agent.ephemeral {
+                <span class="prelude-val">Err</span>(IncompatibleWithTargetless(
+                    <span class="string">&quot;Using an ephemeral container for the agent&quot;</span>.into(),
+                ))<span class="question-mark">?
+            </span>}
+            <span class="kw">if </span>config.agent.pause {
+                <span class="prelude-val">Err</span>(IncompatibleWithTargetless(
+                    <span class="string">&quot;The target pause feature&quot;</span>.into(),
+                ))<span class="question-mark">?
+            </span>}
+        }
+        <span class="prelude-val">Ok</span>(())
     }
 
     <span class="doccomment">/// Wait for the internal proxy to exit.

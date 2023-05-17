@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"static":["OPERATOR_STATUS_NAME"],"struct":["MirrordOperatorCrd","MirrordOperatorSpec","MirrordOperatorStatus","Session","TargetCrd","TargetSpec"]};
+window.SIDEBAR_ITEMS = {"constant":["TARGETLESS_TARGET_NAME"],"static":["OPERATOR_STATUS_NAME"],"struct":["MirrordOperatorCrd","MirrordOperatorSpec","MirrordOperatorStatus","Session","TargetCrd","TargetSpec"]};

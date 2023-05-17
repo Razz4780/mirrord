@@ -147,10 +147,32 @@
 <a href="#147" id="147">147</a>
 <a href="#148" id="148">148</a>
 <a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
 </pre><pre class="rust"><code><span class="kw">use </span>actix_codec::{AsyncRead, AsyncWrite};
 <span class="kw">use </span>futures::{SinkExt, StreamExt};
-<span class="kw">use </span>k8s_openapi::NamespaceResourceScope;
-<span class="kw">use </span>kube::{Api, Client};
+<span class="kw">use </span>k8s_openapi::{api::core::v1::Namespace, NamespaceResourceScope};
+<span class="kw">use </span>kube::{api::ListParams, Api, Client};
 <span class="kw">use </span>mirrord_progress::Progress;
 <span class="kw">use </span>mirrord_protocol::{ClientCodec, ClientMessage, DaemonMessage, LogLevel};
 <span class="kw">use </span>tokio::{
@@ -177,6 +199,28 @@
     } <span class="kw">else </span>{
         Api::default_namespaced(client.clone())
     }
+}
+
+<span class="doccomment">/// Get a vector of namespaces from an optional namespace. If the given namespace is Some, then
+/// fetch its Namespace object, and return a vector only with that.
+/// If the namespace is None - return all namespaces.
+</span><span class="kw">pub async fn </span>get_namespaces(
+    client: <span class="kw-2">&amp;</span>Client,
+    namespace: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
+    lp: <span class="kw-2">&amp;</span>ListParams,
+) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Namespace&gt;&gt; {
+    <span class="kw">let </span>api: Api&lt;Namespace&gt; = Api::all(client.clone());
+    <span class="prelude-val">Ok</span>(<span class="kw">if let </span><span class="prelude-val">Some</span>(namespace) = namespace {
+        <span class="macro">vec!</span>[api.get(namespace).<span class="kw">await</span><span class="question-mark">?</span>]
+    } <span class="kw">else </span>{
+        api.list(lp).<span class="kw">await</span><span class="question-mark">?</span>.items
+    })
+}
+
+<span class="doccomment">/// Check if the client can see a given namespace.
+</span><span class="kw">pub async fn </span>namespace_exists_for_client(namespace: <span class="kw-2">&amp;</span>str, client: <span class="kw-2">&amp;</span>Client) -&gt; bool {
+    <span class="kw">let </span>api: Api&lt;Namespace&gt; = Api::all(client.clone());
+    api.get(namespace).<span class="kw">await</span>.is_ok()
 }
 
 <span class="doccomment">/// Creates the task that handles the messaging between layer/agent.

@@ -392,6 +392,15 @@
 <a href="#392" id="392">392</a>
 <a href="#393" id="393">393</a>
 <a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a>
+<a href="#398" id="398">398</a>
+<a href="#399" id="399">399</a>
+<a href="#400" id="400">400</a>
+<a href="#401" id="401">401</a>
+<a href="#402" id="402">402</a>
+<a href="#403" id="403">403</a>
 </pre><pre class="rust"><code><span class="kw">mod </span>steal;
 
 <span class="attr">#[cfg(test)]
@@ -405,8 +414,8 @@
     <span class="kw">use </span>rstest::<span class="kw-2">*</span>;
 
     <span class="kw">use </span><span class="kw">crate</span>::utils::{
-        hostname_service, kube_client, run_exec, service, udp_logger_service, KubeService,
-        CONTAINER_NAME,
+        hostname_service, kube_client, run_exec_with_target, service, udp_logger_service,
+        KubeService, CONTAINER_NAME,
     };
 
     <span class="attr">#[rstest]
@@ -418,7 +427,8 @@
             <span class="string">&quot;node&quot;</span>,
             <span class="string">&quot;node-e2e/remote_dns/test_remote_dns_enabled_works.mjs&quot;</span>,
         ];
-        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec(node_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>process =
+            run_exec_with_target(node_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
 
         <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
         <span class="macro">assert!</span>(res.success());
@@ -433,7 +443,8 @@
             <span class="string">&quot;node&quot;</span>,
             <span class="string">&quot;node-e2e/remote_dns/test_remote_dns_lookup_google.mjs&quot;</span>,
         ];
-        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec(node_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>process =
+            run_exec_with_target(node_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
 
         <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
         <span class="macro">assert!</span>(res.success());
@@ -450,7 +461,8 @@
             <span class="string">&quot;node&quot;</span>,
             <span class="string">&quot;node-e2e/outgoing/test_outgoing_traffic_single_request.mjs&quot;</span>,
         ];
-        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec(node_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>process =
+            run_exec_with_target(node_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
 
         <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
         <span class="macro">assert!</span>(res.success());
@@ -465,7 +477,8 @@
             <span class="string">&quot;node&quot;</span>,
             <span class="string">&quot;node-e2e/outgoing/test_outgoing_traffic_single_request_ipv6.mjs&quot;</span>,
         ];
-        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec(node_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>process =
+            run_exec_with_target(node_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
 
         <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
         <span class="macro">assert!</span>(res.success());
@@ -480,7 +493,7 @@
             <span class="string">&quot;node-e2e/outgoing/test_outgoing_traffic_single_request.mjs&quot;</span>,
         ];
         <span class="kw">let </span>mirrord_args = <span class="macro">vec!</span>[<span class="string">&quot;--no-outgoing&quot;</span>];
-        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec(
+        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec_with_target(
             node_command,
             <span class="kw-2">&amp;</span>service.target,
             <span class="prelude-val">None</span>,
@@ -501,7 +514,8 @@
             <span class="string">&quot;node&quot;</span>,
             <span class="string">&quot;node-e2e/outgoing/test_outgoing_traffic_make_request_after_listen.mjs&quot;</span>,
         ];
-        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec(node_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>process =
+            run_exec_with_target(node_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
         <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
         <span class="macro">assert!</span>(res.success());
     }
@@ -514,7 +528,8 @@
             <span class="string">&quot;node&quot;</span>,
             <span class="string">&quot;node-e2e/outgoing/test_outgoing_traffic_make_request_localhost.mjs&quot;</span>,
         ];
-        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec(node_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>process =
+            run_exec_with_target(node_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
         <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
         <span class="macro">assert!</span>(res.success());
     }
@@ -557,7 +572,7 @@
         // mirrord forwarding outgoing UDP traffic via the target pod.
         // If this verification fails, the test itself is invalid.
         </span><span class="kw">let </span>mirrord_no_outgoing = <span class="macro">vec!</span>[<span class="string">&quot;--no-outgoing&quot;</span>];
-        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec(
+        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec_with_target(
             node_command.clone(),
             <span class="kw-2">&amp;</span>target_service.target,
             <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>target_service.namespace),
@@ -572,7 +587,7 @@
         <span class="macro">assert_eq!</span>(logs.unwrap(), <span class="string">&quot;&quot;</span>);
 
         <span class="comment">// Run mirrord with outgoing enabled.
-        </span><span class="kw">let </span><span class="kw-2">mut </span>process = run_exec(
+        </span><span class="kw">let </span><span class="kw-2">mut </span>process = run_exec_with_target(
             node_command,
             <span class="kw-2">&amp;</span>target_service.target,
             <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>target_service.namespace),
@@ -615,7 +630,7 @@
             <span class="kw-2">&amp;</span>port,
         ];
         <span class="kw">let </span>mirrord_args = <span class="macro">vec!</span>[<span class="string">&quot;--no-outgoing&quot;</span>];
-        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec(
+        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec_with_target(
             node_command,
             <span class="kw-2">&amp;</span>service.target,
             <span class="prelude-val">None</span>,
@@ -636,7 +651,7 @@
 
     <span class="kw">pub async fn </span>test_go(service: <span class="kw">impl </span>Future&lt;Output = KubeService&gt;, command: Vec&lt;<span class="kw-2">&amp;</span>str&gt;) {
         <span class="kw">let </span>service = service.<span class="kw">await</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec(command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec_with_target(command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
         <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
         <span class="macro">assert!</span>(res.success());
     }
@@ -692,7 +707,8 @@
     </span><span class="kw">pub async fn </span>listen_localhost(<span class="attr">#[future] </span>service: KubeService) {
         <span class="kw">let </span>service = service.<span class="kw">await</span>;
         <span class="kw">let </span>node_command = <span class="macro">vec!</span>[<span class="string">&quot;node&quot;</span>, <span class="string">&quot;node-e2e/listen/test_listen_localhost.mjs&quot;</span>];
-        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec(node_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>process =
+            run_exec_with_target(node_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
         <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
         <span class="macro">assert!</span>(res.success());
     }
@@ -702,7 +718,8 @@
     </span><span class="kw">pub async fn </span>gethostname_remote_result(<span class="attr">#[future] </span>hostname_service: KubeService) {
         <span class="kw">let </span>service = hostname_service.<span class="kw">await</span>;
         <span class="kw">let </span>node_command = <span class="macro">vec!</span>[<span class="string">&quot;python3&quot;</span>, <span class="string">&quot;-u&quot;</span>, <span class="string">&quot;python-e2e/hostname.py&quot;</span>];
-        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec(node_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>process =
+            run_exec_with_target(node_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
 
         <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
         <span class="macro">assert!</span>(res.success());
@@ -740,7 +757,7 @@
             <span class="string">&quot;MIRRORD_OUTGOING_REMOTE_UNIX_STREAMS&quot;</span>,
             <span class="string">&quot;/app/unix-socket-server.sock&quot;</span>,
         )]);
-        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec(executable, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, env).<span class="kw">await</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec_with_target(executable, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, env).<span class="kw">await</span>;
         <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
 
         <span class="comment">// The test application panics if it does not successfully connect to the socket, send data,
@@ -762,7 +779,7 @@
             .to_string();
         <span class="kw">let </span>executable = <span class="macro">vec!</span>[app_path.as_str()];
 
-        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec(executable, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec_with_target(executable, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
         <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
 
         <span class="comment">// The test application panics if it does not successfully connect to the socket, send data,
@@ -781,7 +798,8 @@
             <span class="string">&quot;node&quot;</span>,
             <span class="string">&quot;node-e2e/outgoing/test_outgoing_traffic_original_address.mjs&quot;</span>,
         ];
-        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec(node_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>process =
+            run_exec_with_target(node_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
         <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
         <span class="macro">assert!</span>(res.success());
     }

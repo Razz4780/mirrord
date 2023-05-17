@@ -237,6 +237,75 @@
 <a href="#237" id="237">237</a>
 <a href="#238" id="238">238</a>
 <a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
+<a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::str::FromStr;
 
 <span class="kw">use </span>schemars::JsonSchema;
@@ -270,7 +339,10 @@
     <span class="comment">// we need default else target value will be required in some scenarios.
     </span>Simple(<span class="attr">#[serde(default, deserialize_with = <span class="string">&quot;string_or_struct_option&quot;</span>)] </span><span class="prelude-ty">Option</span>&lt;Target&gt;),
     Advanced {
-        <span class="attr">#[serde(default, deserialize_with = <span class="string">&quot;string_or_struct_option&quot;</span>)]
+        <span class="comment">// Path is optional so that it can also be specified via env var instead of via conf file,
+        // but it is not optional in a resulting [`TargetConfig`] object - either there is a path,
+        // or the target configuration is `None`.
+        </span><span class="attr">#[serde(default, deserialize_with = <span class="string">&quot;string_or_struct_option&quot;</span>)]
         </span>path: <span class="prelude-ty">Option</span>&lt;Target&gt;,
         namespace: <span class="prelude-ty">Option</span>&lt;String&gt;,
     },
@@ -279,7 +351,7 @@
 <span class="attr">#[derive(Serialize, Deserialize, Clone, Eq, PartialEq, Hash, Debug)]
 #[cfg_attr(feature = <span class="string">&quot;schema&quot;</span>, derive(schemars::JsonSchema))]
 </span><span class="kw">pub struct </span>TargetConfig {
-    <span class="kw">pub </span>path: <span class="prelude-ty">Option</span>&lt;Target&gt;,
+    <span class="kw">pub </span>path: Target,
     <span class="kw">pub </span>namespace: <span class="prelude-ty">Option</span>&lt;String&gt;,
 }
 
@@ -293,33 +365,69 @@
     <span class="kw">type </span>Generator = TargetFileConfig;
 }
 
-<span class="kw">impl </span>MirrordConfig <span class="kw">for </span>TargetFileConfig {
-    <span class="kw">type </span>Generated = TargetConfig;
+<span class="kw">impl </span>TargetFileConfig {
+    <span class="kw">fn </span>get_optional_path(path_from_config_file: <span class="prelude-ty">Option</span>&lt;Target&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;Target&gt;&gt; {
+        FromEnvWithError::new(<span class="string">&quot;MIRRORD_IMPERSONATED_TARGET&quot;</span>)
+            .or(path_from_config_file)
+            .source_value()
+            .transpose()
+    }
+}
 
-    <span class="kw">fn </span>generate_config(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Generated&gt; {
+<span class="kw">impl </span>MirrordConfig <span class="kw">for </span>TargetFileConfig {
+    <span class="kw">type </span>Generated = <span class="prelude-ty">Option</span>&lt;TargetConfig&gt;;
+
+    <span class="doccomment">/// Generate the final config object, out of the configuration parsed from a configuration file,
+    /// factoring in environment variables (which are also set by the front end - CLI/IDE-plugin).
+    ///
+    /// `None` if no target specified.
+    /// Specifying target namespace without target is not allowed and results in an error that
+    /// explains to the user what to do instead.
+    </span><span class="kw">fn </span>generate_config(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Generated&gt; {
         <span class="kw">let </span>config = <span class="kw">match </span><span class="self">self </span>{
-            TargetFileConfig::Simple(path) =&gt; TargetConfig {
-                path: FromEnvWithError::new(<span class="string">&quot;MIRRORD_IMPERSONATED_TARGET&quot;</span>)
-                    .or(path)
+            TargetFileConfig::Simple(path) =&gt; {
+                <span class="comment">// Namespace was not specified via file, get it from env var if set.
+                </span><span class="kw">let </span>namespace: <span class="prelude-ty">Option</span>&lt;String&gt; = FromEnv::new(<span class="string">&quot;MIRRORD_TARGET_NAMESPACE&quot;</span>)
                     .source_value()
-                    .transpose()<span class="question-mark">?</span>,
-                namespace: FromEnv::new(<span class="string">&quot;MIRRORD_TARGET_NAMESPACE&quot;</span>)
-                    .source_value()
-                    .transpose()<span class="question-mark">?</span>,
-            },
-            TargetFileConfig::Advanced { path, namespace } =&gt; TargetConfig {
-                path: FromEnvWithError::new(<span class="string">&quot;MIRRORD_IMPERSONATED_TARGET&quot;</span>)
-                    .or(path)
-                    .source_value()
-                    .transpose()<span class="question-mark">?</span>,
-                namespace: FromEnv::new(<span class="string">&quot;MIRRORD_TARGET_NAMESPACE&quot;</span>)
-                    .or(namespace)
-                    .source_value()
-                    .transpose()<span class="question-mark">?</span>,
-            },
+                    .transpose()<span class="question-mark">?</span>;
+
+                <span class="kw">let </span>path = <span class="kw">if let </span><span class="prelude-val">Some</span>(path) = <span class="self">Self</span>::get_optional_path(path)<span class="question-mark">? </span>{
+                    path
+                } <span class="kw">else </span>{
+                    <span class="comment">// No path specified, neither via file, nor via env. So no `TargetConfig`,
+                    // running targetless.
+
+                    </span><span class="kw">if let </span><span class="prelude-val">Some</span>(namespace_from_env) = namespace {
+                        <span class="comment">// env var (or CLI flag) was set.
+
+                        </span><span class="kw">if </span>!namespace_from_env.is_empty() {
+                            <span class="comment">// And the value is not the empty string.
+
+                            </span><span class="kw">return </span><span class="prelude-val">Err</span>(ConfigError::TargetNamespaceWithoutTarget);
+                        }
+                    }
+                    <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>); <span class="comment">// Run targetless.
+                </span>};
+                TargetConfig { path, namespace }
+            }
+            TargetFileConfig::Advanced { path, namespace } =&gt; {
+                <span class="macro">debug_assert!</span>(namespace.is_some()); <span class="comment">// Should only be advanced if namespace there.
+                </span><span class="kw">let </span>path = <span class="kw">if let </span><span class="prelude-val">Some</span>(path) = <span class="self">Self</span>::get_optional_path(path)<span class="question-mark">? </span>{
+                    path
+                } <span class="kw">else </span>{
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(ConfigError::TargetNamespaceWithoutTarget);
+                };
+                TargetConfig {
+                    path,
+                    namespace: FromEnv::new(<span class="string">&quot;MIRRORD_TARGET_NAMESPACE&quot;</span>)
+                        .or(namespace)
+                        .source_value()
+                        .transpose()<span class="question-mark">?</span>,
+                }
+            }
         };
 
-        <span class="prelude-val">Ok</span>(config)
+        <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(config))
     }
 }
 
@@ -457,21 +565,51 @@ mirrord-layer failed to parse the provided target!
     <span class="kw">use crate</span>::{config::MirrordConfig, util::testing::with_env_vars};
 
     <span class="attr">#[rstest]
+    #[case(<span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)] </span><span class="comment">// Nothing specified - no target config (targetless mode).
+    </span><span class="attr">#[should_panic]
+    #[case(<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;ns&quot;</span>), <span class="prelude-val">None</span>)] </span><span class="comment">// Namespace without target - error.
+    </span><span class="attr">#[case(
+        <span class="prelude-val">Some</span>(<span class="string">&quot;pod/foo&quot;</span>),
+        <span class="prelude-val">None</span>,
+        <span class="prelude-val">Some</span>(TargetConfig{
+            path: Target::Pod(PodTarget {pod: <span class="string">&quot;foo&quot;</span>.to_string(), container: <span class="prelude-val">None</span>}),
+            namespace: <span class="prelude-val">None
+        </span>})
+    )] </span><span class="comment">// Only pod specified
+    </span><span class="attr">#[case(
+        <span class="prelude-val">Some</span>(<span class="string">&quot;pod/foo/container/bar&quot;</span>),
+        <span class="prelude-val">None</span>,
+        <span class="prelude-val">Some</span>(TargetConfig{
+            path: Target::Pod(PodTarget {
+                pod: <span class="string">&quot;foo&quot;</span>.to_string(),
+                container: <span class="prelude-val">Some</span>(<span class="string">&quot;bar&quot;</span>.to_string())
+            }),
+            namespace: <span class="prelude-val">None
+        </span>})
+    )] </span><span class="comment">// Pod and container specified.
+    </span><span class="attr">#[case(
+        <span class="prelude-val">Some</span>(<span class="string">&quot;pod/foo&quot;</span>),
+        <span class="prelude-val">Some</span>(<span class="string">&quot;baz&quot;</span>),
+        <span class="prelude-val">Some</span>(TargetConfig{
+            path: Target::Pod(PodTarget {pod: <span class="string">&quot;foo&quot;</span>.to_string(), container: <span class="prelude-val">None</span>}),
+            namespace: <span class="prelude-val">Some</span>(<span class="string">&quot;baz&quot;</span>.to_string())
+        })
+    )] </span><span class="comment">// Pod and namespace specified.
     </span><span class="kw">fn </span>default(
-        <span class="attr">#[values((<span class="prelude-val">None</span>, <span class="prelude-val">None</span>), (<span class="prelude-val">Some</span>(<span class="string">&quot;pod/foobar&quot;</span>), <span class="prelude-val">Some</span>(Target::Pod(PodTarget { pod: <span class="string">&quot;foobar&quot;</span>.to_string(), container: <span class="prelude-val">None </span>}))))]
-        </span>path: (<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;, <span class="prelude-ty">Option</span>&lt;Target&gt;),
-        <span class="attr">#[values((<span class="prelude-val">None</span>, <span class="prelude-val">None</span>), (<span class="prelude-val">Some</span>(<span class="string">&quot;foo&quot;</span>), <span class="prelude-val">Some</span>(<span class="string">&quot;foo&quot;</span>)))] </span>namespace: (<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;, <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;),
+        <span class="attr">#[case] </span>path_env: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
+        <span class="attr">#[case] </span>namespace_env: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
+        <span class="attr">#[case] </span>expected_target_config: <span class="prelude-ty">Option</span>&lt;TargetConfig&gt;,
     ) {
         with_env_vars(
             <span class="macro">vec!</span>[
-                (<span class="string">&quot;MIRRORD_IMPERSONATED_TARGET&quot;</span>, path.<span class="number">0</span>),
-                (<span class="string">&quot;MIRRORD_TARGET_NAMESPACE&quot;</span>, namespace.<span class="number">0</span>),
+                (<span class="string">&quot;MIRRORD_IMPERSONATED_TARGET&quot;</span>, path_env),
+                (<span class="string">&quot;MIRRORD_TARGET_NAMESPACE&quot;</span>, namespace_env),
             ],
             || {
-                <span class="kw">let </span>target = TargetFileConfig::default().generate_config().unwrap();
+                <span class="kw">let </span>generated_target_config =
+                    TargetFileConfig::default().generate_config().unwrap();
 
-                <span class="macro">assert_eq!</span>(target.path, path.<span class="number">1</span>);
-                <span class="macro">assert_eq!</span>(target.namespace.as_deref(), namespace.<span class="number">1</span>);
+                <span class="macro">assert_eq!</span>(expected_target_config, generated_target_config);
             },
         );
     }

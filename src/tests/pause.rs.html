@@ -203,7 +203,7 @@
 
     <span class="kw">use </span><span class="kw">crate</span>::utils::{
         get_service_url, http_log_requester_service, http_logger_service, kube_client,
-        random_namespace_self_deleting_service, run_exec, KubeService,
+        random_namespace_self_deleting_service, run_exec_with_target, KubeService,
     };
 
     <span class="doccomment">/// http_logger_service is a service that logs strings from the uri of incoming http requests.
@@ -284,7 +284,7 @@
         <span class="macro">assert_eq!</span>(first_log, hi_from_deployed_app);
 
         <span class="macro">println!</span>(<span class="string">&quot;Running local app with mirrord.&quot;</span>);
-        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec(
+        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec_with_target(
             command.clone(),
             <span class="kw-2">&amp;</span>requester_service.target,
             <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>requester_service.namespace),
@@ -338,7 +338,7 @@
         <span class="kw">let </span>jobs: Api&lt;Job&gt; = Api::namespaced(kube_client.clone(), <span class="kw-2">&amp;</span>service.namespace);
 
         <span class="macro">println!</span>(<span class="string">&quot;Running local app with mirrord.&quot;</span>);
-        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec(
+        <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec_with_target(
             <span class="comment">// not specifying so grep waits on stdin.
             </span><span class="macro">vec!</span>[<span class="string">&quot;grep&quot;</span>, <span class="string">&quot;nothing&quot;</span>],
             <span class="kw-2">&amp;</span>service.target,

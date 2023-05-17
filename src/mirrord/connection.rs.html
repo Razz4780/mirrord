@@ -108,7 +108,7 @@
 <span class="kw">use </span>mirrord_progress::Progress;
 <span class="kw">use </span>mirrord_protocol::{ClientMessage, DaemonMessage};
 <span class="kw">use </span>tokio::sync::mpsc;
-<span class="kw">use </span>tracing::warn;
+<span class="kw">use </span>tracing::trace;
 
 <span class="kw">use crate</span>::{CliError, <span class="prelude-ty">Result</span>};
 
@@ -149,9 +149,9 @@
             <span class="prelude-val">None
         </span>}
         <span class="prelude-val">Err</span>(err) =&gt; {
-            sub_progress.fail_with(<span class="string">&quot;Unable to connect to Operator&quot;</span>);
+            sub_progress.done_with(<span class="string">&quot;Unable to check if operator exists, probably due to RBAC&quot;</span>);
 
-            <span class="macro">warn!</span>(<span class="string">&quot;{err}&quot;</span>);
+            <span class="macro">trace!</span>(<span class="string">&quot;{err}&quot;</span>);
 
             <span class="prelude-val">None
         </span>}
@@ -172,7 +172,7 @@
             AgentConnection { sender, receiver },
         ))
     } <span class="kw">else </span>{
-        <span class="kw">if </span><span class="macro">matches!</span>(config.target.path, <span class="prelude-val">Some</span>(mirrord_config::target::Target::Deployment{..})) {
+        <span class="kw">if </span><span class="macro">matches!</span>(config.target, <span class="prelude-val">Some</span>(mirrord_config::target::TargetConfig{ path: mirrord_config::target::Target::Deployment{..}, ..})) {
             <span class="comment">// progress.subtask(&quot;text&quot;).done_with(&quot;text&quot;);
             </span><span class="macro">eprintln!</span>(<span class="string">&quot;When targeting multi-pod deployments, mirrord impersonates the first pod in the deployment.\n \
                       Support for multi-pod impersonation requires the mirrord operator, which is part of mirrord for Teams.\n \
