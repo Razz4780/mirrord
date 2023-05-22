@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["Cursor","EndOfArray","EndOfSlice","Writer"],"trait":["Write"]};

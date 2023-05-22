@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["CredentialsError"],"mod":["error","future"],"struct":["Credentials","SharedCredentialsProvider"],"trait":["ProvideCredentials"],"type":["Result"]};

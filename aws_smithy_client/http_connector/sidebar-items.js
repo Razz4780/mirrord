@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["HttpConnector"],"struct":["ConnectorSettings","ConnectorSettingsBuilder"],"type":["MakeConnectorFn"]};

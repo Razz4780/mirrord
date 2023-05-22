@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/kube-runtime-0.77.0/src/controller/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="kube_runtime" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../kube_runtime/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/kube-runtime-0.82.2/src/controller/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="kube_runtime" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../kube_runtime/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -986,6 +986,288 @@
 <a href="#986" id="986">986</a>
 <a href="#987" id="987">987</a>
 <a href="#988" id="988">988</a>
+<a href="#989" id="989">989</a>
+<a href="#990" id="990">990</a>
+<a href="#991" id="991">991</a>
+<a href="#992" id="992">992</a>
+<a href="#993" id="993">993</a>
+<a href="#994" id="994">994</a>
+<a href="#995" id="995">995</a>
+<a href="#996" id="996">996</a>
+<a href="#997" id="997">997</a>
+<a href="#998" id="998">998</a>
+<a href="#999" id="999">999</a>
+<a href="#1000" id="1000">1000</a>
+<a href="#1001" id="1001">1001</a>
+<a href="#1002" id="1002">1002</a>
+<a href="#1003" id="1003">1003</a>
+<a href="#1004" id="1004">1004</a>
+<a href="#1005" id="1005">1005</a>
+<a href="#1006" id="1006">1006</a>
+<a href="#1007" id="1007">1007</a>
+<a href="#1008" id="1008">1008</a>
+<a href="#1009" id="1009">1009</a>
+<a href="#1010" id="1010">1010</a>
+<a href="#1011" id="1011">1011</a>
+<a href="#1012" id="1012">1012</a>
+<a href="#1013" id="1013">1013</a>
+<a href="#1014" id="1014">1014</a>
+<a href="#1015" id="1015">1015</a>
+<a href="#1016" id="1016">1016</a>
+<a href="#1017" id="1017">1017</a>
+<a href="#1018" id="1018">1018</a>
+<a href="#1019" id="1019">1019</a>
+<a href="#1020" id="1020">1020</a>
+<a href="#1021" id="1021">1021</a>
+<a href="#1022" id="1022">1022</a>
+<a href="#1023" id="1023">1023</a>
+<a href="#1024" id="1024">1024</a>
+<a href="#1025" id="1025">1025</a>
+<a href="#1026" id="1026">1026</a>
+<a href="#1027" id="1027">1027</a>
+<a href="#1028" id="1028">1028</a>
+<a href="#1029" id="1029">1029</a>
+<a href="#1030" id="1030">1030</a>
+<a href="#1031" id="1031">1031</a>
+<a href="#1032" id="1032">1032</a>
+<a href="#1033" id="1033">1033</a>
+<a href="#1034" id="1034">1034</a>
+<a href="#1035" id="1035">1035</a>
+<a href="#1036" id="1036">1036</a>
+<a href="#1037" id="1037">1037</a>
+<a href="#1038" id="1038">1038</a>
+<a href="#1039" id="1039">1039</a>
+<a href="#1040" id="1040">1040</a>
+<a href="#1041" id="1041">1041</a>
+<a href="#1042" id="1042">1042</a>
+<a href="#1043" id="1043">1043</a>
+<a href="#1044" id="1044">1044</a>
+<a href="#1045" id="1045">1045</a>
+<a href="#1046" id="1046">1046</a>
+<a href="#1047" id="1047">1047</a>
+<a href="#1048" id="1048">1048</a>
+<a href="#1049" id="1049">1049</a>
+<a href="#1050" id="1050">1050</a>
+<a href="#1051" id="1051">1051</a>
+<a href="#1052" id="1052">1052</a>
+<a href="#1053" id="1053">1053</a>
+<a href="#1054" id="1054">1054</a>
+<a href="#1055" id="1055">1055</a>
+<a href="#1056" id="1056">1056</a>
+<a href="#1057" id="1057">1057</a>
+<a href="#1058" id="1058">1058</a>
+<a href="#1059" id="1059">1059</a>
+<a href="#1060" id="1060">1060</a>
+<a href="#1061" id="1061">1061</a>
+<a href="#1062" id="1062">1062</a>
+<a href="#1063" id="1063">1063</a>
+<a href="#1064" id="1064">1064</a>
+<a href="#1065" id="1065">1065</a>
+<a href="#1066" id="1066">1066</a>
+<a href="#1067" id="1067">1067</a>
+<a href="#1068" id="1068">1068</a>
+<a href="#1069" id="1069">1069</a>
+<a href="#1070" id="1070">1070</a>
+<a href="#1071" id="1071">1071</a>
+<a href="#1072" id="1072">1072</a>
+<a href="#1073" id="1073">1073</a>
+<a href="#1074" id="1074">1074</a>
+<a href="#1075" id="1075">1075</a>
+<a href="#1076" id="1076">1076</a>
+<a href="#1077" id="1077">1077</a>
+<a href="#1078" id="1078">1078</a>
+<a href="#1079" id="1079">1079</a>
+<a href="#1080" id="1080">1080</a>
+<a href="#1081" id="1081">1081</a>
+<a href="#1082" id="1082">1082</a>
+<a href="#1083" id="1083">1083</a>
+<a href="#1084" id="1084">1084</a>
+<a href="#1085" id="1085">1085</a>
+<a href="#1086" id="1086">1086</a>
+<a href="#1087" id="1087">1087</a>
+<a href="#1088" id="1088">1088</a>
+<a href="#1089" id="1089">1089</a>
+<a href="#1090" id="1090">1090</a>
+<a href="#1091" id="1091">1091</a>
+<a href="#1092" id="1092">1092</a>
+<a href="#1093" id="1093">1093</a>
+<a href="#1094" id="1094">1094</a>
+<a href="#1095" id="1095">1095</a>
+<a href="#1096" id="1096">1096</a>
+<a href="#1097" id="1097">1097</a>
+<a href="#1098" id="1098">1098</a>
+<a href="#1099" id="1099">1099</a>
+<a href="#1100" id="1100">1100</a>
+<a href="#1101" id="1101">1101</a>
+<a href="#1102" id="1102">1102</a>
+<a href="#1103" id="1103">1103</a>
+<a href="#1104" id="1104">1104</a>
+<a href="#1105" id="1105">1105</a>
+<a href="#1106" id="1106">1106</a>
+<a href="#1107" id="1107">1107</a>
+<a href="#1108" id="1108">1108</a>
+<a href="#1109" id="1109">1109</a>
+<a href="#1110" id="1110">1110</a>
+<a href="#1111" id="1111">1111</a>
+<a href="#1112" id="1112">1112</a>
+<a href="#1113" id="1113">1113</a>
+<a href="#1114" id="1114">1114</a>
+<a href="#1115" id="1115">1115</a>
+<a href="#1116" id="1116">1116</a>
+<a href="#1117" id="1117">1117</a>
+<a href="#1118" id="1118">1118</a>
+<a href="#1119" id="1119">1119</a>
+<a href="#1120" id="1120">1120</a>
+<a href="#1121" id="1121">1121</a>
+<a href="#1122" id="1122">1122</a>
+<a href="#1123" id="1123">1123</a>
+<a href="#1124" id="1124">1124</a>
+<a href="#1125" id="1125">1125</a>
+<a href="#1126" id="1126">1126</a>
+<a href="#1127" id="1127">1127</a>
+<a href="#1128" id="1128">1128</a>
+<a href="#1129" id="1129">1129</a>
+<a href="#1130" id="1130">1130</a>
+<a href="#1131" id="1131">1131</a>
+<a href="#1132" id="1132">1132</a>
+<a href="#1133" id="1133">1133</a>
+<a href="#1134" id="1134">1134</a>
+<a href="#1135" id="1135">1135</a>
+<a href="#1136" id="1136">1136</a>
+<a href="#1137" id="1137">1137</a>
+<a href="#1138" id="1138">1138</a>
+<a href="#1139" id="1139">1139</a>
+<a href="#1140" id="1140">1140</a>
+<a href="#1141" id="1141">1141</a>
+<a href="#1142" id="1142">1142</a>
+<a href="#1143" id="1143">1143</a>
+<a href="#1144" id="1144">1144</a>
+<a href="#1145" id="1145">1145</a>
+<a href="#1146" id="1146">1146</a>
+<a href="#1147" id="1147">1147</a>
+<a href="#1148" id="1148">1148</a>
+<a href="#1149" id="1149">1149</a>
+<a href="#1150" id="1150">1150</a>
+<a href="#1151" id="1151">1151</a>
+<a href="#1152" id="1152">1152</a>
+<a href="#1153" id="1153">1153</a>
+<a href="#1154" id="1154">1154</a>
+<a href="#1155" id="1155">1155</a>
+<a href="#1156" id="1156">1156</a>
+<a href="#1157" id="1157">1157</a>
+<a href="#1158" id="1158">1158</a>
+<a href="#1159" id="1159">1159</a>
+<a href="#1160" id="1160">1160</a>
+<a href="#1161" id="1161">1161</a>
+<a href="#1162" id="1162">1162</a>
+<a href="#1163" id="1163">1163</a>
+<a href="#1164" id="1164">1164</a>
+<a href="#1165" id="1165">1165</a>
+<a href="#1166" id="1166">1166</a>
+<a href="#1167" id="1167">1167</a>
+<a href="#1168" id="1168">1168</a>
+<a href="#1169" id="1169">1169</a>
+<a href="#1170" id="1170">1170</a>
+<a href="#1171" id="1171">1171</a>
+<a href="#1172" id="1172">1172</a>
+<a href="#1173" id="1173">1173</a>
+<a href="#1174" id="1174">1174</a>
+<a href="#1175" id="1175">1175</a>
+<a href="#1176" id="1176">1176</a>
+<a href="#1177" id="1177">1177</a>
+<a href="#1178" id="1178">1178</a>
+<a href="#1179" id="1179">1179</a>
+<a href="#1180" id="1180">1180</a>
+<a href="#1181" id="1181">1181</a>
+<a href="#1182" id="1182">1182</a>
+<a href="#1183" id="1183">1183</a>
+<a href="#1184" id="1184">1184</a>
+<a href="#1185" id="1185">1185</a>
+<a href="#1186" id="1186">1186</a>
+<a href="#1187" id="1187">1187</a>
+<a href="#1188" id="1188">1188</a>
+<a href="#1189" id="1189">1189</a>
+<a href="#1190" id="1190">1190</a>
+<a href="#1191" id="1191">1191</a>
+<a href="#1192" id="1192">1192</a>
+<a href="#1193" id="1193">1193</a>
+<a href="#1194" id="1194">1194</a>
+<a href="#1195" id="1195">1195</a>
+<a href="#1196" id="1196">1196</a>
+<a href="#1197" id="1197">1197</a>
+<a href="#1198" id="1198">1198</a>
+<a href="#1199" id="1199">1199</a>
+<a href="#1200" id="1200">1200</a>
+<a href="#1201" id="1201">1201</a>
+<a href="#1202" id="1202">1202</a>
+<a href="#1203" id="1203">1203</a>
+<a href="#1204" id="1204">1204</a>
+<a href="#1205" id="1205">1205</a>
+<a href="#1206" id="1206">1206</a>
+<a href="#1207" id="1207">1207</a>
+<a href="#1208" id="1208">1208</a>
+<a href="#1209" id="1209">1209</a>
+<a href="#1210" id="1210">1210</a>
+<a href="#1211" id="1211">1211</a>
+<a href="#1212" id="1212">1212</a>
+<a href="#1213" id="1213">1213</a>
+<a href="#1214" id="1214">1214</a>
+<a href="#1215" id="1215">1215</a>
+<a href="#1216" id="1216">1216</a>
+<a href="#1217" id="1217">1217</a>
+<a href="#1218" id="1218">1218</a>
+<a href="#1219" id="1219">1219</a>
+<a href="#1220" id="1220">1220</a>
+<a href="#1221" id="1221">1221</a>
+<a href="#1222" id="1222">1222</a>
+<a href="#1223" id="1223">1223</a>
+<a href="#1224" id="1224">1224</a>
+<a href="#1225" id="1225">1225</a>
+<a href="#1226" id="1226">1226</a>
+<a href="#1227" id="1227">1227</a>
+<a href="#1228" id="1228">1228</a>
+<a href="#1229" id="1229">1229</a>
+<a href="#1230" id="1230">1230</a>
+<a href="#1231" id="1231">1231</a>
+<a href="#1232" id="1232">1232</a>
+<a href="#1233" id="1233">1233</a>
+<a href="#1234" id="1234">1234</a>
+<a href="#1235" id="1235">1235</a>
+<a href="#1236" id="1236">1236</a>
+<a href="#1237" id="1237">1237</a>
+<a href="#1238" id="1238">1238</a>
+<a href="#1239" id="1239">1239</a>
+<a href="#1240" id="1240">1240</a>
+<a href="#1241" id="1241">1241</a>
+<a href="#1242" id="1242">1242</a>
+<a href="#1243" id="1243">1243</a>
+<a href="#1244" id="1244">1244</a>
+<a href="#1245" id="1245">1245</a>
+<a href="#1246" id="1246">1246</a>
+<a href="#1247" id="1247">1247</a>
+<a href="#1248" id="1248">1248</a>
+<a href="#1249" id="1249">1249</a>
+<a href="#1250" id="1250">1250</a>
+<a href="#1251" id="1251">1251</a>
+<a href="#1252" id="1252">1252</a>
+<a href="#1253" id="1253">1253</a>
+<a href="#1254" id="1254">1254</a>
+<a href="#1255" id="1255">1255</a>
+<a href="#1256" id="1256">1256</a>
+<a href="#1257" id="1257">1257</a>
+<a href="#1258" id="1258">1258</a>
+<a href="#1259" id="1259">1259</a>
+<a href="#1260" id="1260">1260</a>
+<a href="#1261" id="1261">1261</a>
+<a href="#1262" id="1262">1262</a>
+<a href="#1263" id="1263">1263</a>
+<a href="#1264" id="1264">1264</a>
+<a href="#1265" id="1265">1265</a>
+<a href="#1266" id="1266">1266</a>
+<a href="#1267" id="1267">1267</a>
+<a href="#1268" id="1268">1268</a>
+<a href="#1269" id="1269">1269</a>
+<a href="#1270" id="1270">1270</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Runs a user-supplied reconciler function on objects when they (or related objects) are updated
 
 </span><span class="kw">use </span><span class="self">self</span>::runner::Runner;
@@ -997,7 +1279,7 @@
     },
     scheduler::{scheduler, ScheduleRequest},
     utils::{trystream_try_via, CancelableJoinHandle, KubeRuntimeStreamExt, StreamBackoff, WatchStreamExt},
-    watcher::{<span class="self">self</span>, watcher},
+    watcher::{<span class="self">self</span>, watcher, Config},
 };
 <span class="kw">use </span>backoff::backoff::Backoff;
 <span class="kw">use </span>derivative::Derivative;
@@ -1006,7 +1288,7 @@
     future::{<span class="self">self</span>, BoxFuture},
     ready, stream, Future, FutureExt, Stream, StreamExt, TryFuture, TryFutureExt, TryStream, TryStreamExt,
 };
-<span class="kw">use </span>kube_client::api::{Api, DynamicObject, ListParams, Resource};
+<span class="kw">use </span>kube_client::api::{Api, DynamicObject, Resource};
 <span class="kw">use </span>pin_project::pin_project;
 <span class="kw">use </span>serde::de::DeserializeOwned;
 <span class="kw">use </span>std::{
@@ -1045,7 +1327,7 @@
 }
 
 <span class="kw">impl </span>Action {
-    <span class="doccomment">/// Action to to the reconciliation at this time even if no external watch triggers hit
+    <span class="doccomment">/// Action to the reconciliation at this time even if no external watch triggers hit
     ///
     /// This is the best-practice action that ensures eventual consistency of your controller
     /// even in the case of missed changes (which can happen).
@@ -1106,6 +1388,37 @@
     })
 }
 
+<span class="doccomment">/// Enqueues any mapper returned `K` types for reconciliation
+</span><span class="kw">fn </span>trigger_others&lt;S, K, I&gt;(
+    stream: S,
+    mapper: <span class="kw">impl </span>Fn(S::Ok) -&gt; I + Sync + Send + <span class="lifetime">&#39;static</span>,
+    dyntype: &lt;S::Ok <span class="kw">as </span>Resource&gt;::DynamicType,
+) -&gt; <span class="kw">impl </span>Stream&lt;Item = <span class="prelude-ty">Result</span>&lt;ReconcileRequest&lt;K&gt;, S::Error&gt;&gt;
+<span class="kw">where
+    </span><span class="comment">// Input stream has items as some Resource (via Controller::watches)
+    </span>S: TryStream,
+    S::Ok: Resource,
+    &lt;S::Ok <span class="kw">as </span>Resource&gt;::DynamicType: Clone,
+    <span class="comment">// Output stream is requests for the root type K
+    </span>K: Resource,
+    K::DynamicType: Clone,
+    <span class="comment">// but the mapper can produce many of them
+    </span>I: <span class="lifetime">&#39;static </span>+ IntoIterator&lt;Item = ObjectRef&lt;K&gt;&gt;,
+    I::IntoIter: Send,
+{
+    trigger_with(stream, <span class="kw">move </span>|obj| {
+        <span class="kw">let </span>watch_ref = ObjectRef::from_obj_with(<span class="kw-2">&amp;</span>obj, dyntype.clone()).erase();
+        mapper(obj)
+            .into_iter()
+            .map(<span class="kw">move </span>|mapped_obj_ref| ReconcileRequest {
+                obj_ref: mapped_obj_ref,
+                reason: ReconcileReason::RelatedObjectUpdated {
+                    obj_ref: Box::new(watch_ref.clone()),
+                },
+            })
+    })
+}
+
 <span class="doccomment">/// Enqueues any owners of type `KOwner` for reconciliation
 </span><span class="kw">pub fn </span>trigger_owners&lt;KOwner, S&gt;(
     stream: S,
@@ -1119,22 +1432,16 @@
     KOwner: Resource,
     KOwner::DynamicType: Clone,
 {
-    trigger_with(stream, <span class="kw">move </span>|obj| {
+    <span class="kw">let </span>mapper = <span class="kw">move </span>|obj: S::Ok| {
         <span class="kw">let </span>meta = obj.meta().clone();
         <span class="kw">let </span>ns = meta.namespace;
         <span class="kw">let </span>owner_type = owner_type.clone();
-        <span class="kw">let </span>child_ref = ObjectRef::from_obj_with(<span class="kw-2">&amp;</span>obj, child_type.clone()).erase();
         meta.owner_references
             .into_iter()
             .flatten()
             .filter_map(<span class="kw">move </span>|owner| ObjectRef::from_owner_ref(ns.as_deref(), <span class="kw-2">&amp;</span>owner, owner_type.clone()))
-            .map(<span class="kw">move </span>|owner_ref| ReconcileRequest {
-                obj_ref: owner_ref,
-                reason: ReconcileReason::RelatedObjectUpdated {
-                    obj_ref: Box::new(child_ref.clone()),
-                },
-            })
-    })
+    };
+    trigger_others(stream, mapper, child_type)
 }
 
 <span class="doccomment">/// A request to reconcile an object, annotated with why that request was made.
@@ -1368,29 +1675,32 @@
     }
 }
 
-<span class="doccomment">/// Controller
+<span class="doccomment">/// Controller for a Resource `K`
 ///
-/// A controller is made up of:
-/// - 1 `reflector` (for the core object)
-/// - N `watcher` objects for each object child object
-/// - user defined `reconcile` + `error_policy` callbacks
-/// - a generated input stream considering all sources
+/// A controller is an infinite stream of objects to be reconciled.
 ///
-/// And all reconcile requests  through an internal scheduler
+/// Once `run` and continuously awaited, it continuously calls out to user provided
+/// `reconcile` and `error_policy` callbacks whenever relevant changes are detected
+/// or if errors are seen from `reconcile`.
 ///
-/// Pieces:
+/// Reconciles are generally requested for all changes on your root objects.
+/// Changes to managed child resources will also trigger the reconciler for the
+/// managing object by travirsing owner references (for `Controller::owns`),
+/// or traverse a custom mapping (for `Controller::watches`).
+///
+/// This mapping mechanism ultimately hides the reason for the reconciliation request,
+/// and forces you to write an idempotent reconciler.
+///
+/// General setup:
 /// ```no_run
-/// use kube::{
-///   Client, CustomResource,
-///   api::{Api, ListParams},
-///   runtime::controller::{Controller, Action}
-/// };
-/// use serde::{Deserialize, Serialize};
-/// use tokio::time::Duration;
+/// use kube::{Api, Client, CustomResource};
+/// use kube::runtime::{controller::{Controller, Action}, watcher, reflector};
+/// # use serde::{Deserialize, Serialize};
+/// # use tokio::time::Duration;
 /// use futures::StreamExt;
 /// use k8s_openapi::api::core::v1::ConfigMap;
 /// use schemars::JsonSchema;
-/// use std::sync::Arc;
+/// # use std::sync::Arc;
 /// use thiserror::Error;
 ///
 /// #[derive(Debug, Error)]
@@ -1422,8 +1732,8 @@
 ///     let context = Arc::new(()); // bad empty context - put client in here
 ///     let cmgs = Api::&lt;ConfigMapGenerator&gt;::all(client.clone());
 ///     let cms = Api::&lt;ConfigMap&gt;::all(client.clone());
-///     Controller::new(cmgs, ListParams::default())
-///         .owns(cms, ListParams::default())
+///     Controller::new(cmgs, watcher::Config::default())
+///         .owns(cms, watcher::Config::default())
 ///         .run(reconcile, error_policy, context)
 ///         .for_each(|res| async move {
 ///             match res {
@@ -1460,44 +1770,127 @@
     </span>K: Clone + Resource + DeserializeOwned + Debug + Send + Sync + <span class="lifetime">&#39;static</span>,
     K::DynamicType: Eq + Hash + Clone,
 {
-    <span class="doccomment">/// Create a Controller on a type `K`
+    <span class="doccomment">/// Create a Controller for a resource `K`
     ///
     /// Takes an [`Api`] object that determines how the `Controller` listens for changes to the `K`.
     ///
-    /// The [`ListParams`] controls to the possible subset of objects of `K` that you want to manage
+    /// The [`Config`] controls to the possible subset of objects of `K` that you want to manage
     /// and receive reconcile events for.
-    /// For the full set of objects `K` in the given `Api` scope, you can use [`ListParams::default`].
+    /// For the full set of objects `K` in the given `Api` scope, you can use [`Config::default`].
     </span><span class="attr">#[must_use]
-    </span><span class="kw">pub fn </span>new(owned_api: Api&lt;K&gt;, lp: ListParams) -&gt; <span class="self">Self
+    </span><span class="kw">pub fn </span>new(main_api: Api&lt;K&gt;, wc: Config) -&gt; <span class="self">Self
     </span><span class="kw">where
         </span>K::DynamicType: Default,
     {
-        <span class="self">Self</span>::new_with(owned_api, lp, Default::default())
+        <span class="self">Self</span>::new_with(main_api, wc, Default::default())
     }
 
-    <span class="doccomment">/// Create a Controller on a type `K`
+    <span class="doccomment">/// Create a Controller for a resource `K`
     ///
     /// Takes an [`Api`] object that determines how the `Controller` listens for changes to the `K`.
     ///
-    /// The [`ListParams`] lets you define a possible subset of objects of `K` that you want the [`Api`]
+    /// The [`Config`] lets you define a possible subset of objects of `K` that you want the [`Api`]
     /// to watch - in the Api&#39;s  configured scope - and receive reconcile events for.
-    /// For the full set of objects `K` in the given `Api` scope, you can use [`ListParams::default`].
+    /// For the full set of objects `K` in the given `Api` scope, you can use [`Config::default`].
     ///
     /// This variant constructor is for [`dynamic`] types found through discovery. Prefer [`Controller::new`] for static types.
     ///
-    /// [`ListParams`]: kube_client::api::ListParams
+    /// [`Config`]: crate::watcher::Config
     /// [`Api`]: kube_client::Api
     /// [`dynamic`]: kube_client::core::dynamic
-    /// [`ListParams::default`]: kube_client::api::ListParams::default
-    </span><span class="kw">pub fn </span>new_with(owned_api: Api&lt;K&gt;, lp: ListParams, dyntype: K::DynamicType) -&gt; <span class="self">Self </span>{
+    /// [`Config::default`]: crate::watcher::Config::default
+    </span><span class="kw">pub fn </span>new_with(main_api: Api&lt;K&gt;, wc: Config, dyntype: K::DynamicType) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>writer = Writer::&lt;K&gt;::new(dyntype.clone());
         <span class="kw">let </span>reader = writer.as_reader();
         <span class="kw">let </span><span class="kw-2">mut </span>trigger_selector = stream::SelectAll::new();
         <span class="kw">let </span>self_watcher = trigger_self(
-            reflector(writer, watcher(owned_api, lp)).applied_objects(),
+            reflector(writer, watcher(main_api, wc)).applied_objects(),
             dyntype.clone(),
         )
         .boxed();
+        trigger_selector.push(self_watcher);
+        <span class="self">Self </span>{
+            trigger_selector,
+            trigger_backoff: Box::new(watcher::default_backoff()),
+            graceful_shutdown_selector: <span class="macro">vec!</span>[
+                <span class="comment">// Fallback future, ensuring that we never terminate if no additional futures are added to the selector
+                </span>future::pending().boxed(),
+            ],
+            forceful_shutdown_selector: <span class="macro">vec!</span>[
+                <span class="comment">// Fallback future, ensuring that we never terminate if no additional futures are added to the selector
+                </span>future::pending().boxed(),
+            ],
+            dyntype,
+            reader,
+        }
+    }
+
+    <span class="doccomment">/// Create a Controller for a resource `K` from a stream of `K` objects
+    ///
+    /// Same as [`Controller::new`], but instead of an `Api`, a stream of resources is used.
+    /// This allows for customized and pre-filtered watch streams to be used as a trigger,
+    /// as well as sharing input streams between multiple controllers.
+    ///
+    /// **NB**: This is constructor requires an [`unstable`](https://github.com/kube-rs/kube/blob/main/kube-runtime/Cargo.toml#L17-L21) feature.
+    ///
+    /// # Example:
+    ///
+    /// ```no_run
+    /// # use futures::StreamExt;
+    /// # use k8s_openapi::api::apps::v1::Deployment;
+    /// # use kube::runtime::controller::{Action, Controller};
+    /// # use kube::runtime::{predicates, watcher, reflector, WatchStreamExt};
+    /// # use kube::{Api, Client, Error, ResourceExt};
+    /// # use std::sync::Arc;
+    /// # async fn reconcile(_: Arc&lt;Deployment&gt;, _: Arc&lt;()&gt;) -&gt; Result&lt;Action, Error&gt; { Ok(Action::await_change()) }
+    /// # fn error_policy(_: Arc&lt;Deployment&gt;, _: &amp;kube::Error, _: Arc&lt;()&gt;) -&gt; Action { Action::await_change() }
+    /// # async fn doc(client: kube::Client) {
+    /// let api: Api&lt;Deployment&gt; = Api::default_namespaced(client);
+    /// let (reader, writer) = reflector::store();
+    /// let deploys = reflector(writer, watcher(api, watcher::Config::default()))
+    ///     .applied_objects()
+    ///     .predicate_filter(predicates::generation);
+    ///
+    /// Controller::for_stream(deploys, reader)
+    ///     .run(reconcile, error_policy, Arc::new(()))
+    ///     .for_each(|_| std::future::ready(()))
+    ///     .await;
+    /// # }
+    /// ```
+    ///
+    /// Prefer [`Controller::new`] if you do not need to share the stream, or do not need pre-filtering.
+    </span><span class="attr">#[cfg(feature = <span class="string">&quot;unstable-runtime-stream-control&quot;</span>)]
+    </span><span class="kw">pub fn </span>for_stream(
+        trigger: <span class="kw">impl </span>Stream&lt;Item = <span class="prelude-ty">Result</span>&lt;K, watcher::Error&gt;&gt; + Send + <span class="lifetime">&#39;static</span>,
+        reader: Store&lt;K&gt;,
+    ) -&gt; <span class="self">Self
+    </span><span class="kw">where
+        </span>K::DynamicType: Default,
+    {
+        <span class="self">Self</span>::for_stream_with(trigger, reader, Default::default())
+    }
+
+    <span class="doccomment">/// Create a Controller for a resource `K` from a stream of `K` objects
+    ///
+    /// Same as [`Controller::new`], but instead of an `Api`, a stream of resources is used.
+    /// This allows for customized and pre-filtered watch streams to be used as a trigger,
+    /// as well as sharing input streams between multiple controllers.
+    ///
+    /// **NB**: This is constructor requires an [`unstable`](https://github.com/kube-rs/kube/blob/main/kube-runtime/Cargo.toml#L17-L21) feature.
+    ///
+    /// Prefer [`Controller::new`] if you do not need to share the stream, or do not need pre-filtering.
+    ///
+    /// This variant constructor is for [`dynamic`] types found through discovery. Prefer [`Controller::for_stream`] for static types.
+    ///
+    /// [`dynamic`]: kube_client::core::dynamic
+    </span><span class="attr">#[cfg(feature = <span class="string">&quot;unstable-runtime-stream-control&quot;</span>)]
+    </span><span class="kw">pub fn </span>for_stream_with(
+        trigger: <span class="kw">impl </span>Stream&lt;Item = <span class="prelude-ty">Result</span>&lt;K, watcher::Error&gt;&gt; + Send + <span class="lifetime">&#39;static</span>,
+        reader: Store&lt;K&gt;,
+        dyntype: K::DynamicType,
+    ) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span><span class="kw-2">mut </span>trigger_selector = stream::SelectAll::new();
+        <span class="kw">let </span>self_watcher = trigger_self(trigger, dyntype.clone()).boxed();
         trigger_selector.push(self_watcher);
         <span class="self">Self </span>{
             trigger_selector,
@@ -1537,18 +1930,18 @@
     /// Takes an [`Api`] object that determines how the `Controller` listens for changes to the `Child`.
     /// All owned `Child` objects **must** contain an [`OwnerReference`] pointing back to a `K`.
     ///
-    /// The [`ListParams`] refer to the possible subset of `Child` objects that you want the [`Api`]
-    ///  to watch - in the Api&#39;s configured scope - and receive reconcile events for.
-    /// To watch the full set of `Child` objects in the given `Api` scope, you can use [`ListParams::default`].
+    /// The [`watcher::Config`] controls the subset of `Child` objects that you want the [`Api`]
+    /// to watch - in the Api&#39;s configured scope - and receive reconcile events for.
+    /// To watch the full set of `Child` objects in the given `Api` scope, you can use [`watcher::Config::default`].
     ///
     /// [`OwnerReference`]: k8s_openapi::apimachinery::pkg::apis::meta::v1::OwnerReference
     </span><span class="attr">#[must_use]
     </span><span class="kw">pub fn </span>owns&lt;Child: Clone + Resource&lt;DynamicType = ()&gt; + DeserializeOwned + Debug + Send + <span class="lifetime">&#39;static</span>&gt;(
         <span class="self">self</span>,
         api: Api&lt;Child&gt;,
-        lp: ListParams,
+        wc: Config,
     ) -&gt; <span class="self">Self </span>{
-        <span class="self">self</span>.owns_with(api, (), lp)
+        <span class="self">self</span>.owns_with(api, (), wc)
     }
 
     <span class="doccomment">/// Specify `Child` objects which `K` owns and should be watched
@@ -1559,12 +1952,81 @@
         <span class="kw-2">mut </span><span class="self">self</span>,
         api: Api&lt;Child&gt;,
         dyntype: Child::DynamicType,
-        lp: ListParams,
+        wc: Config,
     ) -&gt; <span class="self">Self
     </span><span class="kw">where
         </span>Child::DynamicType: Debug + Eq + Hash + Clone,
     {
-        <span class="kw">let </span>child_watcher = trigger_owners(watcher(api, lp).touched_objects(), <span class="self">self</span>.dyntype.clone(), dyntype);
+        <span class="comment">// TODO: call owns_stream_with when it&#39;s stable
+        </span><span class="kw">let </span>child_watcher = trigger_owners(watcher(api, wc).touched_objects(), <span class="self">self</span>.dyntype.clone(), dyntype);
+        <span class="self">self</span>.trigger_selector.push(child_watcher.boxed());
+        <span class="self">self
+    </span>}
+
+    <span class="doccomment">/// Trigger the reconciliation process for a stream of `Child` objects of the owner `K`
+    ///
+    /// Same as [`Controller::owns`], but instead of an `Api`, a stream of resources is used.
+    /// This allows for customized and pre-filtered watch streams to be used as a trigger,
+    /// as well as sharing input streams between multiple controllers.
+    ///
+    /// **NB**: This is constructor requires an [`unstable`](https://github.com/kube-rs/kube/blob/main/kube-runtime/Cargo.toml#L17-L21) feature.
+    ///
+    /// Watcher streams passed in here should be filtered first through `touched_objects`.
+    ///
+    /// # Example:
+    ///
+    /// ```no_run
+    /// # use futures::StreamExt;
+    /// # use k8s_openapi::api::core::v1::ConfigMap;
+    /// # use k8s_openapi::api::apps::v1::StatefulSet;
+    /// # use kube::runtime::controller::Action;
+    /// # use kube::runtime::{predicates, watcher, Controller, WatchStreamExt};
+    /// # use kube::{Api, Client, Error, ResourceExt};
+    /// # use std::sync::Arc;
+    /// # type CustomResource = ConfigMap;
+    /// # async fn reconcile(_: Arc&lt;CustomResource&gt;, _: Arc&lt;()&gt;) -&gt; Result&lt;Action, Error&gt; { Ok(Action::await_change()) }
+    /// # fn error_policy(_: Arc&lt;CustomResource&gt;, _: &amp;kube::Error, _: Arc&lt;()&gt;) -&gt; Action { Action::await_change() }
+    /// # async fn doc(client: kube::Client) {
+    /// let sts_stream = watcher(Api::&lt;StatefulSet&gt;::all(client.clone()), watcher::Config::default())
+    ///     .touched_objects()
+    ///     .predicate_filter(predicates::generation);
+    ///
+    /// Controller::new(Api::&lt;CustomResource&gt;::all(client), watcher::Config::default())
+    ///     .owns_stream(sts_stream)
+    ///     .run(reconcile, error_policy, Arc::new(()))
+    ///     .for_each(|_| std::future::ready(()))
+    ///     .await;
+    /// # }
+    /// ```
+    </span><span class="attr">#[cfg(feature = <span class="string">&quot;unstable-runtime-stream-control&quot;</span>)]
+    #[must_use]
+    </span><span class="kw">pub fn </span>owns_stream&lt;Child: Resource&lt;DynamicType = ()&gt; + Send + <span class="lifetime">&#39;static</span>&gt;(
+        <span class="self">self</span>,
+        trigger: <span class="kw">impl </span>Stream&lt;Item = <span class="prelude-ty">Result</span>&lt;Child, watcher::Error&gt;&gt; + Send + <span class="lifetime">&#39;static</span>,
+    ) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.owns_stream_with(trigger, ())
+    }
+
+    <span class="doccomment">/// Trigger the reconciliation process for a stream of `Child` objects of the owner `K`
+    ///
+    /// Same as [`Controller::owns`], but instead of an `Api`, a stream of resources is used.
+    /// This allows for customized and pre-filtered watch streams to be used as a trigger,
+    /// as well as sharing input streams between multiple controllers.
+    ///
+    /// **NB**: This is constructor requires an [`unstable`](https://github.com/kube-rs/kube/blob/main/kube-runtime/Cargo.toml#L17-L21) feature.
+    ///
+    /// Same as [`Controller::owns_stream`], but accepts a `DynamicType` so it can be used with dynamic resources.
+    </span><span class="attr">#[cfg(feature = <span class="string">&quot;unstable-runtime-stream-control&quot;</span>)]
+    #[must_use]
+    </span><span class="kw">pub fn </span>owns_stream_with&lt;Child: Resource + Send + <span class="lifetime">&#39;static</span>&gt;(
+        <span class="kw-2">mut </span><span class="self">self</span>,
+        trigger: <span class="kw">impl </span>Stream&lt;Item = <span class="prelude-ty">Result</span>&lt;Child, watcher::Error&gt;&gt; + Send + <span class="lifetime">&#39;static</span>,
+        dyntype: Child::DynamicType,
+    ) -&gt; <span class="self">Self
+    </span><span class="kw">where
+        </span>Child::DynamicType: Debug + Eq + Hash + Clone,
+    {
+        <span class="kw">let </span>child_watcher = trigger_owners(trigger, <span class="self">self</span>.dyntype.clone(), dyntype);
         <span class="self">self</span>.trigger_selector.push(child_watcher.boxed());
         <span class="self">self
     </span>}
@@ -1578,18 +2040,17 @@
     ///
     /// Takes an [`Api`] object that determines how the `Controller` listens for changes to the `Watched`.
     ///
-    /// The [`ListParams`] refer to the possible subset of `Watched` objects that you want the [`Api`]
+    /// The [`watcher::Config`] controls the subset of `Watched` objects that you want the [`Api`]
     /// to watch - in the Api&#39;s configured scope - and run through the custom mapper.
-    /// To watch the full set of `Watched` objects in given the `Api` scope, you can use [`ListParams::default`].
+    /// To watch the full set of `Watched` objects in given the `Api` scope, you can use [`watcher::Config::default`].
     ///
     /// # Example
     ///
     /// Tracking cross cluster references using the [Operator-SDK] annotations.
     ///
     /// ```
-    /// # use kube::runtime::{Controller, controller::Action, reflector::ObjectRef};
-    /// # use kube::api::{Api, ListParams};
-    /// # use kube::ResourceExt;
+    /// # use kube::runtime::{Controller, controller::Action, reflector::ObjectRef, watcher};
+    /// # use kube::{Api, ResourceExt};
     /// # use k8s_openapi::api::core::v1::{ConfigMap, Namespace};
     /// # use futures::StreamExt;
     /// # use std::sync::Arc;
@@ -1604,10 +2065,10 @@
     /// # async fn doc(client: kube::Client) -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
     /// # let memcached = Api::&lt;ConfigMap&gt;::all(client.clone());
     /// # let context = Arc::new(Context);
-    /// Controller::new(memcached, ListParams::default())
+    /// Controller::new(memcached, watcher::Config::default())
     ///     .watches(
     ///         Api::&lt;WatchedResource&gt;::all(client.clone()),
-    ///         ListParams::default(),
+    ///         watcher::Config::default(),
     ///         |ar| {
     ///             let prt = ar
     ///                 .annotations()
@@ -1635,50 +2096,121 @@
     ///
     /// [Operator-SDK]: https://sdk.operatorframework.io/docs/building-operators/ansible/reference/retroactively-owned-resources/
     </span><span class="attr">#[must_use]
-    </span><span class="kw">pub fn </span>watches&lt;
-        Other: Clone + Resource&lt;DynamicType = ()&gt; + DeserializeOwned + Debug + Send + <span class="lifetime">&#39;static</span>,
-        I: <span class="lifetime">&#39;static </span>+ IntoIterator&lt;Item = ObjectRef&lt;K&gt;&gt;,
-    &gt;(
+    </span><span class="kw">pub fn </span>watches&lt;Other, I&gt;(
         <span class="self">self</span>,
         api: Api&lt;Other&gt;,
-        lp: ListParams,
+        wc: Config,
         mapper: <span class="kw">impl </span>Fn(Other) -&gt; I + Sync + Send + <span class="lifetime">&#39;static</span>,
     ) -&gt; <span class="self">Self
     </span><span class="kw">where
-        </span>I::IntoIter: Send,
+        </span>Other: Clone + Resource + DeserializeOwned + Debug + Send + <span class="lifetime">&#39;static</span>,
+        Other::DynamicType: Default + Debug + Clone + Eq + Hash,
+        I: <span class="lifetime">&#39;static </span>+ IntoIterator&lt;Item = ObjectRef&lt;K&gt;&gt;,
+        I::IntoIter: Send,
     {
-        <span class="self">self</span>.watches_with(api, (), lp, mapper)
+        <span class="self">self</span>.watches_with(api, Default::default(), wc, mapper)
     }
 
     <span class="doccomment">/// Specify `Watched` object which `K` has a custom relation to and should be watched
     ///
     /// Same as [`Controller::watches`], but accepts a `DynamicType` so it can be used with dynamic resources.
     </span><span class="attr">#[must_use]
-    </span><span class="kw">pub fn </span>watches_with&lt;
-        Other: Clone + Resource + DeserializeOwned + Debug + Send + <span class="lifetime">&#39;static</span>,
-        I: <span class="lifetime">&#39;static </span>+ IntoIterator&lt;Item = ObjectRef&lt;K&gt;&gt;,
-    &gt;(
+    </span><span class="kw">pub fn </span>watches_with&lt;Other, I&gt;(
         <span class="kw-2">mut </span><span class="self">self</span>,
         api: Api&lt;Other&gt;,
         dyntype: Other::DynamicType,
-        lp: ListParams,
+        wc: Config,
         mapper: <span class="kw">impl </span>Fn(Other) -&gt; I + Sync + Send + <span class="lifetime">&#39;static</span>,
     ) -&gt; <span class="self">Self
     </span><span class="kw">where
-        </span>I::IntoIter: Send,
-        Other::DynamicType: Clone,
+        </span>Other: Clone + Resource + DeserializeOwned + Debug + Send + <span class="lifetime">&#39;static</span>,
+        I: <span class="lifetime">&#39;static </span>+ IntoIterator&lt;Item = ObjectRef&lt;K&gt;&gt;,
+        I::IntoIter: Send,
+        Other::DynamicType: Debug + Clone + Eq + Hash,
     {
-        <span class="kw">let </span>other_watcher = trigger_with(watcher(api, lp).touched_objects(), <span class="kw">move </span>|obj| {
-            <span class="kw">let </span>watched_obj_ref = ObjectRef::from_obj_with(<span class="kw-2">&amp;</span>obj, dyntype.clone()).erase();
-            mapper(obj)
-                .into_iter()
-                .map(<span class="kw">move </span>|mapped_obj_ref| ReconcileRequest {
-                    obj_ref: mapped_obj_ref,
-                    reason: ReconcileReason::RelatedObjectUpdated {
-                        obj_ref: Box::new(watched_obj_ref.clone()),
-                    },
-                })
-        });
+        <span class="kw">let </span>other_watcher = trigger_others(watcher(api, wc).touched_objects(), mapper, dyntype);
+        <span class="self">self</span>.trigger_selector.push(other_watcher.boxed());
+        <span class="self">self
+    </span>}
+
+    <span class="doccomment">/// Trigger the reconciliation process for a stream of `Other` objects related to a `K`
+    ///
+    /// Same as [`Controller::watches`], but instead of an `Api`, a stream of resources is used.
+    /// This allows for customized and pre-filtered watch streams to be used as a trigger,
+    /// as well as sharing input streams between multiple controllers.
+    ///
+    /// **NB**: This is constructor requires an [`unstable`](https://github.com/kube-rs/kube/blob/main/kube-runtime/Cargo.toml#L17-L21) feature.
+    ///
+    /// Watcher streams passed in here should be filtered first through `touched_objects`.
+    ///
+    /// # Example:
+    ///
+    /// ```no_run
+    /// # use futures::StreamExt;
+    /// # use k8s_openapi::api::core::v1::ConfigMap;
+    /// # use k8s_openapi::api::apps::v1::DaemonSet;
+    /// # use kube::runtime::controller::Action;
+    /// # use kube::runtime::{predicates, reflector::ObjectRef, watcher, Controller, WatchStreamExt};
+    /// # use kube::{Api, Client, Error, ResourceExt};
+    /// # use std::sync::Arc;
+    /// # type CustomResource = ConfigMap;
+    /// # async fn reconcile(_: Arc&lt;CustomResource&gt;, _: Arc&lt;()&gt;) -&gt; Result&lt;Action, Error&gt; { Ok(Action::await_change()) }
+    /// # fn error_policy(_: Arc&lt;CustomResource&gt;, _: &amp;kube::Error, _: Arc&lt;()&gt;) -&gt; Action { Action::await_change() }
+    /// fn mapper(_: DaemonSet) -&gt; Option&lt;ObjectRef&lt;CustomResource&gt;&gt; { todo!() }
+    /// # async fn doc(client: kube::Client) {
+    /// let api: Api&lt;DaemonSet&gt; = Api::all(client.clone());
+    /// let cr: Api&lt;CustomResource&gt; = Api::all(client.clone());
+    /// let daemons = watcher(api, watcher::Config::default())
+    ///     .touched_objects()
+    ///     .predicate_filter(predicates::generation);
+    ///
+    /// Controller::new(cr, watcher::Config::default())
+    ///     .watches_stream(daemons, mapper)
+    ///     .run(reconcile, error_policy, Arc::new(()))
+    ///     .for_each(|_| std::future::ready(()))
+    ///     .await;
+    /// # }
+    /// ```
+    </span><span class="attr">#[cfg(feature = <span class="string">&quot;unstable-runtime-stream-control&quot;</span>)]
+    #[must_use]
+    </span><span class="kw">pub fn </span>watches_stream&lt;Other, I&gt;(
+        <span class="self">self</span>,
+        trigger: <span class="kw">impl </span>Stream&lt;Item = <span class="prelude-ty">Result</span>&lt;Other, watcher::Error&gt;&gt; + Send + <span class="lifetime">&#39;static</span>,
+        mapper: <span class="kw">impl </span>Fn(Other) -&gt; I + Sync + Send + <span class="lifetime">&#39;static</span>,
+    ) -&gt; <span class="self">Self
+    </span><span class="kw">where
+        </span>Other: Clone + Resource + DeserializeOwned + Debug + Send + <span class="lifetime">&#39;static</span>,
+        Other::DynamicType: Default + Debug + Clone,
+        I: <span class="lifetime">&#39;static </span>+ IntoIterator&lt;Item = ObjectRef&lt;K&gt;&gt;,
+        I::IntoIter: Send,
+    {
+        <span class="self">self</span>.watches_stream_with(trigger, mapper, Default::default())
+    }
+
+    <span class="doccomment">/// Trigger the reconciliation process for a stream of `Other` objects related to a `K`
+    ///
+    /// Same as [`Controller::owns`], but instead of an `Api`, a stream of resources is used.
+    /// This allows for customized and pre-filtered watch streams to be used as a trigger,
+    /// as well as sharing input streams between multiple controllers.
+    ///
+    /// **NB**: This is constructor requires an [`unstable`](https://github.com/kube-rs/kube/blob/main/kube-runtime/Cargo.toml#L17-L21) feature.
+    ///
+    /// Same as [`Controller::watches_stream`], but accepts a `DynamicType` so it can be used with dynamic resources.
+    </span><span class="attr">#[cfg(feature = <span class="string">&quot;unstable-runtime-stream-control&quot;</span>)]
+    #[must_use]
+    </span><span class="kw">pub fn </span>watches_stream_with&lt;Other, I&gt;(
+        <span class="kw-2">mut </span><span class="self">self</span>,
+        trigger: <span class="kw">impl </span>Stream&lt;Item = <span class="prelude-ty">Result</span>&lt;Other, watcher::Error&gt;&gt; + Send + <span class="lifetime">&#39;static</span>,
+        mapper: <span class="kw">impl </span>Fn(Other) -&gt; I + Sync + Send + <span class="lifetime">&#39;static</span>,
+        dyntype: Other::DynamicType,
+    ) -&gt; <span class="self">Self
+    </span><span class="kw">where
+        </span>Other: Clone + Resource + DeserializeOwned + Debug + Send + <span class="lifetime">&#39;static</span>,
+        Other::DynamicType: Debug + Clone,
+        I: <span class="lifetime">&#39;static </span>+ IntoIterator&lt;Item = ObjectRef&lt;K&gt;&gt;,
+        I::IntoIter: Send,
+    {
+        <span class="kw">let </span>other_watcher = trigger_others(trigger, mapper, dyntype);
         <span class="self">self</span>.trigger_selector.push(other_watcher.boxed());
         <span class="self">self
     </span>}
@@ -1695,8 +2227,11 @@
     /// use k8s_openapi::api::core::v1::ConfigMap;
     /// use kube::{
     ///     Client,
-    ///     api::{ListParams, Api, ResourceExt},
-    ///     runtime::{controller::{Controller, Action}},
+    ///     api::{Api, ResourceExt},
+    ///     runtime::{
+    ///         controller::{Controller, Action},
+    ///         watcher,
+    ///     },
     /// };
     /// use std::{convert::Infallible, io::BufRead, sync::Arc};
     /// let (mut reload_tx, reload_rx) = futures::channel::mpsc::channel(0);
@@ -1709,7 +2244,7 @@
     /// });
     /// Controller::new(
     ///     Api::&lt;ConfigMap&gt;::all(Client::try_default().await.unwrap()),
-    ///     ListParams::default(),
+    ///     watcher::Config::default(),
     /// )
     /// .reconcile_all_on(reload_rx.map(|_| ()))
     /// .run(
@@ -1759,12 +2294,15 @@
     /// # async {
     /// use futures::future::FutureExt;
     /// use k8s_openapi::api::core::v1::ConfigMap;
-    /// use kube::{api::ListParams, Api, Client, ResourceExt};
-    /// use kube_runtime::controller::{Controller, Action};
+    /// use kube::{Api, Client, ResourceExt};
+    /// use kube_runtime::{
+    ///     controller::{Controller, Action},
+    ///     watcher,  
+    /// };
     /// use std::{convert::Infallible, sync::Arc};
     /// Controller::new(
     ///     Api::&lt;ConfigMap&gt;::all(Client::try_default().await.unwrap()),
-    ///     ListParams::default(),
+    ///     watcher::Config::default(),
     /// )
     /// .graceful_shutdown_on(tokio::signal::ctrl_c().map(|_| ()))
     /// .run(
@@ -1883,14 +2421,26 @@
     <span class="kw">use crate</span>::{
         applier,
         reflector::{<span class="self">self</span>, ObjectRef},
-        watcher, Controller,
+        watcher::{<span class="self">self</span>, metadata_watcher, watcher, Event},
+        Controller,
     };
-    <span class="kw">use </span>futures::{pin_mut, StreamExt, TryStreamExt};
+    <span class="kw">use </span>futures::{pin_mut, Stream, StreamExt, TryStreamExt};
     <span class="kw">use </span>k8s_openapi::api::core::v1::ConfigMap;
-    <span class="kw">use </span>kube_client::{core::ObjectMeta, Api};
+    <span class="kw">use </span>kube_client::{core::ObjectMeta, Api, Resource};
+    <span class="kw">use </span>serde::de::DeserializeOwned;
     <span class="kw">use </span>tokio::time::timeout;
 
     <span class="kw">fn </span>assert_send&lt;T: Send&gt;(x: T) -&gt; T {
+        x
+    }
+
+    <span class="comment">// Used to typecheck that a type T is a generic type that implements Stream
+    // and returns a WatchEvent generic over a resource `K`
+    </span><span class="kw">fn </span>assert_stream&lt;T, K&gt;(x: T) -&gt; T
+    <span class="kw">where
+        </span>T: Stream&lt;Item = watcher::Result&lt;Event&lt;K&gt;&gt;&gt; + Send,
+        K: Resource + Clone + DeserializeOwned + std::fmt::Debug + Send + <span class="lifetime">&#39;static</span>,
+    {
         x
     }
 
@@ -1912,13 +2462,27 @@
         );
     }
 
+    <span class="comment">// not #[test] because we don&#39;t want to actually run it, we just want to
+    // assert that it typechecks
+    //
+    // will check return types for `watcher` and `watch_metadata` do not drift
+    // given an arbitrary K that implements `Resource` (e.g ConfigMap)
+    </span><span class="attr">#[allow(dead_code, unused_must_use)]
+    </span><span class="kw">fn </span>test_watcher_stream_type_drift() {
+        assert_stream(watcher(mock_type::&lt;Api&lt;ConfigMap&gt;&gt;(), Default::default()));
+        assert_stream(metadata_watcher(
+            mock_type::&lt;Api&lt;ConfigMap&gt;&gt;(),
+            Default::default(),
+        ));
+    }
+
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>applier_must_not_deadlock_if_reschedule_buffer_fills() {
         <span class="comment">// This tests that `applier` handles reschedule queue backpressure correctly, by trying to flood it with no-op reconciles
         // This is intended to avoid regressing on https://github.com/kube-rs/kube/issues/926
 
         // Assume that we can keep APPLIER_REQUEUE_BUF_SIZE flooded if we have 100x the number of objects &quot;in rotation&quot;
-        // On my (@teozkr)&#39;s 3900X I can reliably trigger this with 10x, but let&#39;s have some safety margin to avoid false negatives
+        // On my (@nightkr)&#39;s 3900X I can reliably trigger this with 10x, but let&#39;s have some safety margin to avoid false negatives
         </span><span class="kw">let </span>items = APPLIER_REQUEUE_BUF_SIZE * <span class="number">50</span>;
         <span class="comment">// Assume that everything&#39;s OK if we can reconcile every object 3 times on average
         </span><span class="kw">let </span>reconciles = items * <span class="number">3</span>;

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["GeneralizedTimeAllowedTimezone","Time"],"struct":["GeneralizedTime","UtcTime"]};

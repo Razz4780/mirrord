@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["BundlePackageType"],"struct":["DirectoryBundle","DirectoryBundleFile","MacOsApplicationBundleBuilder"]};

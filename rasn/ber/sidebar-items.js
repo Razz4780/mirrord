@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["decode","encode"],"mod":["de","enc"],"struct":["Identifier"]};

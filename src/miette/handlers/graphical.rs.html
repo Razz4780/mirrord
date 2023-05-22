@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/miette-5.8.0/src/handlers/graphical.rs`."><title>graphical.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="miette" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../miette/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/miette-5.9.0/src/handlers/graphical.rs`."><title>graphical.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="miette" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../miette/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -903,12 +903,27 @@
 <a href="#903" id="903">903</a>
 <a href="#904" id="904">904</a>
 <a href="#905" id="905">905</a>
+<a href="#906" id="906">906</a>
+<a href="#907" id="907">907</a>
+<a href="#908" id="908">908</a>
+<a href="#909" id="909">909</a>
+<a href="#910" id="910">910</a>
+<a href="#911" id="911">911</a>
+<a href="#912" id="912">912</a>
+<a href="#913" id="913">913</a>
+<a href="#914" id="914">914</a>
+<a href="#915" id="915">915</a>
+<a href="#916" id="916">916</a>
+<a href="#917" id="917">917</a>
+<a href="#918" id="918">918</a>
+<a href="#919" id="919">919</a>
+<a href="#920" id="920">920</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::fmt::{<span class="self">self</span>, Write};
 
 <span class="kw">use </span>owo_colors::{OwoColorize, Style};
 <span class="kw">use </span>unicode_width::UnicodeWidthChar;
 
-<span class="kw">use </span><span class="kw">crate</span>::diagnostic_chain::DiagnosticChain;
+<span class="kw">use </span><span class="kw">crate</span>::diagnostic_chain::{DiagnosticChain, ErrorKind};
 <span class="kw">use </span><span class="kw">crate</span>::handlers::theme::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::protocol::{Diagnostic, Severity};
 <span class="kw">use crate</span>::{LabeledSpan, MietteError, ReportHandler, SourceCode, SourceSpan, SpanContents};
@@ -1005,7 +1020,7 @@ printer.
     <span class="doccomment">/// Whether to include [`Diagnostic::url()`] in the output.
     ///
     /// Disabling this is not recommended, but can be useful for more easily
-    /// reproducable tests, as `url(docsrs)` links are version-dependent.
+    /// reproducible tests, as `url(docsrs)` links are version-dependent.
     </span><span class="kw">pub fn </span>with_urls(<span class="kw-2">mut </span><span class="self">self</span>, urls: bool) -&gt; <span class="self">Self </span>{
         <span class="self">self</span>.links = <span class="kw">match </span>(<span class="self">self</span>.links, urls) {
             (<span class="kw">_</span>, <span class="bool-val">false</span>) =&gt; LinkStyle::None,
@@ -1056,7 +1071,6 @@ printer.
         diagnostic: <span class="kw-2">&amp;</span>(<span class="kw">dyn </span>Diagnostic),
     ) -&gt; fmt::Result {
         <span class="self">self</span>.render_header(f, diagnostic)<span class="question-mark">?</span>;
-        <span class="macro">writeln!</span>(f)<span class="question-mark">?</span>;
         <span class="self">self</span>.render_causes(f, diagnostic)<span class="question-mark">?</span>;
         <span class="kw">let </span>src = diagnostic.source_code();
         <span class="self">self</span>.render_snippets(f, diagnostic, src)<span class="question-mark">?</span>;
@@ -1095,6 +1109,7 @@ printer.
             );
             <span class="macro">write!</span>(header, <span class="string">&quot;{}&quot;</span>, link)<span class="question-mark">?</span>;
             <span class="macro">writeln!</span>(f, <span class="string">&quot;{}&quot;</span>, header)<span class="question-mark">?</span>;
+            <span class="macro">writeln!</span>(f)<span class="question-mark">?</span>;
         } <span class="kw">else if let </span><span class="prelude-val">Some</span>(code) = diagnostic.code() {
             <span class="macro">write!</span>(header, <span class="string">&quot;{}&quot;</span>, code.style(severity_style),)<span class="question-mark">?</span>;
             <span class="kw">if </span><span class="self">self</span>.links == LinkStyle::Text &amp;&amp; diagnostic.url().is_some() {
@@ -1102,6 +1117,7 @@ printer.
                 </span><span class="macro">write!</span>(header, <span class="string">&quot; ({})&quot;</span>, url.style(<span class="self">self</span>.theme.styles.link))<span class="question-mark">?</span>;
             }
             <span class="macro">writeln!</span>(f, <span class="string">&quot;{}&quot;</span>, header)<span class="question-mark">?</span>;
+            <span class="macro">writeln!</span>(f)<span class="question-mark">?</span>;
         }
         <span class="prelude-val">Ok</span>(())
     }
@@ -1158,7 +1174,22 @@ printer.
                 <span class="kw">let </span>opts = textwrap::Options::new(width)
                     .initial_indent(<span class="kw-2">&amp;</span>initial_indent)
                     .subsequent_indent(<span class="kw-2">&amp;</span>rest_indent);
-                <span class="macro">writeln!</span>(f, <span class="string">&quot;{}&quot;</span>, textwrap::fill(<span class="kw-2">&amp;</span>error.to_string(), opts))<span class="question-mark">?</span>;
+                <span class="kw">match </span>error {
+                    ErrorKind::Diagnostic(diag) =&gt; {
+                        <span class="kw">let </span><span class="kw-2">mut </span>inner = String::new();
+
+                        <span class="comment">// Don&#39;t print footer for inner errors
+                        </span><span class="kw">let </span><span class="kw-2">mut </span>inner_renderer = <span class="self">self</span>.clone();
+                        inner_renderer.footer = <span class="prelude-val">None</span>;
+                        inner_renderer.with_cause_chain = <span class="bool-val">false</span>;
+                        inner_renderer.render_report(<span class="kw-2">&amp;mut </span>inner, diag)<span class="question-mark">?</span>;
+
+                        <span class="macro">writeln!</span>(f, <span class="string">&quot;{}&quot;</span>, textwrap::fill(<span class="kw-2">&amp;</span>inner, opts))<span class="question-mark">?</span>;
+                    }
+                    ErrorKind::StdError(err) =&gt; {
+                        <span class="macro">writeln!</span>(f, <span class="string">&quot;{}&quot;</span>, textwrap::fill(<span class="kw-2">&amp;</span>err.to_string(), opts))<span class="question-mark">?</span>;
+                    }
+                }
             }
         }
 
@@ -1192,7 +1223,6 @@ printer.
                     <span class="prelude-val">Some</span>(Severity::Advice) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;Advice: &quot;</span>)<span class="question-mark">?</span>,
                 };
                 <span class="self">self</span>.render_header(f, rel)<span class="question-mark">?</span>;
-                <span class="macro">writeln!</span>(f)<span class="question-mark">?</span>;
                 <span class="self">self</span>.render_causes(f, rel)<span class="question-mark">?</span>;
                 <span class="kw">let </span>src = rel.source_code().or(parent_src);
                 <span class="self">self</span>.render_snippets(f, rel, src)<span class="question-mark">?</span>;

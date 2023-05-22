@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Decoding BER-encoded data."><title>bcder::guide::decode - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="bcder" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../../../bcder/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../../../bcder/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2 class="location"><a href="#">Module decode</a></h2><div class="sidebar-elems"></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Module <a href="../../index.html">bcder</a>::<wbr><a href="../index.html">guide</a>::<wbr><a class="mod" href="#">decode</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../../../src/bcder/guide/decode.rs.html#1-114">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Decoding BER-encoded data.</p>
+<p><em>Note: This guide is still work in progress and will be extended.</em></p>
+<p>Data encoded in BER is a stream of nested values for which the length
+may or may not be known. Primitive values, for which the length <em>is</em>
+always known, contain a sequence of octets representing a value of
+a certain type. Constructed values are a sequence of other values. These
+values may either have a pre-determined length or a bounded by a special
+value marking the end of the sequence. The overall stream of data can be
+viewed as the content of a constructed value bounded by the end of the
+stream.</p>
+<p>In the <em>ber</em> crate, the content of a value is parsed through functions.
+These functions are given a mutable reference to the value’s content and
+are tasked with reading and processing all the content of the value. It
+does so by calling methods on the content value. Some of these methods
+dive into nested values. They require their own parsing functions and
+take them as function arguments such as closures.</p>
+<p>An example will make this concept more clear. Let’s say we have the
+following ASN.1 specification:</p>
+<div class="example-wrap"><pre class="language-text"><code>EncapsulatedContentInfo  ::=  SEQUENCE  {
+    eContentType ContentType,
+    eContent [0] EXPLICIT OCTET STRING OPTIONAL
+}
+
+ContentType  ::=  OBJECT IDENTIFIER
+</code></pre></div>
+<p>Using the types provided by the <em>ber</em> crate for object identifiers and
+octet strings, this definition is easily mapped into a Rust struct:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>bcder::{Oid, OctetString};
+
+<span class="kw">pub struct </span>EncapsulatedContentInfo {
+    content_type: Oid,
+    content: <span class="prelude-ty">Option</span>&lt;OctetString&gt;,
+}</code></pre></div>
+<p>By convention, the decoder function is called <code>take_from</code>. It looks like
+this:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>bcder::Tag;
+<span class="kw">use </span>bcder::decode;
+<span class="kw">use </span>bcder::decode::DecodeError;
+
+<span class="kw">impl </span>EncapsulatedContentInfo {
+    <span class="kw">pub fn </span>take_from&lt;S: decode::Source&gt;(
+        cons: <span class="kw-2">&amp;mut </span>decode::Constructed&lt;S&gt;
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, DecodeError&lt;S::Error&gt;&gt; {
+        cons.take_sequence(|cons| {
+            <span class="prelude-val">Ok</span>(EncapsulatedContentInfo {
+                content_type: Oid::take_from(cons)<span class="question-mark">?</span>,
+                content: cons.take_opt_constructed_if(Tag::ctx(<span class="number">0</span>), |cons| {
+                    OctetString::take_from(cons)
+                })<span class="question-mark">?
+            </span>})
+        })
+    }
+}</code></pre></div>
+<p><em>TODO: Elaborate.</em></p>
+<p>Some types are used with an implicit tag, i.e., the encoding uses
+a different tag than what would normally it would. For these types, a
+function should be provided that only decodes the content. Depending on
+the encoding used for the type, this function should be <code>from_primitive</code>,
+<code>from_constructed</code>, or <code>from_content</code> for types that always use
+primitive encoding, always constructed encoding, or can appear in both
+encodings, respectively.</p>
+<p>As our example type always uses constructed encoding, its content
+decoder would look like this:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>bcder::Tag;
+<span class="kw">use </span>bcder::decode;
+<span class="kw">use </span>bcder::decode::DecodeError;
+
+<span class="kw">impl </span>EncapsulatedContentInfo {
+    <span class="kw">pub fn </span>from_constructed&lt;S: decode::Source&gt;(
+        cons: <span class="kw-2">&amp;mut </span>decode::Constructed&lt;S&gt;
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, DecodeError&lt;S::Error&gt;&gt; {
+        <span class="prelude-val">Ok</span>(EncapsulatedContentInfo {
+            content_type: Oid::take_from(cons)<span class="question-mark">?</span>,
+            content: cons.take_opt_constructed_if(Tag::ctx(<span class="number">0</span>), |cons| {
+                OctetString::take_from(cons)
+            })<span class="question-mark">?
+        </span>})
+    }
+}</code></pre></div>
+<p><em>TODO: Elaborate.</em></p>
+</div></details></section></div></main></body></html>

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["applier","finalizer","reflector","scheduler","watcher"],"mod":["controller","events","finalizer","reflector","scheduler","utils","wait","watcher"],"struct":["Controller"],"trait":["WatchStreamExt"]};
+window.SIDEBAR_ITEMS = {"fn":["applier","finalizer","metadata_watcher","reflector","scheduler","watcher"],"mod":["controller","events","finalizer","reflector","scheduler","utils","wait","watcher"],"struct":["Controller"],"trait":["WatchStreamExt"]};

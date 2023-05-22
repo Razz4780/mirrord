@@ -1,0 +1,161 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Rasn"><title>rasn - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="rasn" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../rasn/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../rasn/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2 class="location"><a href="#">Crate rasn</a></h2><div class="sidebar-elems"><ul class="block"><li class="version">Version 0.6.1</li><li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#reexports">Re-exports</a></li><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li><li><a href="#derives">Derive Macros</a></li></ul></section></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">rasn</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../src/rasn/lib.rs.html#1-30">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><h2 id="rasn"><a href="#rasn">Rasn</a></h2>
+<p><a href="https://crates.io/crates/rasn"><img src="https://img.shields.io/crates/d/rasn.svg" alt="crates.io" /></a>
+<a href="https://github.com/XAMPPRocky/rasn/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22"><img src="https://img.shields.io/github/issues/XAMPPRocky/rasn/help%20wanted?color=green" alt="Help Wanted" /></a>
+<a href="https://github.com/XAMPPRocky/tokei"><img src="https://tokei.rs/b1/github/XAMPPRocky/rasn?category=code" alt="Lines Of Code" /></a>
+<a href="https://docs.rs/rasn/"><img src="https://docs.rs/rasn/badge.svg" alt="Documentation" /></a></p>
+<p>Welcome to <code>rasn</code> (pronounced “raisin”), a safe <code>#[no_std]</code> ASN.1 codec framework.
+That enables you to safely create, share, and handle ASN.1 data types from and to different encoding rules. If you are unfamiliar with ASN.1 and encoding formats like BER/DER, I would recommend reading <a href="https://letsencrypt.org/docs/a-warm-welcome-to-asn1-and-der/"><em>“A Warm Welcome to ASN.1 and DER”</em></a> by Let’s Encrypt as a quick introduction before continuing. In short it is an “Interface Description Language” (and data model) with a set of encoding formats (called rules) for that model. It was originally designed in the late 1980s and is used throughout the industry especially in telecommunications and cryptography.</p>
+<h3 id="features"><a href="#features">Features</a></h3><h4 id="abstract-codec-data-model"><a href="#abstract-codec-data-model">Abstract Codec Data Model</a></h4>
+<p>There are quite a few existing ASN.1 related Rust crates already, however they are currently specific to a single format or even a single standard, this makes it hard to share and re-use standards that are specified in ASN.1. Now with <code>rasn</code>’s abstract model you can build and share ASN.1 data types as crates that work with any encoder or decoder regardless of the underlying encoding rules, whether it’s BER, CER, DER, or your own custom encoding.</p>
+<h4 id="no_std-support"><a href="#no_std-support"><code>#[no_std]</code> Support</a></h4>
+<p>Rasn is entirely <code>#[no_std]</code>, so you can share the same ASN.1 implementation on any Rust target platform that can support <code>alloc</code>.</p>
+<h4 id="rich-data-types"><a href="#rich-data-types">Rich Data Types</a></h4>
+<p>Rasn currently has support for nearly all of ASN.1’s data types. <code>rasn</code> uses popular community libraries such as <code>bitvec</code>, <code>bytes</code>, and <code>chrono</code> for some of its data types as well as providing a couple of its own. Check out the <a href="http://docs.rs/rasn/0.4.1/rasn/types/index.html"><code>types</code></a> module for what’s currently available.</p>
+<h4 id="safe-ber-cer-and-der-codecs"><a href="#safe-ber-cer-and-der-codecs">Safe BER, CER, and DER Codecs</a></h4>
+<p>Included with the framework is a implementation of the X.690 standard also known as the Basic Encoding Rules, Canonical Encoding Rules, and Distinguished Encoding Rules codecs. The encoder and decoder have been written in 100% safe Rust and fuzzed with <a href="https://aflplus.plus">American Fuzzy Lop Plus Plus</a> to ensure that the decoder correctly handles random input, and if valid that the encoder can correctly re-encode that value.</p>
+<h4 id="rfc-implementations"><a href="#rfc-implementations">RFC implementations</a></h4>
+<p>Rasn also provides implementations for a number of IETF RFCs using the <code>rasn</code>
+framework for use out of the box. These crates provide strongly typed
+definitions for the necessary data types. Like <code>rasn</code> they are <code>#[no_std]</code>,
+as well as being transport layer and encoding rule agnostic.</p>
+<ul>
+<li><a href="https://docs.rs/rasn-cms"><strong>CMS:</strong> Cryptographic Message Syntax</a></li>
+<li><a href="https://docs.rs/rasn-kerberos"><strong>Kerberos</strong> Authentication Framework</a></li>
+<li><a href="https://docs.rs/rasn-ldap"><strong>LDAP:</strong> Lightweight Directory Access Protocol</a></li>
+<li><a href="https://docs.rs/rasn-mib"><strong>MIB-II:</strong> Management of Information Base</a></li>
+<li><a href="https://docs.rs/rasn-ocsp"><strong>OCSP:</strong> Online Certificate Status Protocol</a></li>
+<li><a href="https://docs.rs/rasn-pkix"><strong>PKIX:</strong> Public Key Infrastructure</a></li>
+<li><a href="https://docs.rs/rasn-smi"><strong>SMI:</strong> Structure of Management Information</a></li>
+<li><a href="https://docs.rs/rasn-snmp"><strong>SNMP:</strong> Simple Network Management Protocol</a></li>
+<li><a href="https://docs.rs/rasn-smime"><strong>S/MIME:</strong> Secure/Multipurpose Internet Mail Extensions</a></li>
+</ul>
+<h4 id="powerful-derive-macros"><a href="#powerful-derive-macros">Powerful Derive Macros</a></h4>
+<p>Easily model your structs and enums with derive equivalents of all of the traits. These macros provide a automatic implementation that ensures your model is a valid ASN.1 type at <em>compile-time</em>. To explain that though, first we have to explain…</p>
+<h3 id="how-it-works"><a href="#how-it-works">How It Works</a></h3>
+<p>The codec API has been designed for ease of use, safety, and being hard to <em>misuse</em>. The most common mistakes are around handling the length and ensuring it’s correctly encoded and decoded. In <code>rasn</code> this is completely abstracted away letting you focus on the abstract model. Let’s look at what decoding a simple custom <code>SEQUENCE</code> type looks like.</p>
+<div class="example-wrap"><pre class="language-asn1"><code>Person ::= SEQUENCE {
+  age INTEGER,
+  name UTF8String
+}
+</code></pre></div>
+<p>Which we want to map to the following equivalent Rust code.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">struct </span>Person {
+    age: rasn::types::Integer,
+    name: String, <span class="comment">// or rasn::types::Utf8String
+</span>}</code></pre></div>
+<h4 id="implementing-the-traits"><a href="#implementing-the-traits">Implementing The Traits</a></h4>
+<p>When modelling an ASN.1 data type, there are three traits we’ll need to implement. <code>Decode</code> and <code>Encode</code> for converting to and from encoding rules, and the shared <code>AsnType</code> trait; which defines some associated data needed to be given to the encoder and decoder. Currently the only thing we have define is the tag to use to identify our type.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>rasn::{AsnType, Tag};
+
+<span class="kw">impl </span>AsnType <span class="kw">for </span>Person {
+    <span class="comment">// Default tag for sequences.
+    </span><span class="kw">const </span>TAG: Tag = Tag::SEQUENCE;
+}</code></pre></div>
+<p>Next is the <code>Decode</code> and <code>Encode</code> traits. These are mirrors of each other and both have one provided method (<code>decode</code>/<code>encode</code>) and one required method (<code>decode_with_tag</code>/<code>encode_with_tag</code>). Since in ASN.1 nearly every type can be implicitly tagged allowing anyone to override the tag associated with the type, having <code>*_with_tag</code> as a required method requires the implementer to correctly handle this case, and the provided methods simply calls <code>*_with_tag</code> with the type’s associated <code>AsnType::TAG</code>. Let’s look at what the codec implementation of <code>Person</code> looks like.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>rasn::{Decode, Decoder, Encode, Encoder, Tag, types::{Integer, Utf8String}};
+
+<span class="kw">impl </span>Decode <span class="kw">for </span>Person {
+    <span class="kw">fn </span>decode_with_tag&lt;D: Decoder&gt;(decoder: <span class="kw-2">&amp;mut </span>D, tag: Tag) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, D::Error&gt; {
+        <span class="comment">// Accepts a closure that decodes the contents of the sequence.
+        </span>decoder.decode_sequence(tag, |decoder| {
+            <span class="kw">let </span>age = Integer::decode(decoder)<span class="question-mark">?</span>;
+            <span class="kw">let </span>name = Utf8String::decode(decoder)<span class="question-mark">?</span>;
+            <span class="prelude-val">Ok</span>(<span class="self">Self </span>{ age, name })
+        })
+    }
+}
+
+<span class="kw">impl </span>Encode <span class="kw">for </span>Person {
+    <span class="kw">fn </span>encode_with_tag&lt;E: Encoder&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, encoder: <span class="kw-2">&amp;mut </span>E, tag: Tag) -&gt; <span class="prelude-ty">Result</span>&lt;(), E::Error&gt; {
+        <span class="comment">// Accepts a closure that encodes the contents of the sequence.
+        </span>encoder.encode_sequence(tag, |encoder| {
+            <span class="self">self</span>.age.encode(encoder)<span class="question-mark">?</span>;
+            <span class="self">self</span>.name.encode(encoder)<span class="question-mark">?</span>;
+            <span class="prelude-val">Ok</span>(())
+        })<span class="question-mark">?</span>;
+
+        <span class="prelude-val">Ok</span>(())
+    }
+}</code></pre></div>
+<p>That’s it!  We’ve just created a new ASN.1 that be encoded and decoded to BER, CER, and DER; and nowhere did we have to check the tag, the length, or whether the string was primitive or constructed encoded. All those nasty encoding rules details are completely abstracted away so your type only has handle how to map to and from ASN.1’s data model.</p>
+<p>With all the actual conversion code isolated to the codec implementations you can know that your model is always safe to use. The API has also been designed to prevent you from making common logic errors that can lead to invalid encoding. For example; if we look back our <code>Encode</code> implementation, and what if we forgot to use the encoder we were given in <code>encode_sequence</code> and tired to use the parent instead?</p>
+<div class="example-wrap"><pre class="language-text"><code>error[E0501]: cannot borrow `*encoder` as mutable because previous closure requires unique access
+   --&gt; tests/derive.rs:122:9
+    |
+122 |           encoder.encode_sequence(tag, |sequence| {
+    |           ^       ---------------      ---------- closure construction occurs here
+    |           |       |
+    |  _________|       first borrow later used by call
+    | |
+123 | |             self.age.encode(encoder)?;
+    | |                             ------- first borrow occurs due to use of `encoder` in closure
+124 | |             self.name.encode(sequence)?;
+125 | |             Ok(())
+126 | |         })?;
+    | |__________^ second borrow occurs here
+
+error[E0500]: closure requires unique access to `encoder` but it is already borrowed
+   --&gt; tests/derive.rs:122:38
+    |
+122 |         encoder.encode_sequence(tag, |sequence| {
+    |         ------- ---------------      ^^^^^^^^^^ closure construction occurs here
+    |         |       |
+    |         |       first borrow later used by call
+    |         borrow occurs here
+123 |             self.age.encode(encoder)?;
+    |                             ------- second borrow occurs due to use of `encoder` in closure
+
+</code></pre></div>
+<p>Our code fails to compile! Which, in this case is great, there’s no chance that our contents will accidentally be encoded in the wrong sequence because we forgot to change the name of a variable. These ownership semantics also mean that an <code>Encoder</code> can’t accidentally encode the contents of a sequence multiple times in their implementation.  Let’s see how we can try to take this even further.</p>
+<h4 id="compile-safe-asn1-with-macros"><a href="#compile-safe-asn1-with-macros">Compile-Safe ASN.1 With Macros</a></h4>
+<p>So far we’ve shown how rasn’s API takes steps to be safe and protect from accidentally creating an invalid model. However, it’s often hard to cover everything in an imperative API. Something that is important to understand about ASN.1 that isn’t obvious in the above examples is that; in ASN.1, all types can be identified by a tag (essentially two numbers e.g. <code>INTEGER</code>’s tag is <code>0, 2</code>). Field and variant names are not transmitted in most encoding rules, so this tag is also used to identify fields or variants in a <code>SEQUENCE</code> or <code>CHOICE</code>. This means that every that in a ASN.1 struct or enum every field and variant  <strong>must have</strong> a distinct tag for the whole type to be considered valid. For example ; If we changed <code>age</code> in <code>Person</code> to be a <code>String</code> like below it would be invalid ASN.1 even though it compiles and runs correctly, we have to either use a different type or override <code>age</code>’s tag to be distinct from <code>name</code>’s. When implementing the <code>AsnType</code> trait yourself this requirement must checked by manually, however as we’ll see you generally won’t need to do that.</p>
+<p>Included with rasn is a set of derive macros that enable you to have your ASN.1 model implementation implemented declaratively. The <code>Encode</code> and <code>Decode</code> macros will essentially auto-generate the implementations we showed earlier, but the real magic is the <code>AsnType</code> derive macro. Thanks to the <code>static-assertations</code> crate and recent developments in <code>const fn</code>; the <code>AsnType</code> derive will not only generate your <code>AsnType</code> implementation, it will also generate a check that asserts that every field or variant has a distinct tag at <em>compile-time</em>. This means now if for some reason we made a change to one of the types in person, we don’t have re-check that our model is still valid, the compiler takes care of that for us.</p>
+<div class="example-wrap"><pre class="language-no_compile"><code>// Invalid
+#[derive(rasn::AsnType)]
+struct Person {
+    age: Option&lt;String&gt;,
+    name: Option&lt;String&gt;,
+}
+</code></pre></div>
+<p>We’ll now get the following error trying to compile the above definition.</p>
+<div class="example-wrap"><pre class="language-text"><code>error[E0080]: evaluation of constant value failed
+   --&gt; tests/derive.rs:146:10
+    |
+146 | #[derive(rasn::AsnType)]
+    |          ^^^^^^^^^^^^^ the evaluated program panicked at &#39;Person&#39;s fields is not a valid order of ASN.1 tags, ensure that your field&#39;s tags and OPTIONAL
+s are correct.&#39;, tests/derive.rs:146:10
+    |
+    = note: this error originates in the macro `$crate::panic::panic_2015` (in Nightly builds, run with -Z macro-backtrace for more info)
+</code></pre></div>
+<p>Validating your model at compile-time enables you to work on ASN.1 code without fear that you’re unintentionally changing something in the background. I bet you’re wondering now though, how we are supposed to have a struct with two strings for fields? The answer is thankfully pretty simple, you just add <code>#[rasn(tag)]</code> attribute to override the tags of one or more of the types. However we can actually go further, because in ASN.1 there’s the concept of having <code>AUTOMATIC TAGS</code> which essentially tells your ASN.1 compiler to automatically generate distinct tags for your ASN.1 definition. Now with rasn you can do that in Rust! Applying <code>#[rasn(automatic_tags)]</code> to the container  automatically generate tags will apply the same automatic tagging transformation you’d expect from an ASN.1 compiler.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>rasn::AsnType;
+
+<span class="comment">// Valid
+</span><span class="attr">#[derive(AsnType)]
+</span><span class="kw">struct </span>Person {
+    <span class="attr">#[rasn(tag(context, <span class="number">0</span>))] </span><span class="comment">// or just #[rasn(tag(0))]
+    </span>age: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    name: <span class="prelude-ty">Option</span>&lt;String&gt;,
+}
+
+<span class="comment">// Also valid
+</span><span class="attr">#[derive(AsnType)]
+#[rasn(automatic_tags)]
+</span><span class="kw">struct </span>Person2 {
+    age: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    name: <span class="prelude-ty">Option</span>&lt;String&gt;,
+}</code></pre></div>
+<h4 id="whats-missing--whats-next"><a href="#whats-missing--whats-next">What’s Missing &amp; What’s Next?</a></h4>
+<p>While rasn is starting out relatively full featured, there are still plenty of missing features and types. The main limitation that exists currently, is the lack of support for constraints. In ASN.1 you can arbitrarily put constraints on types (e.g. array always of length 4, or a number between 1–10). There are encoding rules that take advantage of these constraints to save space, and you can’t currently communicate those constraints to a codec in a safe abstract fashion. So this means for example you wouldn’t be able to implement a Packed Encoding Rules (PER) codec that handles constraints correctly. I want to eventually support constraints and PER directly, but it still requires a lot of design work to be thought through first.</p>
+<h3 id="disclaimer"><a href="#disclaimer">Disclaimer</a></h3>
+<p>The software is provided “as is” and the authors disclaim all warranties with regard to this software including all implied warranties of merchant-ability and fitness. In no event shall the authors be liable for any special, direct, indirect, or consequential damages or any damages whatsoever resulting from loss of use, data or profits, whether in an action of contract, negligence or other tortuous action, arising out of or in connection with the use or performance of this software.</p>
+</div></details><h2 id="reexports" class="small-section-header"><a href="#reexports">Re-exports</a></h2><ul class="item-table"><li><div class="item-name" id="reexport.Decode"><code>pub use self::de::<a class="trait" href="trait.Decode.html" title="trait rasn::Decode">Decode</a>;</code></div></li><li><div class="item-name" id="reexport.Encode"><code>pub use self::enc::<a class="trait" href="trait.Encode.html" title="trait rasn::Encode">Encode</a>;</code></div></li><li><div class="item-name" id="reexport.AsnType"><code>pub use self::types::<a class="trait" href="trait.AsnType.html" title="trait rasn::AsnType">AsnType</a>;</code></div></li></ul><h2 id="modules" class="small-section-header"><a href="#modules">Modules</a></h2><ul class="item-table"><li><div class="item-name"><a class="mod" href="ber/index.html" title="mod rasn::ber">ber</a></div><div class="desc docblock-short">Basic Encoding Rules</div></li><li><div class="item-name"><a class="mod" href="cer/index.html" title="mod rasn::cer">cer</a></div><div class="desc docblock-short">Canonical Encoding Rules</div></li><li><div class="item-name"><a class="mod" href="de/index.html" title="mod rasn::de">de</a></div><div class="desc docblock-short">Generic ASN.1 decoding framework.</div></li><li><div class="item-name"><a class="mod" href="der/index.html" title="mod rasn::der">der</a></div><div class="desc docblock-short">Distinguished Encoding Rules</div></li><li><div class="item-name"><a class="mod" href="enc/index.html" title="mod rasn::enc">enc</a></div><div class="desc docblock-short">Generic ASN.1 encoding framework.</div></li><li><div class="item-name"><a class="mod" href="prelude/index.html" title="mod rasn::prelude">prelude</a></div><div class="desc docblock-short">A prelude containing the codec traits and all types defined in the <a href="types/index.html" title="mod rasn::types"><code>types</code></a>
+module.</div></li><li><div class="item-name"><a class="mod" href="types/index.html" title="mod rasn::types">types</a></div><div class="desc docblock-short">ASN.1 Data Types</div></li></ul><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.Tag.html" title="struct rasn::Tag">Tag</a></div><div class="desc docblock-short">An abstract representation of an ASN.1 tag that uniquely identifies a type
+within a ASN.1 module for codecs.</div></li></ul><h2 id="enums" class="small-section-header"><a href="#enums">Enums</a></h2><ul class="item-table"><li><div class="item-name"><a class="enum" href="enum.TagTree.html" title="enum rasn::TagTree">TagTree</a></div><div class="desc docblock-short">The root or node in tree reprensenting all of potential tags in a ASN.1 type.
+For most types this is only ever one level deep, except for CHOICE enums
+which will contain a set of nodes, that either point to a <code>Leaf</code> or another
+level of <code>Choice</code>.</div></li></ul><h2 id="traits" class="small-section-header"><a href="#traits">Traits</a></h2><ul class="item-table"><li><div class="item-name"><a class="trait" href="trait.AsnType.html" title="trait rasn::AsnType">AsnType</a></div><div class="desc docblock-short">A trait representing any type that can represented in ASN.1.</div></li><li><div class="item-name"><a class="trait" href="trait.Decode.html" title="trait rasn::Decode">Decode</a></div><div class="desc docblock-short">A <strong>data type</strong> that can decoded from any ASN.1 format.</div></li><li><div class="item-name"><a class="trait" href="trait.Decoder.html" title="trait rasn::Decoder">Decoder</a></div><div class="desc docblock-short">A <strong>data format</strong> decode any ASN.1 data type.</div></li><li><div class="item-name"><a class="trait" href="trait.Encode.html" title="trait rasn::Encode">Encode</a></div><div class="desc docblock-short">A <strong>data type</strong> that can be encoded to a ASN.1 data format.</div></li><li><div class="item-name"><a class="trait" href="trait.Encoder.html" title="trait rasn::Encoder">Encoder</a></div><div class="desc docblock-short">A <strong>data format</strong> encode any ASN.1 data type.</div></li></ul><h2 id="derives" class="small-section-header"><a href="#derives">Derive Macros</a></h2><ul class="item-table"><li><div class="item-name"><a class="derive" href="derive.AsnType.html" title="derive rasn::AsnType">AsnType</a></div><div class="desc docblock-short">An automatic derive of the <code>AsnType</code> trait.</div></li><li><div class="item-name"><a class="derive" href="derive.Decode.html" title="derive rasn::Decode">Decode</a></div><div class="desc docblock-short">An automatic derive of the <code>Decode</code> trait.</div></li><li><div class="item-name"><a class="derive" href="derive.Encode.html" title="derive rasn::Encode">Encode</a></div><div class="desc docblock-short">An automatic derive of the <code>Encode</code> trait.</div></li></ul></section></div></main></body></html>

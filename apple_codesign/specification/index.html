@@ -1,0 +1,262 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Apple code signing technical specifications"><title>apple_codesign::specification - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="apple_codesign" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../../apple_codesign/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../../apple_codesign/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2 class="location"><a href="#">Module specification</a></h2><div class="sidebar-elems"></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Module <a href="../index.html">apple_codesign</a>::<wbr><a class="mod" href="#">specification</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../../src/apple_codesign/specification.rs.html#5-324">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Apple code signing technical specifications</p>
+<p>This document outlines how Apple code signing is implemented at a technical
+level.</p>
+<h2 id="high-level-overview"><a href="#high-level-overview">High Level Overview</a></h2>
+<p>Mach-O binaries embed an optional binary blob containing code signing
+metadata. This binary blob contains content digests of various aspects
+of the binary (such as the executable code) as well as an optional
+cryptographic signature which effectively attests to the digested
+content of the binary.</p>
+<p>At run-time, stored digests are used to help ensure file integrity.</p>
+<p>The cryptographic signature is used to verify the digests haven’t
+been tampered with as well as to validate trust with the entity that
+produced that signature.</p>
+<p>See
+<a href="https://developer.apple.com/library/archive/technotes/tn2206/_index.html#//apple_ref/doc/uid/DTS40007919">https://developer.apple.com/library/archive/technotes/tn2206/_index.html#//apple_ref/doc/uid/DTS40007919</a>
+for an additional overview of how code signing works on Apple platforms.</p>
+<h2 id="the-important-data-structures"><a href="#the-important-data-structures">The Important Data Structures</a></h2>
+<p>Mach-O is the executable binary format used by Apple platforms. A
+Mach-O binary contains (among other things), a series of named <em>segments</em>
+holding arbitrary data and <em>load commands</em> instructing the loader how
+to load/execute the binary.</p>
+<p>Code signing data is embedded within the <code>__LINKEDIT</code> segment in a Mach-O
+binary. An <code>LC_CODE_SIGNATURE</code> load command identifies the offsets of
+code signing data within <code>__LINKEDIT</code>.</p>
+<p>The code signing data within a <code>__LINKEDIT</code> segment is itself a collection
+of sub-records. A <em>SuperBlob</em> header defines the signing data format, the
+length of data to follow, and the number of sub-sections, or <em>Blob</em> within.
+Each <em>Blob</em> occupies a defined <em>slot</em>. <em>Slots</em> are effectively well-known
+pieces of signing data. These include a <em>Code Directory</em>, <em>Entitlements</em>,
+and a <em>Signature</em>, among others. See the <a href="../embedded_signature/enum.CodeSigningSlot.html" title="enum apple_codesign::embedded_signature::CodeSigningSlot">crate::CodeSigningSlot</a>
+enumeration for the known defined slots.</p>
+<p>Each <em>Blob</em> contains its own header magic effectively identifying the
+content type within and how bytes should be interpreted. The magic
+values are independent of the <em>slot</em> type. However, there appears to be
+a relationship between the two. For example, the code directory slot
+will have header magic identifying the payload as a code directory structure.</p>
+<p>The <em>Code Directory</em> blob/slot defines information about the binary
+being signed. There are many fields to this data structure. But the most
+important ones to understand are the hashes / content digests. The <em>Code
+Directory</em> contains digests (e.g. SHA-256) of various content in the binary,
+such as Mach-O segment data (i.e. the executable code) and other blobs/slots.</p>
+<p>The <em>Entitlements</em> blob/slot contains a <em>plist</em>.</p>
+<p>Additional file-based resources can also be signed. These are referred to as
+<em>Code Resources</em>. <em>Code Resources</em> are captured in a
+<code>_CodeSignature/CodeResources</code> XML plist file in the bundle and the digest
+of this file is captured by the <em>Code Directory</em>. There is a defined
+<code>RESOURCEDIR</code> slot to hold its digest. However, there is no explicit
+magic constant for resources, implying that this data can only be provided
+externally and not embedded within the <em>SuperBlob</em>.</p>
+<p>The <em>Signature</em> blob/slot contains a Cryptographic Message Syntax (CMS)
+RFC 5652 defined <code>SignedData</code> BER encoded ASN.1 data structure. CMS is
+a specification for cryptographically signing arbitrary content. The
+<code>SignedData</code> structure contains an additional set of <em>signed attributes</em>
+(think of it as arbitrary extra content to sign), a cryptographic signature
+of the signed data, and likely the X.509 certificate of the signer and its
+chain of certificate signers.</p>
+<h2 id="how-signing-works"><a href="#how-signing-works">How Signing Works</a></h2>
+<p>Code signing logically consists of the following steps:</p>
+<ol>
+<li>Collecting content that needs to be signed/attested/trusted.</li>
+<li>Computing content digests.</li>
+<li>Cryptographically signing a message derived from the content digests.</li>
+<li>Adding signature data to Mach-O binary.</li>
+</ol>
+<h3 id="collecting-content"><a href="#collecting-content">Collecting Content</a></h3>
+<p>Embedded code signatures support signing a myriad of data formats.
+These include but aren’t limited to:</p>
+<ul>
+<li>The Mach-O data outside the signature data in the <code>__LINKEDIT</code> segment.</li>
+<li>Requested entitlements for the binary.</li>
+<li>A code requirement statement / expression.</li>
+<li>Resource files.</li>
+</ul>
+<p>If your binary is already part of a <em>bundle</em>, content collection can
+occur automatically using heuristics. e.g. the <code>Contents/Resources</code>
+directory contains additional files whose content should be signed.</p>
+<h3 id="computing-content-digests"><a href="#computing-content-digests">Computing Content Digests</a></h3>
+<p>Once content has been assembled, a series of digests are computed.</p>
+<p>For the code digests, the Mach-O segments are iterated. The raw segment
+data is chunked into <em>pages</em> and each hashed separately. This is to allow
+code data to be lazily hashed as a page is loaded into the kernel.
+(Otherwise you would have to hash often megabytes on process start, which
+would add overhead.)</p>
+<p>Code hashes are a bit nuanced. A hash is emitted at segment boundaries. i.e.
+hashes don’t span across multiple segments. The <code>__PAGEZERO</code> segment is
+not hashed. The <code>__LINKEDIT</code> segment is hashed, but only up to the start
+offset of the embedded signature data, if present.</p>
+<p>Other content (such as the entitlements, code requirement statement, and
+resource files) are serialized to <em>Blob</em> data. The mechanism for this
+varies by type. e.g. the entitlements plist is embedded as UTF-8
+data and the code requirement statement is serialized into an expression
+tree. The resulting <em>Blob</em> is then digested.</p>
+<p>The content digests are then assembled into a <em>Code Directory</em> data
+structure. Digests of code data are referred to to <em>code slots</em> and
+digests of other entitles (namely <em>Blob</em> data) occupy <em>special slots</em>.
+The <em>Code Directory</em> also contains important other information, such
+as describing the hash/digest mechanism used, the page size for code
+hashing, and executable limits for the binary.</p>
+<p>The content of the <em>Code Directory</em> serialized to a <em>Blob</em> is then itself
+digested. This value is known as the <em>code directory hash</em>.</p>
+<h3 id="cryptographic-signing"><a href="#cryptographic-signing">Cryptographic Signing</a></h3>
+<p>A cryptographic signature is produced using the Cryptographic Message
+Syntax (CMS) signing mechanism.</p>
+<p>From a high level, CMS takes as inputs:</p>
+<ul>
+<li>Optional content to sign.</li>
+<li>Optional set of additional attributes (effectively key-value data) to sign.</li>
+<li>A signing key.</li>
+<li>Information about the signing key (including its CA chain).</li>
+</ul>
+<p>From these, CMS will produce a BER encoded ASN.1 blob containing the
+cryptographic signature and sufficient metadata to verify it (such
+as the signed attributes and information about the signing certificate).</p>
+<p>In CMS speak, the <em>encapsulated content</em> being signed is not defined.
+However, the <code>message-digest</code> signed attribute is the digest of the
+<em>Code Directory</em> <em>Blob</em> data. (This appears to be not compliant with RFC 5652,
+which says <em>encapsulated content</em> should be present in the <em>SignedObject</em>
+structure. Omitting the data is likely done to avoid redundant storage
+of this data in the Mach-O binary and/or to simplify parsing, as <em>Code
+Directory</em> data wouldn’t be embedded within an ASN.1 stream.)</p>
+<p>In addition, there is a signed attribute for the signing time. There is
+also an XML plist defining an array of base64 encoded <em>Code Directory</em>
+hashes. There are multiple <em>slots</em> in a <em>SuperBlob</em> for code directories
+and the array in the signed XML plist appears to allow hashes of all of
+them to be recorded.</p>
+<p>(TODO it isn’t clear what the signed content is when there are multiple
+<em>Code Directory</em> slots in use. Presumably <code>message-digest</code> is computed
+over all of them.)</p>
+<p>CMS will concatenate the <em>Code Directory</em> data with the DER serialized
+ASN.1 structures defining the <em>signed attributes</em>. This becomes the
+<em>plaintext</em> message to be signed.</p>
+<p>This <em>plaintext</em> message is combined with a private key and cryptographically
+signed (likely using RSA). This produces a <em>signature</em>.</p>
+<p>CMS then serializes the <em>signature</em>, <em>signed attributes</em>, signer
+certificate info, and other important metadata to a BER encoded ASN.1
+data structure. This raw slice of bytes is referred to as the
+<em>embedded signature</em>.</p>
+<h3 id="adding-signature-data-to-mach-o-binary"><a href="#adding-signature-data-to-mach-o-binary">Adding Signature Data to Mach-O Binary</a></h3>
+<p>The above steps have already materialized several <em>Blob</em> data
+structures. The individual pieces like the entitlements and code requirement
+<em>Blob</em> were materialized in order to compute their hashes for the <em>Code
+Directory</em> data structure. And the <em>Code Directory</em> <em>Blob</em> was constructed
+so it could be signed by CMS.</p>
+<p>The <em>embedded signature</em> data produced by CMS is assembled into a <em>Blob</em>
+structure. At this point, we have all the <em>Blob</em> ready.</p>
+<p>All the <em>Blobs</em> are assembled together into a <em>SuperBlob</em>. The
+<em>SuperBlob</em> is then written to the <code>__LINKEDIT</code> segment of the
+Mach-O binary. An appropriate <code>LC_CODE_SIGNATURE</code> load command is
+also written to the Mach-O binary to instruct where the <em>SuperBlob</em>
+data resides.</p>
+<p>The <code>__LINKEDIT</code> segment is the last segment in the Mach-O binary and
+the <em>SuperBlob</em> often occupies the final bytes of the <code>__LINKEDIT</code>
+segment. So in many cases adding code signature data to a Mach-O
+requires an optional truncation to remove the existing signature then
+file appends for the <code>__LINKEDIT</code> data.</p>
+<p>However, insertion or removal of <code>LC_CODE_SIGNATURE</code> will require
+rewriting the entire file and adjusting offsets in various Mach-O
+data structures accordingly. In many cases, an existing code signature
+can be replaced by truncating the <code>__LINKEDIT</code> section, writing the
+replacement data, and updating sizes/offsets in-place in the segments
+index and <code>LC_CODE_SIGNATURE</code> load command.</p>
+<p>Note that there is a chicken-and-egg problem related to writing the
+Mach-O binary and computing the digests of that binary for the <em>Code
+Directory</em>! The <em>Code Directory</em> needs to compute a digest over the
+content of the Mach-O file up until the signature data. But this needs
+to be done before a CMS signature is produced, as we need to digest
+the <em>Code Directory</em> for a CMS signed attribute. We also need to know
+the size of the CMS signature, as it is part of the signature data
+embedded in the Mach-O binary and its size needs to be recorded in
+the <code>LC_CODE_SIGNATURE</code> load command and segment definitions, which
+are hashed by the <em>Code Directory</em>. This is a circular dependency. A
+trick to working around it is to pad the Mach-O signature data with
+extra NULLs and record this extra long value in <code>LC_CODE_SIGNATURE</code>
+before code digests are computed. The <em>SuperBlob</em> parser appears to
+be lenient about this solution. Further note that calculating the
+exact final length before CMS signature generation may be impossible
+due to the CMS signature being non-deterministic (due to the use of
+signing times and timestamp servers tokens, which could be variable
+length).</p>
+<h2 id="how-bundle-signing-works"><a href="#how-bundle-signing-works">How Bundle Signing Works</a></h2>
+<p>Signing bundles (e.g. <code>.app</code>, <code>.framework</code> directories) has its own
+complexities beyond signing individual binaries.</p>
+<p>Bundles consist of multiple files, perhaps multiple binaries. These files
+can be classified as:</p>
+<ol>
+<li>The main executable.</li>
+<li>The <code>Info.plist</code> file.</li>
+<li>Support/resources files.</li>
+<li>Code signature files.</li>
+</ol>
+<p>When signing bundles, the high-level process is the following:</p>
+<ol>
+<li>Find and sign all nested binaries and bundles (bundles can contain
+other bundles) except the main binary and bundle.</li>
+<li>Identify support/resources files and calculate their hashes, capturing
+this metadata in a <code>CodeResources</code> XML file.</li>
+<li>Sign the main binary with an embedded reference to the digest of the
+<code>CodeResources</code> file.</li>
+</ol>
+<h2 id="how-verification-works"><a href="#how-verification-works">How Verification Works</a></h2>
+<p>What happens when a binary is loaded? Read on to find out.</p>
+<p>Please note that we don’t know for sure what all occurs when a binary is
+loaded because the code is proprietary. We do have some high-level
+documentation from Apple and we can empirically observe what occurs.
+We can also infer what is happening based on the signing technical
+implementation, assuming Apple follows correct practices. But some content
+of this section is speculation and is merely what <em>likely</em> occurs.</p>
+<p>When a Mach-O binary is loaded, the loader looks for an
+<code>LC_CODE_SIGNATURE</code> load command. If not found, there is no embedded
+signature data and running the binary may be rejected.</p>
+<p>The associated code signature data is located in the <code>__LINKEDIT</code> section
+and parsed so <em>Blob</em> are discovered. How deeply it is parsed at this stage,
+we don’t know.</p>
+<p>Data for the <em>Signature</em> slot/blob is obtained. This is the CMS <em>SignedData</em>
+structure (BER encoded ASN.1). This structure is decoded and the cryptographic
+signature, signed attributes, and X.509 certificates involved in the signing
+are obtained from within.</p>
+<p>We do not know the full extent of trust verification that occurs. But
+Apple will examine details of the signing certificate and ensure its use
+is allowed. For example, if the signing certificate wasn’t issued/signed
+by Apple or doesn’t have the appropriate extensions present (such as bits
+indicating the certificate is appropriate for code signing), it may refuse
+to proceed. This trust validation likely occurs immediately after the
+CMS data is parsed, as soon as the signing certificate information becomes
+available for scrutiny.</p>
+<p>The original <em>plaintext</em> message that was signed is assembled. This is
+done by DER encoding the <em>signed attributes</em> from the CMS <em>SignedData</em>
+structure.</p>
+<p>This <em>plaintext</em> message, the signature of it, and the public key used
+to produce the signature are all used to verify the cryptographic integrity
+of the <em>signed attributes</em>. This effectively answers the question <em>did
+something with possession of certificate X sign exactly the signed attributes
+in this message.</em></p>
+<p>Successful signature verification ensures that the <em>signed attributes</em>
+haven’t been tampered with since they were signed.</p>
+<p>The CMS data may also contain <em>unsigned attributes</em>. There may be
+a <em>time stamp token</em> here containing a signature of the time when the
+signed message was produced. This may be validated as well.</p>
+<p>One of the signed attributes is <code>message-digest</code>. In this use of CMS,
+<code>message-digest</code> is the digest of the <em>Code Directory</em> <em>Blob</em> data. This
+digest is possibly verified: we don’t know for sure. According to RFC 5652
+it should be verified. However, it may not need to be because the digest
+of the <em>Code Directory</em> data is stored elsewhere…</p>
+<p>A signed attribute contains an XML plist containing an array of base64 encoded
+hashes of <em>Code Directory</em> <em>blobs</em>. This plist is likely parsed and the hashes
+within are compared to the hashes from the <em>Code Directory</em> blobs/slots from
+the <em>SuperBlob</em> record. If the digests are identical, it means that the <em>Code
+Directory</em> data structures in the Mach-O binary haven’t been modified since the
+signature was created.</p>
+<p>The <em>Code Directory</em> data structures contain digests of code data and
+other <em>Blob</em> data from the <em>SuperBlob</em>. Since the digest of the <em>Code Directory</em>
+data was verified via CMS and a trust relationship was (presumably) established
+with the signer of that CMS data, verification and trust is transitively applied
+to the other <em>Blob</em> data and code data (this is effectively a Merkle Tree).
+This means that we can digest other <em>Blob</em> entries and code data and compare to
+the digests within the <em>Code Directory</em> structures. If the digests are identical,
+content hasn’t changed since the signature was made.</p>
+<p>It is unclear in what order other <em>Blob</em> data is read. But presumably important
+data like the embedded entitlements and code requirement statement are read very
+early during binary loading so an appropriate trust policy can be applied to
+the binary.</p>
+</div></details></section></div></main></body></html>

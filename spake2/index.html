@@ -1,0 +1,225 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="RustCrypto: SPAKE2"><title>spake2 - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="spake2" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/RustCrypto/meta/master/logo.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../spake2/index.html"><img src="https://raw.githubusercontent.com/RustCrypto/meta/master/logo.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../spake2/index.html"><img src="https://raw.githubusercontent.com/RustCrypto/meta/master/logo.svg" alt="logo"></a><h2 class="location"><a href="#">Crate spake2</a></h2><div class="sidebar-elems"><ul class="block"><li class="version">Version 0.3.1</li><li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li><li><a href="#traits">Traits</a></li><li><a href="#types">Type Definitions</a></li></ul></section></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">spake2</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../src/spake2/lib.rs.html#1-783">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><h2 id="rustcrypto-spake2"><a href="#rustcrypto-spake2">RustCrypto: SPAKE2</a></h2>
+<p><a href="https://crates.io/crates/spake2"><img src="https://img.shields.io/crates/v/spake2.svg" alt="crate" /></a>
+<a href="https://docs.rs/spake2/"><img src="https://docs.rs/spake2/badge.svg" alt="Docs" /></a>
+<img src="https://img.shields.io/badge/license-Apache2.0/MIT-blue.svg" alt="Apache2/MIT licensed" />
+<img src="https://img.shields.io/badge/rustc-1.56+-blue.svg" alt="Rust Version" />
+<a href="https://rustcrypto.zulipchat.com/#narrow/stream/260045-PAKEs"><img src="https://img.shields.io/badge/zulip-join_chat-blue.svg" alt="Project Chat" /></a>
+<a href="https://github.com/RustCrypto/PAKEs/actions/workflows/spake2.yml"><img src="https://github.com/RustCrypto/PAKEs/actions/workflows/spake2.yml/badge.svg" alt="Build Status" /></a></p>
+<p>Pure Rust implementation of the <a href="https://tools.ietf.org/id/draft-irtf-cfrg-spake2-10.html">SPAKE2</a> password-authenticated key-exchange algorithm.</p>
+<p><a href="https://docs.rs/spake2/">Documentation</a></p>
+<h3 id="about"><a href="#about">About</a></h3>
+<p>This library implements the SPAKE2 password-authenticated key exchange
+(“PAKE”) algorithm. This allows two parties, who share a weak password, to
+safely derive a strong shared secret (and therefore build an
+encrypted+authenticated channel).</p>
+<p>A passive attacker who eavesdrops on the connection learns no information
+about the password or the generated secret. An active attacker
+(man-in-the-middle) gets exactly one guess at the password, and unless they
+get it right, they learn no information about the password or the generated
+secret. Each execution of the protocol enables one guess. The use of a weak
+password is made safer by the rate-limiting of guesses: no off-line
+dictionary attack is available to the network-level attacker, and the
+protocol does not depend upon having previously-established confidentiality
+of the network (unlike e.g. sending a plaintext password over TLS).</p>
+<p>The protocol requires the exchange of one pair of messages, so only one round
+trip is necessary to establish the session key. If key-confirmation is
+necessary, that will require a second round trip.</p>
+<p>All messages are bytestrings. For the default security level (using the
+Ed25519 elliptic curve, roughly equivalent to an 128-bit symmetric key), the
+message is 33 bytes long.</p>
+<p>This implementation is generic over a <code>Group</code>, which defines the cyclic
+group to use, the functions which convert group elements and scalars to
+and from bytestrings, and the three distinctive group elements used in
+the blinding process. Only one such Group is implemented, named
+<code>Ed25519Group</code>, which provides fast operations and high security, and is
+compatible with my <a href="https://github.com/warner/python-spake2">python implementation</a>.</p>
+<h2 id="what-is-it-good-for"><a href="#what-is-it-good-for">What Is It Good For?</a></h2>
+<p>PAKE can be used in a pairing protocol, like the initial version of Firefox
+Sync (the one with J-PAKE), to introduce one device to another and help them
+share secrets. In this mode, one device creates a random code, the user
+copies that code to the second device, then both devices use the code as a
+one-time password and run the PAKE protocol. Once both devices have a shared
+strong key, they can exchange other secrets safely.</p>
+<p>PAKE can also be used (carefully) in a login protocol, where SRP is perhaps
+the best-known approach. Traditional non-PAKE login consists of sending a
+plaintext password through a TLS-encrypted channel, to a server which then
+checks it (by hashing/stretching and comparing against a stored verifier). In
+a PAKE login, both sides put the password into their PAKE protocol, and then
+confirm that their generated key is the same. This nominally does not require
+the initial TLS-protected channel. However note that it requires other,
+deeper design considerations (the PAKE protocol must be bound to whatever
+protected channel you end up using, else the attacker can wait for PAKE to
+complete normally and then steal the channel), and is not simply a drop-in
+replacement. In addition, the server cannot hash/stretch the password very
+much (see the note on “Augmented PAKE” below), so unless the client is
+willing to perform key-stretching before running PAKE, the server’s stored
+verifier will be vulnerable to a low-cost dictionary attack.</p>
+<h3 id="-security-warning"><a href="#-security-warning">⚠️ Security Warning</a></h3>
+<p>This crate has never received an independent third party audit for security and
+correctness.</p>
+<p>USE AT YOUR OWN RISK!</p>
+<h3 id="minimum-supported-rust-version"><a href="#minimum-supported-rust-version">Minimum Supported Rust Version</a></h3>
+<p>Rust <strong>1.56</strong> or higher.</p>
+<p>Minimum supported Rust version can be changed in the future, but it will be
+done with a minor version bump.</p>
+<h3 id="license"><a href="#license">License</a></h3>
+<p>Licensed under either of:</p>
+<ul>
+<li><a href="http://www.apache.org/licenses/LICENSE-2.0">Apache License, Version 2.0</a></li>
+<li><a href="http://opensource.org/licenses/MIT">MIT license</a></li>
+</ul>
+<p>at your option.</p>
+<h4 id="contribution"><a href="#contribution">Contribution</a></h4>
+<p>Unless you explicitly state otherwise, any contribution intentionally submitted
+for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
+dual licensed as above, without any additional terms or conditions.</p>
+<h2 id="usage"><a href="#usage">Usage</a></h2>
+<p>Alice and Bob both initialize their SPAKE2 instances with the same (weak)
+password. They will exchange messages to (hopefully) derive a shared secret
+key. The protocol is symmetric: for each operation that Alice does, Bob will
+do the same.</p>
+<p>However, there are two roles in the SPAKE2 protocol, “A” and “B”. The two
+sides must agree ahead of time which one will play which role (the
+messages they generate depend upon which side they play). There are two
+separate constructor functions, <code>start_a()</code> and <code>start_b()</code>, and a
+complete interaction will use one of each (one <code>start_a</code> on one computer,
+and one <code>start_b</code> on the other computer).</p>
+<p>Each instance of a SPAKE2 protocol uses a set of shared parameters. These
+include a group, a generator, and a pair of arbitrary group elements.
+This library comes a single pre-generated parameter set, but could be
+extended with others.</p>
+<p>You start by calling <code>start_a()</code> (or <code>_b)</code> with the password and identity
+strings for both sides. This gives you back a state object and the first
+message, which you must send to your partner. Once you receive the
+corresponding inbound message, you pass it into the state object
+(consuming both in the process) by calling <code>s.finish()</code>, and you get back
+the shared key as a bytestring.</p>
+<p>The password and identity strings must each be wrapped in a “newtype”,
+which is a simple <code>struct</code> that protects against swapping the different
+types of bytestrings.</p>
+<p>Thus a client-side program start with:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>spake2::{Ed25519Group, Identity, Password, Spake2};
+<span class="kw">let </span>(s1, outbound_msg) = Spake2::&lt;Ed25519Group&gt;::start_a(
+   <span class="kw-2">&amp;</span>Password::new(<span class="string">b&quot;password&quot;</span>),
+   <span class="kw-2">&amp;</span>Identity::new(<span class="string">b&quot;client id string&quot;</span>),
+   <span class="kw-2">&amp;</span>Identity::new(<span class="string">b&quot;server id string&quot;</span>));
+send(<span class="kw-2">&amp;</span>outbound_msg);
+
+<span class="kw">let </span>inbound_msg = receive();
+<span class="kw">let </span>key1 = s1.finish(<span class="kw-2">&amp;</span>inbound_msg).unwrap();</code></pre></div>
+<p>while the server-side might do:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>spake2::{Ed25519Group, Identity, Password, Spake2};
+<span class="kw">let </span>(s1, outbound_msg) = Spake2::&lt;Ed25519Group&gt;::start_b(
+   <span class="kw-2">&amp;</span>Password::new(<span class="string">b&quot;password&quot;</span>),
+   <span class="kw-2">&amp;</span>Identity::new(<span class="string">b&quot;client id string&quot;</span>),
+   <span class="kw-2">&amp;</span>Identity::new(<span class="string">b&quot;server id string&quot;</span>));
+send(<span class="kw-2">&amp;</span>outbound_msg);
+
+<span class="kw">let </span>inbound_msg = receive();
+<span class="kw">let </span>key2 = s1.finish(<span class="kw-2">&amp;</span>inbound_msg).unwrap();</code></pre></div>
+<p>If both sides used the same password, and there is no man-in-the-middle,
+then <code>key1</code> and <code>key2</code> will be identical. If not, the two sides will get
+different keys. When one side encrypts with <code>key1</code>, and the other side
+attempts to decrypt with <code>key2</code>, they’ll get nothing but garbled noise.</p>
+<p>The shared key can be used as an HMAC key to provide data integrity on
+subsequent messages, or as an authenticated-encryption key (e.g.
+nacl.secretbox). It can also be fed into <a href="https://tools.ietf.org/html/rfc5869" title="HKDF">HKDF</a> to derive other
+session keys as necessary.</p>
+<p>The <code>SPAKE2</code> instances, and the messages they create, are single-use. Create
+a new one for each new session. <code>finish</code> consumes the instance.</p>
+<h2 id="symmetric-usage"><a href="#symmetric-usage">Symmetric Usage</a></h2>
+<p>A single SPAKE2 instance must be used asymmetrically: the two sides must
+somehow decide (ahead of time) which role they will each play. The
+implementation includes the side identifier in the exchanged message to
+guard against a <code>start_a</code> talking to another <code>start_a</code>. Typically a
+“client” will take on the <code>A</code> role, and the “server” will be <code>B</code>.</p>
+<p>This is a nuisance for more egalitarian protocols, where there’s no clear
+way to assign these roles ahead of time. In this case, use
+<code>start_symmetric()</code> on both sides. This uses a different set of
+parameters (so it is not interoperable with <code>start_A</code> or <code>start_b</code>), but
+should otherwise behave the same way. The symmetric mode uses only one
+identity string, not two.</p>
+<p>Carol does:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>spake2::{Ed25519Group, Identity, Password, Spake2};
+<span class="kw">let </span>(s1, outbound_msg) = Spake2::&lt;Ed25519Group&gt;::start_symmetric(
+   <span class="kw-2">&amp;</span>Password::new(<span class="string">b&quot;password&quot;</span>),
+   <span class="kw-2">&amp;</span>Identity::new(<span class="string">b&quot;shared id string&quot;</span>));
+send(<span class="kw-2">&amp;</span>outbound_msg);
+
+<span class="kw">let </span>inbound_msg = receive();
+<span class="kw">let </span>key1 = s1.finish(<span class="kw-2">&amp;</span>inbound_msg).unwrap();</code></pre></div>
+<p>Dave does exactly the same:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>spake2::{Ed25519Group, Identity, Password, Spake2};
+<span class="kw">let </span>(s1, outbound_msg) = Spake2::&lt;Ed25519Group&gt;::start_symmetric(
+   <span class="kw-2">&amp;</span>Password::new(<span class="string">b&quot;password&quot;</span>),
+   <span class="kw-2">&amp;</span>Identity::new(<span class="string">b&quot;shared id string&quot;</span>));
+send(<span class="kw-2">&amp;</span>outbound_msg);
+
+<span class="kw">let </span>inbound_msg = receive();
+<span class="kw">let </span>key1 = s1.finish(<span class="kw-2">&amp;</span>inbound_msg).unwrap();</code></pre></div>
+<h2 id="identifier-strings"><a href="#identifier-strings">Identifier Strings</a></h2>
+<p>The SPAKE2 protocol includes a pair of “identity strings” <code>idA</code> and <code>idB</code>
+that are included in the final key-derivation hash. This binds the key to a
+single pair of parties, or for some specific purpose.</p>
+<p>For example, when user “alice” logs into “example.com”, both sides should set
+<code>idA = b&quot;alice&quot;</code> and <code>idB = b&quot;example.com&quot;</code>. This prevents an attacker from
+substituting messages from unrelated login sessions (other users on the same
+server, or other servers for the same user).</p>
+<p>This also makes sure the session is established with the correct service. If
+Alice has one password for “example.com” but uses it for both login and
+file-transfer services, <code>idB</code> should be different for the two services.
+Otherwise if Alice is simultaneously connecting to both services, and
+attacker could rearrange the messages and cause her login client to connect
+to the file-transfer server, and vice versa.</p>
+<p><code>idA</code> and <code>idB</code> must be bytestrings (slices of <code>&lt;u8&gt;</code>).</p>
+<p><code>start_symmetric</code> uses a single <code>idSymmetric=</code> string, instead of <code>idA</code>
+and <code>idB</code>. Both sides must provide the same <code>idSymmetric=</code>, or leave it
+empty.</p>
+<h2 id="serialization"><a href="#serialization">Serialization</a></h2>
+<p>Sometimes, you can’t hold the SPAKE2 instance in memory for the whole
+negotiation: perhaps all your program state is stored in a database, and
+nothing lives in RAM for more than a few moments.</p>
+<p>Unfortunately the Rust implementation does not yet provide serialization
+of the state object. A future version should correct this.</p>
+<h2 id="security"><a href="#security">Security</a></h2>
+<p>This library is probably not constant-time, and does not protect against
+timing attacks. Do not allow attackers to measure how long it takes you
+to create or respond to a message. This matters somewhat less for pairing
+protocols, because their passwords are single-use randomly-generated
+keys, so an attacker has much less to work with.</p>
+<p>This library depends upon a strong source of random numbers. Do not use it on
+a system where os.urandom() is weak.</p>
+<h2 id="speed"><a href="#speed">Speed</a></h2>
+<p>To run the built-in speed tests, just run <code>cargo bench</code>.</p>
+<p>SPAKE2 consists of two phases, separated by a single message exchange.
+The time these phases take is split roughly 50/50. On my 2.8GHz Core-i7
+(i7-7600U) cpu, the built-in Ed25519Group parameters take about 112
+microseconds for each phase, and the message exchanged is 33 bytes long.</p>
+<h2 id="testing"><a href="#testing">Testing</a></h2>
+<p>Run <code>cargo test</code> to run the built-in test suite.</p>
+<h2 id="history"><a href="#history">History</a></h2>
+<p>The protocol was described as “PAKE2” in [“cryptobook”] <a href="http://crypto.stanford.edu/~dabo/cryptobook/" title="cryptobook">2</a> from Dan Boneh
+and Victor Shoup. This is a form of “SPAKE2”, defined by Abdalla and
+Pointcheval at [RSA 2005] <a href="http://www.di.ens.fr/~pointche/Documents/Papers/2005_rsa.pdf" title="RSA 2005">3</a>. Additional recommendations for groups and
+distinguished elements were published in [Ladd’s IETF draft] <a href="https://tools.ietf.org/html/draft-ladd-spake2-01" title="Ladd's IETF draft">4</a>.</p>
+<p>The Ed25519 implementation uses code adapted from Daniel Bernstein (djb),
+Matthew Dempsky, Daniel Holth, Ron Garret, with further optimizations by
+Brian Warner<a href="https://github.com/warner/python-pure25519">5</a>. The “arbitrary element” computation, which must be the same
+for both participants, is from python-pure25519 version 0.5.</p>
+<p>The Boneh/Shoup chapter that defines PAKE2 also defines an augmented variant
+named “PAKE2+”, which changes one side (typically a server) to record a
+derivative of the password instead of the actual password. In PAKE2+, a
+server compromise does not immediately give access to the passwords: instead,
+the attacker must perform an offline dictionary attack against the stolen
+data before they can learn the passwords. PAKE2+ support is planned, but not
+yet implemented.</p>
+<p>The security of the symmetric case was proved by Kobara/Imai<a href="http://eprint.iacr.org/2003/038.pdf" title="Pretty-Simple Password-Authenticated Key-Exchange Under Standard Assumptions">6</a> in 2003, and
+uses different (slightly weaker?) reductions than that of the asymmetric
+form. See also Mike Hamburg’s analysis<a href="https://moderncrypto.org/mail-archive/curves/2015/000419.html" title="PAKE questions">7</a> from 2015.</p>
+<p>Brian Warner first wrote the Python version in July 2010. He wrote this
+Rust version in in May 2017.</p>
+<h4 id="footnotes"><a href="#footnotes">footnotes</a></h4></div></details><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.Ed25519Group.html" title="struct spake2::Ed25519Group">Ed25519Group</a></div><div class="desc docblock-short">Ed25519 elliptic curve group.</div></li><li><div class="item-name"><a class="struct" href="struct.Identity.html" title="struct spake2::Identity">Identity</a></div><div class="desc docblock-short">SPAKE2 identity.</div></li><li><div class="item-name"><a class="struct" href="struct.Password.html" title="struct spake2::Password">Password</a></div><div class="desc docblock-short">Password type.</div></li><li><div class="item-name"><a class="struct" href="struct.Spake2.html" title="struct spake2::Spake2">Spake2</a></div><div class="desc docblock-short">SPAKE2 algorithm.</div></li></ul><h2 id="enums" class="small-section-header"><a href="#enums">Enums</a></h2><ul class="item-table"><li><div class="item-name"><a class="enum" href="enum.Error.html" title="enum spake2::Error">Error</a></div><div class="desc docblock-short">SPAKE2 errors.</div></li></ul><h2 id="traits" class="small-section-header"><a href="#traits">Traits</a></h2><ul class="item-table"><li><div class="item-name"><a class="trait" href="trait.Group.html" title="trait spake2::Group">Group</a></div><div class="desc docblock-short">Group trait.</div></li></ul><h2 id="types" class="small-section-header"><a href="#types">Type Definitions</a></h2><ul class="item-table"><li><div class="item-name"><a class="type" href="type.Result.html" title="type spake2::Result">Result</a></div><div class="desc docblock-short"><a href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result"><code>Result</code></a> type with <code>spake2</code>’s <a href="enum.Error.html" title="enum spake2::Error"><code>Error</code></a> type.</div></li></ul></section></div></main></body></html>

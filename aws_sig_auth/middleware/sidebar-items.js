@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["SigV4SigningStage","Signature","SigningStageError"]};

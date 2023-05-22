@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"derive":["Encode"],"trait":["Encode","Encoder","Error"]};

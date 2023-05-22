@@ -306,6 +306,21 @@
 <a href="#306" id="306">306</a>
 <a href="#307" id="307">307</a>
 <a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::str::FromStr;
 
 <span class="kw">use </span>schemars::JsonSchema;
@@ -336,7 +351,8 @@
 </span><span class="attr">#[derive(Deserialize, PartialEq, Eq, Clone, Debug, JsonSchema)]
 #[serde(untagged, rename_all = <span class="string">&quot;lowercase&quot;</span>)]
 </span><span class="kw">pub enum </span>TargetFileConfig {
-    <span class="comment">// we need default else target value will be required in some scenarios.
+    <span class="comment">// Generated when the value of the `target` field is a string, or when there is no target.
+    // we need default else target value will be required in some scenarios.
     </span>Simple(<span class="attr">#[serde(default, deserialize_with = <span class="string">&quot;string_or_struct_option&quot;</span>)] </span><span class="prelude-ty">Option</span>&lt;Target&gt;),
     Advanced {
         <span class="comment">// Path is optional so that it can also be specified via env var instead of via conf file,
@@ -366,11 +382,54 @@
 }
 
 <span class="kw">impl </span>TargetFileConfig {
-    <span class="kw">fn </span>get_optional_path(path_from_config_file: <span class="prelude-ty">Option</span>&lt;Target&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;Target&gt;&gt; {
+    <span class="doccomment">/// Get the final path.
+    /// Will return the environment variable&#39;s value if set, if not the value from the
+    /// configuration (passed argument), and if that is not set as well, `None`.
+    ///
+    /// # Arguments
+    ///
+    /// * `path_from_config_file` - The optional value read from the config file.
+    </span><span class="kw">fn </span>get_optional_path(path_from_config_file: <span class="prelude-ty">Option</span>&lt;Target&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;Target&gt;&gt; {
         FromEnvWithError::new(<span class="string">&quot;MIRRORD_IMPERSONATED_TARGET&quot;</span>)
             .or(path_from_config_file)
             .source_value()
             .transpose()
+    }
+
+    <span class="doccomment">/// Get the final namespace.
+    /// Will return the environment variable&#39;s value if set, if not the value from the
+    /// configuration (passed argument), and if that is not set as well, `None`.
+    ///
+    /// # Arguments
+    ///
+    /// * `namespace_from_config_file` - The optional value read from the config file.
+    </span><span class="kw">fn </span>get_optional_namespace(
+        namespace_from_config_file: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;String&gt;&gt; {
+        FromEnv::new(<span class="string">&quot;MIRRORD_TARGET_NAMESPACE&quot;</span>)
+            .or(namespace_from_config_file)
+            .source_value()
+            .transpose()
+    }
+
+    <span class="doccomment">/// Take the final values (after taking into account the values from the file and from env), and
+    /// return the optional `TargetConfig` (`None` if targetless).
+    ///
+    /// # Errors
+    /// * `ConfigError::TargetNamespaceWithoutTarget` - if namespace is some but path is `None`,
+    ///   because the target namespace does not mean anything without a target path. The user might
+    ///   have meant the agent namespace.
+    </span><span class="kw">fn </span>from_final_path_and_namespace(
+        path: <span class="prelude-ty">Option</span>&lt;Target&gt;,
+        namespace: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;TargetConfig&gt;&gt; {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(path) = path {
+            <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(TargetConfig { path, namespace }))
+        } <span class="kw">else if </span>namespace.is_some() {
+            <span class="prelude-val">Err</span>(ConfigError::TargetNamespaceWithoutTarget)
+        } <span class="kw">else </span>{
+            <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
+        }
     }
 }
 
@@ -384,50 +443,21 @@
     /// Specifying target namespace without target is not allowed and results in an error that
     /// explains to the user what to do instead.
     </span><span class="kw">fn </span>generate_config(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Generated&gt; {
-        <span class="kw">let </span>config = <span class="kw">match </span><span class="self">self </span>{
+        <span class="kw">match </span><span class="self">self </span>{
             TargetFileConfig::Simple(path) =&gt; {
                 <span class="comment">// Namespace was not specified via file, get it from env var if set.
                 </span><span class="kw">let </span>namespace: <span class="prelude-ty">Option</span>&lt;String&gt; = FromEnv::new(<span class="string">&quot;MIRRORD_TARGET_NAMESPACE&quot;</span>)
                     .source_value()
                     .transpose()<span class="question-mark">?</span>;
-
-                <span class="kw">let </span>path = <span class="kw">if let </span><span class="prelude-val">Some</span>(path) = <span class="self">Self</span>::get_optional_path(path)<span class="question-mark">? </span>{
-                    path
-                } <span class="kw">else </span>{
-                    <span class="comment">// No path specified, neither via file, nor via env. So no `TargetConfig`,
-                    // running targetless.
-
-                    </span><span class="kw">if let </span><span class="prelude-val">Some</span>(namespace_from_env) = namespace {
-                        <span class="comment">// env var (or CLI flag) was set.
-
-                        </span><span class="kw">if </span>!namespace_from_env.is_empty() {
-                            <span class="comment">// And the value is not the empty string.
-
-                            </span><span class="kw">return </span><span class="prelude-val">Err</span>(ConfigError::TargetNamespaceWithoutTarget);
-                        }
-                    }
-                    <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>); <span class="comment">// Run targetless.
-                </span>};
-                TargetConfig { path, namespace }
+                <span class="kw">let </span>path = <span class="self">Self</span>::get_optional_path(path)<span class="question-mark">?</span>;
+                <span class="self">Self</span>::from_final_path_and_namespace(path, namespace)
             }
             TargetFileConfig::Advanced { path, namespace } =&gt; {
-                <span class="macro">debug_assert!</span>(namespace.is_some()); <span class="comment">// Should only be advanced if namespace there.
-                </span><span class="kw">let </span>path = <span class="kw">if let </span><span class="prelude-val">Some</span>(path) = <span class="self">Self</span>::get_optional_path(path)<span class="question-mark">? </span>{
-                    path
-                } <span class="kw">else </span>{
-                    <span class="kw">return </span><span class="prelude-val">Err</span>(ConfigError::TargetNamespaceWithoutTarget);
-                };
-                TargetConfig {
-                    path,
-                    namespace: FromEnv::new(<span class="string">&quot;MIRRORD_TARGET_NAMESPACE&quot;</span>)
-                        .or(namespace)
-                        .source_value()
-                        .transpose()<span class="question-mark">?</span>,
-                }
+                <span class="kw">let </span>path = <span class="self">Self</span>::get_optional_path(path)<span class="question-mark">?</span>;
+                <span class="kw">let </span>namespace = <span class="self">Self</span>::get_optional_namespace(namespace)<span class="question-mark">?</span>;
+                <span class="self">Self</span>::from_final_path_and_namespace(path, namespace)
             }
-        };
-
-        <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(config))
+        }
     }
 }
 

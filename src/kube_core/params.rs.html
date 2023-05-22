@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/kube-core-0.77.0/src/params.rs`."><title>params.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="kube_core" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../kube_core/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/kube-core-0.82.2/src/params.rs`."><title>params.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="kube_core" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../kube_core/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -590,12 +590,240 @@
 <a href="#590" id="590">590</a>
 <a href="#591" id="591">591</a>
 <a href="#592" id="592">592</a>
+<a href="#593" id="593">593</a>
+<a href="#594" id="594">594</a>
+<a href="#595" id="595">595</a>
+<a href="#596" id="596">596</a>
+<a href="#597" id="597">597</a>
+<a href="#598" id="598">598</a>
+<a href="#599" id="599">599</a>
+<a href="#600" id="600">600</a>
+<a href="#601" id="601">601</a>
+<a href="#602" id="602">602</a>
+<a href="#603" id="603">603</a>
+<a href="#604" id="604">604</a>
+<a href="#605" id="605">605</a>
+<a href="#606" id="606">606</a>
+<a href="#607" id="607">607</a>
+<a href="#608" id="608">608</a>
+<a href="#609" id="609">609</a>
+<a href="#610" id="610">610</a>
+<a href="#611" id="611">611</a>
+<a href="#612" id="612">612</a>
+<a href="#613" id="613">613</a>
+<a href="#614" id="614">614</a>
+<a href="#615" id="615">615</a>
+<a href="#616" id="616">616</a>
+<a href="#617" id="617">617</a>
+<a href="#618" id="618">618</a>
+<a href="#619" id="619">619</a>
+<a href="#620" id="620">620</a>
+<a href="#621" id="621">621</a>
+<a href="#622" id="622">622</a>
+<a href="#623" id="623">623</a>
+<a href="#624" id="624">624</a>
+<a href="#625" id="625">625</a>
+<a href="#626" id="626">626</a>
+<a href="#627" id="627">627</a>
+<a href="#628" id="628">628</a>
+<a href="#629" id="629">629</a>
+<a href="#630" id="630">630</a>
+<a href="#631" id="631">631</a>
+<a href="#632" id="632">632</a>
+<a href="#633" id="633">633</a>
+<a href="#634" id="634">634</a>
+<a href="#635" id="635">635</a>
+<a href="#636" id="636">636</a>
+<a href="#637" id="637">637</a>
+<a href="#638" id="638">638</a>
+<a href="#639" id="639">639</a>
+<a href="#640" id="640">640</a>
+<a href="#641" id="641">641</a>
+<a href="#642" id="642">642</a>
+<a href="#643" id="643">643</a>
+<a href="#644" id="644">644</a>
+<a href="#645" id="645">645</a>
+<a href="#646" id="646">646</a>
+<a href="#647" id="647">647</a>
+<a href="#648" id="648">648</a>
+<a href="#649" id="649">649</a>
+<a href="#650" id="650">650</a>
+<a href="#651" id="651">651</a>
+<a href="#652" id="652">652</a>
+<a href="#653" id="653">653</a>
+<a href="#654" id="654">654</a>
+<a href="#655" id="655">655</a>
+<a href="#656" id="656">656</a>
+<a href="#657" id="657">657</a>
+<a href="#658" id="658">658</a>
+<a href="#659" id="659">659</a>
+<a href="#660" id="660">660</a>
+<a href="#661" id="661">661</a>
+<a href="#662" id="662">662</a>
+<a href="#663" id="663">663</a>
+<a href="#664" id="664">664</a>
+<a href="#665" id="665">665</a>
+<a href="#666" id="666">666</a>
+<a href="#667" id="667">667</a>
+<a href="#668" id="668">668</a>
+<a href="#669" id="669">669</a>
+<a href="#670" id="670">670</a>
+<a href="#671" id="671">671</a>
+<a href="#672" id="672">672</a>
+<a href="#673" id="673">673</a>
+<a href="#674" id="674">674</a>
+<a href="#675" id="675">675</a>
+<a href="#676" id="676">676</a>
+<a href="#677" id="677">677</a>
+<a href="#678" id="678">678</a>
+<a href="#679" id="679">679</a>
+<a href="#680" id="680">680</a>
+<a href="#681" id="681">681</a>
+<a href="#682" id="682">682</a>
+<a href="#683" id="683">683</a>
+<a href="#684" id="684">684</a>
+<a href="#685" id="685">685</a>
+<a href="#686" id="686">686</a>
+<a href="#687" id="687">687</a>
+<a href="#688" id="688">688</a>
+<a href="#689" id="689">689</a>
+<a href="#690" id="690">690</a>
+<a href="#691" id="691">691</a>
+<a href="#692" id="692">692</a>
+<a href="#693" id="693">693</a>
+<a href="#694" id="694">694</a>
+<a href="#695" id="695">695</a>
+<a href="#696" id="696">696</a>
+<a href="#697" id="697">697</a>
+<a href="#698" id="698">698</a>
+<a href="#699" id="699">699</a>
+<a href="#700" id="700">700</a>
+<a href="#701" id="701">701</a>
+<a href="#702" id="702">702</a>
+<a href="#703" id="703">703</a>
+<a href="#704" id="704">704</a>
+<a href="#705" id="705">705</a>
+<a href="#706" id="706">706</a>
+<a href="#707" id="707">707</a>
+<a href="#708" id="708">708</a>
+<a href="#709" id="709">709</a>
+<a href="#710" id="710">710</a>
+<a href="#711" id="711">711</a>
+<a href="#712" id="712">712</a>
+<a href="#713" id="713">713</a>
+<a href="#714" id="714">714</a>
+<a href="#715" id="715">715</a>
+<a href="#716" id="716">716</a>
+<a href="#717" id="717">717</a>
+<a href="#718" id="718">718</a>
+<a href="#719" id="719">719</a>
+<a href="#720" id="720">720</a>
+<a href="#721" id="721">721</a>
+<a href="#722" id="722">722</a>
+<a href="#723" id="723">723</a>
+<a href="#724" id="724">724</a>
+<a href="#725" id="725">725</a>
+<a href="#726" id="726">726</a>
+<a href="#727" id="727">727</a>
+<a href="#728" id="728">728</a>
+<a href="#729" id="729">729</a>
+<a href="#730" id="730">730</a>
+<a href="#731" id="731">731</a>
+<a href="#732" id="732">732</a>
+<a href="#733" id="733">733</a>
+<a href="#734" id="734">734</a>
+<a href="#735" id="735">735</a>
+<a href="#736" id="736">736</a>
+<a href="#737" id="737">737</a>
+<a href="#738" id="738">738</a>
+<a href="#739" id="739">739</a>
+<a href="#740" id="740">740</a>
+<a href="#741" id="741">741</a>
+<a href="#742" id="742">742</a>
+<a href="#743" id="743">743</a>
+<a href="#744" id="744">744</a>
+<a href="#745" id="745">745</a>
+<a href="#746" id="746">746</a>
+<a href="#747" id="747">747</a>
+<a href="#748" id="748">748</a>
+<a href="#749" id="749">749</a>
+<a href="#750" id="750">750</a>
+<a href="#751" id="751">751</a>
+<a href="#752" id="752">752</a>
+<a href="#753" id="753">753</a>
+<a href="#754" id="754">754</a>
+<a href="#755" id="755">755</a>
+<a href="#756" id="756">756</a>
+<a href="#757" id="757">757</a>
+<a href="#758" id="758">758</a>
+<a href="#759" id="759">759</a>
+<a href="#760" id="760">760</a>
+<a href="#761" id="761">761</a>
+<a href="#762" id="762">762</a>
+<a href="#763" id="763">763</a>
+<a href="#764" id="764">764</a>
+<a href="#765" id="765">765</a>
+<a href="#766" id="766">766</a>
+<a href="#767" id="767">767</a>
+<a href="#768" id="768">768</a>
+<a href="#769" id="769">769</a>
+<a href="#770" id="770">770</a>
+<a href="#771" id="771">771</a>
+<a href="#772" id="772">772</a>
+<a href="#773" id="773">773</a>
+<a href="#774" id="774">774</a>
+<a href="#775" id="775">775</a>
+<a href="#776" id="776">776</a>
+<a href="#777" id="777">777</a>
+<a href="#778" id="778">778</a>
+<a href="#779" id="779">779</a>
+<a href="#780" id="780">780</a>
+<a href="#781" id="781">781</a>
+<a href="#782" id="782">782</a>
+<a href="#783" id="783">783</a>
+<a href="#784" id="784">784</a>
+<a href="#785" id="785">785</a>
+<a href="#786" id="786">786</a>
+<a href="#787" id="787">787</a>
 </pre><pre class="rust"><code><span class="doccomment">//! A port of request parameter *Optionals from apimachinery/types.go
 </span><span class="kw">use </span><span class="kw">crate</span>::request::Error;
 <span class="kw">use </span>serde::Serialize;
 
-<span class="doccomment">/// Common query parameters used in watch/list/delete calls on collections
-</span><span class="attr">#[derive(Clone, Debug)]
+<span class="doccomment">/// Controls how the resource version parameter is applied for list calls
+///
+/// Not specifying a `VersionMatch` strategy will give you different semantics
+/// depending on what `resource_version`, `limit`, `continue_token` you include with the list request.
+///
+/// See &lt;https://kubernetes.io/docs/reference/using-api/api-concepts/#semantics-for-get-and-list&gt; for details.
+</span><span class="attr">#[derive(Clone, Debug, PartialEq)]
+</span><span class="kw">pub enum </span>VersionMatch {
+    <span class="doccomment">/// Returns data at least as new as the provided resource version.
+    ///
+    /// The newest available data is preferred, but any data not older than the provided resource version may be served.
+    /// This guarantees that the collection&#39;s resource version is not older than the requested resource version,
+    /// but does not make any guarantee about the resource version of any of the items in that collection.
+    ///
+    /// ### Any Version
+    /// A degenerate, but common sub-case of `NotOlderThan` is when used together with `resource_version` &quot;0&quot;.
+    ///
+    /// It is possible for a &quot;0&quot; resource version request to return data at a much older resource version
+    /// than the client has previously observed, particularly in HA configurations, due to partitions or stale caches.
+    /// Clients that cannot tolerate this should not use this semantic.
+    </span>NotOlderThan,
+
+    <span class="doccomment">/// Return data at the exact resource version provided.
+    ///
+    /// If the provided resource version  is unavailable, the server responds with HTTP 410 &quot;Gone&quot;.
+    /// For list requests to servers that honor the resource version Match parameter, this guarantees that the collection&#39;s
+    /// resource version  is the same as the resource version  you requested in the query string.
+    /// That guarantee does not apply to the resource version  of any items within that collection.
+    ///
+    /// Note that `Exact` cannot be used with resource version &quot;0&quot;. For the most up-to-date list; use `Unset`.
+    </span>Exact,
+}
+
+<span class="doccomment">/// Common query parameters used in list/delete calls on collections
+</span><span class="attr">#[derive(Clone, Debug, Default)]
 </span><span class="kw">pub struct </span>ListParams {
     <span class="doccomment">/// A selector to restrict the list of returned objects by their labels.
     ///
@@ -608,6 +836,211 @@
     </span><span class="kw">pub </span>field_selector: <span class="prelude-ty">Option</span>&lt;String&gt;,
 
     <span class="doccomment">/// Timeout for the list/watch call.
+    ///
+    /// This limits the duration of the call, regardless of any activity or inactivity.
+    </span><span class="kw">pub </span>timeout: <span class="prelude-ty">Option</span>&lt;u32&gt;,
+
+    <span class="doccomment">/// Limit the number of results.
+    ///
+    /// If there are more results, the server will respond with a continue token which can be used to fetch another page
+    /// of results. See the [Kubernetes API docs](https://kubernetes.io/docs/reference/using-api/api-concepts/#retrieving-large-results-sets-in-chunks)
+    /// for pagination details.
+    </span><span class="kw">pub </span>limit: <span class="prelude-ty">Option</span>&lt;u32&gt;,
+
+    <span class="doccomment">/// Fetch a second page of results.
+    ///
+    /// After listing results with a limit, a continue token can be used to fetch another page of results.
+    </span><span class="kw">pub </span>continue_token: <span class="prelude-ty">Option</span>&lt;String&gt;,
+
+    <span class="doccomment">/// Determines how resourceVersion is matched applied to list calls.
+    </span><span class="kw">pub </span>version_match: <span class="prelude-ty">Option</span>&lt;VersionMatch&gt;,
+
+    <span class="doccomment">/// An explicit resourceVersion using the given `VersionMatch` strategy
+    ///
+    /// See &lt;https://kubernetes.io/docs/reference/using-api/api-concepts/#resource-versions&gt; for details.
+    </span><span class="kw">pub </span>resource_version: <span class="prelude-ty">Option</span>&lt;String&gt;,
+}
+
+<span class="kw">impl </span>ListParams {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>validate(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(rv) = <span class="kw-2">&amp;</span><span class="self">self</span>.resource_version {
+            <span class="kw">if </span><span class="self">self</span>.version_match == <span class="prelude-val">Some</span>(VersionMatch::Exact) &amp;&amp; rv == <span class="string">&quot;0&quot; </span>{
+                <span class="kw">return </span><span class="prelude-val">Err</span>(Error::Validation(
+                    <span class="string">&quot;A non-zero resource_version is required when using an Exact match&quot;</span>.into(),
+                ));
+            }
+        } <span class="kw">else if </span><span class="self">self</span>.version_match.is_some() {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::Validation(
+                <span class="string">&quot;A resource_version is required when using an explicit match&quot;</span>.into(),
+            ));
+        }
+        <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="comment">// Partially populate query parameters (needs resourceVersion out of band)
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>populate_qp(<span class="kw-2">&amp;</span><span class="self">self</span>, qp: <span class="kw-2">&amp;mut </span>form_urlencoded::Serializer&lt;String&gt;) {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(fields) = <span class="kw-2">&amp;</span><span class="self">self</span>.field_selector {
+            qp.append_pair(<span class="string">&quot;fieldSelector&quot;</span>, fields);
+        }
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(labels) = <span class="kw-2">&amp;</span><span class="self">self</span>.label_selector {
+            qp.append_pair(<span class="string">&quot;labelSelector&quot;</span>, labels);
+        }
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(limit) = <span class="kw-2">&amp;</span><span class="self">self</span>.limit {
+            qp.append_pair(<span class="string">&quot;limit&quot;</span>, <span class="kw-2">&amp;</span>limit.to_string());
+        }
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(continue_token) = <span class="kw-2">&amp;</span><span class="self">self</span>.continue_token {
+            qp.append_pair(<span class="string">&quot;continue&quot;</span>, continue_token);
+        }
+
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(rv) = <span class="kw-2">&amp;</span><span class="self">self</span>.resource_version {
+            qp.append_pair(<span class="string">&quot;resourceVersion&quot;</span>, rv.as_str());
+        }
+        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.version_match {
+            <span class="prelude-val">None </span>=&gt; {}
+            <span class="prelude-val">Some</span>(VersionMatch::NotOlderThan) =&gt; {
+                qp.append_pair(<span class="string">&quot;resourceVersionMatch&quot;</span>, <span class="string">&quot;NotOlderThan&quot;</span>);
+            }
+            <span class="prelude-val">Some</span>(VersionMatch::Exact) =&gt; {
+                qp.append_pair(<span class="string">&quot;resourceVersionMatch&quot;</span>, <span class="string">&quot;Exact&quot;</span>);
+            }
+        }
+    }
+}
+
+<span class="doccomment">/// Builder interface to ListParams
+///
+/// Usage:
+/// ```
+/// use kube::api::ListParams;
+/// let lp = ListParams::default()
+///     .match_any()
+///     .timeout(60)
+///     .labels(&quot;kubernetes.io/lifecycle=spot&quot;);
+/// ```
+</span><span class="kw">impl </span>ListParams {
+    <span class="doccomment">/// Configure the timeout for list/watch calls
+    ///
+    /// This limits the duration of the call, regardless of any activity or inactivity.
+    /// Defaults to 290s
+    </span><span class="attr">#[must_use]
+    </span><span class="kw">pub fn </span>timeout(<span class="kw-2">mut </span><span class="self">self</span>, timeout_secs: u32) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.timeout = <span class="prelude-val">Some</span>(timeout_secs);
+        <span class="self">self
+    </span>}
+
+    <span class="doccomment">/// Configure the selector to restrict the list of returned objects by their fields.
+    ///
+    /// Defaults to everything.
+    /// Supports `=`, `==`, `!=`, and can be comma separated: `key1=value1,key2=value2`.
+    /// The server only supports a limited number of field queries per type.
+    </span><span class="attr">#[must_use]
+    </span><span class="kw">pub fn </span>fields(<span class="kw-2">mut </span><span class="self">self</span>, field_selector: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.field_selector = <span class="prelude-val">Some</span>(field_selector.to_string());
+        <span class="self">self
+    </span>}
+
+    <span class="doccomment">/// Configure the selector to restrict the list of returned objects by their labels.
+    ///
+    /// Defaults to everything.
+    /// Supports `=`, `==`, `!=`, and can be comma separated: `key1=value1,key2=value2`.
+    </span><span class="attr">#[must_use]
+    </span><span class="kw">pub fn </span>labels(<span class="kw-2">mut </span><span class="self">self</span>, label_selector: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.label_selector = <span class="prelude-val">Some</span>(label_selector.to_string());
+        <span class="self">self
+    </span>}
+
+    <span class="doccomment">/// Sets a result limit.
+    </span><span class="attr">#[must_use]
+    </span><span class="kw">pub fn </span>limit(<span class="kw-2">mut </span><span class="self">self</span>, limit: u32) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.limit = <span class="prelude-val">Some</span>(limit);
+        <span class="self">self
+    </span>}
+
+    <span class="doccomment">/// Sets a continue token.
+    </span><span class="attr">#[must_use]
+    </span><span class="kw">pub fn </span>continue_token(<span class="kw-2">mut </span><span class="self">self</span>, token: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.continue_token = <span class="prelude-val">Some</span>(token.to_string());
+        <span class="self">self
+    </span>}
+
+    <span class="doccomment">/// Sets the resource version
+    </span><span class="attr">#[must_use]
+    </span><span class="kw">pub fn </span>at(<span class="kw-2">mut </span><span class="self">self</span>, resource_version: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.resource_version = <span class="prelude-val">Some</span>(resource_version.into());
+        <span class="self">self
+    </span>}
+
+    <span class="doccomment">/// Sets an arbitary resource version match strategy
+    ///
+    /// A non-default strategy such as `VersionMatch::Exact` or `VersionMatch::NotGreaterThan`
+    /// requires an explicit `resource_version` set to pass request validation.
+    </span><span class="attr">#[must_use]
+    </span><span class="kw">pub fn </span>matching(<span class="kw-2">mut </span><span class="self">self</span>, version_match: VersionMatch) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.version_match = <span class="prelude-val">Some</span>(version_match);
+        <span class="self">self
+    </span>}
+
+    <span class="doccomment">/// Use the semantic &quot;any&quot; resource version strategy
+    ///
+    /// This is a less taxing variant of the default list, returning data at any resource version.
+    /// It will prefer the newest avialable resource version, but strong consistency is not required;
+    /// data at any resource version may be served.
+    /// It is possible for the request to return data at a much older resource version than the client
+    /// has previously observed, particularly in high availability configurations, due to partitions or stale caches.
+    /// Clients that cannot tolerate this should not use this semantic.
+    </span><span class="attr">#[must_use]
+    </span><span class="kw">pub fn </span>match_any(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.matching(VersionMatch::NotOlderThan).at(<span class="string">&quot;0&quot;</span>)
+    }
+}
+
+<span class="doccomment">/// The validation directive to use for `fieldValidation` when using server-side apply.
+</span><span class="attr">#[derive(Clone, Debug)]
+</span><span class="kw">pub enum </span>ValidationDirective {
+    <span class="doccomment">/// Strict mode will fail any invalid manifests.
+    ///
+    /// This will fail the request with a BadRequest error if any unknown fields would be dropped from the
+    /// object, or if any duplicate fields are present. The error returned from the server will contain
+    /// all unknown and duplicate fields encountered.
+    </span>Strict,
+    <span class="doccomment">/// Warn mode will return a warning for invalid manifests.
+    ///
+    /// This will send a warning via the standard warning response header for each unknown field that
+    /// is dropped from the object, and for each duplicate field that is encountered. The request will
+    /// still succeed if there are no other errors, and will only persist the last of any duplicate fields.
+    </span>Warn,
+    <span class="doccomment">/// Ignore mode will silently ignore any problems.
+    ///
+    /// This will ignore any unknown fields that are silently dropped from the object, and will ignore
+    /// all but the last duplicate field that the decoder encounters.
+    </span>Ignore,
+}
+
+<span class="kw">impl </span>ValidationDirective {
+    <span class="doccomment">/// Returns the string format of the directive
+    </span><span class="kw">pub fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+        <span class="kw">match </span><span class="self">self </span>{
+            <span class="self">Self</span>::Strict =&gt; <span class="string">&quot;Strict&quot;</span>,
+            <span class="self">Self</span>::Warn =&gt; <span class="string">&quot;Warn&quot;</span>,
+            <span class="self">Self</span>::Ignore =&gt; <span class="string">&quot;Ignore&quot;</span>,
+        }
+    }
+}
+
+<span class="doccomment">/// Common query parameters used in watch calls on collections
+</span><span class="attr">#[derive(Clone, Debug)]
+</span><span class="kw">pub struct </span>WatchParams {
+    <span class="doccomment">/// A selector to restrict returned objects by their labels.
+    ///
+    /// Defaults to everything if `None`.
+    </span><span class="kw">pub </span>label_selector: <span class="prelude-ty">Option</span>&lt;String&gt;,
+
+    <span class="doccomment">/// A selector to restrict returned objects by their fields.
+    ///
+    /// Defaults to everything if `None`.
+    </span><span class="kw">pub </span>field_selector: <span class="prelude-ty">Option</span>&lt;String&gt;,
+
+    <span class="doccomment">/// Timeout for the watch call.
     ///
     /// This limits the duration of the call, regardless of any activity or inactivity.
     /// If unset for a watch call, we will use 290s.
@@ -624,22 +1057,40 @@
     /// If the feature gate WatchBookmarks is not enabled in apiserver,
     /// this field is ignored.
     </span><span class="kw">pub </span>bookmarks: bool,
-
-    <span class="doccomment">/// Limit the number of results.
-    ///
-    /// If there are more results, the server will respond with a continue token which can be used to fetch another page
-    /// of results. See the [Kubernetes API docs](https://kubernetes.io/docs/reference/using-api/api-concepts/#retrieving-large-results-sets-in-chunks)
-    /// for pagination details.
-    </span><span class="kw">pub </span>limit: <span class="prelude-ty">Option</span>&lt;u32&gt;,
-
-    <span class="doccomment">/// Fetch a second page of results.
-    ///
-    /// After listing results with a limit, a continue token can be used to fetch another page of results.
-    </span><span class="kw">pub </span>continue_token: <span class="prelude-ty">Option</span>&lt;String&gt;,
 }
 
-<span class="kw">impl </span>Default <span class="kw">for </span>ListParams {
-    <span class="doccomment">/// Default `ListParams` without any constricting selectors
+<span class="kw">impl </span>WatchParams {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>validate(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(to) = <span class="kw-2">&amp;</span><span class="self">self</span>.timeout {
+            <span class="comment">// https://github.com/kubernetes/kubernetes/issues/6513
+            </span><span class="kw">if </span><span class="kw-2">*</span>to &gt;= <span class="number">295 </span>{
+                <span class="kw">return </span><span class="prelude-val">Err</span>(Error::Validation(<span class="string">&quot;WatchParams::timeout must be &lt; 295s&quot;</span>.into()));
+            }
+        }
+        <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="comment">// Partially populate query parameters (needs resourceVersion out of band)
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>populate_qp(<span class="kw-2">&amp;</span><span class="self">self</span>, qp: <span class="kw-2">&amp;mut </span>form_urlencoded::Serializer&lt;String&gt;) {
+        qp.append_pair(<span class="string">&quot;watch&quot;</span>, <span class="string">&quot;true&quot;</span>);
+
+        <span class="comment">// https://github.com/kubernetes/kubernetes/issues/6513
+        </span>qp.append_pair(<span class="string">&quot;timeoutSeconds&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.timeout.unwrap_or(<span class="number">290</span>).to_string());
+
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(fields) = <span class="kw-2">&amp;</span><span class="self">self</span>.field_selector {
+            qp.append_pair(<span class="string">&quot;fieldSelector&quot;</span>, fields);
+        }
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(labels) = <span class="kw-2">&amp;</span><span class="self">self</span>.label_selector {
+            qp.append_pair(<span class="string">&quot;labelSelector&quot;</span>, labels);
+        }
+        <span class="kw">if </span><span class="self">self</span>.bookmarks {
+            qp.append_pair(<span class="string">&quot;allowWatchBookmarks&quot;</span>, <span class="string">&quot;true&quot;</span>);
+        }
+    }
+}
+
+<span class="kw">impl </span>Default <span class="kw">for </span>WatchParams {
+    <span class="doccomment">/// Default `WatchParams` without any constricting selectors
     </span><span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             <span class="comment">// bookmarks stable since 1.17, and backwards compatible
@@ -648,35 +1099,21 @@
             label_selector: <span class="prelude-val">None</span>,
             field_selector: <span class="prelude-val">None</span>,
             timeout: <span class="prelude-val">None</span>,
-            limit: <span class="prelude-val">None</span>,
-            continue_token: <span class="prelude-val">None</span>,
         }
     }
 }
 
-<span class="kw">impl </span>ListParams {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>validate(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(to) = <span class="kw-2">&amp;</span><span class="self">self</span>.timeout {
-            <span class="comment">// https://github.com/kubernetes/kubernetes/issues/6513
-            </span><span class="kw">if </span><span class="kw-2">*</span>to &gt;= <span class="number">295 </span>{
-                <span class="kw">return </span><span class="prelude-val">Err</span>(Error::Validation(<span class="string">&quot;ListParams::timeout must be &lt; 295s&quot;</span>.into()));
-            }
-        }
-        <span class="prelude-val">Ok</span>(())
-    }
-}
-
-<span class="doccomment">/// Builder interface to ListParams
+<span class="doccomment">/// Builder interface to WatchParams
 ///
 /// Usage:
 /// ```
-/// use kube::api::ListParams;
-/// let lp = ListParams::default()
+/// use kube::api::WatchParams;
+/// let lp = WatchParams::default()
 ///     .timeout(60)
 ///     .labels(&quot;kubernetes.io/lifecycle=spot&quot;);
 /// ```
-</span><span class="kw">impl </span>ListParams {
-    <span class="doccomment">/// Configure the timeout for list/watch calls
+</span><span class="kw">impl </span>WatchParams {
+    <span class="doccomment">/// Configure the timeout for watch calls
     ///
     /// This limits the duration of the call, regardless of any activity or inactivity.
     /// Defaults to 290s
@@ -716,53 +1153,6 @@
         <span class="self">self</span>.bookmarks = <span class="bool-val">false</span>;
         <span class="self">self
     </span>}
-
-    <span class="doccomment">/// Sets a result limit.
-    </span><span class="attr">#[must_use]
-    </span><span class="kw">pub fn </span>limit(<span class="kw-2">mut </span><span class="self">self</span>, limit: u32) -&gt; <span class="self">Self </span>{
-        <span class="self">self</span>.limit = <span class="prelude-val">Some</span>(limit);
-        <span class="self">self
-    </span>}
-
-    <span class="doccomment">/// Sets a continue token.
-    </span><span class="attr">#[must_use]
-    </span><span class="kw">pub fn </span>continue_token(<span class="kw-2">mut </span><span class="self">self</span>, token: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
-        <span class="self">self</span>.continue_token = <span class="prelude-val">Some</span>(token.to_string());
-        <span class="self">self
-    </span>}
-}
-
-<span class="doccomment">/// The validation directive to use for `fieldValidation` when using server-side apply.
-</span><span class="attr">#[derive(Clone, Debug)]
-</span><span class="kw">pub enum </span>ValidationDirective {
-    <span class="doccomment">/// Strict mode will fail any invalid manifests.
-    ///
-    /// This will fail the request with a BadRequest error if any unknown fields would be dropped from the
-    /// object, or if any duplicate fields are present. The error returned from the server will contain
-    /// all unknown and duplicate fields encountered.
-    </span>Strict,
-    <span class="doccomment">/// Warn mode will return a warning for invalid manifests.
-    ///
-    /// This will send a warning via the standard warning response header for each unknown field that
-    /// is dropped from the object, and for each duplicate field that is encountered. The request will
-    /// still succeed if there are no other errors, and will only persist the last of any duplicate fields.
-    </span>Warn,
-    <span class="doccomment">/// Ignore mode will silently ignore any problems.
-    ///
-    /// This will ignore any unknown fields that are silently dropped from the object, and will ignore
-    /// all but the last duplicate field that the decoder encounters.
-    </span>Ignore,
-}
-
-<span class="kw">impl </span>ValidationDirective {
-    <span class="doccomment">/// Returns the string format of the directive
-    </span><span class="kw">pub fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
-        <span class="kw">match </span><span class="self">self </span>{
-            <span class="self">Self</span>::Strict =&gt; <span class="string">&quot;Strict&quot;</span>,
-            <span class="self">Self</span>::Warn =&gt; <span class="string">&quot;Warn&quot;</span>,
-            <span class="self">Self</span>::Ignore =&gt; <span class="string">&quot;Ignore&quot;</span>,
-        }
-    }
 }
 
 <span class="doccomment">/// Common query parameters for put/post calls

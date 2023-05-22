@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["v1"],"struct":["Descriptor","Metric","Mount","Platform"]};
+window.SIDEBAR_ITEMS = {"mod":["sandbox","v1"],"struct":["Descriptor","Metric","Mount","Platform","Sandbox"]};

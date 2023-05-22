@@ -1,0 +1,83 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="A short introduction to ASN.1 and BER."><title>bcder::guide::asn1_and_ber - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="bcder" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../../../bcder/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../../../bcder/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2 class="location"><a href="#">Module asn1_and_ber</a></h2><div class="sidebar-elems"></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Module <a href="../../index.html">bcder</a>::<wbr><a href="../index.html">guide</a>::<wbr><a class="mod" href="#">asn1_and_ber</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../../../src/bcder/guide/asn1_and_ber.rs.html#1-97">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>A short introduction to ASN.1 and BER.</p>
+<h2 id="asn1-and-encoding-rules"><a href="#asn1-and-encoding-rules">ASN.1 and Encoding Rules</a></h2>
+<p>The <em>Abstract Syntax Notation One</em> (ASN.1) is a formal language that can
+be used to describe the structure of data. Statements describe both data
+types and how they are composed from other types. In addition, values of
+these types can be specified. These rules do not, however, describe how
+the values are to be represented in files or on the network. This is done
+by accompanying standards known as <em>encoding rules.</em> Different such rules
+exist.</p>
+<p>On set of such encoding rules is the <em>Basic Encoding Rules</em> (BER). They
+are a relatively simple type-length-values encoding that can be derived
+straightforwardly from the ASN.1 notation. BER gives the encoder a number
+of options to accommodate differing use cases. As this means there is not
+necessarily a canonical encoding of a type, two restrictive profiles on
+top of BER have been defined: The <em>Canonical Encoding Rules</em> (CER) cater
+for cases where data is streamed and the final size of values is not
+necessarily known up front while <em>Distinguished Encoding Rules</em> (DER)
+always use the most simple option but require the overall length to be
+availbale before starting to encode.</p>
+<p>ASN.1 is currently defined in ITU-T recommendation <a href="https://www.itu.int/rec/T-REC-X.680-201508-I/en">X.680</a>, the three
+encoding rules in <a href="https://www.itu.int/rec/T-REC-X.690-201508-I/en">X.690</a>. Both these recommendations are freely available
+from the ITU.</p>
+<h2 id="asn1-definitions"><a href="#asn1-definitions">ASN.1 Definitions</a></h2>
+<p>ASN.1 collects definitions into documents called modules. All definitions
+create named objects: data types if the names start with a capital letter
+or values if they start with a small letter.</p>
+<p>As an example, here is how a certificate is defined by RFC 5280:</p>
+<div class="example-wrap"><pre class="language-text"><code>Certificate  ::=  SEQUENCE  {
+     tbsCertificate       TBSCertificate,
+     signatureAlgorithm   AlgorithmIdentifier,
+     signature            BIT STRING  }
+</code></pre></div>
+<p>This snippet defines a data type <code>Certificate</code> in terms of a number of
+other types. The terms in all caps are universal types that are part of
+the standard. <code>SEQUENCE</code> is a sequence of well defined elements
+provided one after another within the braces. In this case there are
+three elements. The first part is the name of the element and the
+second its type. The two types <code>TBSCertificate</code> and <code>AlgorithmIdentifer</code>
+are in turn defined elsewhere in the module while <code>BIT STRING</code> is a
+universal type representing a sequence of bits.</p>
+<p>Universal types are the fundamental building blocks that all ASN.1
+structures eventually boil down to. Each of these types has an
+identifying code called their tag. The BIT STRING type, for instance,
+has the tag 3 in universal class.</p>
+<blockquote>
+<p><em>Continues:</em></p>
+<ul>
+<li>implicit v. explicit tags,</li>
+<li>OPTIONAL, DEFAULT.</li>
+</ul>
+</blockquote>
+<h2 id="encoding-asn1-values"><a href="#encoding-asn1-values">Encoding ASN.1 Values</a></h2>
+<p>The Basic Encoding Rules describe how to encode a values of data types
+described by ASN.1 defintions. Since these definitions are either
+fundamental types or composed from other types, BER distinguishes two
+categories of encodings: primitive encodings for those fundamental
+types and constructed encodings for types that are composed from other
+types.</p>
+<p>Both categories consist of three parts: identifier octets, length octets,
+and content octets. The idenitifer octets describe the type of the value.
+They contain its tag and whether primitive or constructed encoding is
+used. The length octets determine the length of the value, more
+specifically the number of octets in the content octet. Those content
+octets finally contain the value’s content. For values in primitive
+encoding the interpretation of those octets depends on the type. For
+values in constructed encoding, the content octets are a sequence of
+values in BER encoding – i.e., the value is constructed from a sequence
+of more values.</p>
+<blockquote>
+<p><em>Continues:</em></p>
+<ul>
+<li>details on encoding of tag,</li>
+<li>definite v. indefinite length.</li>
+</ul>
+</blockquote>
+<h2 id="selected-universal-types"><a href="#selected-universal-types">Selected Universal Types</a></h2>
+<p>ASN.1 defines a wide range of types for all sorts of occassions. In
+practice, you are likely to encounter only a few. The following has
+some details on the types that the <em>ber</em> crate supports.</p>
+<blockquote>
+<p><em>well, it will have, soon …</em></p>
+</blockquote>
+</div></details></section></div></main></body></html>

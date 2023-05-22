@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Channel","ClientTlsConfig","Endpoint","ResponseFuture"]};
+window.SIDEBAR_ITEMS = {"struct":["Channel","Endpoint","ResponseFuture"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"derive":["CborLen","Decode","Encode"],"fn":["decode","decode_with","encode","encode_with","len","len_with","to_vec","to_vec_with"],"mod":["bytes","data","decode","encode"]};

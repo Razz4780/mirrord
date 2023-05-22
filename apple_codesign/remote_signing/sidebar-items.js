@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["DEFAULT_SERVER_URL"],"enum":["RemoteSignError"],"mod":["session_negotiation"],"struct":["InitiatorClient","PairedClient","SigningClient","UnjoinedSigningClient"],"type":["SessionInfoCallback"]};

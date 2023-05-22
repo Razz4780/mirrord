@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["Fallback"],"trait":["InstructionSet","SIMD128","SIMD256"]};

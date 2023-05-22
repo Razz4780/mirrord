@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tonic-0.8.3/src/codec/decode.rs`."><title>decode.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="tonic" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../tonic/index.html"><img src="https://raw.githubusercontent.com/tokio-rs/website/master/public/img/icons/tonic.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tonic-0.9.2/src/codec/decode.rs`."><title>decode.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="tonic" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../tonic/index.html"><img src="https://raw.githubusercontent.com/tokio-rs/website/master/public/img/icons/tonic.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -379,8 +379,47 @@
 <a href="#379" id="379">379</a>
 <a href="#380" id="380">380</a>
 <a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a>
+<a href="#398" id="398">398</a>
+<a href="#399" id="399">399</a>
+<a href="#400" id="400">400</a>
+<a href="#401" id="401">401</a>
+<a href="#402" id="402">402</a>
+<a href="#403" id="403">403</a>
+<a href="#404" id="404">404</a>
+<a href="#405" id="405">405</a>
+<a href="#406" id="406">406</a>
+<a href="#407" id="407">407</a>
+<a href="#408" id="408">408</a>
+<a href="#409" id="409">409</a>
+<a href="#410" id="410">410</a>
+<a href="#411" id="411">411</a>
+<a href="#412" id="412">412</a>
+<a href="#413" id="413">413</a>
+<a href="#414" id="414">414</a>
+<a href="#415" id="415">415</a>
+<a href="#416" id="416">416</a>
+<a href="#417" id="417">417</a>
+<a href="#418" id="418">418</a>
+<a href="#419" id="419">419</a>
+<a href="#420" id="420">420</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::compression::{decompress, CompressionEncoding};
-<span class="kw">use super</span>::{DecodeBuf, Decoder, HEADER_SIZE};
+<span class="kw">use super</span>::{DecodeBuf, Decoder, DEFAULT_MAX_RECV_MESSAGE_SIZE, HEADER_SIZE};
 <span class="kw">use crate</span>::{body::BoxBody, metadata::MetadataMap, Code, Status};
 <span class="kw">use </span>bytes::{Buf, BufMut, BytesMut};
 <span class="kw">use </span>futures_core::Stream;
@@ -413,6 +452,7 @@
     trailers: <span class="prelude-ty">Option</span>&lt;MetadataMap&gt;,
     decompress_buf: BytesMut,
     encoding: <span class="prelude-ty">Option</span>&lt;CompressionEncoding&gt;,
+    max_message_size: <span class="prelude-ty">Option</span>&lt;usize&gt;,
 }
 
 <span class="kw">impl</span>&lt;T&gt; Unpin <span class="kw">for </span>Streaming&lt;T&gt; {}
@@ -427,7 +467,7 @@
     Error,
 }
 
-<span class="attr">#[derive(Debug)]
+<span class="attr">#[derive(Debug, PartialEq, Eq)]
 </span><span class="kw">enum </span>Direction {
     Request,
     Response(StatusCode),
@@ -440,13 +480,20 @@
         body: B,
         status_code: StatusCode,
         encoding: <span class="prelude-ty">Option</span>&lt;CompressionEncoding&gt;,
+        max_message_size: <span class="prelude-ty">Option</span>&lt;usize&gt;,
     ) -&gt; <span class="self">Self
     </span><span class="kw">where
         </span>B: Body + Send + <span class="lifetime">&#39;static</span>,
         B::Error: Into&lt;<span class="kw">crate</span>::Error&gt;,
         D: Decoder&lt;Item = T, Error = Status&gt; + Send + <span class="lifetime">&#39;static</span>,
     {
-        <span class="self">Self</span>::new(decoder, body, Direction::Response(status_code), encoding)
+        <span class="self">Self</span>::new(
+            decoder,
+            body,
+            Direction::Response(status_code),
+            encoding,
+            max_message_size,
+        )
     }
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new_empty&lt;B, D&gt;(decoder: D, body: B) -&gt; <span class="self">Self
@@ -455,17 +502,28 @@
         B::Error: Into&lt;<span class="kw">crate</span>::Error&gt;,
         D: Decoder&lt;Item = T, Error = Status&gt; + Send + <span class="lifetime">&#39;static</span>,
     {
-        <span class="self">Self</span>::new(decoder, body, Direction::EmptyResponse, <span class="prelude-val">None</span>)
+        <span class="self">Self</span>::new(decoder, body, Direction::EmptyResponse, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)
     }
 
     <span class="attr">#[doc(hidden)]
-    </span><span class="kw">pub fn </span>new_request&lt;B, D&gt;(decoder: D, body: B, encoding: <span class="prelude-ty">Option</span>&lt;CompressionEncoding&gt;) -&gt; <span class="self">Self
+    </span><span class="kw">pub fn </span>new_request&lt;B, D&gt;(
+        decoder: D,
+        body: B,
+        encoding: <span class="prelude-ty">Option</span>&lt;CompressionEncoding&gt;,
+        max_message_size: <span class="prelude-ty">Option</span>&lt;usize&gt;,
+    ) -&gt; <span class="self">Self
     </span><span class="kw">where
         </span>B: Body + Send + <span class="lifetime">&#39;static</span>,
         B::Error: Into&lt;<span class="kw">crate</span>::Error&gt;,
         D: Decoder&lt;Item = T, Error = Status&gt; + Send + <span class="lifetime">&#39;static</span>,
     {
-        <span class="self">Self</span>::new(decoder, body, Direction::Request, encoding)
+        <span class="self">Self</span>::new(
+            decoder,
+            body,
+            Direction::Request,
+            encoding,
+            max_message_size,
+        )
     }
 
     <span class="kw">fn </span>new&lt;B, D&gt;(
@@ -473,6 +531,7 @@
         body: B,
         direction: Direction,
         encoding: <span class="prelude-ty">Option</span>&lt;CompressionEncoding&gt;,
+        max_message_size: <span class="prelude-ty">Option</span>&lt;usize&gt;,
     ) -&gt; <span class="self">Self
     </span><span class="kw">where
         </span>B: Body + Send + <span class="lifetime">&#39;static</span>,
@@ -492,6 +551,7 @@
                 trailers: <span class="prelude-val">None</span>,
                 decompress_buf: BytesMut::new(),
                 encoding,
+                max_message_size,
             },
         }
     }
@@ -532,7 +592,21 @@
                     <span class="kw">return </span><span class="prelude-val">Err</span>(Status::new(Code::Internal, message));
                 }
             };
+
             <span class="kw">let </span>len = <span class="self">self</span>.buf.get_u32() <span class="kw">as </span>usize;
+            <span class="kw">let </span>limit = <span class="self">self
+                </span>.max_message_size
+                .unwrap_or(DEFAULT_MAX_RECV_MESSAGE_SIZE);
+            <span class="kw">if </span>len &gt; limit {
+                <span class="kw">return </span><span class="prelude-val">Err</span>(Status::new(
+                    Code::OutOfRange,
+                    <span class="macro">format!</span>(
+                        <span class="string">&quot;Error, message length too large: found {} bytes, the limit is: {} bytes&quot;</span>,
+                        len, limit
+                    ),
+                ));
+            }
+
             <span class="self">self</span>.buf.reserve(len);
 
             <span class="self">self</span>.state = State::ReadBody {
@@ -580,6 +654,10 @@
         <span class="kw">let </span>chunk = <span class="kw">match </span><span class="macro">ready!</span>(Pin::new(<span class="kw-2">&amp;mut </span><span class="self">self</span>.body).poll_data(cx)) {
             <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(d)) =&gt; <span class="prelude-val">Some</span>(d),
             <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(e)) =&gt; {
+                <span class="kw">if </span><span class="self">self</span>.direction == Direction::Request &amp;&amp; e.code() == Code::Cancelled {
+                    <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>));
+                }
+
                 <span class="kw">let _ </span>= std::mem::replace(<span class="kw-2">&amp;mut </span><span class="self">self</span>.state, State::Error);
                 <span class="kw">let </span>err: <span class="kw">crate</span>::Error = e.into();
                 <span class="macro">debug!</span>(<span class="string">&quot;decoder inner stream error: {:?}&quot;</span>, err);

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["pair","tuple"],"trait":["Tuple"]};

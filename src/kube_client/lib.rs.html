@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/kube-client-0.77.0/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="kube_client" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../kube_client/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/kube-client-0.82.2/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="kube_client" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../kube_client/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -529,6 +529,88 @@
 <a href="#529" id="529">529</a>
 <a href="#530" id="530">530</a>
 <a href="#531" id="531">531</a>
+<a href="#532" id="532">532</a>
+<a href="#533" id="533">533</a>
+<a href="#534" id="534">534</a>
+<a href="#535" id="535">535</a>
+<a href="#536" id="536">536</a>
+<a href="#537" id="537">537</a>
+<a href="#538" id="538">538</a>
+<a href="#539" id="539">539</a>
+<a href="#540" id="540">540</a>
+<a href="#541" id="541">541</a>
+<a href="#542" id="542">542</a>
+<a href="#543" id="543">543</a>
+<a href="#544" id="544">544</a>
+<a href="#545" id="545">545</a>
+<a href="#546" id="546">546</a>
+<a href="#547" id="547">547</a>
+<a href="#548" id="548">548</a>
+<a href="#549" id="549">549</a>
+<a href="#550" id="550">550</a>
+<a href="#551" id="551">551</a>
+<a href="#552" id="552">552</a>
+<a href="#553" id="553">553</a>
+<a href="#554" id="554">554</a>
+<a href="#555" id="555">555</a>
+<a href="#556" id="556">556</a>
+<a href="#557" id="557">557</a>
+<a href="#558" id="558">558</a>
+<a href="#559" id="559">559</a>
+<a href="#560" id="560">560</a>
+<a href="#561" id="561">561</a>
+<a href="#562" id="562">562</a>
+<a href="#563" id="563">563</a>
+<a href="#564" id="564">564</a>
+<a href="#565" id="565">565</a>
+<a href="#566" id="566">566</a>
+<a href="#567" id="567">567</a>
+<a href="#568" id="568">568</a>
+<a href="#569" id="569">569</a>
+<a href="#570" id="570">570</a>
+<a href="#571" id="571">571</a>
+<a href="#572" id="572">572</a>
+<a href="#573" id="573">573</a>
+<a href="#574" id="574">574</a>
+<a href="#575" id="575">575</a>
+<a href="#576" id="576">576</a>
+<a href="#577" id="577">577</a>
+<a href="#578" id="578">578</a>
+<a href="#579" id="579">579</a>
+<a href="#580" id="580">580</a>
+<a href="#581" id="581">581</a>
+<a href="#582" id="582">582</a>
+<a href="#583" id="583">583</a>
+<a href="#584" id="584">584</a>
+<a href="#585" id="585">585</a>
+<a href="#586" id="586">586</a>
+<a href="#587" id="587">587</a>
+<a href="#588" id="588">588</a>
+<a href="#589" id="589">589</a>
+<a href="#590" id="590">590</a>
+<a href="#591" id="591">591</a>
+<a href="#592" id="592">592</a>
+<a href="#593" id="593">593</a>
+<a href="#594" id="594">594</a>
+<a href="#595" id="595">595</a>
+<a href="#596" id="596">596</a>
+<a href="#597" id="597">597</a>
+<a href="#598" id="598">598</a>
+<a href="#599" id="599">599</a>
+<a href="#600" id="600">600</a>
+<a href="#601" id="601">601</a>
+<a href="#602" id="602">602</a>
+<a href="#603" id="603">603</a>
+<a href="#604" id="604">604</a>
+<a href="#605" id="605">605</a>
+<a href="#606" id="606">606</a>
+<a href="#607" id="607">607</a>
+<a href="#608" id="608">608</a>
+<a href="#609" id="609">609</a>
+<a href="#610" id="610">610</a>
+<a href="#611" id="611">611</a>
+<a href="#612" id="612">612</a>
+<a href="#613" id="613">613</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Crate for interacting with the Kubernetes API
 //!
 //! This crate includes the tools for manipulating Kubernetes resources as
@@ -656,7 +738,6 @@
 <span class="doccomment">/// Re-exports from kube_core
 </span><span class="kw">pub use </span>kube_core <span class="kw">as </span>core;
 
-
 <span class="comment">// Tests that require a cluster and the complete feature set
 // Can be run with `cargo test -p kube-client --lib features=rustls-tls,ws -- --ignored`
 </span><span class="attr">#[cfg(all(feature = <span class="string">&quot;client&quot;</span>, feature = <span class="string">&quot;config&quot;</span>))]
@@ -671,7 +752,7 @@
     <span class="kw">use </span>futures::{StreamExt, TryStreamExt};
     <span class="kw">use </span>k8s_openapi::api::core::v1::Pod;
     <span class="kw">use </span>kube_core::{
-        params::{DeleteParams, Patch},
+        params::{DeleteParams, Patch, WatchParams},
         response::StatusSummary,
     };
     <span class="kw">use </span>serde_json::json;
@@ -680,8 +761,8 @@
     <span class="comment">// hard disabled test atm due to k3d rustls issues: https://github.com/kube-rs/kube/issues?q=is%3Aopen+is%3Aissue+label%3Arustls
     </span><span class="attr">#[cfg(feature = <span class="string">&quot;when_rustls_works_with_k3d&quot;</span>)]
     #[tokio::test]
-    #[ignore] </span><span class="comment">// needs cluster (lists pods)
-    </span><span class="attr">#[cfg(all(feature = <span class="string">&quot;rustls-tls&quot;</span>))]
+    #[ignore = <span class="string">&quot;needs cluster (lists pods)&quot;</span>]
+    #[cfg(all(feature = <span class="string">&quot;rustls-tls&quot;</span>))]
     </span><span class="kw">async fn </span>custom_client_rustls_configuration() -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
         <span class="kw">let </span>config = Config::infer().<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="kw">let </span>https = config.rustls_https_connector()<span class="question-mark">?</span>;
@@ -695,8 +776,8 @@
     }
 
     <span class="attr">#[tokio::test]
-    #[ignore] </span><span class="comment">// needs cluster (lists pods)
-    </span><span class="attr">#[cfg(all(feature = <span class="string">&quot;openssl-tls&quot;</span>))]
+    #[ignore = <span class="string">&quot;needs cluster (lists pods)&quot;</span>]
+    #[cfg(all(feature = <span class="string">&quot;openssl-tls&quot;</span>))]
     </span><span class="kw">async fn </span>custom_client_openssl_tls_configuration() -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
         <span class="kw">let </span>config = Config::infer().<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="kw">let </span>https = config.openssl_https_connector()<span class="question-mark">?</span>;
@@ -710,8 +791,8 @@
     }
 
     <span class="attr">#[tokio::test]
-    #[ignore] </span><span class="comment">// needs cluster (lists api resources)
-    </span><span class="attr">#[cfg(all(feature = <span class="string">&quot;discovery&quot;</span>))]
+    #[ignore = <span class="string">&quot;needs cluster (lists api resources)&quot;</span>]
+    #[cfg(all(feature = <span class="string">&quot;discovery&quot;</span>))]
     </span><span class="kw">async fn </span>group_discovery_oneshot() -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
         <span class="kw">use crate</span>::{core::DynamicObject, discovery};
         <span class="kw">let </span>client = Client::try_default().<span class="kw">await</span><span class="question-mark">?</span>;
@@ -724,7 +805,7 @@
     }
 
     <span class="attr">#[tokio::test]
-    #[ignore] </span><span class="comment">// needs cluster (will create and edit a pod)
+    #[ignore = <span class="string">&quot;needs cluster (will create and edit a pod)&quot;</span>]
     </span><span class="kw">async fn </span>pod_can_use_core_apis() -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
         <span class="kw">use </span>kube::api::{DeleteParams, ListParams, Patch, PatchParams, PostParams, WatchEvent};
 
@@ -759,10 +840,10 @@
 
         <span class="comment">// Manual watch-api for it to become ready
         // NB: don&#39;t do this; using conditions (see pod_api example) is easier and less error prone
-        </span><span class="kw">let </span>lp = ListParams::default()
+        </span><span class="kw">let </span>wp = WatchParams::default()
             .fields(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;metadata.name={}&quot;</span>, <span class="string">&quot;busybox-kube1&quot;</span>))
             .timeout(<span class="number">15</span>);
-        <span class="kw">let </span><span class="kw-2">mut </span>stream = pods.watch(<span class="kw-2">&amp;</span>lp, <span class="string">&quot;0&quot;</span>).<span class="kw">await</span><span class="question-mark">?</span>.boxed();
+        <span class="kw">let </span><span class="kw-2">mut </span>stream = pods.watch(<span class="kw-2">&amp;</span>wp, <span class="string">&quot;0&quot;</span>).<span class="kw">await</span><span class="question-mark">?</span>.boxed();
         <span class="kw">while let </span><span class="prelude-val">Some</span>(ev) = stream.try_next().<span class="kw">await</span><span class="question-mark">? </span>{
             <span class="comment">// can debug format watch event
             </span><span class="kw">let _ </span>= <span class="macro">format!</span>(<span class="string">&quot;we: {ev:?}&quot;</span>);
@@ -804,8 +885,8 @@
     }
 
     <span class="attr">#[tokio::test]
-    #[ignore] </span><span class="comment">// needs cluster (will create and attach to a pod)
-    </span><span class="attr">#[cfg(all(feature = <span class="string">&quot;ws&quot;</span>))]
+    #[ignore = <span class="string">&quot;needs cluster (will create and attach to a pod)&quot;</span>]
+    #[cfg(all(feature = <span class="string">&quot;ws&quot;</span>))]
     </span><span class="kw">async fn </span>pod_can_exec_and_write_to_stdin() -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
         <span class="kw">use </span><span class="kw">crate</span>::api::{DeleteParams, ListParams, Patch, PatchParams, WatchEvent};
 
@@ -839,10 +920,10 @@
 
         <span class="comment">// Manual watch-api for it to become ready
         // NB: don&#39;t do this; using conditions (see pod_api example) is easier and less error prone
-        </span><span class="kw">let </span>lp = ListParams::default()
+        </span><span class="kw">let </span>wp = WatchParams::default()
             .fields(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;metadata.name={}&quot;</span>, <span class="string">&quot;busybox-kube2&quot;</span>))
             .timeout(<span class="number">15</span>);
-        <span class="kw">let </span><span class="kw-2">mut </span>stream = pods.watch(<span class="kw-2">&amp;</span>lp, <span class="string">&quot;0&quot;</span>).<span class="kw">await</span><span class="question-mark">?</span>.boxed();
+        <span class="kw">let </span><span class="kw-2">mut </span>stream = pods.watch(<span class="kw-2">&amp;</span>wp, <span class="string">&quot;0&quot;</span>).<span class="kw">await</span><span class="question-mark">?</span>.boxed();
         <span class="kw">while let </span><span class="prelude-val">Some</span>(ev) = stream.try_next().<span class="kw">await</span><span class="question-mark">? </span>{
             <span class="kw">match </span>ev {
                 WatchEvent::Modified(o) =&gt; {
@@ -916,7 +997,7 @@
     }
 
     <span class="attr">#[tokio::test]
-    #[ignore] </span><span class="comment">// needs cluster (will create and tail logs from a pod)
+    #[ignore = <span class="string">&quot;needs cluster (will create and tail logs from a pod)&quot;</span>]
     </span><span class="kw">async fn </span>can_get_pod_logs_and_evict() -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
         <span class="kw">use crate</span>::{
             api::{DeleteParams, EvictParams, ListParams, Patch, PatchParams, WatchEvent},
@@ -953,10 +1034,10 @@
 
         <span class="comment">// Manual watch-api for it to become ready
         // NB: don&#39;t do this; using conditions (see pod_api example) is easier and less error prone
-        </span><span class="kw">let </span>lp = ListParams::default()
+        </span><span class="kw">let </span>wp = WatchParams::default()
             .fields(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;metadata.name={}&quot;</span>, <span class="string">&quot;busybox-kube3&quot;</span>))
             .timeout(<span class="number">15</span>);
-        <span class="kw">let </span><span class="kw-2">mut </span>stream = pods.watch(<span class="kw-2">&amp;</span>lp, <span class="string">&quot;0&quot;</span>).<span class="kw">await</span><span class="question-mark">?</span>.boxed();
+        <span class="kw">let </span><span class="kw-2">mut </span>stream = pods.watch(<span class="kw-2">&amp;</span>wp, <span class="string">&quot;0&quot;</span>).<span class="kw">await</span><span class="question-mark">?</span>.boxed();
         <span class="kw">while let </span><span class="prelude-val">Some</span>(ev) = stream.try_next().<span class="kw">await</span><span class="question-mark">? </span>{
             <span class="kw">match </span>ev {
                 WatchEvent::Modified(o) =&gt; {
@@ -977,20 +1058,19 @@
             ..LogParams::default()
         };
         <span class="kw">let </span><span class="kw-2">mut </span>logs_stream = pods.log_stream(<span class="string">&quot;busybox-kube3&quot;</span>, <span class="kw-2">&amp;</span>lp).<span class="kw">await</span><span class="question-mark">?</span>.boxed();
-        <span class="kw">let </span>log_line = logs_stream.try_next().<span class="kw">await</span><span class="question-mark">?</span>.unwrap();
-        <span class="macro">assert_eq!</span>(log_line, <span class="string">&quot;kube 1\n&quot;</span>);
 
         <span class="comment">// wait for container to finish
-        </span>tokio::time::sleep(std::time::Duration::from_secs(<span class="number">1</span>)).<span class="kw">await</span>;
+        </span>tokio::time::sleep(std::time::Duration::from_secs(<span class="number">2</span>)).<span class="kw">await</span>;
 
         <span class="kw">let </span>all_logs = pods.logs(<span class="string">&quot;busybox-kube3&quot;</span>, <span class="kw-2">&amp;</span>Default::default()).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="macro">assert_eq!</span>(all_logs, <span class="string">&quot;kube 1\nkube 2\nkube 3\nkube 4\nkube 5\n&quot;</span>);
 
-        <span class="comment">// remaining logs should have been buffered internally
-        </span><span class="macro">assert_eq!</span>(logs_stream.try_next().<span class="kw">await</span><span class="question-mark">?</span>.unwrap(), <span class="string">&quot;kube 2\n&quot;</span>);
-        <span class="macro">assert_eq!</span>(logs_stream.try_next().<span class="kw">await</span><span class="question-mark">?</span>.unwrap(), <span class="string">&quot;kube 3\n&quot;</span>);
-        <span class="macro">assert_eq!</span>(logs_stream.try_next().<span class="kw">await</span><span class="question-mark">?</span>.unwrap(), <span class="string">&quot;kube 4\n&quot;</span>);
-        <span class="macro">assert_eq!</span>(logs_stream.try_next().<span class="kw">await</span><span class="question-mark">?</span>.unwrap(), <span class="string">&quot;kube 5\n&quot;</span>);
+        <span class="comment">// individual logs may or may not buffer
+        </span><span class="kw">let </span><span class="kw-2">mut </span>output = String::new();
+        <span class="kw">while let </span><span class="prelude-val">Some</span>(line) = logs_stream.try_next().<span class="kw">await</span><span class="question-mark">? </span>{
+            output.push_str(<span class="kw-2">&amp;</span>String::from_utf8_lossy(<span class="kw-2">&amp;</span>line));
+        }
+        <span class="macro">assert_eq!</span>(output, <span class="string">&quot;kube 1\nkube 2\nkube 3\nkube 4\nkube 5\n&quot;</span>);
 
         <span class="comment">// evict the pod
         </span><span class="kw">let </span>ep = EvictParams::default();
@@ -1002,7 +1082,91 @@
     }
 
     <span class="attr">#[tokio::test]
-    #[ignore] </span><span class="comment">// needs cluster (will create a CertificateSigningRequest)
+    #[ignore = <span class="string">&quot;requires a cluster&quot;</span>]
+    </span><span class="kw">async fn </span>can_operate_on_pod_metadata() -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
+        <span class="kw">use crate</span>::{
+            api::{DeleteParams, EvictParams, ListParams, Patch, PatchParams, WatchEvent},
+            core::subresource::LogParams,
+        };
+        <span class="kw">use </span>kube_core::{ObjectList, ObjectMeta, PartialObjectMeta, PartialObjectMetaExt};
+
+        <span class="kw">let </span>client = Client::try_default().<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>pods: Api&lt;Pod&gt; = Api::default_namespaced(client);
+
+        <span class="comment">// create busybox pod that&#39;s alive for at most 30s
+        </span><span class="kw">let </span>p: Pod = serde_json::from_value(<span class="macro">json!</span>({
+            <span class="string">&quot;apiVersion&quot;</span>: <span class="string">&quot;v1&quot;</span>,
+            <span class="string">&quot;kind&quot;</span>: <span class="string">&quot;Pod&quot;</span>,
+            <span class="string">&quot;metadata&quot;</span>: {
+                <span class="string">&quot;name&quot;</span>: <span class="string">&quot;busybox-kube-meta&quot;</span>,
+                <span class="string">&quot;labels&quot;</span>: { <span class="string">&quot;app&quot;</span>: <span class="string">&quot;kube-rs-test&quot; </span>},
+            },
+            <span class="string">&quot;spec&quot;</span>: {
+                <span class="string">&quot;terminationGracePeriodSeconds&quot;</span>: <span class="number">1</span>,
+                <span class="string">&quot;restartPolicy&quot;</span>: <span class="string">&quot;Never&quot;</span>,
+                <span class="string">&quot;containers&quot;</span>: [{
+                  <span class="string">&quot;name&quot;</span>: <span class="string">&quot;busybox&quot;</span>,
+                  <span class="string">&quot;image&quot;</span>: <span class="string">&quot;busybox:1.34.1&quot;</span>,
+                  <span class="string">&quot;command&quot;</span>: [<span class="string">&quot;sh&quot;</span>, <span class="string">&quot;-c&quot;</span>, <span class="string">&quot;sleep 30s&quot;</span>],
+                }],
+            }
+        }))<span class="question-mark">?</span>;
+
+        <span class="kw">match </span>pods.create(<span class="kw-2">&amp;</span>Default::default(), <span class="kw-2">&amp;</span>p).<span class="kw">await </span>{
+            <span class="prelude-val">Ok</span>(o) =&gt; <span class="macro">assert_eq!</span>(p.name_unchecked(), o.name_unchecked()),
+            <span class="prelude-val">Err</span>(<span class="kw">crate</span>::Error::Api(ae)) =&gt; <span class="macro">assert_eq!</span>(ae.code, <span class="number">409</span>), <span class="comment">// if we failed to clean-up
+            </span><span class="prelude-val">Err</span>(e) =&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(e.into()),                         <span class="comment">// any other case if a failure
+        </span>}
+
+        <span class="comment">// Test we can get a pod as a PartialObjectMeta and convert to
+        // ObjectMeta
+        </span><span class="kw">let </span>pod_metadata = pods.get_metadata(<span class="string">&quot;busybox-kube-meta&quot;</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="macro">assert_eq!</span>(<span class="string">&quot;busybox-kube-meta&quot;</span>, pod_metadata.name_any());
+        <span class="macro">assert_eq!</span>(
+            <span class="prelude-val">Some</span>((<span class="kw-2">&amp;</span><span class="string">&quot;app&quot;</span>.to_string(), <span class="kw-2">&amp;</span><span class="string">&quot;kube-rs-test&quot;</span>.to_string())),
+            pod_metadata.labels().get_key_value(<span class="string">&quot;app&quot;</span>)
+        );
+
+        <span class="comment">// Test we can get a list of PartialObjectMeta for pods
+        </span><span class="kw">let </span>p_list = pods.list_metadata(<span class="kw-2">&amp;</span>ListParams::default()).<span class="kw">await</span><span class="question-mark">?</span>;
+
+        <span class="comment">// Find only pod we are concerned with in this test and fail eagerly if
+        // name doesn&#39;t exist
+        </span><span class="kw">let </span>pod_metadata = p_list
+            .items
+            .into_iter()
+            .find(|p| p.name_any() == <span class="string">&quot;busybox-kube-meta&quot;</span>)
+            .unwrap();
+        <span class="macro">assert_eq!</span>(
+            pod_metadata.labels().get(<span class="string">&quot;app&quot;</span>),
+            <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="string">&quot;kube-rs-test&quot;</span>.to_string())
+        );
+
+        <span class="comment">// Attempt to patch pod metadata
+        </span><span class="kw">let </span>patch = ObjectMeta {
+            annotations: <span class="prelude-val">Some</span>([(<span class="string">&quot;test&quot;</span>.to_string(), <span class="string">&quot;123&quot;</span>.to_string())].into()),
+            ..Default::default()
+        }
+        .into_request_partial::&lt;Pod&gt;();
+
+        <span class="kw">let </span>patchparams = PatchParams::default();
+        <span class="kw">let </span>p_patched = pods
+            .patch_metadata(<span class="string">&quot;busybox-kube-meta&quot;</span>, <span class="kw-2">&amp;</span>patchparams, <span class="kw-2">&amp;</span>Patch::Merge(<span class="kw-2">&amp;</span>patch))
+            .<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="macro">assert_eq!</span>(p_patched.annotations().get(<span class="string">&quot;test&quot;</span>), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="string">&quot;123&quot;</span>.to_string()));
+        <span class="macro">assert_eq!</span>(p_patched.types.as_ref().unwrap().kind, <span class="string">&quot;PartialObjectMetadata&quot;</span>);
+        <span class="macro">assert_eq!</span>(p_patched.types.as_ref().unwrap().api_version, <span class="string">&quot;meta.k8s.io/v1&quot;</span>);
+
+        <span class="comment">// Clean-up
+        </span><span class="kw">let </span>dp = DeleteParams::default();
+        pods.delete(<span class="string">&quot;busybox-kube-meta&quot;</span>, <span class="kw-2">&amp;</span>dp).<span class="kw">await</span><span class="question-mark">?</span>.map_left(|pdel| {
+            <span class="macro">assert_eq!</span>(pdel.name_any(), <span class="string">&quot;busybox-kube-meta&quot;</span>);
+        });
+
+        <span class="prelude-val">Ok</span>(())
+    }
+    <span class="attr">#[tokio::test]
+    #[ignore = <span class="string">&quot;needs cluster (will create a CertificateSigningRequest)&quot;</span>]
     </span><span class="kw">async fn </span>csr_can_be_approved() -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
         <span class="kw">use </span><span class="kw">crate</span>::api::PostParams;
         <span class="kw">use </span>k8s_openapi::api::certificates::v1::{

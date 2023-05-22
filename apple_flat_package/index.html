@@ -1,0 +1,66 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Apple flat packages."><title>apple_flat_package - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="apple_flat_package" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../apple_flat_package/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../apple_flat_package/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2 class="location"><a href="#">Crate apple_flat_package</a></h2><div class="sidebar-elems"><ul class="block"><li class="version">Version 0.13.0</li><li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#reexports">Re-exports</a></li><li><a href="#modules">Modules</a></li><li><a href="#enums">Enums</a></li><li><a href="#types">Type Definitions</a></li></ul></section></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">apple_flat_package</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../src/apple_flat_package/lib.rs.html#5-118">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Apple flat packages.</p>
+<p>Apple flat packages - often existing as <code>.pkg</code> files - are an installer
+file format used by macOS.</p>
+<h2 id="file-format"><a href="#file-format">File Format</a></h2>
+<p>Flat packages are Apple-flavored XAR archives. XAR is a tar-like
+file format consisting of file records/metadata and raw file data.
+See the <code>apple-xar</code> crate for more on this file format.</p>
+<p>Flat packages come in 2 flavors: <em>component</em> packages and <em>product</em>
+packages. <em>Component</em> packages contain a single <em>component</em>. <em>Product</em>
+installers can contain multiple <em>components</em> as well as additional
+metadata describing the installer. End-user <code>.pkg</code> files are typically
+<em>product</em> packages. Using Apple tooling, <em>component</em> packages are built
+<code>pkgbuild</code> and <em>product</em> packages using <code>productbuild</code>.</p>
+<h3 id="components"><a href="#components">Components</a></h3>
+<p>A <em>component</em> defines an installable unit. <em>Components</em> are comprised of
+a set of well-known files:</p>
+<p><code>Bom</code>
+A <em>bill of materials</em> describing the contents of the component.
+<code>PackageInfo</code>
+An XML file describing the component. See <a href="package_info/struct.PackageInfo.html" title="struct apple_flat_package::package_info::PackageInfo">PackageInfo</a> for the Rust
+struct defining this file format.
+<code>Payload</code>
+A cpio archive containing files comprising the component. See the
+<code>cpio-archive</code> for more on this file format.
+<code>Scripts</code>
+A cpio archive containing <em>scripts</em> files that run as part of component
+processing.</p>
+<h3 id="products"><a href="#products">Products</a></h3>
+<p>A <em>product</em> flat package consists of 1 or more <em>components</em> and additional
+metadata.</p>
+<p>A <em>product</em> flat package is identified by the presence of a <code>Distribution</code>
+XML file in the root of the archive. See <a href="distribution/struct.Distribution.html" title="struct apple_flat_package::distribution::Distribution">Distribution</a> for the Rust type
+defining this file format. See also
+<a href="https://developer.apple.com/library/archive/documentation/DeveloperTools/Reference/DistributionDefinitionRef/Chapters/Distribution_XML_Ref.html">Apple’s XML documentation</a>.</p>
+<p>Components within a <em>product</em> flat package exist in sub-directories which often
+have the name <code>*.pkg/</code>.</p>
+<p>In addition, a <em>product</em> flat package may also have additional <em>resource</em> files
+in the <code>Resources/</code> directory.</p>
+<h2 id="cryptographic-signing"><a href="#cryptographic-signing">Cryptographic Signing</a></h2>
+<p>Cryptographic message syntax (CMS) / RFC 5652 signatures can be embedded in
+the XAR archive’s <em>table of contents</em>, which is a data structure at the beginning
+of the XAR defining the content within.</p>
+<p>The cryptographic signature is over the <em>checksum</em> content digest, which is also
+captured in the XAR table of contents. This <em>checksum</em> effectively captures the
+content of all files within the XAR.</p>
+<h2 id="nested-archive-formats"><a href="#nested-archive-formats">Nested Archive Formats</a></h2>
+<p>Flat packages contain multiple data structures that effectively enumerate
+lists of files. There are many layers to the onion and there is duplication
+of functionality to express file manifests.</p>
+<ul>
+<li>XAR archives contain a <em>table of contents</em> enumerating files within the XAR.</li>
+<li>Each component has <code>Payload</code> and/or <code>Scripts</code> files, which are cpio archives.
+These cpio archives are file manifests containing file metadata and content.</li>
+<li>Each component may have a <code>Bom</code>, which is a binary data structure defining
+file metadata as well as other attributes.</li>
+</ul>
+<p>There are also multiple layers that involve compression:</p>
+<ul>
+<li>The XAR table of contents is likely compressed with zlib.</li>
+<li>Individual files within XAR archives can be individually compressed
+with a compression format denoted by a MIME type.</li>
+<li>cpio archive files may also be compressed.</li>
+<li>Installed files in components may also be compressed (but this file
+content is treated as opaque by the flat package format).</li>
+</ul>
+</div></details><h2 id="reexports" class="small-section-header"><a href="#reexports">Re-exports</a></h2><ul class="item-table"><li><div class="item-name" id="reexport.ComponentPackageReader"><code>pub use component_package::<a class="struct" href="component_package/struct.ComponentPackageReader.html" title="struct apple_flat_package::component_package::ComponentPackageReader">ComponentPackageReader</a>;</code></div></li><li><div class="item-name" id="reexport.Distribution"><code>pub use distribution::<a class="struct" href="distribution/struct.Distribution.html" title="struct apple_flat_package::distribution::Distribution">Distribution</a>;</code></div></li><li><div class="item-name" id="reexport.PackageInfo"><code>pub use package_info::<a class="struct" href="package_info/struct.PackageInfo.html" title="struct apple_flat_package::package_info::PackageInfo">PackageInfo</a>;</code></div></li><li><div class="item-name" id="reexport.PkgFlavor"><code>pub use reader::<a class="enum" href="reader/enum.PkgFlavor.html" title="enum apple_flat_package::reader::PkgFlavor">PkgFlavor</a>;</code></div></li><li><div class="item-name" id="reexport.PkgReader"><code>pub use reader::<a class="struct" href="reader/struct.PkgReader.html" title="struct apple_flat_package::reader::PkgReader">PkgReader</a>;</code></div></li></ul><h2 id="modules" class="small-section-header"><a href="#modules">Modules</a></h2><ul class="item-table"><li><div class="item-name"><a class="mod" href="component_package/index.html" title="mod apple_flat_package::component_package">component_package</a></div><div class="desc docblock-short">Interface to component packages, installable units within flat packages.</div></li><li><div class="item-name"><a class="mod" href="distribution/index.html" title="mod apple_flat_package::distribution">distribution</a></div><div class="desc docblock-short">Distribution XML file format.</div></li><li><div class="item-name"><a class="mod" href="package_info/index.html" title="mod apple_flat_package::package_info">package_info</a></div><div class="desc docblock-short"><code>PkgInfo</code> XML files.</div></li><li><div class="item-name"><a class="mod" href="reader/index.html" title="mod apple_flat_package::reader">reader</a></div><div class="desc docblock-short">Reading support for Apple flat package (<code>.pkg</code>) installers.</div></li></ul><h2 id="enums" class="small-section-header"><a href="#enums">Enums</a></h2><ul class="item-table"><li><div class="item-name"><a class="enum" href="enum.Error.html" title="enum apple_flat_package::Error">Error</a></div></li></ul><h2 id="types" class="small-section-header"><a href="#types">Type Definitions</a></h2><ul class="item-table"><li><div class="item-name"><a class="type" href="type.PkgResult.html" title="type apple_flat_package::PkgResult">PkgResult</a></div><div class="desc docblock-short">Result type for this crate.</div></li></ul></section></div></main></body></html>

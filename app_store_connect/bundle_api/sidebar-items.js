@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["BundleIdPlatform"],"struct":["BundleId","BundleIdAttributes","BundleIdCreateRequest","BundleIdCreateRequestAttributes","BundleIdCreateRequestData","BundleIdResponse","BundleIdsResponse"]};

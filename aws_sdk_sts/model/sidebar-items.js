@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["assumed_role_user","credentials","federated_user","policy_descriptor_type","tag"],"struct":["AssumedRoleUser","Credentials","FederatedUser","PolicyDescriptorType","Tag"]};

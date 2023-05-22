@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/clap_builder-4.2.7/src/output/help_template.rs`."><title>help_template.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="clap_builder" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../clap_builder/index.html"><img src="https://raw.githubusercontent.com/clap-rs/clap/master/assets/clap.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/clap_builder-4.3.0/src/output/help_template.rs`."><title>help_template.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="clap_builder" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../clap_builder/index.html"><img src="https://raw.githubusercontent.com/clap-rs/clap/master/assets/clap.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1098,29 +1098,6 @@
 <a href="#1098" id="1098">1098</a>
 <a href="#1099" id="1099">1099</a>
 <a href="#1100" id="1100">1100</a>
-<a href="#1101" id="1101">1101</a>
-<a href="#1102" id="1102">1102</a>
-<a href="#1103" id="1103">1103</a>
-<a href="#1104" id="1104">1104</a>
-<a href="#1105" id="1105">1105</a>
-<a href="#1106" id="1106">1106</a>
-<a href="#1107" id="1107">1107</a>
-<a href="#1108" id="1108">1108</a>
-<a href="#1109" id="1109">1109</a>
-<a href="#1110" id="1110">1110</a>
-<a href="#1111" id="1111">1111</a>
-<a href="#1112" id="1112">1112</a>
-<a href="#1113" id="1113">1113</a>
-<a href="#1114" id="1114">1114</a>
-<a href="#1115" id="1115">1115</a>
-<a href="#1116" id="1116">1116</a>
-<a href="#1117" id="1117">1117</a>
-<a href="#1118" id="1118">1118</a>
-<a href="#1119" id="1119">1119</a>
-<a href="#1120" id="1120">1120</a>
-<a href="#1121" id="1121">1121</a>
-<a href="#1122" id="1122">1122</a>
-<a href="#1123" id="1123">1123</a>
 </pre><pre class="rust"><code><span class="comment">// HACK: for rust 1.64 (1.68 doesn&#39;t need this since this is in lib.rs)
 //
 // Wanting consistency in our calls
@@ -1573,9 +1550,10 @@
             }
         }
     }
+
     <span class="doccomment">/// Sorts arguments by length and display order and write their help to the wrapped stream.
     </span><span class="kw">fn </span>write_args(<span class="kw-2">&amp;mut </span><span class="self">self</span>, args: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>Arg], _category: <span class="kw-2">&amp;</span>str, sort_key: ArgSortKey) {
-        <span class="macro">debug!</span>(<span class="string">&quot;HelpTemplate::write_args {}&quot;</span>, _category);
+        <span class="macro">debug!</span>(<span class="string">&quot;HelpTemplate::write_args {_category}&quot;</span>);
         <span class="comment">// The shortest an arg can legally be is 2 (i.e. &#39;-x&#39;)
         </span><span class="kw">let </span><span class="kw-2">mut </span>longest = <span class="number">2</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>ord_v = Vec::new();
@@ -1700,9 +1678,8 @@
             </span>};
             <span class="kw">let </span>spcs = longest + padding - self_len;
             <span class="macro">debug!</span>(
-                <span class="string">&quot;HelpTemplate::align_to_about: positional=false arg_len={}, spaces={}&quot;</span>,
-                self_len, spcs
-            );
+                <span class="string">&quot;HelpTemplate::align_to_about: positional=false arg_len={self_len}, spaces={spcs}&quot;
+            </span>);
 
             spcs
         } <span class="kw">else </span>{
@@ -1710,8 +1687,7 @@
             <span class="kw">let </span>padding = TAB_WIDTH;
             <span class="kw">let </span>spcs = longest + padding - self_len;
             <span class="macro">debug!</span>(
-                <span class="string">&quot;HelpTemplate::align_to_about: positional=true arg_len={}, spaces={}&quot;</span>,
-                self_len, spcs
+                <span class="string">&quot;HelpTemplate::align_to_about: positional=true arg_len={self_len}, spaces={spcs}&quot;</span>,
             );
 
             spcs
@@ -1735,7 +1711,7 @@
 
         <span class="comment">// Is help on next line, if so then indent
         </span><span class="kw">if </span>next_line_help {
-            <span class="macro">debug!</span>(<span class="string">&quot;HelpTemplate::help: Next Line...{:?}&quot;</span>, next_line_help);
+            <span class="macro">debug!</span>(<span class="string">&quot;HelpTemplate::help: Next Line...{next_line_help:?}&quot;</span>);
             <span class="self">self</span>.writer.push_str(<span class="string">&quot;\n&quot;</span>);
             <span class="self">self</span>.writer.push_str(TAB);
             <span class="self">self</span>.writer.push_str(NEXT_LINE_INDENT);
@@ -1777,38 +1753,21 @@
         <span class="self">self</span>.writer.push_styled(<span class="kw-2">&amp;</span>help);
         <span class="kw">if let </span><span class="prelude-val">Some</span>(arg) = arg {
             <span class="kw">const </span>DASH_SPACE: usize = <span class="string">&quot;- &quot;</span>.len();
-            <span class="kw">const </span>COLON_SPACE: usize = <span class="string">&quot;: &quot;</span>.len();
             <span class="kw">let </span>possible_vals = arg.get_possible_values();
-            <span class="kw">if </span><span class="self">self</span>.use_long
+            <span class="kw">if </span>!possible_vals.is_empty()
                 &amp;&amp; !arg.is_hide_possible_values_set()
-                &amp;&amp; possible_vals.iter().any(PossibleValue::should_show_help)
+                &amp;&amp; <span class="self">self</span>.use_long_pv(arg)
             {
-                <span class="macro">debug!</span>(
-                    <span class="string">&quot;HelpTemplate::help: Found possible vals...{:?}&quot;</span>,
-                    possible_vals
-                );
+                <span class="macro">debug!</span>(<span class="string">&quot;HelpTemplate::help: Found possible vals...{possible_vals:?}&quot;</span>);
                 <span class="kw">let </span>longest = possible_vals
                     .iter()
-                    .filter_map(|f| f.get_visible_quoted_name().map(|name| display_width(<span class="kw-2">&amp;</span>name)))
+                    .filter(|f| !f.is_hide_set())
+                    .map(|f| display_width(f.get_name()))
                     .max()
                     .expect(<span class="string">&quot;Only called with possible value&quot;</span>);
-                <span class="kw">let </span>help_longest = possible_vals
-                    .iter()
-                    .filter_map(|f| f.get_visible_help().map(|h| h.display_width()))
-                    .max()
-                    .expect(<span class="string">&quot;Only called with possible value with help&quot;</span>);
-                <span class="comment">// should new line
-                </span><span class="kw">let </span>taken = longest + spaces + DASH_SPACE;
-
-                <span class="kw">let </span>possible_value_new_line =
-                    <span class="self">self</span>.term_w &gt;= taken &amp;&amp; <span class="self">self</span>.term_w &lt; taken + COLON_SPACE + help_longest;
 
                 <span class="kw">let </span>spaces = spaces + TAB_WIDTH - DASH_SPACE;
-                <span class="kw">let </span>trailing_indent = <span class="kw">if </span>possible_value_new_line {
-                    spaces + DASH_SPACE
-                } <span class="kw">else </span>{
-                    spaces + longest + DASH_SPACE + COLON_SPACE
-                };
+                <span class="kw">let </span>trailing_indent = spaces + DASH_SPACE;
                 <span class="kw">let </span>trailing_indent = <span class="self">self</span>.get_spaces(trailing_indent);
 
                 <span class="kw">if </span>!help_is_empty {
@@ -1827,14 +1786,9 @@
                     <span class="kw">if let </span><span class="prelude-val">Some</span>(help) = pv.get_help() {
                         <span class="macro">debug!</span>(<span class="string">&quot;HelpTemplate::help: Possible Value help&quot;</span>);
 
-                        <span class="kw">if </span>possible_value_new_line {
-                            <span class="kw">let </span>padding = trailing_indent.len();
-                            <span class="kw">let _ </span>= <span class="macro">write!</span>(<span class="self">self</span>.writer, <span class="string">&quot;:\n{:padding$}&quot;</span>, <span class="string">&quot;&quot;</span>);
-                        } <span class="kw">else </span>{
-                            <span class="comment">// To align help messages
-                            </span><span class="kw">let </span>padding = longest - display_width(pv.get_name());
-                            <span class="kw">let _ </span>= <span class="macro">write!</span>(<span class="self">self</span>.writer, <span class="string">&quot;: {:padding$}&quot;</span>, <span class="string">&quot;&quot;</span>);
-                        }
+                        <span class="comment">// To align help messages
+                        </span><span class="kw">let </span>padding = longest - display_width(pv.get_name());
+                        <span class="kw">let _ </span>= <span class="macro">write!</span>(<span class="self">self</span>.writer, <span class="string">&quot;: {:padding$}&quot;</span>, <span class="string">&quot;&quot;</span>);
 
                         <span class="kw">let </span>avail_chars = <span class="kw">if </span><span class="self">self</span>.term_w &gt; trailing_indent.len() {
                             <span class="self">self</span>.term_w - trailing_indent.len()
@@ -1883,7 +1837,7 @@
     }
 
     <span class="kw">fn </span>spec_vals(<span class="kw-2">&amp;</span><span class="self">self</span>, a: <span class="kw-2">&amp;</span>Arg) -&gt; String {
-        <span class="macro">debug!</span>(<span class="string">&quot;HelpTemplate::spec_vals: a={}&quot;</span>, a);
+        <span class="macro">debug!</span>(<span class="string">&quot;HelpTemplate::spec_vals: a={a}&quot;</span>);
         <span class="kw">let </span><span class="kw-2">mut </span>spec_vals = Vec::new();
         <span class="attr">#[cfg(feature = <span class="string">&quot;env&quot;</span>)]
         </span><span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>env) = a.env {
@@ -1958,14 +1912,8 @@
         }
 
         <span class="kw">let </span>possible_vals = a.get_possible_values();
-        <span class="kw">if </span>!(a.is_hide_possible_values_set()
-            || possible_vals.is_empty()
-            || <span class="self">self</span>.use_long &amp;&amp; possible_vals.iter().any(PossibleValue::should_show_help))
-        {
-            <span class="macro">debug!</span>(
-                <span class="string">&quot;HelpTemplate::spec_vals: Found possible vals...{:?}&quot;</span>,
-                possible_vals
-            );
+        <span class="kw">if </span>!possible_vals.is_empty() &amp;&amp; !a.is_hide_possible_values_set() &amp;&amp; !<span class="self">self</span>.use_long_pv(a) {
+            <span class="macro">debug!</span>(<span class="string">&quot;HelpTemplate::spec_vals: Found possible vals...{possible_vals:?}&quot;</span>);
 
             <span class="kw">let </span>pvs = possible_vals
                 .iter()
@@ -1986,6 +1934,14 @@
     <span class="kw">fn </span>write_padding(<span class="kw-2">&amp;mut </span><span class="self">self</span>, amount: usize) {
         <span class="kw">use </span>std::fmt::Write <span class="kw">as _</span>;
         <span class="kw">let _ </span>= <span class="macro">write!</span>(<span class="self">self</span>.writer, <span class="string">&quot;{:amount$}&quot;</span>, <span class="string">&quot;&quot;</span>);
+    }
+
+    <span class="kw">fn </span>use_long_pv(<span class="kw-2">&amp;</span><span class="self">self</span>, arg: <span class="kw-2">&amp;</span>Arg) -&gt; bool {
+        <span class="self">self</span>.use_long
+            &amp;&amp; arg
+                .get_possible_values()
+                .iter()
+                .any(PossibleValue::should_show_help)
     }
 }
 
@@ -2033,15 +1989,12 @@
         }
         ord_v.sort_by(|a, b| (a.<span class="number">0</span>, <span class="kw-2">&amp;</span>a.<span class="number">1</span>).cmp(<span class="kw-2">&amp;</span>(b.<span class="number">0</span>, <span class="kw-2">&amp;</span>b.<span class="number">1</span>)));
 
-        <span class="macro">debug!</span>(<span class="string">&quot;HelpTemplate::write_subcommands longest = {}&quot;</span>, longest);
+        <span class="macro">debug!</span>(<span class="string">&quot;HelpTemplate::write_subcommands longest = {longest}&quot;</span>);
 
         <span class="kw">let </span>next_line_help = <span class="self">self</span>.will_subcommands_wrap(cmd.get_subcommands(), longest);
 
-        <span class="kw">let </span><span class="kw-2">mut </span>first = <span class="bool-val">true</span>;
-        <span class="kw">for </span>(<span class="kw">_</span>, sc_str, sc) <span class="kw">in </span>ord_v {
-            <span class="kw">if </span>first {
-                first = <span class="bool-val">false</span>;
-            } <span class="kw">else </span>{
+        <span class="kw">for </span>(i, (<span class="kw">_</span>, sc_str, sc)) <span class="kw">in </span>ord_v.into_iter().enumerate() {
+            <span class="kw">if </span><span class="number">0 </span>&lt; i {
                 <span class="self">self</span>.writer.push_str(<span class="string">&quot;\n&quot;</span>);
             }
             <span class="self">self</span>.write_subcommand(sc_str, sc, next_line_help, longest);
@@ -2110,7 +2063,8 @@
     }
 
     <span class="kw">fn </span>subcommand_next_line_help(<span class="kw-2">&amp;</span><span class="self">self</span>, cmd: <span class="kw-2">&amp;</span>Command, spec_vals: <span class="kw-2">&amp;</span>str, longest: usize) -&gt; bool {
-        <span class="kw">if </span><span class="self">self</span>.next_line_help | <span class="self">self</span>.use_long {
+        <span class="comment">// Ignore `self.use_long` since subcommands are only shown as short help
+        </span><span class="kw">if </span><span class="self">self</span>.next_line_help {
             <span class="comment">// setting_next_line
             </span><span class="bool-val">true
         </span>} <span class="kw">else </span>{

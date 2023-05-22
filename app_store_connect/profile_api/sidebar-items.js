@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ProfileType"],"struct":["Profile","ProfileAttributes","ProfileCreateRequest","ProfileCreateRequestAttributes","ProfileCreateRequestData","ProfileCreateRequestRelationships","ProfileResponse","ProfilesResponse","Ref","RefData","Refs"]};

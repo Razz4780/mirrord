@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Script"],"struct":["BundleRef","File","PackageInfo","Payload","PostInstall","PreInstall"]};

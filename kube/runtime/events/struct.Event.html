@@ -9,11 +9,14 @@
 </div></details><h2 id="fields" class="fields small-section-header">Fields<a href="#fields" class="anchor">§</a></h2><span id="structfield.type_" class="structfield small-section-header"><a href="#structfield.type_" class="anchor field">§</a><code>type_: <a class="enum" href="enum.EventType.html" title="enum kube::runtime::events::EventType">EventType</a></code></span><div class="docblock"><p>The event severity.</p>
 <p>Shows up in <code>kubectl describe</code> as <code>Type</code>.</p>
 </div><span id="structfield.reason" class="structfield small-section-header"><a href="#structfield.reason" class="anchor field">§</a><code>reason: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a></code></span><div class="docblock"><p>The short reason explaining why the <code>action</code> was taken.</p>
-<p>This must be at most 128 characters, and is often PascalCased. Shows up in <code>kubectl describe</code> as <code>Reason</code>.</p>
+<p>This must be at most 128 characters, and is often PascalCased. Shows up in <code>kubectl describe</code> as <code>Reason</code>.
+Usually denoted</p>
 </div><span id="structfield.note" class="structfield small-section-header"><a href="#structfield.note" class="anchor field">§</a><code>note: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>&gt;</code></span><div class="docblock"><p>A optional description of the status of the <code>action</code>.</p>
 <p>This must be at most 1kB in size. Shows up in <code>kubectl describe</code> as <code>Message</code>.</p>
 </div><span id="structfield.action" class="structfield small-section-header"><a href="#structfield.action" class="anchor field">§</a><code>action: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a></code></span><div class="docblock"><p>The action that was taken (either successfully or unsuccessfully) against main object</p>
-<p>This must be at most 128 characters. It does not currently show up in <code>kubectl describe</code>.</p>
+<p>This must be at most 128 characters. It does not currently show up in <code>kubectl describe</code>.
+A common convention is a short identifier of the action that caused the outcome described in <code>reason</code>.
+Usually denoted in <code>PascalCase</code>.</p>
 </div><span id="structfield.secondary" class="structfield small-section-header"><a href="#structfield.secondary" class="anchor field">§</a><code>secondary: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="../../../k8s_openapi/v1_24/api/core/v1/object_reference/struct.ObjectReference.html" title="struct k8s_openapi::v1_24::api::core::v1::object_reference::ObjectReference">ObjectReference</a>&gt;</code></span><div class="docblock"><p>Optional secondary object related to the main object</p>
 <p>Some events are emitted for actions that affect multiple objects.
 <code>secondary</code> can be populated to capture this detail.</p>

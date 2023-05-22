@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Basic","Bearer","RequireAuthorization","RequireAuthorizationLayer","ResponseFuture"],"trait":["AuthorizeRequest"]};
+window.SIDEBAR_ITEMS = {"struct":["Basic","Bearer"]};

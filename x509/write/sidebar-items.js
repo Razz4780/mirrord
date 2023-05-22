@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["algorithm_identifier","certificate","tbs_certificate"]};

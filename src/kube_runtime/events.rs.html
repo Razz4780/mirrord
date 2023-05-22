@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/kube-runtime-0.77.0/src/events.rs`."><title>events.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="kube_runtime" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../kube_runtime/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/kube-runtime-0.82.2/src/events.rs`."><title>events.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="kube_runtime" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../kube_runtime/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -309,9 +309,19 @@
 <a href="#309" id="309">309</a>
 <a href="#310" id="310">310</a>
 <a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Publishes events for objects for kubernetes &gt;= 1.19
 </span><span class="kw">use </span>k8s_openapi::{
-    api::{core::v1::ObjectReference, events::v1::Event <span class="kw">as </span>CoreEvent},
+    api::{core::v1::ObjectReference, events::v1::Event <span class="kw">as </span>K8sEvent},
     apimachinery::pkg::apis::meta::v1::{MicroTime, ObjectMeta},
     chrono::Utc,
 };
@@ -332,6 +342,7 @@
     <span class="doccomment">/// The short reason explaining why the `action` was taken.
     ///
     /// This must be at most 128 characters, and is often PascalCased. Shows up in `kubectl describe` as `Reason`.
+    /// Usually denoted
     </span><span class="kw">pub </span>reason: String,
 
     <span class="doccomment">/// A optional description of the status of the `action`.
@@ -342,6 +353,8 @@
     <span class="doccomment">/// The action that was taken (either successfully or unsuccessfully) against main object
     ///
     /// This must be at most 128 characters. It does not currently show up in `kubectl describe`.
+    /// A common convention is a short identifier of the action that caused the outcome described in `reason`.
+    /// Usually denoted in `PascalCase`.
     </span><span class="kw">pub </span>action: String,
 
     <span class="doccomment">/// Optional secondary object related to the main object
@@ -437,10 +450,7 @@
 /// specified when building the recorder using [`Recorder::new`].
 ///
 /// ```
-/// use kube::{
-///   core::Resource,
-///   runtime::events::{Reporter, Recorder, Event, EventType}
-/// };
+/// use kube::runtime::events::{Reporter, Recorder, Event, EventType};
 /// use k8s_openapi::api::core::v1::ObjectReference;
 ///
 /// # async fn wrapper() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
@@ -472,9 +482,19 @@
 ///
 /// Events attached to an object will be shown in the `Events` section of the output of
 /// of `kubectl describe` for that object.
+///
+/// ## RBAC
+///
+/// Note that usage of the event recorder minimally requires the following RBAC rules:
+///
+/// ```yaml
+/// - apiGroups: [&quot;events.k8s.io&quot;]
+///   resources: [&quot;events&quot;]
+///   verbs: [&quot;create&quot;]
+/// ```
 </span><span class="attr">#[derive(Clone)]
 </span><span class="kw">pub struct </span>Recorder {
-    events: Api&lt;CoreEvent&gt;,
+    events: Api&lt;K8sEvent&gt;,
     reporter: Reporter,
     reference: ObjectReference,
 }
@@ -513,14 +533,14 @@
         // for more detail on the fields
         // and what&#39;s expected: https://kubernetes.io/docs/reference/using-api/deprecation-guide/#event-v125
         </span><span class="self">self</span>.events
-            .create(<span class="kw-2">&amp;</span>PostParams::default(), <span class="kw-2">&amp;</span>CoreEvent {
+            .create(<span class="kw-2">&amp;</span>PostParams::default(), <span class="kw-2">&amp;</span>K8sEvent {
                 action: <span class="prelude-val">Some</span>(ev.action),
                 reason: <span class="prelude-val">Some</span>(ev.reason),
                 deprecated_count: <span class="prelude-val">None</span>,
                 deprecated_first_timestamp: <span class="prelude-val">None</span>,
                 deprecated_last_timestamp: <span class="prelude-val">None</span>,
                 deprecated_source: <span class="prelude-val">None</span>,
-                event_time: MicroTime(Utc::now()),
+                event_time: <span class="prelude-val">Some</span>(MicroTime(Utc::now())),
                 regarding: <span class="prelude-val">Some</span>(<span class="self">self</span>.reference.clone()),
                 note: ev.note.map(Into::into),
                 metadata: ObjectMeta {
@@ -552,7 +572,7 @@
     <span class="attr">#![allow(unused_imports)]
 
     </span><span class="kw">use </span>k8s_openapi::api::{
-        core::v1::{Event <span class="kw">as </span>CoreEvent, Service},
+        core::v1::{Event <span class="kw">as </span>K8sEvent, Service},
         rbac::v1::ClusterRole,
     };
     <span class="kw">use </span>kube_client::{Api, Client, Resource};
@@ -560,7 +580,7 @@
     <span class="kw">use super</span>::{Event, EventType, Recorder};
 
     <span class="attr">#[tokio::test]
-    #[ignore] </span><span class="comment">// needs cluster (creates a pointless event on the kubernetes main service)
+    #[ignore = <span class="string">&quot;needs cluster (creates an event for the default kubernetes service)&quot;</span>]
     </span><span class="kw">async fn </span>event_recorder_attaches_events() -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
         <span class="kw">let </span>client = Client::try_default().<span class="kw">await</span><span class="question-mark">?</span>;
 
@@ -576,7 +596,7 @@
                 secondary: <span class="prelude-val">None</span>,
             })
             .<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let </span>events: Api&lt;CoreEvent&gt; = Api::namespaced(client, <span class="string">&quot;default&quot;</span>);
+        <span class="kw">let </span>events: Api&lt;K8sEvent&gt; = Api::namespaced(client, <span class="string">&quot;default&quot;</span>);
 
         <span class="kw">let </span>event_list = events.list(<span class="kw-2">&amp;</span>Default::default()).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="kw">let </span>found_event = event_list
@@ -589,7 +609,7 @@
     }
 
     <span class="attr">#[tokio::test]
-    #[ignore] </span><span class="comment">// needs cluster (creates a pointless event on the kubernetes main service)
+    #[ignore = <span class="string">&quot;needs cluster (creates an event for the default kubernetes service)&quot;</span>]
     </span><span class="kw">async fn </span>event_recorder_attaches_events_without_namespace() -&gt; <span class="prelude-ty">Result</span>&lt;(), Box&lt;<span class="kw">dyn </span>std::error::Error&gt;&gt; {
         <span class="kw">let </span>client = Client::try_default().<span class="kw">await</span><span class="question-mark">?</span>;
 
@@ -605,7 +625,7 @@
                 secondary: <span class="prelude-val">None</span>,
             })
             .<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let </span>events: Api&lt;CoreEvent&gt; = Api::namespaced(client, <span class="string">&quot;kube-system&quot;</span>);
+        <span class="kw">let </span>events: Api&lt;K8sEvent&gt; = Api::namespaced(client, <span class="string">&quot;kube-system&quot;</span>);
 
         <span class="kw">let </span>event_list = events.list(<span class="kw-2">&amp;</span>Default::default()).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="kw">let </span>found_event = event_list

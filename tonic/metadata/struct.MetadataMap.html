@@ -478,7 +478,7 @@ manipulation.</p>
     K: IntoMetadataKey&lt;<a class="enum" href="enum.Ascii.html" title="enum tonic::metadata::Ascii">Ascii</a>&gt;,</span></h4></section></summary><div class="docblock"><p>Inserts an ascii key-value pair into the map. To insert a binary entry,
 use <code>insert_bin</code>.</p>
 <p>This method panics when the given key is a string and it cannot be
-converted to a MetadataKey<Ascii>.</p>
+converted to a <code>MetadataKey&lt;Ascii&gt;</code>.</p>
 <p>If the map did not previously have this key present, then <code>None</code> is
 returned.</p>
 <p>If the map did have this key present, the new value is associated with
@@ -511,7 +511,7 @@ without being identical.</p>
 ) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="struct.MetadataValue.html" title="struct tonic::metadata::MetadataValue">MetadataValue</a>&lt;<a class="enum" href="enum.Binary.html" title="enum tonic::metadata::Binary">Binary</a>&gt;&gt;<span class="where fmt-newline">where
     K: IntoMetadataKey&lt;<a class="enum" href="enum.Binary.html" title="enum tonic::metadata::Binary">Binary</a>&gt;,</span></h4></section></summary><div class="docblock"><p>Like insert, but for Binary keys (for example “trace-proto-bin”).</p>
 <p>This method panics when the given key is a string and it cannot be
-converted to a MetadataKey<Binary>.</p>
+converted to a <code>MetadataKey&lt;Binary&gt;</code>.</p>
 <h5 id="examples-25"><a href="#examples-25">Examples</a></h5>
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span><span class="kw-2">mut </span>map = MetadataMap::new();
 <span class="macro">assert!</span>(map.insert_bin(<span class="string">&quot;trace-proto-bin&quot;</span>, MetadataValue::from_bytes(<span class="string">b&quot;world&quot;</span>)).is_none());
@@ -531,7 +531,7 @@ converted to a MetadataKey<Binary>.</p>
     K: IntoMetadataKey&lt;<a class="enum" href="enum.Ascii.html" title="enum tonic::metadata::Ascii">Ascii</a>&gt;,</span></h4></section></summary><div class="docblock"><p>Inserts an ascii key-value pair into the map. To insert a binary entry,
 use <code>append_bin</code>.</p>
 <p>This method panics when the given key is a string and it cannot be
-converted to a MetadataKey<Ascii>.</p>
+converted to a <code>MetadataKey&lt;Ascii&gt;</code>.</p>
 <p>If the map did not previously have this key present, then <code>false</code> is
 returned.</p>
 <p>If the map did have this key present, the new value is pushed to the end
@@ -560,7 +560,7 @@ map.append(<span class="string">&quot;x-host&quot;</span>, <span class="string">
 </div></details><details class="toggle method-toggle" open><summary><section id="method.append_bin" class="method"><a class="srclink rightside" href="../../src/tonic/metadata/map.rs.html#1133-1138">source</a><h4 class="code-header">pub fn <a href="#method.append_bin" class="fn">append_bin</a>&lt;K&gt;(&amp;mut self, key: K, value: <a class="struct" href="struct.MetadataValue.html" title="struct tonic::metadata::MetadataValue">MetadataValue</a>&lt;<a class="enum" href="enum.Binary.html" title="enum tonic::metadata::Binary">Binary</a>&gt;) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a><span class="where fmt-newline">where
     K: IntoMetadataKey&lt;<a class="enum" href="enum.Binary.html" title="enum tonic::metadata::Binary">Binary</a>&gt;,</span></h4></section></summary><div class="docblock"><p>Like append, but for binary keys (for example “trace-proto-bin”).</p>
 <p>This method panics when the given key is a string and it cannot be
-converted to a MetadataKey<Binary>.</p>
+converted to a <code>MetadataKey&lt;Binary&gt;</code>.</p>
 <h5 id="examples-27"><a href="#examples-27">Examples</a></h5>
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span><span class="kw-2">mut </span>map = MetadataMap::new();
 <span class="macro">assert!</span>(map.insert_bin(<span class="string">&quot;trace-proto-bin&quot;</span>, MetadataValue::from_bytes(<span class="string">b&quot;world&quot;</span>)).is_none());

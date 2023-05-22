@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["customize"],"struct":["AssumeRole","AssumeRoleWithSAML","AssumeRoleWithWebIdentity","DecodeAuthorizationMessage","GetAccessKeyInfo","GetCallerIdentity","GetFederationToken","GetSessionToken"]};

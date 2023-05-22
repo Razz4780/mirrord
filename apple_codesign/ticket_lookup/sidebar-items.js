@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["APPLE_TICKET_LOOKUP_URL"],"enum":["TicketLookupResponseRecord"],"fn":["default_client","lookup_notarization_ticket","lookup_notarization_tickets"],"struct":["Field","TicketLookupRequest","TicketLookupRequestRecord","TicketLookupResponse","TicketLookupResponseRecordFailure","TicketLookupResponseRecordSuccess","TicketRecordEvent"]};

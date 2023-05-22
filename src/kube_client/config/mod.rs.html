@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/kube-client-0.77.0/src/config/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="kube_client" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../kube_client/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/kube-client-0.82.2/src/config/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="kube_client" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../kube_client/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -418,34 +418,6 @@
 <a href="#418" id="418">418</a>
 <a href="#419" id="419">419</a>
 <a href="#420" id="420">420</a>
-<a href="#421" id="421">421</a>
-<a href="#422" id="422">422</a>
-<a href="#423" id="423">423</a>
-<a href="#424" id="424">424</a>
-<a href="#425" id="425">425</a>
-<a href="#426" id="426">426</a>
-<a href="#427" id="427">427</a>
-<a href="#428" id="428">428</a>
-<a href="#429" id="429">429</a>
-<a href="#430" id="430">430</a>
-<a href="#431" id="431">431</a>
-<a href="#432" id="432">432</a>
-<a href="#433" id="433">433</a>
-<a href="#434" id="434">434</a>
-<a href="#435" id="435">435</a>
-<a href="#436" id="436">436</a>
-<a href="#437" id="437">437</a>
-<a href="#438" id="438">438</a>
-<a href="#439" id="439">439</a>
-<a href="#440" id="440">440</a>
-<a href="#441" id="441">441</a>
-<a href="#442" id="442">442</a>
-<a href="#443" id="443">443</a>
-<a href="#444" id="444">444</a>
-<a href="#445" id="445">445</a>
-<a href="#446" id="446">446</a>
-<a href="#447" id="447">447</a>
-<a href="#448" id="448">448</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Kubernetes configuration objects from `~/.kube/config`, `$KUBECONFIG`, or the [cluster environment](https://kubernetes.io/docs/tasks/access-application-cluster/access-cluster/#accessing-the-api-from-a-pod).
 //!
 //! # Usage
@@ -592,14 +564,6 @@
     ///
     /// A value of `None` means no timeout
     </span><span class="kw">pub </span>write_timeout: <span class="prelude-ty">Option</span>&lt;std::time::Duration&gt;,
-    <span class="doccomment">/// Timeout for calls to the Kubernetes API.
-    ///
-    /// A value of `None` means no timeout
-    </span><span class="attr">#[deprecated(
-        since = <span class="string">&quot;0.75.0&quot;</span>,
-        note = <span class="string">&quot;replaced by more granular members `connect_timeout`, `read_timeout` and `write_timeout`. This member will be removed in 0.78.0.&quot;
-    </span>)]
-    </span><span class="kw">pub </span>timeout: <span class="prelude-ty">Option</span>&lt;std::time::Duration&gt;,
     <span class="doccomment">/// Whether to accept invalid certificates
     </span><span class="kw">pub </span>accept_invalid_certs: bool,
     <span class="doccomment">/// Stores information to tell the cluster who you are.
@@ -620,15 +584,13 @@
     /// Most likely you want to use [`Config::infer`] to infer the config from
     /// the environment.
     </span><span class="kw">pub fn </span>new(cluster_url: http::Uri) -&gt; <span class="self">Self </span>{
-        <span class="attr">#[allow(deprecated)]
-        </span><span class="self">Self </span>{
+        <span class="self">Self </span>{
             cluster_url,
             default_namespace: String::from(<span class="string">&quot;default&quot;</span>),
             root_cert: <span class="prelude-val">None</span>,
             connect_timeout: <span class="prelude-val">Some</span>(DEFAULT_CONNECT_TIMEOUT),
             read_timeout: <span class="prelude-val">Some</span>(DEFAULT_READ_TIMEOUT),
             write_timeout: <span class="prelude-val">None</span>,
-            timeout: <span class="prelude-val">Some</span>(DEFAULT_TIMEOUT),
             accept_invalid_certs: <span class="bool-val">false</span>,
             auth_info: AuthInfo::default(),
             proxy_url: <span class="prelude-val">None</span>,
@@ -666,20 +628,8 @@
 
     <span class="doccomment">/// Load an in-cluster Kubernetes client configuration using
     /// [`Config::incluster_env`].
-    ///
-    /// # Rustls-specific behavior
-    /// Rustls does not support validating IP addresses (see
-    /// &lt;https://github.com/kube-rs/kube/issues/1003&gt;).
-    /// To work around this, when rustls is configured, this function automatically appends
-    /// `tls-server-name = &quot;kubernetes.default.svc&quot;` to the resulting configuration.
-    /// Overriding or unsetting `Config::tls_server_name` will avoid this behaviour.
     </span><span class="kw">pub fn </span>incluster() -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, InClusterError&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>cfg = <span class="self">Self</span>::incluster_env()<span class="question-mark">?</span>;
-        <span class="kw">if </span><span class="macro">cfg!</span>(all(not(feature = <span class="string">&quot;openssl-tls&quot;</span>), feature = <span class="string">&quot;rustls-tls&quot;</span>)) {
-            <span class="comment">// openssl takes precedence when both features present, so only do it when only rustls is there
-            </span>cfg.tls_server_name = <span class="prelude-val">Some</span>(<span class="string">&quot;kubernetes.default.svc&quot;</span>.to_string());
-        }
-        <span class="prelude-val">Ok</span>(cfg)
+        <span class="self">Self</span>::incluster_env()
     }
 
     <span class="doccomment">/// Load an in-cluster config using the `KUBERNETES_SERVICE_HOST` and
@@ -713,15 +663,13 @@
         <span class="kw">let </span>default_namespace = incluster_config::load_default_ns()<span class="question-mark">?</span>;
         <span class="kw">let </span>root_cert = incluster_config::load_cert()<span class="question-mark">?</span>;
 
-        <span class="attr">#[allow(deprecated)]
-        </span><span class="prelude-val">Ok</span>(<span class="self">Self </span>{
+        <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
             cluster_url,
             default_namespace,
             root_cert: <span class="prelude-val">Some</span>(root_cert),
             connect_timeout: <span class="prelude-val">Some</span>(DEFAULT_CONNECT_TIMEOUT),
             read_timeout: <span class="prelude-val">Some</span>(DEFAULT_READ_TIMEOUT),
             write_timeout: <span class="prelude-val">None</span>,
-            timeout: <span class="prelude-val">Some</span>(DEFAULT_TIMEOUT),
             accept_invalid_certs: <span class="bool-val">false</span>,
             auth_info: AuthInfo {
                 token_file: <span class="prelude-val">Some</span>(incluster_config::token_file()),
@@ -775,15 +723,13 @@
             root_cert = <span class="prelude-val">Some</span>(ca_bundle);
         }
 
-        <span class="attr">#[allow(deprecated)]
-        </span><span class="prelude-val">Ok</span>(<span class="self">Self </span>{
+        <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
             cluster_url,
             default_namespace,
             root_cert,
             connect_timeout: <span class="prelude-val">Some</span>(DEFAULT_CONNECT_TIMEOUT),
             read_timeout: <span class="prelude-val">Some</span>(DEFAULT_READ_TIMEOUT),
             write_timeout: <span class="prelude-val">None</span>,
-            timeout: <span class="prelude-val">Some</span>(DEFAULT_TIMEOUT),
             accept_invalid_certs,
             proxy_url: loader.proxy_url()<span class="question-mark">?</span>,
             auth_info: loader.user,
@@ -849,9 +795,7 @@
 }
 
 <span class="comment">// https://github.com/kube-rs/kube/issues/146#issuecomment-590924397
-</span><span class="doccomment">/// Default Timeout
-</span><span class="kw">const </span>DEFAULT_TIMEOUT: Duration = Duration::from_secs(<span class="number">295</span>);
-<span class="kw">const </span>DEFAULT_CONNECT_TIMEOUT: Duration = Duration::from_secs(<span class="number">30</span>);
+</span><span class="kw">const </span>DEFAULT_CONNECT_TIMEOUT: Duration = Duration::from_secs(<span class="number">30</span>);
 <span class="kw">const </span>DEFAULT_READ_TIMEOUT: Duration = Duration::from_secs(<span class="number">295</span>);
 
 <span class="comment">// Expose raw config structs

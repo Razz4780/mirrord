@@ -1008,7 +1008,7 @@
         core::v1::{Namespace, Pod, Service},
     };
     <span class="kw">use </span>kube::{
-        api::{DeleteParams, ListParams, PostParams},
+        api::{DeleteParams, ListParams, PostParams, WatchParams},
         core::WatchEvent,
         runtime::wait::{await_condition, conditions::is_pod_running},
         Api, Client, Config, Error,
@@ -1041,7 +1041,7 @@
         api: <span class="kw-2">&amp;</span>Api&lt;K&gt;,
         name: <span class="kw-2">&amp;</span>str,
     ) {
-        <span class="kw">let </span>params = ListParams::default()
+        <span class="kw">let </span>params = WatchParams::default()
             .fields(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;metadata.name={name}&quot;</span>))
             .timeout(<span class="number">10</span>);
         <span class="kw">let </span>stream = api.watch(<span class="kw-2">&amp;</span>params, <span class="string">&quot;0&quot;</span>).<span class="kw">await</span>.unwrap();

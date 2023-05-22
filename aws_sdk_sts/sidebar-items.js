@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Error"],"mod":["client","config","error","input","middleware","model","operation","output","types"],"static":["PKG_VERSION"],"struct":["AppName","Client","Config","Credentials","Endpoint","Region"]};

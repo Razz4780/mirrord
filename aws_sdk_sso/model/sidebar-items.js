@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["account_info","role_credentials","role_info"],"struct":["AccountInfo","RoleCredentials","RoleInfo"]};

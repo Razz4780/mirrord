@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Document","Number"],"mod":["base64","date_time","endpoint","error","primitive","retry","timeout"],"struct":["Blob"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["get_role_credentials_output","list_account_roles_output","list_accounts_output","logout_output"],"struct":["GetRoleCredentialsOutput","ListAccountRolesOutput","ListAccountsOutput","LogoutOutput"]};

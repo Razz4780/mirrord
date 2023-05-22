@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Content"],"struct":["BytesSource","CaptureSource","Constructed","ContentError","DecodeError","LimitedSource","Pos","Primitive","SliceSource"],"trait":["IntoSource","Source"]};

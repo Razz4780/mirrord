@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ErrorKind","RetryKind","RetryMode"],"struct":["RetryConfig","RetryConfigBuilder","RetryModeParseError"],"trait":["ProvideErrorKind"]};

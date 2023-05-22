@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/kube-client-0.77.0/src/api/remote_command.rs`."><title>remote_command.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="kube_client" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../kube_client/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/kube-client-0.82.2/src/api/remote_command.rs`."><title>remote_command.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="kube_client" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../kube_client/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -366,6 +366,33 @@
 <a href="#366" id="366">366</a>
 <a href="#367" id="367">367</a>
 <a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::future::Future;
 
 <span class="kw">use </span>k8s_openapi::apimachinery::pkg::apis::meta::v1::Status;
@@ -529,9 +556,15 @@
     }
 
     <span class="doccomment">/// Async writer to stdin.
-    /// ```ignore
+    /// ```no_run
+    /// # use kube_client::api::AttachedProcess;
+    /// # use tokio::io::{AsyncReadExt, AsyncWriteExt};
+    /// # async fn wrapper() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    /// # let attached: AttachedProcess = todo!();
     /// let mut stdin_writer = attached.stdin().unwrap();
     /// stdin_writer.write(b&quot;foo\n&quot;).await?;
+    /// # Ok(())
+    /// # }
     /// ```
     /// Only available if [`AttachParams`](super::AttachParams) had `stdin`.
     </span><span class="kw">pub fn </span>stdin(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw">impl </span>AsyncWrite + Unpin&gt; {
@@ -542,9 +575,16 @@
     }
 
     <span class="doccomment">/// Async reader for stdout outputs.
-    /// ```ignore
+    /// ```no_run
+    /// # use kube_client::api::AttachedProcess;
+    /// # use tokio::io::{AsyncReadExt, AsyncWriteExt};
+    /// # async fn wrapper() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    /// # let attached: AttachedProcess = todo!();
     /// let mut stdout_reader = attached.stdout().unwrap();
-    /// let next_stdout = stdout_reader.read().await?;
+    /// let mut buf = [0u8; 4];
+    /// stdout_reader.read_exact(&amp;mut buf).await?;
+    /// # Ok(())
+    /// # }
     /// ```
     /// Only available if [`AttachParams`](super::AttachParams) had `stdout`.
     </span><span class="kw">pub fn </span>stdout(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw">impl </span>AsyncRead + Unpin&gt; {
@@ -555,9 +595,16 @@
     }
 
     <span class="doccomment">/// Async reader for stderr outputs.
-    /// ```ignore
+    /// ```no_run
+    /// # use kube_client::api::AttachedProcess;
+    /// # use tokio::io::{AsyncReadExt, AsyncWriteExt};
+    /// # async fn wrapper() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    /// # let attached: AttachedProcess = todo!();
     /// let mut stderr_reader = attached.stderr().unwrap();
-    /// let next_stderr = stderr_reader.read().await?;
+    /// let mut buf = [0u8; 4];
+    /// stderr_reader.read_exact(&amp;mut buf).await?;
+    /// # Ok(())
+    /// # }
     /// ```
     /// Only available if [`AttachParams`](super::AttachParams) had `stderr`.
     </span><span class="kw">pub fn </span>stderr(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw">impl </span>AsyncRead + Unpin&gt; {
@@ -586,12 +633,19 @@
     }
 
     <span class="doccomment">/// Async writer to change the terminal size
-    /// ```ignore
+    /// ```no_run
+    /// # use kube_client::api::{AttachedProcess, TerminalSize};
+    /// # use tokio::io::{AsyncReadExt, AsyncWriteExt};
+    /// # use futures::SinkExt;
+    /// # async fn wrapper() -&gt; Result&lt;(), Box&lt;dyn std::error::Error&gt;&gt; {
+    /// # let attached: AttachedProcess = todo!();
     /// let mut terminal_size_writer = attached.terminal_size().unwrap();
     /// terminal_size_writer.send(TerminalSize{
     ///     height: 100,
     ///     width: 200,
     /// }).await?;
+    /// # Ok(())
+    /// # }
     /// ```
     /// Only available if [`AttachParams`](super::AttachParams) had `tty`.
     </span><span class="kw">pub fn </span>terminal_size(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;TerminalSizeSender&gt; {
@@ -623,7 +677,7 @@
     <span class="kw">let </span>(<span class="kw-2">mut </span>server_send, raw_server_recv) = stream.split();
     <span class="comment">// Work with filtered messages to reduce noise.
     </span><span class="kw">let </span><span class="kw-2">mut </span>server_recv = raw_server_recv.filter_map(filter_message).boxed();
-    <span class="kw">let </span>have_terminal_size_rx = terminal_size_rx.is_some();
+    <span class="kw">let </span><span class="kw-2">mut </span>have_terminal_size_rx = terminal_size_rx.is_some();
 
     <span class="kw">loop </span>{
         <span class="kw">let </span>terminal_size_next = <span class="kw">async </span>{
@@ -693,8 +747,8 @@
                         server_send.send(ws::Message::Binary(vec)).<span class="kw">await</span>.map_err(Error::SendTerminalSize)<span class="question-mark">?</span>;
                     },
                     <span class="prelude-val">None </span>=&gt; {
-                        <span class="kw">break
-                    </span>}
+                        have_terminal_size_rx = <span class="bool-val">false</span>;
+                    }
                 }
             },
         }

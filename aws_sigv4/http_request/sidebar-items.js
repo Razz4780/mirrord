@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["PayloadChecksumKind","PercentEncodingMode","SignableBody","SignatureLocation","UriPathNormalizationMode"],"fn":["sign"],"struct":["SignableRequest","SigningError","SigningSettings"],"type":["SigningParams"]};

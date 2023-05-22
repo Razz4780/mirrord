@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["XarNotarizationTrailerType"],"fn":["record_name_from_executable_bundle","staple_ticket_to_bundle","xar_notarization_trailer"],"struct":["Stapler","XarNotarizationTrailer"]};

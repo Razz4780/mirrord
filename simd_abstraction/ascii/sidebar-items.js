@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["AsciiCase"],"fn":["find_non_ascii_whitespace_fallback","find_non_ascii_whitespace_simd","is_ascii_ct_fallback","is_ascii_ct_simd","remove_ascii_whitespace_raw_fallback"],"mod":["multiversion"]};

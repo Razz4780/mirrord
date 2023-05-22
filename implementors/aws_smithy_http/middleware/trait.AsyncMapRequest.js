@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"aws_http":[["impl <a class=\"trait\" href=\"aws_smithy_http/middleware/trait.AsyncMapRequest.html\" title=\"trait aws_smithy_http::middleware::AsyncMapRequest\">AsyncMapRequest</a> for <a class=\"struct\" href=\"aws_http/auth/struct.CredentialsStage.html\" title=\"struct aws_http::auth::CredentialsStage\">CredentialsStage</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

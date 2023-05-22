@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["LatencyUnit"],"mod":["auth","classify","map_response_body","services","trace"],"type":["BoxError"]};
+window.SIDEBAR_ITEMS = {"enum":["LatencyUnit"],"mod":["auth","classify","map_response_body","services","trace","validate_request"],"type":["BoxError"]};

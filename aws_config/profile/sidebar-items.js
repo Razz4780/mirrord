@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["load"],"mod":["app_name","credentials","profile_file","region","retry_config"],"struct":["Profile","ProfileFileCredentialsProvider","ProfileFileRegionProvider","ProfileParseError","ProfileSet","Property"]};

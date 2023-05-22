@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/json-patch-0.3.0/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="json_patch" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../json_patch/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/json-patch-1.0.0/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="json_patch" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../json_patch/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -496,6 +496,69 @@
 <a href="#496" id="496">496</a>
 <a href="#497" id="497">497</a>
 <a href="#498" id="498">498</a>
+<a href="#499" id="499">499</a>
+<a href="#500" id="500">500</a>
+<a href="#501" id="501">501</a>
+<a href="#502" id="502">502</a>
+<a href="#503" id="503">503</a>
+<a href="#504" id="504">504</a>
+<a href="#505" id="505">505</a>
+<a href="#506" id="506">506</a>
+<a href="#507" id="507">507</a>
+<a href="#508" id="508">508</a>
+<a href="#509" id="509">509</a>
+<a href="#510" id="510">510</a>
+<a href="#511" id="511">511</a>
+<a href="#512" id="512">512</a>
+<a href="#513" id="513">513</a>
+<a href="#514" id="514">514</a>
+<a href="#515" id="515">515</a>
+<a href="#516" id="516">516</a>
+<a href="#517" id="517">517</a>
+<a href="#518" id="518">518</a>
+<a href="#519" id="519">519</a>
+<a href="#520" id="520">520</a>
+<a href="#521" id="521">521</a>
+<a href="#522" id="522">522</a>
+<a href="#523" id="523">523</a>
+<a href="#524" id="524">524</a>
+<a href="#525" id="525">525</a>
+<a href="#526" id="526">526</a>
+<a href="#527" id="527">527</a>
+<a href="#528" id="528">528</a>
+<a href="#529" id="529">529</a>
+<a href="#530" id="530">530</a>
+<a href="#531" id="531">531</a>
+<a href="#532" id="532">532</a>
+<a href="#533" id="533">533</a>
+<a href="#534" id="534">534</a>
+<a href="#535" id="535">535</a>
+<a href="#536" id="536">536</a>
+<a href="#537" id="537">537</a>
+<a href="#538" id="538">538</a>
+<a href="#539" id="539">539</a>
+<a href="#540" id="540">540</a>
+<a href="#541" id="541">541</a>
+<a href="#542" id="542">542</a>
+<a href="#543" id="543">543</a>
+<a href="#544" id="544">544</a>
+<a href="#545" id="545">545</a>
+<a href="#546" id="546">546</a>
+<a href="#547" id="547">547</a>
+<a href="#548" id="548">548</a>
+<a href="#549" id="549">549</a>
+<a href="#550" id="550">550</a>
+<a href="#551" id="551">551</a>
+<a href="#552" id="552">552</a>
+<a href="#553" id="553">553</a>
+<a href="#554" id="554">554</a>
+<a href="#555" id="555">555</a>
+<a href="#556" id="556">556</a>
+<a href="#557" id="557">557</a>
+<a href="#558" id="558">558</a>
+<a href="#559" id="559">559</a>
+<a href="#560" id="560">560</a>
+<a href="#561" id="561">561</a>
 </pre><pre class="rust"><code><span class="doccomment">//! A [JSON Patch (RFC 6902)](https://tools.ietf.org/html/rfc6902) and
 //! [JSON Merge Patch (RFC 7396)](https://tools.ietf.org/html/rfc7396) implementation for Rust.
 //!
@@ -578,7 +641,10 @@
 
 </span><span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>serde_json::{Map, Value};
-<span class="kw">use </span>std::borrow::Cow;
+<span class="kw">use </span>std::{
+    borrow::Cow,
+    fmt::{<span class="self">self</span>, Display, Formatter},
+};
 <span class="kw">use </span>thiserror::Error;
 
 <span class="attr">#[cfg(feature = <span class="string">&quot;diff&quot;</span>)]
@@ -587,9 +653,45 @@
 <span class="attr">#[cfg(feature = <span class="string">&quot;diff&quot;</span>)]
 </span><span class="kw">pub use </span><span class="self">self</span>::diff::diff;
 
+<span class="kw">struct </span>WriteAdapter&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span><span class="kw">dyn </span>fmt::Write);
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; std::io::Write <span class="kw">for </span>WriteAdapter&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">fn </span>write(<span class="kw-2">&amp;mut </span><span class="self">self</span>, buf: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;usize, std::io::Error&gt; {
+        <span class="kw">let </span>s = std::str::from_utf8(buf).unwrap();
+        <span class="self">self</span>.<span class="number">0
+            </span>.write_str(s)
+            .map_err(|<span class="kw">_</span>| std::io::Error::from(std::io::ErrorKind::Other))<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(buf.len())
+    }
+
+    <span class="kw">fn </span>flush(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), std::io::Error&gt; {
+        <span class="prelude-val">Ok</span>(())
+    }
+}
+
+<span class="macro">macro_rules! </span>impl_display {
+    (<span class="macro-nonterminal">$name</span>:ident) =&gt; {
+        <span class="kw">impl </span>Display <span class="kw">for </span><span class="macro-nonterminal">$name </span>{
+            <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
+                <span class="kw">let </span>alternate = f.alternate();
+                <span class="kw">if </span>alternate {
+                    serde_json::to_writer_pretty(WriteAdapter(f), <span class="self">self</span>)
+                        .map_err(|<span class="kw">_</span>| std::fmt::Error)<span class="question-mark">?</span>;
+                } <span class="kw">else </span>{
+                    serde_json::to_writer(WriteAdapter(f), <span class="self">self</span>).map_err(|<span class="kw">_</span>| std::fmt::Error)<span class="question-mark">?</span>;
+                }
+                <span class="prelude-val">Ok</span>(())
+            }
+        }
+    };
+}
+
 <span class="doccomment">/// Representation of JSON Patch (list of patch operations)
 </span><span class="attr">#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = <span class="string">&quot;utoipa&quot;</span>, derive(utoipa::ToSchema))]
 </span><span class="kw">pub struct </span>Patch(<span class="kw">pub </span>Vec&lt;PatchOperation&gt;);
+
+<span class="macro">impl_display!</span>(Patch);
 
 <span class="kw">impl </span>std::ops::Deref <span class="kw">for </span>Patch {
     <span class="kw">type </span>Target = [PatchOperation];
@@ -601,34 +703,46 @@
 
 <span class="doccomment">/// JSON Patch &#39;add&#39; operation representation
 </span><span class="attr">#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = <span class="string">&quot;utoipa&quot;</span>, derive(utoipa::ToSchema))]
 </span><span class="kw">pub struct </span>AddOperation {
     <span class="doccomment">/// JSON-Pointer value [RFC6901](https://tools.ietf.org/html/rfc6901) that references a location
     /// within the target document where the operation is performed.
     </span><span class="kw">pub </span>path: String,
     <span class="doccomment">/// Value to add to the target location.
+    </span><span class="attr">#[cfg_attr(feature = <span class="string">&quot;utoipa&quot;</span>, schema(value_type = Object))]
     </span><span class="kw">pub </span>value: Value,
 }
 
+<span class="macro">impl_display!</span>(AddOperation);
+
 <span class="doccomment">/// JSON Patch &#39;remove&#39; operation representation
 </span><span class="attr">#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = <span class="string">&quot;utoipa&quot;</span>, derive(utoipa::ToSchema))]
 </span><span class="kw">pub struct </span>RemoveOperation {
     <span class="doccomment">/// JSON-Pointer value [RFC6901](https://tools.ietf.org/html/rfc6901) that references a location
     /// within the target document where the operation is performed.
     </span><span class="kw">pub </span>path: String,
 }
 
+<span class="macro">impl_display!</span>(RemoveOperation);
+
 <span class="doccomment">/// JSON Patch &#39;replace&#39; operation representation
 </span><span class="attr">#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = <span class="string">&quot;utoipa&quot;</span>, derive(utoipa::ToSchema))]
 </span><span class="kw">pub struct </span>ReplaceOperation {
     <span class="doccomment">/// JSON-Pointer value [RFC6901](https://tools.ietf.org/html/rfc6901) that references a location
     /// within the target document where the operation is performed.
     </span><span class="kw">pub </span>path: String,
     <span class="doccomment">/// Value to replace with.
+    </span><span class="attr">#[cfg_attr(feature = <span class="string">&quot;utoipa&quot;</span>, schema(value_type = Object))]
     </span><span class="kw">pub </span>value: Value,
 }
 
+<span class="macro">impl_display!</span>(ReplaceOperation);
+
 <span class="doccomment">/// JSON Patch &#39;move&#39; operation representation
 </span><span class="attr">#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = <span class="string">&quot;utoipa&quot;</span>, derive(utoipa::ToSchema))]
 </span><span class="kw">pub struct </span>MoveOperation {
     <span class="doccomment">/// JSON-Pointer value [RFC6901](https://tools.ietf.org/html/rfc6901) that references a location
     /// to move value from.
@@ -638,8 +752,11 @@
     </span><span class="kw">pub </span>path: String,
 }
 
+<span class="macro">impl_display!</span>(MoveOperation);
+
 <span class="doccomment">/// JSON Patch &#39;copy&#39; operation representation
 </span><span class="attr">#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = <span class="string">&quot;utoipa&quot;</span>, derive(utoipa::ToSchema))]
 </span><span class="kw">pub struct </span>CopyOperation {
     <span class="doccomment">/// JSON-Pointer value [RFC6901](https://tools.ietf.org/html/rfc6901) that references a location
     /// to copy value from.
@@ -649,18 +766,25 @@
     </span><span class="kw">pub </span>path: String,
 }
 
+<span class="macro">impl_display!</span>(CopyOperation);
+
 <span class="doccomment">/// JSON Patch &#39;test&#39; operation representation
 </span><span class="attr">#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = <span class="string">&quot;utoipa&quot;</span>, derive(utoipa::ToSchema))]
 </span><span class="kw">pub struct </span>TestOperation {
     <span class="doccomment">/// JSON-Pointer value [RFC6901](https://tools.ietf.org/html/rfc6901) that references a location
     /// within the target document where the operation is performed.
     </span><span class="kw">pub </span>path: String,
     <span class="doccomment">/// Value to test against.
+    </span><span class="attr">#[cfg_attr(feature = <span class="string">&quot;utoipa&quot;</span>, schema(value_type = Object))]
     </span><span class="kw">pub </span>value: Value,
 }
 
+<span class="macro">impl_display!</span>(TestOperation);
+
 <span class="doccomment">/// JSON Patch single patch operation
 </span><span class="attr">#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = <span class="string">&quot;utoipa&quot;</span>, derive(utoipa::ToSchema))]
 #[serde(tag = <span class="string">&quot;op&quot;</span>)]
 #[serde(rename_all = <span class="string">&quot;lowercase&quot;</span>)]
 </span><span class="kw">pub enum </span>PatchOperation {
@@ -677,6 +801,8 @@
     <span class="doccomment">/// &#39;test&#39; operation
     </span>Test(TestOperation),
 }
+
+<span class="macro">impl_display!</span>(PatchOperation);
 
 <span class="doccomment">/// This type represents all possible errors that can occur when applying JSON patch
 </span><span class="attr">#[derive(Debug, Error)]

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["auto_indirect","avx2","fallback","sse41"]};

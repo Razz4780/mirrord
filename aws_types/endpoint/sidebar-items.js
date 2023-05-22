@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["credential_scope"],"struct":["AwsEndpoint","CredentialScope"],"trait":["ResolveAwsEndpoint"],"type":["BoxError"]};

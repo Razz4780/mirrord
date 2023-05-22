@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Choice2","Choice3"],"fn":["iter","sequence","sequence_as","set","set_as","slice","total_encoded_len","write_header"],"struct":["Constructed","Iter","Nothing","Primitive","Slice"],"trait":["PrimitiveContent","Values"]};

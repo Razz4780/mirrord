@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["Device","DeviceAttributes","DeviceCreateRequest","DeviceCreateRequestAttributes","DeviceCreateRequestData","DeviceResponse","DevicesResponse"]};

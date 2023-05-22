@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["CRC_32_C_NAME","CRC_32_NAME","MD5_NAME","SHA_1_NAME","SHA_256_NAME"],"enum":["ChecksumAlgorithm"],"mod":["body","error","http"],"trait":["Checksum"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["XmlVersion"],"fn":["is_name_char","is_name_start_char","is_whitespace_char","is_whitespace_str"],"struct":["TextPosition"],"trait":["Position"]};

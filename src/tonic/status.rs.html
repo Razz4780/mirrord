@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tonic-0.8.3/src/status.rs`."><title>status.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="tonic" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../tonic/index.html"><img src="https://raw.githubusercontent.com/tokio-rs/website/master/public/img/icons/tonic.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tonic-0.9.2/src/status.rs`."><title>status.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="tonic" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../tonic/index.html"><img src="https://raw.githubusercontent.com/tokio-rs/website/master/public/img/icons/tonic.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -980,8 +980,38 @@
 <a href="#980" id="980">980</a>
 <a href="#981" id="981">981</a>
 <a href="#982" id="982">982</a>
+<a href="#983" id="983">983</a>
+<a href="#984" id="984">984</a>
+<a href="#985" id="985">985</a>
+<a href="#986" id="986">986</a>
+<a href="#987" id="987">987</a>
+<a href="#988" id="988">988</a>
+<a href="#989" id="989">989</a>
+<a href="#990" id="990">990</a>
+<a href="#991" id="991">991</a>
+<a href="#992" id="992">992</a>
+<a href="#993" id="993">993</a>
+<a href="#994" id="994">994</a>
+<a href="#995" id="995">995</a>
+<a href="#996" id="996">996</a>
+<a href="#997" id="997">997</a>
+<a href="#998" id="998">998</a>
+<a href="#999" id="999">999</a>
+<a href="#1000" id="1000">1000</a>
+<a href="#1001" id="1001">1001</a>
+<a href="#1002" id="1002">1002</a>
+<a href="#1003" id="1003">1003</a>
+<a href="#1004" id="1004">1004</a>
+<a href="#1005" id="1005">1005</a>
+<a href="#1006" id="1006">1006</a>
+<a href="#1007" id="1007">1007</a>
+<a href="#1008" id="1008">1008</a>
+<a href="#1009" id="1009">1009</a>
+<a href="#1010" id="1010">1010</a>
+<a href="#1011" id="1011">1011</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::body::BoxBody;
 <span class="kw">use </span><span class="kw">crate</span>::metadata::MetadataMap;
+<span class="kw">use </span>base64::Engine <span class="kw">as _</span>;
 <span class="kw">use </span>bytes::Bytes;
 <span class="kw">use </span>http::header::{HeaderMap, HeaderValue};
 <span class="kw">use </span>percent_encoding::{percent_decode, percent_encode, AsciiSet, CONTROLS};
@@ -1306,7 +1336,14 @@
         })
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>try_from_error(
+    <span class="doccomment">/// Create a `Status` from various types of `Error`.
+    ///
+    /// Returns the error if a status could not be created.
+    ///
+    /// # Downcast stability
+    /// This function does not provide any stability guarantees around how it will downcast errors into
+    /// status codes.
+    </span><span class="kw">pub fn </span>try_from_error(
         err: Box&lt;<span class="kw">dyn </span>Error + Send + Sync + <span class="lifetime">&#39;static</span>&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;Status, Box&lt;<span class="kw">dyn </span>Error + Send + Sync + <span class="lifetime">&#39;static</span>&gt;&gt; {
         <span class="kw">let </span>err = <span class="kw">match </span>err.downcast::&lt;Status&gt;() {
@@ -1335,8 +1372,17 @@
     <span class="comment">// FIXME: bubble this into `transport` and expose generic http2 reasons.
     </span><span class="attr">#[cfg(feature = <span class="string">&quot;transport&quot;</span>)]
     </span><span class="kw">fn </span>from_h2_error(err: Box&lt;h2::Error&gt;) -&gt; Status {
+        <span class="kw">let </span>code = <span class="self">Self</span>::code_from_h2(<span class="kw-2">&amp;</span>err);
+
+        <span class="kw">let </span><span class="kw-2">mut </span>status = <span class="self">Self</span>::new(code, <span class="macro">format!</span>(<span class="string">&quot;h2 protocol error: {}&quot;</span>, err));
+        status.source = <span class="prelude-val">Some</span>(Arc::new(<span class="kw-2">*</span>err));
+        status
+    }
+
+    <span class="attr">#[cfg(feature = <span class="string">&quot;transport&quot;</span>)]
+    </span><span class="kw">fn </span>code_from_h2(err: <span class="kw-2">&amp;</span>h2::Error) -&gt; Code {
         <span class="comment">// See https://github.com/grpc/grpc/blob/3977c30/doc/PROTOCOL-HTTP2.md#errors
-        </span><span class="kw">let </span>code = <span class="kw">match </span>err.reason() {
+        </span><span class="kw">match </span>err.reason() {
             <span class="prelude-val">Some</span>(h2::Reason::NO_ERROR)
             | <span class="prelude-val">Some</span>(h2::Reason::PROTOCOL_ERROR)
             | <span class="prelude-val">Some</span>(h2::Reason::INTERNAL_ERROR)
@@ -1350,11 +1396,7 @@
             <span class="prelude-val">Some</span>(h2::Reason::INADEQUATE_SECURITY) =&gt; Code::PermissionDenied,
 
             <span class="kw">_ </span>=&gt; Code::Unknown,
-        };
-
-        <span class="kw">let </span><span class="kw-2">mut </span>status = <span class="self">Self</span>::new(code, <span class="macro">format!</span>(<span class="string">&quot;h2 protocol error: {}&quot;</span>, err));
-        status.source = <span class="prelude-val">Some</span>(Arc::new(<span class="kw-2">*</span>err));
-        status
+        }
     }
 
     <span class="attr">#[cfg(feature = <span class="string">&quot;transport&quot;</span>)]
@@ -1390,6 +1432,14 @@
         </span><span class="kw">if </span>err.is_timeout() || err.is_connect() {
             <span class="kw">return </span><span class="prelude-val">Some</span>(Status::unavailable(err.to_string()));
         }
+
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(h2_err) = err.source().and_then(|e| e.downcast_ref::&lt;h2::Error&gt;()) {
+            <span class="kw">let </span>code = Status::code_from_h2(h2_err);
+            <span class="kw">let </span>status = <span class="self">Self</span>::new(code, <span class="macro">format!</span>(<span class="string">&quot;h2 protocol error: {}&quot;</span>, err));
+
+            <span class="kw">return </span><span class="prelude-val">Some</span>(status);
+        }
+
         <span class="prelude-val">None
     </span>}
 
@@ -1417,7 +1467,8 @@
             <span class="kw">let </span>details = header_map
                 .get(GRPC_STATUS_DETAILS_HEADER)
                 .map(|h| {
-                    base64::decode(h.as_bytes())
+                    <span class="kw">crate</span>::util::base64::STANDARD
+                        .decode(h.as_bytes())
                         .expect(<span class="string">&quot;Invalid status header, expected base64 encoded value&quot;</span>)
                 })
                 .map(Bytes::from)
@@ -1481,7 +1532,8 @@
         <span class="prelude-val">Ok</span>(header_map)
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>add_header(<span class="kw-2">&amp;</span><span class="self">self</span>, header_map: <span class="kw-2">&amp;mut </span>HeaderMap) -&gt; <span class="prelude-ty">Result</span>&lt;(), <span class="self">Self</span>&gt; {
+    <span class="doccomment">/// Add headers from this `Status` into `header_map`.
+    </span><span class="kw">pub fn </span>add_header(<span class="kw-2">&amp;</span><span class="self">self</span>, header_map: <span class="kw-2">&amp;mut </span>HeaderMap) -&gt; <span class="prelude-ty">Result</span>&lt;(), <span class="self">Self</span>&gt; {
         header_map.extend(<span class="self">self</span>.metadata.clone().into_sanitized_headers());
 
         header_map.insert(GRPC_STATUS_HEADER_CODE, <span class="self">self</span>.code.to_header_value());
@@ -1498,7 +1550,7 @@
         }
 
         <span class="kw">if </span>!<span class="self">self</span>.details.is_empty() {
-            <span class="kw">let </span>details = base64::encode_config(<span class="kw-2">&amp;</span><span class="self">self</span>.details[..], base64::STANDARD_NO_PAD);
+            <span class="kw">let </span>details = <span class="kw">crate</span>::util::base64::STANDARD_NO_PAD.encode(<span class="kw-2">&amp;</span><span class="self">self</span>.details[..]);
 
             header_map.insert(
                 GRPC_STATUS_DETAILS_HEADER,
@@ -1534,6 +1586,12 @@
             source: <span class="prelude-val">None</span>,
         }
     }
+
+    <span class="doccomment">/// Add a source error to this status.
+    </span><span class="kw">pub fn </span>set_source(<span class="kw-2">&amp;mut </span><span class="self">self</span>, source: Arc&lt;<span class="kw">dyn </span>Error + Send + Sync + <span class="lifetime">&#39;static</span>&gt;) -&gt; <span class="kw-2">&amp;mut </span>Status {
+        <span class="self">self</span>.source = <span class="prelude-val">Some</span>(source);
+        <span class="self">self
+    </span>}
 
     <span class="attr">#[allow(clippy::wrong_self_convention)]
     </span><span class="doccomment">/// Build an `http::Response` from the given `Status`.
@@ -1953,7 +2011,7 @@
 
         <span class="kw">let </span>header_map = status.to_header_map().unwrap();
 
-        <span class="kw">let </span>b64_details = base64::encode_config(DETAILS, base64::STANDARD_NO_PAD);
+        <span class="kw">let </span>b64_details = <span class="kw">crate</span>::util::base64::STANDARD_NO_PAD.encode(DETAILS);
 
         <span class="macro">assert_eq!</span>(header_map[<span class="kw">super</span>::GRPC_STATUS_DETAILS_HEADER], b64_details);
 

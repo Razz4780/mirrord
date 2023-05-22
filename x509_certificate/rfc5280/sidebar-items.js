@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Version"],"struct":["AlgorithmIdentifier","AlgorithmParameter","Certificate","CertificateList","Extension","Extensions","SubjectPublicKeyInfo","TbsCertList","TbsCertificate","Validity"],"type":["CertificateSerialNumber","UniqueIdentifier"]};

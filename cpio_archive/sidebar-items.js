@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Error"],"fn":["reader"],"mod":["newc","odc"],"trait":["CpioHeader","CpioReader"],"type":["ChainedCpioReader","CpioResult"]};

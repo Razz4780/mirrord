@@ -1,0 +1,380 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Procedural macros to derive minicbor’s `Encode`, `Decode`, and `CborLen` traits."><title>minicbor_derive - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="minicbor_derive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../minicbor_derive/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../minicbor_derive/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2 class="location"><a href="#">Crate minicbor_derive</a></h2><div class="sidebar-elems"><ul class="block"><li class="version">Version 0.13.0</li><li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#derives">Derive Macros</a></li></ul></section></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">minicbor_derive</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../src/minicbor_derive/lib.rs.html#1-665">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Procedural macros to derive minicbor’s <code>Encode</code>, <code>Decode</code>, and <code>CborLen</code>
+traits.</p>
+<p>Deriving is supported for <code>struct</code>s and <code>enum</code>s. The encoding is optimised
+for forward and backward compatibility and the overall approach is
+influenced by <a href="https://developers.google.com/protocol-buffers/">Google’s Protocol Buffers</a>.</p>
+<p>The goal is that ideally a change to a type still allows older software,
+which is unaware of the changes, to decode values of the changed type
+(forward compatibility) and newer software, to decode values of types
+encoded by older software, which do not include the changes made to the
+type (backward compatibility).</p>
+<p>In order to reach this goal, the encoding has the following characteristics:</p>
+<ol>
+<li>
+<p>The encoding does not contain any names, i.e. no field names, type names
+or variant names. Instead, every field and every constructor needs to be
+annotated with an (unsigned) index number, e.g. <code>#[n(1)]</code>.</p>
+</li>
+<li>
+<p>Unknown fields are ignored during decoding.<sup id="fnref1"><a href="#fn1">1</a></sup></p>
+</li>
+<li>
+<p>Optional types default to <code>None</code> if their value is not present during
+decoding.</p>
+</li>
+<li>
+<p>Optional enums default to <code>None</code> if an unknown variant is encountered
+during decoding.</p>
+</li>
+</ol>
+<p>Item <strong>1</strong> ensures that names can be changed freely without compatibility
+concerns. Item <strong>2</strong> ensures that new fields do not affect older software.
+Item <strong>3</strong> ensures that newer software can stop producing optional values.
+Item <strong>4</strong> ensures that enums can get new variants that older software is
+not aware of. By “fields” we mean the elements of structs and tuple structs
+as well as enum structs and enum tuples. In addition, it is a compatible
+change to turn a unit variant into a struct or tuple variant if all fields
+are optional.</p>
+<p>From the above it should be obvious that <em>non-optional fields need to be
+present forever</em>, so they should only be part of a type after careful
+consideration.</p>
+<p>It should be emphasised that an <code>enum</code> itself can not be changed in a
+compatible way. An unknown variant causes an error. It is only when they
+are declared as an optional field type that unknown variants of an enum
+are mapped to <code>None</code>. In other words, <em>only structs can be used as
+top-level types in a forward and backward compatible way, enums can not.</em></p>
+<h2 id="example"><a href="#example">Example</a></h2>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>minicbor::{Encode, Decode};
+
+<span class="attr">#[derive(Encode, Decode)]
+</span><span class="kw">struct </span>Point {
+    <span class="attr">#[n(<span class="number">0</span>)] </span>x: f64,
+    <span class="attr">#[n(<span class="number">1</span>)] </span>y: f64
+}
+
+<span class="attr">#[derive(Encode, Decode)]
+</span><span class="kw">struct </span>ConvexHull {
+    <span class="attr">#[n(<span class="number">0</span>)] </span>left: Point,
+    <span class="attr">#[n(<span class="number">1</span>)] </span>right: Point,
+    <span class="attr">#[n(<span class="number">2</span>)] </span>points: Vec&lt;Point&gt;,
+    <span class="attr">#[n(<span class="number">3</span>)] </span>state: <span class="prelude-ty">Option</span>&lt;State&gt;
+}
+
+<span class="attr">#[derive(Encode, Decode)]
+</span><span class="kw">enum </span>State {
+    <span class="attr">#[n(<span class="number">0</span>)] </span>Start,
+    <span class="attr">#[n(<span class="number">1</span>)] </span>Search { <span class="attr">#[n(<span class="number">0</span>)] </span>info: u64 }
+}</code></pre></div>
+<p>In this example the following changes would be compatible in both
+directions:</p>
+<ul>
+<li>
+<p>Renaming every identifier.</p>
+</li>
+<li>
+<p>Adding optional fields to <code>Point</code>, <code>ConvexHull</code>, <code>State::Start</code> or
+<code>State::Search</code>.</p>
+</li>
+<li>
+<p>Adding more variants to <code>State</code> <em>iff</em> <code>State</code> is only decoded as part of
+<code>ConvexHull</code>. Direct decoding of <code>State</code> would produce an <code>UnknownVariant</code>
+error for those new variants.</p>
+</li>
+</ul>
+<h2 id="supported-attributes"><a href="#supported-attributes">Supported attributes</a></h2>
+<ul>
+<li><a href="#n-and-b-or-cborn-and-cborb"><code>#[n(...)]</code> and <code>#[cbor(n(...))]</code></a></li>
+<li><a href="#n-and-b-or-cborn-and-cborb"><code>#[b(...)]</code> and <code>#[cbor(b(...))]</code></a></li>
+<li><a href="#cborarray"><code>#[cbor(array)]</code></a></li>
+<li><a href="#cbormap"><code>#[cbor(map)]</code></a></li>
+<li><a href="#cborindex_only"><code>#[cbor(index_only)]</code></a></li>
+<li><a href="#cbortransparent"><code>#[cbor(transparent)]</code></a></li>
+<li><a href="#cbordecode_with--path"><code>#[cbor(decode_with)]</code></a></li>
+<li><a href="#cborencode_with--path"><code>#[cbor(encode_with)]</code></a></li>
+<li><a href="#cborwith--path"><code>#[cbor(with)]</code></a></li>
+<li><a href="#cbornil--path"><code>#[cbor(nil)]</code></a></li>
+<li><a href="#cborhas_nil"><code>#[cbor(has_nil)]</code></a></li>
+<li><a href="#cboris_nil--path"><code>#[cbor(is_nil)]</code></a></li>
+<li><a href="#cbordecode_bound--"><code>#[cbor(decode_bound)]</code></a></li>
+<li><a href="#cborencode_bound--"><code>#[cbor(encode_bound)]</code></a></li>
+<li><a href="#cborbound"><code>#[cbor(bound)]</code></a></li>
+<li><a href="#cborcontext_bound--"><code>#[cbor(context_bound)]</code></a></li>
+<li><a href="#cborcbor_len--path"><code>#[cbor(cbor_len)]</code></a></li>
+</ul>
+<h3 id="n-and-b-or-cborn-and-cborb"><a href="#n-and-b-or-cborn-and-cborb"><code>#[n(...)]</code> and <code>#[b(...)]</code> (or <code>#[cbor(n(...))]</code> and <code>#[cbor(b(...))]</code>)</a></h3>
+<p>Each field and variant needs to be annotated with an index number, which is
+used instead of the name. For the encoding it makes no difference which one
+to choose. For decoding, <code>b</code> indicates that the value borrows from the
+decoding input, whereas <code>n</code> produces non-borrowed values (but see section
+<a href="#implicit-borrowing">Implicit borrowing</a> below). This means that if a type
+is annotated with <code>#[b(...)]</code>, all its lifetimes will be constrained to the
+input lifetime (<code>'bytes</code>). Further, if the type is a <code>Cow&lt;'_, str&gt;</code>,
+<code>Cow&lt;'_, minicbor::bytes::ByteSlice&gt;</code> or <code>Cow&lt;'_, [u8]&gt;</code> the generated code
+will decode the <code>str</code>, <code>ByteSlice</code> or <code>[u8]</code> and construct a <code>Cow::Borrowed</code>
+variant, contrary to the regular <code>Cow</code> impls of <code>Decode</code> and <code>DecodeBytes</code>
+which produce owned values.</p>
+<h3 id="cborarray"><a href="#cborarray"><code>#[cbor(array)]</code></a></h3>
+<p>Uses a CBOR array to encode the annotated struct, enum or enum variant.
+When used with an enum it applies to all its variants but can be overriden
+per variant. See section <a href="#cbor-encoding">CBOR encoding</a> for details.</p>
+<p>If neither <code>#[cbor(array)]</code> nor <code>#[cbor(map)]</code> are specified, <code>#[cbor(array)]</code>
+is used by default.</p>
+<h3 id="cbormap"><a href="#cbormap"><code>#[cbor(map)]</code></a></h3>
+<p>Use a CBOR map to encode the annotated struct, enum or enum variant.
+When used with an enum it applies to all its variants but can be overriden
+per variant. See section <a href="#cbor-encoding">CBOR encoding</a> for details.</p>
+<p>If neither <code>#[cbor(array)]</code> nor <code>#[cbor(map)]</code> are specified, <code>#[cbor(array)]</code>
+is used by default.</p>
+<h3 id="cborindex_only"><a href="#cborindex_only"><code>#[cbor(index_only)]</code></a></h3>
+<p>Enumerations which do not contain fields may have this attribute attached to
+them. This changes the encoding to encode only the variant index (cf. section
+<a href="#cbor-encoding">CBOR encoding</a> for details).</p>
+<h3 id="cbortransparent"><a href="#cbortransparent"><code>#[cbor(transparent)]</code></a></h3>
+<p>This attribute can be attached to structs with exactly one field (aka newtypes).
+If present, the generated <code>Encode</code> and <code>Decode</code> impls will just forward the
+respective <code>encode</code> and <code>decode</code> calls to the inner type, i.e. the resulting
+CBOR representation will be identical to the one of the inner type.</p>
+<h3 id="cbordecode_with--path"><a href="#cbordecode_with--path"><code>#[cbor(decode_with = &quot;&lt;path&gt;&quot;)]</code></a></h3>
+<p>When applied to a field of type <code>T</code>, the function denoted by <code>&lt;path&gt;</code> will be
+used to decode <code>T</code>. The function needs to be equivalent to the following type:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>minicbor::decode::{Decoder, Error};
+
+<span class="kw">fn </span>decode&lt;<span class="lifetime">&#39;b</span>, Ctx, T: <span class="lifetime">&#39;b</span>&gt;(d: <span class="kw-2">&amp;mut </span>Decoder&lt;<span class="lifetime">&#39;b</span>&gt;, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;T, Error&gt; {
+    <span class="macro">todo!</span>()
+}</code></pre></div>
+<p>Please note that if the decode function is generic in its context parameter that the
+derive macro uses the type variable name <code>Ctx</code>.</p>
+<h3 id="cborencode_with--path"><a href="#cborencode_with--path"><code>#[cbor(encode_with = &quot;&lt;path&gt;&quot;)]</code></a></h3>
+<p>When applied to a field of type <code>T</code>, the function denoted by <code>&lt;path&gt;</code> will be
+used to encode <code>T</code>. The function needs to be equivalent to the following type:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>minicbor::encode::{Encoder, Error, Write};
+
+<span class="kw">fn </span>encode&lt;Ctx, T, W: Write&gt;(v: <span class="kw-2">&amp;</span>T, e: <span class="kw-2">&amp;mut </span>Encoder&lt;W&gt;, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&lt;W::Error&gt;&gt; {
+    <span class="macro">todo!</span>()
+}</code></pre></div>
+<p>Please note that if the encode function is generic in its context parameter that the
+derive macro uses the type variable name <code>Ctx</code>.</p>
+<h3 id="cborwith--path"><a href="#cborwith--path"><code>#[cbor(with = &quot;&lt;path&gt;&quot;)]</code></a></h3>
+<p>Combines <a href="#cbordecode_with--path"><code>#[cbor(decode_with = &quot;...&quot;)]</code></a> and
+<a href="#cborencode_with--path"><code>#[cbor(encode_with = &quot;...&quot;)]</code></a>. Here, <code>&lt;path&gt;</code> denotes
+a module that contains functions named <code>encode</code> and <code>decode</code> that satisfy the
+respective type signatures mentioned in <code>encode_with</code> and <code>decode_with</code>.
+If <code>CborLen</code> is also derived, the module is assumed to contain a function named
+<code>cbor_len</code> with a signature matching the one described in
+<a href="#cborcbor_len--path"><code>#[cbor(cbor_len = &quot;...&quot;)]</code></a> below.</p>
+<h3 id="cbornil--path"><a href="#cbornil--path"><code>#[cbor(nil = &quot;&lt;path&gt;&quot;)]</code></a></h3>
+<p>Only valid in conjuction with <a href="#cbordecode_with--path"><code>#[cbor(decode_with = &quot;...&quot;)]</code></a>.
+If present, <code>&lt;path&gt;</code> denotes a function to create a nil-like value of type <code>T</code>.
+See <code>minicbor::Decode::nil</code> for details. The function needs to be equivalent to the
+following type:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">fn </span>nil&lt;T&gt;() -&gt; <span class="prelude-ty">Option</span>&lt;T&gt; {
+    <span class="macro">todo!</span>()
+}</code></pre></div>
+<h3 id="cborhas_nil"><a href="#cborhas_nil"><code>#[cbor(has_nil)]</code></a></h3>
+<p>Only valid in conjuction with <a href="#cborwith--path"><code>#[cbor(with = &quot;...&quot;)]</code></a>. If present,
+the attribute signals that the module denoted by <code>with</code> also contains functions <code>nil</code>
+and <code>is_nil</code> to create nil values and to check if a value is a nil value.</p>
+<h3 id="cboris_nil--path"><a href="#cboris_nil--path"><code>#[cbor(is_nil = &quot;&lt;path&gt;&quot;)]</code></a></h3>
+<p>Only valid in conjuction with <a href="#cborencode_with--path"><code>#[cbor(encode_with = &quot;...&quot;)]</code></a>.
+If present, <code>&lt;path&gt;</code> denotes a function to check if a value of type <code>T</code> is a
+nil-like value. See <code>minicbor::Encode::is_nil</code> for details. The function needs to
+be equivalent to the following type:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">fn </span>is_nil&lt;T&gt;(v: <span class="kw-2">&amp;</span>T) -&gt; bool {
+    <span class="macro">todo!</span>()
+}</code></pre></div>
+<h3 id="cborcbor_len--path"><a href="#cborcbor_len--path"><code>#[cbor(cbor_len = &quot;&lt;path&gt;&quot;)]</code></a></h3>
+<p>Only applicable when deriving <code>CborLen</code>. When applied to a field of type <code>T</code>, the
+function denoted by <code>&lt;path&gt;</code> will be used to calculate the CBOR length in bytes.
+The function needs to be equivalent to the following type:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">fn </span>cbor_len&lt;Ctx, T&gt;(val: <span class="kw-2">&amp;</span>T, ctx: <span class="kw-2">&amp;mut </span>Ctx) -&gt; usize {
+    <span class="macro">todo!</span>()
+}</code></pre></div>
+<p>Please note that if the cbor_len function is generic in its context parameter that the
+derive macro uses the type variable name <code>Ctx</code>.</p>
+<h3 id="cbordecode_bound--"><a href="#cbordecode_bound--"><code>#[cbor(decode_bound = &quot;...&quot;)]</code></a></h3>
+<p>When applied to a generic field, this attribute overrides any implicit type
+parameter bounds generated by <code>minicbor-derive</code> for the derived <code>Decode</code> impl.</p>
+<h3 id="cborencode_bound--"><a href="#cborencode_bound--"><code>#[cbor(encode_bound = &quot;...&quot;)]</code></a></h3>
+<p>When applied to a generic field, this attribute overrides any implicit type
+parameter bounds generated by <code>minicbor-derive</code> for the derived <code>Encode</code> impl.</p>
+<h3 id="cborbound"><a href="#cborbound"><code>#[cbor(bound)]</code></a></h3>
+<p>Combines <a href="#cborencode_bound--"><code>#[cbor(encode_bound = &quot;...&quot;)]</code></a> and
+<a href="#cbordecode_bound--"><code>#[cbor(decode_bound = &quot;...&quot;)]</code></a>, i.e. the bound applies
+to the derived <code>Encode</code> and <code>Decode</code> impl.</p>
+<h3 id="cborcontext_bound--"><a href="#cborcontext_bound--"><code>#[cbor(context_bound = &quot;...&quot;)]</code></a></h3>
+<p>When deriving <code>Encode</code> or <code>Decode</code> for a type which has parts that constrain the
+generic context type parameter, this attribute can be used to add the required
+trait bounds to the context type parameter. The attribute can either be repeated
+or the bounds can be listed as ‘+’-separated value, e.g. “A + B + C”.</p>
+<h4 id="example-1"><a href="#example-1">Example</a></h4><details>
+    <summary>A combined context.</summary>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>minicbor::{Encode, Decode};
+<span class="kw">use </span>minicbor::decode::{<span class="self">self</span>, Decoder};
+
+<span class="comment">// Some decodable type that uses a custom context.
+</span><span class="kw">struct </span>A(u8);
+
+<span class="comment">// `A`&#39;s context type.
+</span><span class="kw">struct </span>AC { a: u8 }
+
+<span class="kw">impl </span>AsMut&lt;AC&gt; <span class="kw">for </span>AC {
+    <span class="kw">fn </span>as_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>AC { <span class="self">self </span>}
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;b</span>, C: AsMut&lt;AC&gt;&gt; Decode&lt;<span class="lifetime">&#39;b</span>, C&gt; <span class="kw">for </span>A {
+    <span class="kw">fn </span>decode(d: <span class="kw-2">&amp;mut </span>Decoder&lt;<span class="lifetime">&#39;b</span>&gt;, ctx: <span class="kw-2">&amp;mut </span>C) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, decode::Error&gt; {
+        <span class="prelude-val">Ok</span>(A(ctx.as_mut().a))
+    }
+}
+
+<span class="comment">// Another decodable type that uses a different context.
+</span><span class="kw">struct </span>B(u8);
+
+<span class="comment">// `B`&#39;s context type.
+</span><span class="kw">struct </span>BC { b: u8 }
+
+<span class="kw">impl </span>AsMut&lt;BC&gt; <span class="kw">for </span>BC {
+    <span class="kw">fn </span>as_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>BC { <span class="self">self </span>}
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;b</span>, C: AsMut&lt;BC&gt;&gt; Decode&lt;<span class="lifetime">&#39;b</span>, C&gt; <span class="kw">for </span>B {
+    <span class="kw">fn </span>decode(d: <span class="kw-2">&amp;mut </span>Decoder&lt;<span class="lifetime">&#39;b</span>&gt;, ctx: <span class="kw-2">&amp;mut </span>C) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, decode::Error&gt; {
+        <span class="prelude-val">Ok</span>(B(ctx.as_mut().b))
+    }
+}
+
+<span class="comment">// Finally, a type that combines `A` and `B` and therefore also needs to provide
+// a context that can be used by both of them.
+</span><span class="attr">#[derive(Decode)]
+#[cbor(context_bound = <span class="string">&quot;AsMut&lt;AC&gt; + AsMut&lt;BC&gt;&quot;</span>)]
+</span><span class="kw">struct </span>C {
+    <span class="attr">#[n(<span class="number">0</span>)] </span>a: A,
+    <span class="attr">#[n(<span class="number">1</span>)] </span>b: B
+}
+
+<span class="comment">// The combined context type.
+</span><span class="kw">struct </span>CC(AC, BC);
+
+<span class="kw">impl </span>AsMut&lt;AC&gt; <span class="kw">for </span>CC {
+    <span class="kw">fn </span>as_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>AC {
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>.<span class="number">0
+    </span>}
+}
+
+<span class="kw">impl </span>AsMut&lt;BC&gt; <span class="kw">for </span>CC {
+    <span class="kw">fn </span>as_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>BC {
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>.<span class="number">1
+    </span>}
+}
+</code></pre></div>
+</details>
+<h2 id="implicit-borrowing"><a href="#implicit-borrowing">Implicit borrowing</a></h2>
+<p>Apart from the explicit borrowing with <a href="#n-and-b-or-cborn-and-cborb"><code>#[b(...)]</code></a>,
+the following types implicitly borrow from the decoding input, which means
+their lifetimes are constrained by the input lifetime:</p>
+<ul>
+<li><code>&amp;'_ str</code></li>
+<li><code>&amp;'_ minicbor::bytes::ByteSlice</code></li>
+<li><code>Option&lt;&amp;'_ str&gt;</code></li>
+<li><code>Option&lt;&amp;'_ minicbor::bytes::ByteSlice&gt;</code></li>
+</ul>
+<h3 id="what-about-u8"><a href="#what-about-u8">What about <code>&amp;[u8]</code>?</a></h3>
+<p><code>&amp;[u8]</code> is a special case of <code>&amp;[T]</code>. The lack of trait impl specialisation
+in Rust makes it difficult to provide optimised support for byte slices.
+The generic <code>[T]</code> impl of <code>Encode</code> produces an array of <code>T</code>s. To specifically
+encode to and decode from CBOR bytes, the types <code>ByteSlice</code>, <code>ByteArray</code> and
+<code>ByteVec</code> are provided by <code>minicbor</code>. In addition, the attributes
+<code>encode_with</code>, <code>decode_with</code> and <code>with</code> can be used with <code>&amp;[u8]</code> when deriving,
+e.g.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>minicbor::{Encode, Decode};
+
+<span class="attr">#[derive(Encode, Decode)]
+</span><span class="kw">struct </span>Foo&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="attr">#[cbor(n(<span class="number">0</span>), with = <span class="string">&quot;minicbor::bytes&quot;</span>)]
+    </span>field0: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8],
+
+    <span class="attr">#[n(<span class="number">1</span>)]
+    #[cbor(encode_with = <span class="string">&quot;minicbor::bytes::encode&quot;</span>)]
+    #[cbor(decode_with = <span class="string">&quot;minicbor::bytes::decode&quot;</span>)]
+    </span>field1: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8],
+
+    <span class="attr">#[cbor(n(<span class="number">2</span>), with = <span class="string">&quot;minicbor::bytes&quot;</span>)]
+    </span>field2: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8]&gt;,
+
+    <span class="attr">#[cbor(n(<span class="number">3</span>), with = <span class="string">&quot;minicbor::bytes&quot;</span>)]
+    </span>field3: Vec&lt;u8&gt;,
+
+    <span class="attr">#[cbor(n(<span class="number">4</span>), with = <span class="string">&quot;minicbor::bytes&quot;</span>)]
+    </span>field4: [u8; <span class="number">16</span>]
+}</code></pre></div>
+<h2 id="cbor-encoding"><a href="#cbor-encoding">CBOR encoding</a></h2>
+<p>The CBOR values produced by a derived <code>Encode</code> implementation are of the
+following formats.</p>
+<h3 id="structs"><a href="#structs">Structs</a></h3><h4 id="array-encoding"><a href="#array-encoding">Array encoding</a></h4>
+<p>By default or if a struct has the <a href="#cborarray"><code>#[cbor(array)]</code></a> attribute,
+it will be represented as a CBOR array. Its index numbers are represened by
+the position of the field value in this array. Any gaps between index numbers
+are filled with CBOR NULL values and <code>Option</code>s which are <code>None</code> likewise
+end up as NULLs in this array.</p>
+<div class="example-wrap"><pre class="language-text"><code>&lt;&lt;struct-as-array encoding&gt;&gt; =
+    `array(n)`
+        item_0
+        item_1
+        ...
+        item_n
+</code></pre></div><h4 id="map-encoding"><a href="#map-encoding">Map encoding</a></h4>
+<p>If a struct has the <a href="#cbormap"><code>#[cbor(map)]</code></a> attribute attached, then it
+will be represented as a CBOR map with keys corresponding to the numeric
+index value:</p>
+<div class="example-wrap"><pre class="language-text"><code>&lt;&lt;struct-as-map encoding&gt;&gt; =
+    `map(n)`
+        `0` item_0
+        `1` item_1
+        ...
+         n  item_n
+</code></pre></div>
+<p>Optional fields whose value is <code>None</code> are not encoded.</p>
+<h3 id="enums"><a href="#enums">Enums</a></h3>
+<p>Unless the <a href="#cborindex_only"><code>#[cbor(index_only)]</code></a> attribute is used for
+enums without any fields, each enum variant is encoded as a two-element
+array. The first element is the variant index and the second the actual
+variant value. Otherwise, if enums do not have fields and the <code>index_only</code>
+attribute is present, only the variant index is encoded:</p>
+<div class="example-wrap"><pre class="language-text"><code>&lt;&lt;enum encoding&gt;&gt; =
+    | `array(2)` n &lt;&lt;struct-as-array encoding&gt;&gt; ; if #[cbor(array)]
+    | `array(2)` n &lt;&lt;struct-as-map encoding&gt;&gt;   ; if #[cbor(map)]
+    | n                                         ; if #[cbor(index_only)]
+</code></pre></div><h3 id="which-encoding-to-use"><a href="#which-encoding-to-use">Which encoding to use?</a></h3>
+<p>The map encoding needs to represent the indexes explicitly in the encoding
+which costs at least one extra byte per field value, whereas the array
+encoding does not need to encode the indexes. On the other hand, absent
+values, i.e. <code>None</code>s and gaps between indexes are not encoded with maps but
+need to be encoded explicitly with arrays as NULLs which need one byte each.
+Which encoding to choose depends therefore on the nature of the type that
+should be encoded:</p>
+<ul>
+<li>
+<p><em>Dense types</em> are types which contain only few <code>Option</code>s or their <code>Option</code>s
+are assumed to be <code>Some</code>s usually. They are best encoded as arrays.</p>
+</li>
+<li>
+<p><em>Sparse types</em> are types with many <code>Option</code>s and their <code>Option</code>s are usually
+<code>None</code>s. They are best encoded as maps.</p>
+</li>
+</ul>
+<p>When selecting the encoding, future changes to the type should be considered
+as they may turn a dense type into a sparse one over time. This also applies
+to <a href="#cborindex_only"><code>#[cbor(index_only)]</code></a> which should be used only with
+enums which are not expected to ever have fields in their variants.</p>
+<div class="footnotes"><hr><ol><li id="fn1"><p>CBOR items are ignored using <code>Decoder::skip</code>. This method requires
+feature “alloc” to work for all possible CBOR items. Without “alloc”,
+indefinite maps or arrays inside of regular maps or arrays can not be skipped
+over. If such a combination occurs and <code>Decoder::skip</code> was compiled without
+feature “alloc”, a decoding error is returned.&nbsp;<a href="#fnref1">↩</a></p></li></ol></div></div></details><h2 id="derives" class="small-section-header"><a href="#derives">Derive Macros</a></h2><ul class="item-table"><li><div class="item-name"><a class="derive" href="derive.CborLen.html" title="derive minicbor_derive::CborLen">CborLen</a></div><div class="desc docblock-short">Derive the <code>minicbor::CborLen</code> trait for a struct or enum.</div></li><li><div class="item-name"><a class="derive" href="derive.Decode.html" title="derive minicbor_derive::Decode">Decode</a></div><div class="desc docblock-short">Derive the <code>minicbor::Decode</code> trait for a struct or enum.</div></li><li><div class="item-name"><a class="derive" href="derive.Encode.html" title="derive minicbor_derive::Encode">Encode</a></div><div class="desc docblock-short">Derive the <code>minicbor::Encode</code> trait for a struct or enum.</div></li></ul></section></div></main></body></html>

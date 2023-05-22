@@ -1,0 +1,103 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="A small CBOR codec suitable for `no_std` environments."><title>minicbor - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="minicbor" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../minicbor/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../minicbor/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2 class="location"><a href="#">Crate minicbor</a></h2><div class="sidebar-elems"><ul class="block"><li class="version">Version 0.19.1</li><li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#reexports">Re-exports</a></li><li><a href="#modules">Modules</a></li><li><a href="#functions">Functions</a></li><li><a href="#derives">Derive Macros</a></li></ul></section></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">minicbor</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../src/minicbor/lib.rs.html#1-272">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>A small <a href="https://tools.ietf.org/html/rfc7049">CBOR</a> codec suitable for <code>no_std</code> environments.</p>
+<p>The crate is organised around the following entities:</p>
+<ul>
+<li>
+<p><a href="encode/struct.Encoder.html" title="struct minicbor::encode::Encoder"><code>Encoder</code></a> and <a href="decode/struct.Decoder.html" title="struct minicbor::decode::Decoder"><code>Decoder</code></a> for type-directed encoding and decoding
+of values.</p>
+</li>
+<li>
+<p><a href="encode/trait.Encode.html" title="trait minicbor::encode::Encode"><code>Encode</code></a> and <a href="decode/trait.Decode.html" title="trait minicbor::decode::Decode"><code>Decode</code></a> traits which can be implemented for any
+type that should be encoded to or decoded from CBOR. They are similar
+to <a href="https://serde.rs">serde</a>’s <code>Serialize</code> and <code>Deserialize</code> traits but do not abstract
+over the encoder/decoder.</p>
+</li>
+</ul>
+<p>Encoding and decoding proceeds in a type-directed way, i.e.  by calling
+methods for expected data item types, e.g. <a href="decode/struct.Decoder.html#method.u32" title="method minicbor::decode::Decoder::u32"><code>Decoder::u32</code></a> or
+<a href="encode/struct.Encoder.html#method.str" title="method minicbor::encode::Encoder::str"><code>Encoder::str</code></a>. In addition there is support for data type inspection.
+The <code>Decoder</code> can be queried for the current data type which returns a
+<a href="data/enum.Type.html" title="enum minicbor::data::Type"><code>data::Type</code></a> that can represent every possible CBOR type and decoding
+can thus proceed based on this information. It is also possible to just
+tokenize the input bytes using a <a href="decode::Tokenizer"><code>Tokenizer</code></a>, i.e.
+an <code>Iterator</code> over CBOR <a href="decode::Token"><code>Token</code></a>s. Finally, the length
+in bytes of a value’s CBOR representation can be calculated if the
+value’s type implements the <a href="encode/trait.CborLen.html" title="trait minicbor::encode::CborLen"><code>CborLen</code></a> trait.</p>
+<p>Optionally, <code>Encode</code> and <code>Decode</code> can be derived for structs and enums
+using the respective derive macros (<em>requires feature</em> <code>&quot;derive&quot;</code>).
+See <a href="../minicbor_derive/index.html" title="mod minicbor_derive"><code>minicbor_derive</code></a> for details.</p>
+<p>For I/O support see <a href="https://twittner.gitlab.io/minicbor/minicbor_io/"><code>minicbor-io</code></a>.</p>
+<h2 id="feature-flags"><a href="#feature-flags">Feature flags</a></h2>
+<p>The following feature flags are supported:</p>
+<ul>
+<li>
+<p><code>&quot;alloc&quot;</code>: Enables most collection types in a <code>no_std</code> environment.</p>
+</li>
+<li>
+<p><code>&quot;std&quot;</code>: Implies <code>&quot;alloc&quot;</code> and enables more functionality that depends
+on the <code>std</code> crate.</p>
+</li>
+<li>
+<p><code>&quot;derive&quot;</code>: Allows deriving <a href="encode/trait.Encode.html" title="trait minicbor::encode::Encode"><code>Encode</code></a> and <a href="decode/trait.Decode.html" title="trait minicbor::decode::Decode"><code>Decode</code></a> traits.</p>
+</li>
+</ul>
+<h2 id="example-generic-encoding-and-decoding"><a href="#example-generic-encoding-and-decoding">Example: generic encoding and decoding</a></h2>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>minicbor::{Encode, Decode};
+
+<span class="kw">let </span>input = [<span class="string">&quot;hello&quot;</span>, <span class="string">&quot;world&quot;</span>];
+<span class="kw">let </span><span class="kw-2">mut </span>buffer = [<span class="number">0u8</span>; <span class="number">128</span>];
+
+minicbor::encode(<span class="kw-2">&amp;</span>input, buffer.as_mut())<span class="question-mark">?</span>;
+<span class="kw">let </span>output: [<span class="kw-2">&amp;</span>str; <span class="number">2</span>] = minicbor::decode(buffer.as_ref())<span class="question-mark">?</span>;
+<span class="macro">assert_eq!</span>(input, output);
+</code></pre></div>
+<h2 id="example-ad-hoc-encoding"><a href="#example-ad-hoc-encoding">Example: ad-hoc encoding</a></h2>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>minicbor::Encoder;
+
+<span class="kw">let </span><span class="kw-2">mut </span>buffer = [<span class="number">0u8</span>; <span class="number">128</span>];
+<span class="kw">let </span><span class="kw-2">mut </span>encoder = Encoder::new(<span class="kw-2">&amp;mut </span>buffer[..]);
+
+encoder.begin_map()<span class="question-mark">? </span><span class="comment">// using an indefinite map here
+    </span>.str(<span class="string">&quot;hello&quot;</span>)<span class="question-mark">?</span>.str(<span class="string">&quot;world&quot;</span>)<span class="question-mark">?
+    </span>.str(<span class="string">&quot;submap&quot;</span>)<span class="question-mark">?</span>.map(<span class="number">2</span>)<span class="question-mark">?
+        </span>.u8(<span class="number">1</span>)<span class="question-mark">?</span>.bool(<span class="bool-val">true</span>)<span class="question-mark">?
+        </span>.u8(<span class="number">2</span>)<span class="question-mark">?</span>.bool(<span class="bool-val">false</span>)<span class="question-mark">?
+    </span>.u16(<span class="number">34234</span>)<span class="question-mark">?</span>.array(<span class="number">3</span>)<span class="question-mark">?</span>.u8(<span class="number">1</span>)<span class="question-mark">?</span>.u8(<span class="number">2</span>)<span class="question-mark">?</span>.u8(<span class="number">3</span>)<span class="question-mark">?
+    </span>.bool(<span class="bool-val">true</span>)<span class="question-mark">?</span>.null()<span class="question-mark">?
+</span>.end()<span class="question-mark">?</span>;
+</code></pre></div>
+<h2 id="example-ad-hoc-decoding"><a href="#example-ad-hoc-decoding">Example: ad-hoc decoding</a></h2>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>minicbor::Decoder;
+<span class="kw">use </span>minicbor::data::Tag;
+
+<span class="kw">let </span>input = [
+    <span class="number">0xc0</span>, <span class="number">0x74</span>, <span class="number">0x32</span>, <span class="number">0x30</span>, <span class="number">0x31</span>, <span class="number">0x33</span>, <span class="number">0x2d</span>, <span class="number">0x30</span>,
+    <span class="number">0x33</span>, <span class="number">0x2d</span>, <span class="number">0x32</span>, <span class="number">0x31</span>, <span class="number">0x54</span>, <span class="number">0x32</span>, <span class="number">0x30</span>, <span class="number">0x3a</span>,
+    <span class="number">0x30</span>, <span class="number">0x34</span>, <span class="number">0x3a</span>, <span class="number">0x30</span>, <span class="number">0x30</span>, <span class="number">0x5a
+</span>];
+
+<span class="kw">let </span><span class="kw-2">mut </span>decoder = Decoder::new(<span class="kw-2">&amp;</span>input);
+<span class="macro">assert_eq!</span>(Tag::DateTime, decoder.tag()<span class="question-mark">?</span>);
+<span class="macro">assert_eq!</span>(<span class="string">&quot;2013-03-21T20:04:00Z&quot;</span>, decoder.str()<span class="question-mark">?</span>);</code></pre></div>
+<h2 id="example-tokenization"><a href="#example-tokenization">Example: tokenization</a></h2>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>minicbor::display;
+<span class="kw">use </span>minicbor::decode::{Token, Tokenizer};
+
+<span class="kw">let </span>input  = [<span class="number">0x83</span>, <span class="number">0x01</span>, <span class="number">0x9f</span>, <span class="number">0x02</span>, <span class="number">0x03</span>, <span class="number">0xff</span>, <span class="number">0x82</span>, <span class="number">0x04</span>, <span class="number">0x05</span>];
+
+<span class="macro">assert_eq!</span>(<span class="string">&quot;[1, [_ 2, 3], [4, 5]]&quot;</span>, <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, display(<span class="kw-2">&amp;</span>input)));
+
+<span class="kw">let </span>tokens = Tokenizer::new(<span class="kw-2">&amp;</span>input).collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;Token&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
+
+<span class="macro">assert_eq! </span>{ <span class="kw-2">&amp;</span>tokens[..],
+    <span class="kw-2">&amp;</span>[Token::Array(<span class="number">3</span>),
+      Token::U8(<span class="number">1</span>),
+      Token::BeginArray,
+      Token::U8(<span class="number">2</span>),
+      Token::U8(<span class="number">3</span>),
+      Token::Break,
+      Token::Array(<span class="number">2</span>),
+      Token::U8(<span class="number">4</span>),
+      Token::U8(<span class="number">5</span>)]
+};
+</code></pre></div>
+</div></details><h2 id="reexports" class="small-section-header"><a href="#reexports">Re-exports</a></h2><ul class="item-table"><li><div class="item-name" id="reexport.Decode"><code>pub use decode::<a class="trait" href="decode/trait.Decode.html" title="trait minicbor::decode::Decode">Decode</a>;</code></div></li><li><div class="item-name" id="reexport.Decoder"><code>pub use decode::<a class="struct" href="decode/struct.Decoder.html" title="struct minicbor::decode::Decoder">Decoder</a>;</code></div></li><li><div class="item-name" id="reexport.Encode"><code>pub use encode::<a class="trait" href="encode/trait.Encode.html" title="trait minicbor::encode::Encode">Encode</a>;</code></div></li><li><div class="item-name" id="reexport.Encoder"><code>pub use encode::<a class="struct" href="encode/struct.Encoder.html" title="struct minicbor::encode::Encoder">Encoder</a>;</code></div></li><li><div class="item-name" id="reexport.CborLen"><code>pub use encode::<a class="trait" href="encode/trait.CborLen.html" title="trait minicbor::encode::CborLen">CborLen</a>;</code></div></li></ul><h2 id="modules" class="small-section-header"><a href="#modules">Modules</a></h2><ul class="item-table"><li><div class="item-name"><a class="mod" href="bytes/index.html" title="mod minicbor::bytes">bytes</a></div><div class="desc docblock-short">Newtypes for <code>&amp;[u8]</code>, <code>[u8;N]</code> and <code>Vec&lt;u8&gt;</code>.</div></li><li><div class="item-name"><a class="mod" href="data/index.html" title="mod minicbor::data">data</a></div><div class="desc docblock-short">Information about CBOR data types and tags.</div></li><li><div class="item-name"><a class="mod" href="decode/index.html" title="mod minicbor::decode">decode</a></div><div class="desc docblock-short">Traits and types for decoding CBOR.</div></li><li><div class="item-name"><a class="mod" href="encode/index.html" title="mod minicbor::encode">encode</a></div><div class="desc docblock-short">Traits and types for encoding CBOR.</div></li></ul><h2 id="functions" class="small-section-header"><a href="#functions">Functions</a></h2><ul class="item-table"><li><div class="item-name"><a class="fn" href="fn.decode.html" title="fn minicbor::decode">decode</a></div><div class="desc docblock-short">Decode a type implementing <a href="decode/trait.Decode.html" title="trait minicbor::decode::Decode"><code>Decode</code></a> from the given byte slice.</div></li><li><div class="item-name"><a class="fn" href="fn.decode_with.html" title="fn minicbor::decode_with">decode_with</a></div><div class="desc docblock-short">Decode a type implementing <a href="decode/trait.Decode.html" title="trait minicbor::decode::Decode"><code>Decode</code></a> from the given byte slice.</div></li><li><div class="item-name"><a class="fn" href="fn.encode.html" title="fn minicbor::encode">encode</a></div><div class="desc docblock-short">Encode a type implementing <a href="encode/trait.Encode.html" title="trait minicbor::encode::Encode"><code>Encode</code></a> to the given <a href="encode/write/trait.Write.html" title="trait minicbor::encode::write::Write"><code>encode::Write</code></a> impl.</div></li><li><div class="item-name"><a class="fn" href="fn.encode_with.html" title="fn minicbor::encode_with">encode_with</a></div><div class="desc docblock-short">Encode a type implementing <a href="encode/trait.Encode.html" title="trait minicbor::encode::Encode"><code>Encode</code></a> to the given <a href="encode/write/trait.Write.html" title="trait minicbor::encode::write::Write"><code>encode::Write</code></a> impl.</div></li><li><div class="item-name"><a class="fn" href="fn.len.html" title="fn minicbor::len">len</a></div><div class="desc docblock-short">Calculate the length in bytes of the given value’s CBOR representation.</div></li><li><div class="item-name"><a class="fn" href="fn.len_with.html" title="fn minicbor::len_with">len_with</a></div><div class="desc docblock-short">Calculate the length in bytes of the given value’s CBOR representation.</div></li><li><div class="item-name"><a class="fn" href="fn.to_vec.html" title="fn minicbor::to_vec">to_vec</a></div><div class="desc docblock-short">Encode a type implementing <a href="encode/trait.Encode.html" title="trait minicbor::encode::Encode"><code>Encode</code></a> and return the encoded byte vector.</div></li><li><div class="item-name"><a class="fn" href="fn.to_vec_with.html" title="fn minicbor::to_vec_with">to_vec_with</a></div><div class="desc docblock-short">Encode a type implementing <a href="encode/trait.Encode.html" title="trait minicbor::encode::Encode"><code>Encode</code></a> and return the encoded byte vector.</div></li></ul><h2 id="derives" class="small-section-header"><a href="#derives">Derive Macros</a></h2><ul class="item-table"><li><div class="item-name"><a class="derive" href="derive.CborLen.html" title="derive minicbor::CborLen">CborLen</a></div><div class="desc docblock-short">Derive the <code>minicbor::CborLen</code> trait for a struct or enum.</div></li><li><div class="item-name"><a class="derive" href="derive.Decode.html" title="derive minicbor::Decode">Decode</a></div><div class="desc docblock-short">Derive the <code>minicbor::Decode</code> trait for a struct or enum.</div></li><li><div class="item-name"><a class="derive" href="derive.Encode.html" title="derive minicbor::Encode">Encode</a></div><div class="desc docblock-short">Derive the <code>minicbor::Encode</code> trait for a struct or enum.</div></li></ul></section></div></main></body></html>

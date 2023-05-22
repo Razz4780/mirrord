@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Difference"],"fn":["diff","print_diff"],"macro":["assert_diff"],"struct":["Changeset"]};

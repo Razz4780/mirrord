@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["AwsAuthStage","AwsAuthStageError","AwsEndpoint","CredentialScope"],"trait":["ResolveAwsEndpoint"],"type":["BoxError"]};

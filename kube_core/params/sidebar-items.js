@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Patch","PropagationPolicy","ValidationDirective"],"struct":["DeleteParams","ListParams","PatchParams","PostParams","Preconditions"]};
+window.SIDEBAR_ITEMS = {"enum":["Patch","PropagationPolicy","ValidationDirective","VersionMatch"],"struct":["DeleteParams","ListParams","PatchParams","PostParams","Preconditions","WatchParams"]};

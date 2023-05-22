@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["app_name","build_metadata","config","credentials","endpoint","http_connector","region","sdk_config"],"struct":["SigningService"]};
