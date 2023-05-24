@@ -131,7 +131,7 @@
 <span class="kw">where
     </span>P: Progress + Send + Sync,
 {
-    <span class="kw">let </span>sub_progress = progress.subtask(<span class="string">&quot;Checking Operator&quot;</span>);
+    <span class="kw">let </span>sub_progress = progress.subtask(<span class="string">&quot;checking operator&quot;</span>);
 
     <span class="kw">match </span>OperatorApi::discover(config, progress)
         .<span class="kw">await
@@ -139,17 +139,17 @@
         .into_diagnostic()
     {
         <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(connection)) =&gt; {
-            sub_progress.done_with(<span class="string">&quot;Connected to Operator&quot;</span>);
+            sub_progress.done_with(<span class="string">&quot;connected to operator&quot;</span>);
 
             <span class="prelude-val">Some</span>(connection)
         }
         <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>) =&gt; {
-            sub_progress.done_with(<span class="string">&quot;No Operator Detected&quot;</span>);
+            sub_progress.done_with(<span class="string">&quot;no operator detected&quot;</span>);
 
             <span class="prelude-val">None
         </span>}
         <span class="prelude-val">Err</span>(err) =&gt; {
-            sub_progress.done_with(<span class="string">&quot;Unable to check if operator exists, probably due to RBAC&quot;</span>);
+            sub_progress.done_with(<span class="string">&quot;unable to check if operator exists, probably due to RBAC&quot;</span>);
 
             <span class="macro">trace!</span>(<span class="string">&quot;{err}&quot;</span>);
 

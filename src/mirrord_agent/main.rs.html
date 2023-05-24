@@ -711,30 +711,6 @@
 <a href="#711" id="711">711</a>
 <a href="#712" id="712">712</a>
 <a href="#713" id="713">713</a>
-<a href="#714" id="714">714</a>
-<a href="#715" id="715">715</a>
-<a href="#716" id="716">716</a>
-<a href="#717" id="717">717</a>
-<a href="#718" id="718">718</a>
-<a href="#719" id="719">719</a>
-<a href="#720" id="720">720</a>
-<a href="#721" id="721">721</a>
-<a href="#722" id="722">722</a>
-<a href="#723" id="723">723</a>
-<a href="#724" id="724">724</a>
-<a href="#725" id="725">725</a>
-<a href="#726" id="726">726</a>
-<a href="#727" id="727">727</a>
-<a href="#728" id="728">728</a>
-<a href="#729" id="729">729</a>
-<a href="#730" id="730">730</a>
-<a href="#731" id="731">731</a>
-<a href="#732" id="732">732</a>
-<a href="#733" id="733">733</a>
-<a href="#734" id="734">734</a>
-<a href="#735" id="735">735</a>
-<a href="#736" id="736">736</a>
-<a href="#737" id="737">737</a>
 </pre><pre class="rust"><code><span class="attr">#![feature(result_option_inspect)]
 #![feature(hash_drain_filter)]
 #![feature(once_cell)]
@@ -758,13 +734,14 @@
 <span class="kw">use </span>error::{AgentError, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span>file::FileManager;
 <span class="kw">use </span>futures::{
-    executor,
     stream::{FuturesUnordered, StreamExt},
     SinkExt, TryFutureExt,
 };
-<span class="kw">use </span>mirrord_protocol::{ClientMessage, DaemonCodec, DaemonMessage, GetEnvVarsRequest, LogMessage};
+<span class="kw">use </span>mirrord_protocol::{
+    pause::DaemonPauseTarget, ClientMessage, DaemonCodec, DaemonMessage, GetEnvVarsRequest,
+    LogMessage,
+};
 <span class="kw">use </span>outgoing::{udp::UdpOutgoingApi, TcpOutgoingApi};
-<span class="kw">use </span>runtime::ContainerInfo;
 <span class="kw">use </span>sniffer::{SnifferCommand, TcpConnectionSniffer, TcpSnifferApi};
 <span class="kw">use </span>steal::api::TcpStealerApi;
 <span class="kw">use </span>tokio::{
@@ -780,7 +757,8 @@
 
 <span class="kw">use crate</span>::{
     cli::Args,
-    runtime::{get_container, Container, ContainerRuntime},
+    container_handle::ContainerHandle,
+    runtime::get_container,
     steal::{
         connection::TcpConnectionStealer,
         ip_tables::{
@@ -794,6 +772,7 @@
 };
 
 <span class="kw">mod </span>cli;
+<span class="kw">mod </span>container_handle;
 <span class="kw">mod </span>dns;
 <span class="kw">mod </span>env;
 <span class="kw">mod </span>error;
@@ -808,83 +787,73 @@
 <span class="kw">const </span>CHANNEL_SIZE: usize = <span class="number">1024</span>;
 
 <span class="doccomment">/// Keeps track of connected clients.
-/// If pausing target, also pauses and unpauses when number of clients changes from or to 0.
 </span><span class="attr">#[derive(Debug)]
 </span><span class="kw">struct </span>State {
     clients: HashSet&lt;ClientId&gt;,
     index_allocator: IndexAllocator&lt;ClientId&gt;,
-    <span class="doccomment">/// Was the pause argument passed? If true, will pause the container when no clients are
-    /// connected.
-    </span>should_pause: bool,
-    <span class="doccomment">/// This is an option because it is acceptable not to pass a container runtime and id if not
-    /// pausing. When those args are not passed, container is None.
-    </span>container: <span class="prelude-ty">Option</span>&lt;Container&gt;,
-}
-
-<span class="doccomment">/// This is to make sure we don&#39;t leave the target container paused if the agent hits an error and
-/// exits early without removing all of its clients.
-</span><span class="kw">impl </span>Drop <span class="kw">for </span>State {
-    <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="kw">if </span><span class="self">self</span>.should_pause &amp;&amp; !<span class="self">self</span>.no_clients_left() {
-            <span class="macro">info!</span>(
-                <span class="string">&quot;Agent exiting without having removed all the clients. Unpausing target container.&quot;
-            </span>);
-            <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = executor::block_on(<span class="self">self</span>.container.as_ref().unwrap().unpause()) {
-                <span class="macro">error!</span>(
-                    <span class="string">&quot;Could not unpause target container while exiting early, got error: {err:?}&quot;
-                </span>);
-            }
-        }
-    }
+    <span class="doccomment">/// Handle to the target container if there is one.
+    /// This is optional because it is acceptable not to pass the container runtime and id if not
+    /// pausing. When those args are not passed, container is [`None`].
+    </span>container: <span class="prelude-ty">Option</span>&lt;ContainerHandle&gt;,
+    env: HashMap&lt;String, String&gt;,
+    <span class="doccomment">/// Whether this agent is run in an ephemeral container.
+    </span>ephemeral: bool,
 }
 
 <span class="kw">impl </span>State {
-    <span class="doccomment">/// Returns Err if container runtime operations failed or if the `pause` arg was passed, but
-    /// the container info (runtime and id) was not.
+    <span class="doccomment">/// Return [`Err`] if container runtime operations failed.
     </span><span class="kw">pub async fn </span>new(args: <span class="kw-2">&amp;</span>Args) -&gt; <span class="prelude-ty">Result</span>&lt;State&gt; {
         <span class="kw">let </span>container =
             get_container(args.container_id.as_ref(), args.container_runtime.as_ref()).<span class="kw">await</span><span class="question-mark">?</span>;
 
-        <span class="kw">if </span>container.is_none() &amp;&amp; args.pause {
-            <span class="prelude-val">Err</span>(AgentError::MissingContainerInfo)<span class="question-mark">?
-        </span>}
+        <span class="kw">let </span>container = <span class="kw">match </span>container {
+            <span class="prelude-val">Some</span>(container) =&gt; <span class="prelude-val">Some</span>(ContainerHandle::new(container).<span class="kw">await</span><span class="question-mark">?</span>),
+            <span class="prelude-val">None </span>=&gt; <span class="prelude-val">None</span>,
+        };
+
+        <span class="kw">let </span>environ_path = PathBuf::from(<span class="string">&quot;/proc&quot;</span>)
+            .join(
+                container
+                    .as_ref()
+                    .map(|h| h.pid().to_string())
+                    .unwrap_or_else(|| <span class="string">&quot;self&quot;</span>.to_string()),
+            )
+            .join(<span class="string">&quot;environ&quot;</span>);
+
+        <span class="kw">let </span><span class="kw-2">mut </span>env = container
+            .as_ref()
+            .map(ContainerHandle::raw_env)
+            .cloned()
+            .unwrap_or_default();
+        <span class="kw">match </span>env::get_proc_environ(environ_path).<span class="kw">await </span>{
+            <span class="prelude-val">Ok</span>(environ) =&gt; env.extend(environ.into_iter()),
+            <span class="prelude-val">Err</span>(err) =&gt; {
+                <span class="macro">error!</span>(<span class="string">&quot;Failed to get process environment variables: {err:?}&quot;</span>);
+            }
+        };
+
         <span class="prelude-val">Ok</span>(State {
             clients: HashSet::new(),
             index_allocator: Default::default(),
-            should_pause: args.pause,
             container,
+            env,
+            ephemeral: args.ephemeral_container,
         })
     }
 
-    <span class="doccomment">/// Get the external pid + env of the target container, if container info available.
-    </span><span class="kw">pub async fn </span>get_container_info(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;ContainerInfo&gt;&gt; {
-        <span class="kw">if </span><span class="self">self</span>.container.is_some() {
-            <span class="kw">let </span>container = <span class="self">self</span>.container.as_ref().unwrap();
-            <span class="kw">let </span>info = container.get_info().<span class="kw">await</span><span class="question-mark">?</span>;
-            <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(info))
-        } <span class="kw">else </span>{
-            <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
-        }
+    <span class="doccomment">/// Return the process ID of the target container if there is one.
+    </span><span class="kw">pub fn </span>container_pid(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
+        <span class="self">self</span>.container.as_ref().map(ContainerHandle::pid)
     }
 
-    <span class="doccomment">/// If there are clientIDs left, insert new one and return it.
-    /// If there were no clients before, and there is a Pauser, start pausing.
-    /// Propagate container runtime errors.
+    <span class="doccomment">/// If there are [`ClientId`]s left, insert new one and return it.
     </span><span class="kw">pub async fn </span>new_client(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;ClientId&gt; {
-        <span class="kw">match </span><span class="self">self</span>.generate_id() {
-            <span class="prelude-val">None </span>=&gt; <span class="prelude-val">Err</span>(AgentError::ConnectionLimitReached),
-            <span class="prelude-val">Some</span>(new_id) =&gt; {
-                <span class="self">self</span>.clients.insert(new_id.to_owned());
-                <span class="kw">if </span><span class="self">self</span>.clients.len() == <span class="number">1 </span>{
-                    <span class="comment">// First client after no clients.
-                    </span><span class="kw">if </span><span class="self">self</span>.should_pause {
-                        <span class="self">self</span>.container.as_ref().unwrap().pause().<span class="kw">await</span><span class="question-mark">?</span>;
-                        <span class="macro">trace!</span>(<span class="string">&quot;First client connected - pausing container.&quot;</span>)
-                    }
-                }
-                <span class="prelude-val">Ok</span>(new_id)
-            }
-        }
+        <span class="kw">let </span>new_id = <span class="self">self
+            </span>.index_allocator
+            .next_index()
+            .ok_or(AgentError::ConnectionLimitReached)<span class="question-mark">?</span>;
+        <span class="self">self</span>.clients.insert(new_id);
+        <span class="prelude-val">Ok</span>(new_id)
     }
 
     <span class="kw">pub async fn </span>new_connection(
@@ -892,9 +861,6 @@
         stream: TcpStream,
         tasks: BackgroundTasks,
         cancellation_token: CancellationToken,
-        ephemeral_container: bool,
-        pid: <span class="prelude-ty">Option</span>&lt;u64&gt;,
-        env: HashMap&lt;String, String&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;JoinHandle&lt;u32&gt;&gt;&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>stream = Framed::new(stream, DaemonCodec::new());
 
@@ -913,11 +879,15 @@
             }
         };
 
+        <span class="kw">let </span>container_handle = <span class="self">self</span>.container.clone();
+        <span class="kw">let </span>ephemeral_container = <span class="self">self</span>.ephemeral;
+        <span class="kw">let </span>env = <span class="self">self</span>.env.clone();
+
         <span class="kw">let </span>task = tokio::spawn(<span class="kw">async move </span>{
             <span class="kw">let </span>result = ClientConnectionHandler::new(
                 client_id,
                 stream,
-                pid,
+                container_handle,
                 ephemeral_container,
                 tasks,
                 env,
@@ -946,27 +916,12 @@
         <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(task))
     }
 
-    <span class="kw">fn </span>generate_id(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;ClientId&gt; {
-        <span class="self">self</span>.index_allocator.next_index()
-    }
-
-    <span class="doccomment">/// If that was the last client and we are pausing, stop pausing.
-    /// Propagate container runtime errors.
+    <span class="doccomment">/// Free id of the given client.
     </span><span class="kw">pub async fn </span>remove_client(<span class="kw-2">&amp;mut </span><span class="self">self</span>, client_id: ClientId) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.clients.remove(<span class="kw-2">&amp;</span>client_id);
         <span class="self">self</span>.index_allocator.free_index(client_id);
-        <span class="kw">if </span><span class="self">self</span>.no_clients_left() {
-            <span class="comment">// resume container (stop stopping).
-            </span><span class="kw">if </span><span class="self">self</span>.should_pause {
-                <span class="self">self</span>.container.as_ref().unwrap().unpause().<span class="kw">await</span><span class="question-mark">?</span>;
-                <span class="macro">trace!</span>(<span class="string">&quot;Last client disconnected - resuming container.&quot;</span>)
-            }
-        }
-        <span class="prelude-val">Ok</span>(())
-    }
 
-    <span class="kw">pub fn </span>no_clients_left(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="self">self</span>.clients.is_empty()
+        <span class="prelude-val">Ok</span>(())
     }
 }
 
@@ -981,10 +936,7 @@
 }
 
 <span class="kw">struct </span>ClientConnectionHandler {
-    <span class="doccomment">/// Used to prevent closing the main loop [`ClientConnectionHandler::start`] when any
-    /// request is done (tcp outgoing feature). Stays `true` until `agent` receives an
-    /// `ExitRequest`.
-    </span>id: ClientId,
+    id: ClientId,
     <span class="doccomment">/// Handles mirrord&#39;s file operations, see [`FileManager`].
     </span>file_manager: FileManager,
     stream: Framed&lt;TcpStream, DaemonCodec&gt;,
@@ -994,6 +946,13 @@
     udp_outgoing_api: UdpOutgoingApi,
     dns_api: DnsApi,
     env: HashMap&lt;String, String&gt;,
+    <span class="doccomment">/// Handle to the target container if there is one.
+    /// Used for pausing the container.
+    </span>container_handle: <span class="prelude-ty">Option</span>&lt;ContainerHandle&gt;,
+    <span class="doccomment">/// Whether this agent is run in an ephemeral container.
+    /// TODO this is used only to prevent pausing from an ephemeral container and should be removed
+    /// once this feature is supported
+    </span>ephemeral: bool,
 }
 
 <span class="kw">impl </span>ClientConnectionHandler {
@@ -1001,16 +960,14 @@
     </span><span class="kw">pub async fn </span>new(
         id: ClientId,
         <span class="kw-2">mut </span>stream: Framed&lt;TcpStream, DaemonCodec&gt;,
-        pid: <span class="prelude-ty">Option</span>&lt;u64&gt;,
+        container_handle: <span class="prelude-ty">Option</span>&lt;ContainerHandle&gt;,
         ephemeral: bool,
         bg_tasks: BackgroundTasks,
         env: HashMap&lt;String, String&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">let </span>file_manager = <span class="kw">match </span>pid {
-            <span class="prelude-val">Some</span>(<span class="kw">_</span>) =&gt; FileManager::new(pid),
-            <span class="prelude-val">None </span><span class="kw">if </span>ephemeral =&gt; FileManager::new(<span class="prelude-val">Some</span>(<span class="number">1</span>)),
-            <span class="prelude-val">None </span>=&gt; FileManager::new(<span class="prelude-val">None</span>),
-        };
+        <span class="kw">let </span>pid = container_handle.as_ref().map(ContainerHandle::pid);
+
+        <span class="kw">let </span>file_manager = FileManager::new(pid.or_else(|| ephemeral.then_some(<span class="number">1</span>)));
 
         <span class="kw">let </span>tcp_sniffer_api = <span class="kw">match </span>TcpSnifferApi::new(
             id,
@@ -1067,6 +1024,8 @@
             udp_outgoing_api,
             dns_api: bg_tasks.dns_api,
             env,
+            container_handle,
+            ephemeral,
         };
 
         <span class="prelude-val">Ok</span>(client_handler)
@@ -1197,7 +1156,28 @@
             ClientMessage::Close =&gt; {
                 <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="bool-val">false</span>);
             }
+            ClientMessage::PauseTargetRequest(pause) =&gt; {
+                <span class="kw">if </span><span class="self">self</span>.ephemeral {
+                    <span class="prelude-val">Err</span>(AgentError::PauseEphemeralAgent)<span class="question-mark">?</span>;
+                }
+
+                <span class="kw">let </span>changed = <span class="self">self
+                    </span>.container_handle
+                    .as_ref()
+                    .ok_or(AgentError::PauseAbsentTarget)<span class="question-mark">?
+                    </span>.set_paused(pause)
+                    .<span class="kw">await</span><span class="question-mark">?</span>;
+
+                <span class="self">self</span>.respond(DaemonMessage::PauseTarget(
+                    DaemonPauseTarget::PauseResponse {
+                        changed,
+                        container_paused: pause,
+                    },
+                ))
+                .<span class="kw">await</span><span class="question-mark">?</span>;
+            }
         }
+
         <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>)
     }
 }
@@ -1215,24 +1195,6 @@
     .<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="kw">let </span><span class="kw-2">mut </span>state = State::new(<span class="kw-2">&amp;</span>args).<span class="kw">await</span><span class="question-mark">?</span>;
-    <span class="kw">let </span>(pid, <span class="kw-2">mut </span>env) = <span class="kw">match </span>state.get_container_info().<span class="kw">await</span><span class="question-mark">? </span>{
-        <span class="prelude-val">Some</span>(ContainerInfo { pid, env }) =&gt; (<span class="prelude-val">Some</span>(pid), env),
-        <span class="prelude-val">None </span>=&gt; (<span class="prelude-val">None</span>, HashMap::new()),
-    };
-
-    <span class="kw">let </span>environ_path = PathBuf::from(<span class="string">&quot;/proc&quot;</span>)
-        .join(
-            pid.map(|i| i.to_string())
-                .unwrap_or_else(|| <span class="string">&quot;self&quot;</span>.to_string()),
-        )
-        .join(<span class="string">&quot;environ&quot;</span>);
-
-    <span class="kw">match </span>env::get_proc_environ(environ_path).<span class="kw">await </span>{
-        <span class="prelude-val">Ok</span>(environ) =&gt; env.extend(environ.into_iter()),
-        <span class="prelude-val">Err</span>(err) =&gt; {
-            <span class="macro">error!</span>(<span class="string">&quot;Failed to get process environment variables: {err:?}&quot;</span>);
-        }
-    }
 
     <span class="kw">let </span>cancellation_token = CancellationToken::new();
     <span class="comment">// Cancel all other tasks on exit
@@ -1241,7 +1203,7 @@
     <span class="kw">let </span>(sniffer_command_tx, sniffer_command_rx) = mpsc::channel::&lt;SnifferCommand&gt;(<span class="number">1000</span>);
     <span class="kw">let </span>(stealer_command_tx, stealer_command_rx) = mpsc::channel::&lt;StealerCommand&gt;(<span class="number">1000</span>);
 
-    <span class="kw">let </span>dns_api = DnsApi::new(pid, <span class="number">1000</span>);
+    <span class="kw">let </span>dns_api = DnsApi::new(state.container_pid(), <span class="number">1000</span>);
 
     <span class="kw">let </span>(sniffer_task, sniffer_status) = {
         <span class="kw">let </span>cancellation_token = cancellation_token.clone();
@@ -1261,7 +1223,7 @@
         <span class="kw">let </span>task = run_thread_in_namespace(
             watched_task.start(),
             TcpConnectionSniffer::TASK_NAME.to_string(),
-            pid,
+            state.container_pid(),
             <span class="string">&quot;net&quot;</span>,
         );
 
@@ -1284,7 +1246,7 @@
         <span class="kw">let </span>task = run_thread_in_namespace(
             watched_task.start(),
             TcpConnectionStealer::TASK_NAME.to_string(),
-            pid,
+            state.container_pid(),
             <span class="string">&quot;net&quot;</span>,
         );
 
@@ -1316,14 +1278,7 @@
         <span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>((stream, addr))) =&gt; {
             <span class="macro">trace!</span>(<span class="string">&quot;start -&gt; Connection accepted from {:?}&quot;</span>, addr);
             <span class="kw">if let </span><span class="prelude-val">Some</span>(client) = state
-                .new_connection(
-                    stream,
-                    bg_tasks.clone(),
-                    cancellation_token.clone(),
-                    args.ephemeral_container,
-                    pid,
-                    env.clone(),
-                )
+                .new_connection(stream, bg_tasks.clone(), cancellation_token.clone())
                 .<span class="kw">await</span><span class="question-mark">?
             </span>{
                 clients.push(client)
@@ -1351,9 +1306,6 @@
                     stream,
                     bg_tasks.clone(),
                     cancellation_token.clone(),
-                    args.ephemeral_container,
-                    pid,
-                    env.clone()
                 ).<span class="kw">await</span><span class="question-mark">? </span>{clients.push(client) };
             },
             client = clients.next() =&gt; {
@@ -1414,7 +1366,7 @@
 
     <span class="kw">let </span>args = parse_args();
     <span class="kw">let </span>state = State::new(<span class="kw-2">&amp;</span>args).<span class="kw">await</span><span class="question-mark">?</span>;
-    <span class="kw">let </span>pid = state.get_container_info().<span class="kw">await</span><span class="question-mark">?</span>.map(|c| c.pid);
+    <span class="kw">let </span>pid = state.container_pid();
 
     std::env::set_var(IPTABLE_PREROUTING_ENV, IPTABLE_PREROUTING.as_str());
     std::env::set_var(IPTABLE_MESH_ENV, IPTABLE_MESH.as_str());

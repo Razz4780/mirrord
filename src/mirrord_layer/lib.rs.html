@@ -1601,7 +1601,7 @@
     /// This message has no dedicated handler, and is thus handled directly here, changing the
     /// [`Self::ping`] state.
     ///
-    /// ### [`DaemonMessage::GetEnvVarsResponse`]
+    /// ### [`DaemonMessage::GetEnvVarsResponse`] and [`DaemonMessage::PauseTarget`]
     ///
     /// Handled during mirrord-layer initialization, this message should never make it this far.
     ///
@@ -1613,7 +1613,7 @@
     ///
     /// ### [`DaemonMessage::LogMessage`]
     ///
-    /// This message has no dedicated handler, the internal message is simply logged here.
+    /// This message is handled in protocol level `wrap_raw_connection`.
     </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(<span class="self">self</span>))]
     </span><span class="kw">async fn </span>handle_daemon_message(<span class="kw-2">&amp;mut </span><span class="self">self</span>, daemon_message: DaemonMessage) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">match </span>daemon_message {
@@ -1654,9 +1654,9 @@
                 </span>.send(get_addr_info.<span class="number">0</span>)
                 .map_err(|<span class="kw">_</span>| LayerError::SendErrorGetAddrInfoResponse),
             DaemonMessage::Close(error_message) =&gt; <span class="prelude-val">Err</span>(LayerError::AgentErrorClosed(error_message)),
-            DaemonMessage::LogMessage(<span class="kw">_</span>) =&gt; {
-                <span class="comment">// handled in protocol level `wrap_raw_connection`
-                </span><span class="prelude-val">Ok</span>(())
+            DaemonMessage::LogMessage(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(()),
+            DaemonMessage::PauseTarget(<span class="kw">_</span>) =&gt; {
+                <span class="macro">unreachable!</span>(<span class="string">&quot;We set pausing target only on initialization, shouldn&#39;t happen&quot;</span>)
             }
         }
     }

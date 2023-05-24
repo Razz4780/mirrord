@@ -169,6 +169,7 @@ var sourcesIndex = JSON.parse('{\
 "hex":["",[],["error.rs","lib.rs"]],\
 "hkdf":["",[],["errors.rs","lib.rs","sealed.rs"]],\
 "hmac":["",[],["lib.rs","optim.rs","simple.rs"]],\
+"home":["",[],["env.rs","lib.rs"]],\
 "hostname":["",[],["lib.rs","nix.rs"]],\
 "http":["",[["header",[],["map.rs","mod.rs","name.rs","value.rs"]],["uri",[],["authority.rs","builder.rs","mod.rs","path.rs","port.rs","scheme.rs"]]],["byte_str.rs","convert.rs","error.rs","extensions.rs","lib.rs","method.rs","request.rs","response.rs","status.rs","version.rs"]],\
 "http_body":["",[],["frame.rs","lib.rs","size_hint.rs"]],\
@@ -234,7 +235,7 @@ var sourcesIndex = JSON.parse('{\
 "miniz_oxide":["",[["deflate",[],["buffer.rs","core.rs","mod.rs","stream.rs"]],["inflate",[],["core.rs","mod.rs","output_buffer.rs","stream.rs"]]],["lib.rs","shared.rs"]],\
 "mio":["",[["event",[],["event.rs","events.rs","mod.rs","source.rs"]],["net",[["tcp",[],["listener.rs","mod.rs","stream.rs"]],["uds",[],["datagram.rs","listener.rs","mod.rs","stream.rs"]]],["mod.rs","udp.rs"]],["sys",[["unix",[["selector",[],["epoll.rs","mod.rs"]],["uds",[],["datagram.rs","listener.rs","mod.rs","socketaddr.rs","stream.rs"]]],["mod.rs","net.rs","pipe.rs","sourcefd.rs","tcp.rs","udp.rs","waker.rs"]]],["mod.rs"]]],["interest.rs","io_source.rs","lib.rs","macros.rs","poll.rs","token.rs","waker.rs"]],\
 "mirrord":["",[],["config.rs","connection.rs","error.rs","execution.rs","extension.rs","extract.rs","internal_proxy.rs","main.rs","operator.rs"]],\
-"mirrord_agent":["",[["outgoing",[],["socket_stream.rs","udp.rs"]],["runtime",[],["crio.rs"]],["steal",[["http",[],["error.rs","filter.rs","hyper_handler.rs","reversible_stream.rs","v1.rs","v2.rs"]],["ip_tables",[],["chain.rs","flush_connections.rs","mesh.rs","redirect.rs"]]],["api.rs","connection.rs","http.rs","ip_tables.rs","orig_dst.rs"]]],["cli.rs","dns.rs","env.rs","error.rs","file.rs","main.rs","outgoing.rs","runtime.rs","sniffer.rs","steal.rs","util.rs","watched_task.rs"]],\
+"mirrord_agent":["",[["outgoing",[],["socket_stream.rs","udp.rs"]],["runtime",[],["crio.rs"]],["steal",[["http",[],["error.rs","filter.rs","hyper_handler.rs","reversible_stream.rs","v1.rs","v2.rs"]],["ip_tables",[],["chain.rs","flush_connections.rs","mesh.rs","redirect.rs"]]],["api.rs","connection.rs","http.rs","ip_tables.rs","orig_dst.rs"]]],["cli.rs","container_handle.rs","dns.rs","env.rs","error.rs","file.rs","main.rs","outgoing.rs","runtime.rs","sniffer.rs","steal.rs","util.rs","watched_task.rs"]],\
 "mirrord_auth":["",[],["lib.rs"]],\
 "mirrord_config":["",[["config",[],["deprecated.rs","from_env.rs","source.rs","unstable.rs"]],["fs",[],["advanced.rs","mode.rs"]],["incoming",[],["http_filter.rs"]]],["agent.rs","config.rs","env.rs","feature.rs","fs.rs","incoming.rs","lib.rs","network.rs","outgoing.rs","target.rs","util.rs"]],\
 "mirrord_config_derive":["",[["config",[],["field.rs","flag.rs"]]],["config.rs","lib.rs"]],\
@@ -244,7 +245,7 @@ var sourcesIndex = JSON.parse('{\
 "mirrord_layer_macro":["",[],["lib.rs"]],\
 "mirrord_operator":["",[],["client.rs","crd.rs","lib.rs","license.rs","setup.rs"]],\
 "mirrord_progress":["",[],["lib.rs"]],\
-"mirrord_protocol":["",[["outgoing",[],["tcp.rs","udp.rs"]]],["codec.rs","dns.rs","error.rs","file.rs","lib.rs","outgoing.rs","tcp.rs"]],\
+"mirrord_protocol":["",[["outgoing",[],["tcp.rs","udp.rs"]]],["codec.rs","dns.rs","error.rs","file.rs","lib.rs","outgoing.rs","pause.rs","tcp.rs"]],\
 "mirrord_sip":["",[],["lib.rs"]],\
 "nix":["",[["mount",[],["linux.rs","mod.rs"]],["net",[],["if_.rs","mod.rs"]],["sys",[["ioctl",[],["linux.rs","mod.rs"]],["ptrace",[],["linux.rs","mod.rs"]],["socket",[],["addr.rs","mod.rs","sockopt.rs"]]],["aio.rs","epoll.rs","eventfd.rs","inotify.rs","memfd.rs","mman.rs","mod.rs","personality.rs","pthread.rs","quota.rs","reboot.rs","resource.rs","select.rs","sendfile.rs","signal.rs","signalfd.rs","stat.rs","statfs.rs","statvfs.rs","sysinfo.rs","termios.rs","time.rs","timer.rs","timerfd.rs","uio.rs","utsname.rs","wait.rs"]]],["dir.rs","env.rs","errno.rs","fcntl.rs","features.rs","ifaddrs.rs","kmod.rs","lib.rs","macros.rs","mqueue.rs","poll.rs","pty.rs","sched.rs","time.rs","ucontext.rs","unistd.rs"]],\
 "no_std_net":["",[],["lib.rs"]],\

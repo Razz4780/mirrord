@@ -146,13 +146,6 @@
 <a href="#146" id="146">146</a>
 <a href="#147" id="147">147</a>
 <a href="#148" id="148">148</a>
-<a href="#149" id="149">149</a>
-<a href="#150" id="150">150</a>
-<a href="#151" id="151">151</a>
-<a href="#152" id="152">152</a>
-<a href="#153" id="153">153</a>
-<a href="#154" id="154">154</a>
-<a href="#155" id="155">155</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::collections::HashMap;
 
 <span class="kw">use </span>mirrord_config_derive::MirrordConfig;
@@ -228,13 +221,6 @@
     /// and if that fails it uses eth0.
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_AGENT_NETWORK_INTERFACE&quot;</span>)]
     </span><span class="kw">pub </span>network_interface: <span class="prelude-ty">Option</span>&lt;String&gt;,
-
-    <span class="doccomment">/// Controls target pause feature. Unstable.
-    ///
-    /// With this feature enabled, the remote container is paused while clients are connected to
-    /// the agent.
-    </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_PAUSE&quot;</span>, default = <span class="bool-val">false</span>, unstable)]
-    </span><span class="kw">pub </span>pause: bool,
 
     <span class="doccomment">/// Flushes existing connections when starting to steal, might fix issues where connections
     /// aren&#39;t stolen (due to being already established)

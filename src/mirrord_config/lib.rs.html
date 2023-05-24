@@ -487,6 +487,13 @@
 <a href="#487" id="487">487</a>
 <a href="#488" id="488">488</a>
 <a href="#489" id="489">489</a>
+<a href="#490" id="490">490</a>
+<a href="#491" id="491">491</a>
+<a href="#492" id="492">492</a>
+<a href="#493" id="493">493</a>
+<a href="#494" id="494">494</a>
+<a href="#495" id="495">495</a>
+<a href="#496" id="496">496</a>
 </pre><pre class="rust"><code><span class="attr">#![feature(slice_concat_trait)]
 #![feature(once_cell)]
 #![feature(result_option_inspect)]
@@ -587,6 +594,13 @@
     /// - `deployment/{sample-deployment}/[container]/{sample-container}`;
     </span><span class="attr">#[config(nested)]
     </span><span class="kw">pub </span>target: <span class="prelude-ty">Option</span>&lt;TargetConfig&gt;,
+
+    <span class="doccomment">/// Controls target pause feature. Unstable.
+    ///
+    /// With this feature enabled, the remote container is paused while this layer is connected to
+    /// the agent.
+    </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_PAUSE&quot;</span>, default = <span class="bool-val">false</span>, unstable)]
+    </span><span class="kw">pub </span>pause: bool,
 
     <span class="doccomment">/// IP:PORT to connect to instead of using k8s api, for testing purposes.
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_CONNECT_TCP&quot;</span>)]
@@ -698,6 +712,7 @@
                     <span class="string">r#&quot;
                     {
                         &quot;accept_invalid_certificates&quot;: false,
+                        &quot;pause&quot;: false,
                         &quot;target&quot;: {
                             &quot;path&quot;: &quot;pod/test-service-abcdefg-abcd&quot;,
                             &quot;namespace&quot;: &quot;default&quot;
@@ -710,7 +725,6 @@
                             &quot;image_pull_secrets&quot;: [{&quot;name&quot;: &quot;testsecret&quot;}],
                             &quot;ttl&quot;: 60,
                             &quot;ephemeral&quot;: false,
-                            &quot;pause&quot;: false,
                             &quot;flush_connections&quot;: false
                         },
                         &quot;feature&quot;: {
@@ -733,6 +747,7 @@
                 ConfigType::Toml =&gt; {
                     <span class="string">r#&quot;
                     accept_invalid_certificates = false
+                    pause = false
 
                     [target]
                     path = &quot;pod/test-service-abcdefg-abcd&quot;
@@ -746,7 +761,6 @@
                     image_pull_secrets = [{name = &quot;testsecret&quot;}]
                     ttl = 60
                     ephemeral = false
-                    pause = false
                     flush_connections = false
 
                     [feature]
@@ -767,6 +781,7 @@
                 ConfigType::Yaml =&gt; {
                     <span class="string">r#&quot;
                     accept_invalid_certificates: false
+                    pause: false
                     target:
                         path: &quot;pod/test-service-abcdefg-abcd&quot;
                         namespace: &quot;default&quot;
@@ -780,7 +795,6 @@
                             - name: &quot;testsecret&quot;
                         ttl: 60
                         ephemeral: false
-                        pause: false
                         flush_connections: false
 
                     feature:
@@ -832,6 +846,7 @@
 
         <span class="kw">let </span>expect = LayerFileConfig {
             accept_invalid_certificates: <span class="prelude-val">Some</span>(<span class="bool-val">false</span>),
+            pause: <span class="prelude-val">Some</span>(<span class="bool-val">false</span>),
             kubeconfig: <span class="prelude-val">None</span>,
             connect_agent_name: <span class="prelude-val">None</span>,
             connect_agent_port: <span class="prelude-val">None</span>,
@@ -857,7 +872,6 @@
                 communication_timeout: <span class="prelude-val">None</span>,
                 startup_timeout: <span class="prelude-val">None</span>,
                 network_interface: <span class="prelude-val">None</span>,
-                pause: <span class="prelude-val">Some</span>(<span class="bool-val">false</span>),
                 flush_connections: <span class="prelude-val">Some</span>(<span class="bool-val">false</span>),
             }),
             feature: <span class="prelude-val">Some</span>(FeatureFileConfig {

@@ -237,7 +237,7 @@
 
     <span class="kw">let </span>status_api: Api&lt;MirrordOperatorCrd&gt; = Api::all(kube_api);
 
-    <span class="kw">let </span>status_progress = progress.subtask(<span class="string">&quot;Fetching Status&quot;</span>);
+    <span class="kw">let </span>status_progress = progress.subtask(<span class="string">&quot;fetching status&quot;</span>);
 
     <span class="kw">let </span>mirrord_status = <span class="kw">match </span>status_api
         .get(OPERATOR_STATUS_NAME)
@@ -248,13 +248,13 @@
     {
         <span class="prelude-val">Ok</span>(status) =&gt; status,
         <span class="prelude-val">Err</span>(err) =&gt; {
-            status_progress.fail_with(<span class="string">&quot;Unable to get Status&quot;</span>);
+            status_progress.fail_with(<span class="string">&quot;unable to get status&quot;</span>);
 
             <span class="kw">return </span><span class="prelude-val">Err</span>(err);
         }
     };
 
-    status_progress.done_with(<span class="string">&quot;Fetched Status&quot;</span>);
+    status_progress.done_with(<span class="string">&quot;fetched status&quot;</span>);
 
     progress.done();
 

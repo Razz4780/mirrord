@@ -305,11 +305,11 @@
         <span class="string">&quot;This is a bug. Please report it in our Discord or GitHub repository. {GENERAL_HELP}&quot;
     </span>))]
     </span>InvalidMessage(String),
-    <span class="attr">#[error(<span class="string">&quot;Timeout waiting for remote environment variables.&quot;</span>)]
+    <span class="attr">#[error(<span class="string">&quot;Initial communication with the agent failed. {0:#?}&quot;</span>)]
     #[diagnostic(help(
         <span class="string">&quot;Please make sure the agent is running and the logs are not showing any errors.{GENERAL_HELP}&quot;
     </span>))]
-    </span>GetEnvironmentTimeout,
+    </span>InitialCommFailed(<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str),
     <span class="attr">#[error(<span class="string">&quot;Failed to execute binary `{0:#?}` with args `{1:#?}`&quot;</span>)]
     #[diagnostic(help(
         <span class="string">r#&quot;
