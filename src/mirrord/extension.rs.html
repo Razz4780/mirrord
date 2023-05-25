@@ -43,21 +43,16 @@
 <a href="#43" id="43">43</a>
 <a href="#44" id="44">44</a>
 <a href="#45" id="45">45</a>
-<a href="#46" id="46">46</a>
-<a href="#47" id="47">47</a>
-<a href="#48" id="48">48</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::collections::HashMap;
 
 <span class="kw">use </span>mirrord_config::LayerConfig;
-<span class="kw">use </span>mirrord_progress::{Progress, ProgressMode, TaskProgress};
+<span class="kw">use </span>mirrord_progress::{Progress, TaskProgress};
 
 <span class="kw">use crate</span>::{config::ExtensionExecArgs, error::CliError, execution::MirrordExecution, <span class="prelude-ty">Result</span>};
 
 <span class="doccomment">/// Facilitate the execution of a process using mirrord by an IDE extension
-</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>extension_exec(args: ExtensionExecArgs) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-    mirrord_progress::init_from_env(ProgressMode::Json);
-
-    <span class="kw">let </span>progress = TaskProgress::new(<span class="string">&quot;mirrord preparing to launch&quot;</span>);
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>extension_exec(args: ExtensionExecArgs, progress: <span class="kw-2">&amp;</span>TaskProgress) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">let </span>progress = progress.subtask(<span class="string">&quot;mirrord preparing to launch&quot;</span>);
     <span class="kw">let </span><span class="kw-2">mut </span>env: HashMap&lt;String, String&gt; = HashMap::new();
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(config_file) = args.config_file {
@@ -75,7 +70,6 @@
         std::env::set_var(<span class="string">&quot;MIRRORD_IMPERSONATED_TARGET&quot;</span>, target.clone());
         env.insert(<span class="string">&quot;MIRRORD_IMPERSONATED_TARGET&quot;</span>.into(), target);
     }
-
     <span class="kw">let </span>config = LayerConfig::from_env()<span class="question-mark">?</span>;
 
     <span class="comment">// extension needs more timeout since it might need to build

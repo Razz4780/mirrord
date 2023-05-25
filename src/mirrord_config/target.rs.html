@@ -321,6 +321,7 @@
 <a href="#321" id="321">321</a>
 <a href="#322" id="322">322</a>
 <a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::str::FromStr;
 
 <span class="kw">use </span>schemars::JsonSchema;
@@ -453,7 +454,8 @@
                 <span class="self">Self</span>::from_final_path_and_namespace(path, namespace)
             }
             TargetFileConfig::Advanced { path, namespace } =&gt; {
-                <span class="kw">let </span>path = <span class="self">Self</span>::get_optional_path(path)<span class="question-mark">?</span>;
+                <span class="macro">debug_assert!</span>(namespace.is_some()); <span class="comment">// Should only be advanced if namespace there.
+                </span><span class="kw">let </span>path = <span class="self">Self</span>::get_optional_path(path)<span class="question-mark">?</span>;
                 <span class="kw">let </span>namespace = <span class="self">Self</span>::get_optional_namespace(namespace)<span class="question-mark">?</span>;
                 <span class="self">Self</span>::from_final_path_and_namespace(path, namespace)
             }

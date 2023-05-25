@@ -966,6 +966,12 @@
 <a href="#966" id="966">966</a>
 <a href="#967" id="967">967</a>
 <a href="#968" id="968">968</a>
+<a href="#969" id="969">969</a>
+<a href="#970" id="970">970</a>
+<a href="#971" id="971">971</a>
+<a href="#972" id="972">972</a>
+<a href="#973" id="973">973</a>
+<a href="#974" id="974">974</a>
 </pre><pre class="rust"><code><span class="attr">#![feature(c_variadic)]
 #![feature(once_cell)]
 #![feature(result_option_inspect)]
@@ -1057,7 +1063,7 @@
 <span class="kw">use </span>libc::c_int;
 <span class="kw">use </span>mirrord_config::{
     feature::FeatureConfig,
-    fs::FsConfig,
+    fs::{FsConfig, FsModeConfig},
     incoming::{http_filter::HttpHeaderFilterConfig, IncomingConfig},
     network::NetworkConfig,
     util::VecOrSingle,
@@ -1406,7 +1412,13 @@
         .set(config.feature.network.incoming.ignore_ports.clone())
         .expect(<span class="string">&quot;Setting INCOMING_IGNORE_PORTS failed&quot;</span>);
 
-    FILE_FILTER.get_or_init(|| FileFilter::new(config.feature.fs.clone()));
+    FILE_FILTER.get_or_init(|| {
+        <span class="kw">let </span><span class="kw-2">mut </span>fs_config = config.feature.fs.clone();
+        <span class="kw">if </span>config.target.is_none() {
+            fs_config.mode = FsModeConfig::LocalWithOverrides;
+        }
+        FileFilter::new(fs_config)
+    });
 
     DEBUGGER_IGNORED_PORTS
         .set(DebuggerPorts::from_env())
