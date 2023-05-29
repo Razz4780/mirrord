@@ -307,7 +307,7 @@
     client: Client,
     target_api: Api&lt;TargetCrd&gt;,
     version_api: Api&lt;MirrordOperatorCrd&gt;,
-    target_config: <span class="prelude-ty">Option</span>&lt;TargetConfig&gt;,
+    target_config: TargetConfig,
 }
 
 <span class="kw">impl </span>OperatorApi {
@@ -375,7 +375,7 @@
         )
         .<span class="kw">await</span><span class="question-mark">?</span>;
 
-        <span class="kw">let </span>target_namespace = <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>target_config) = target_config {
+        <span class="kw">let </span>target_namespace = <span class="kw">if </span>target_config.path.is_some() {
             target_config.namespace.as_deref()
         } <span class="kw">else </span>{
             <span class="comment">// When targetless, pass agent namespace to operator so that it knows where to create
@@ -405,7 +405,7 @@
     }
 
     <span class="kw">async fn </span>fetch_target(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;TargetCrd&gt;&gt; {
-        <span class="kw">let </span>target_name = TargetCrd::target_name_by_optional_config(<span class="kw-2">&amp;</span><span class="self">self</span>.target_config);
+        <span class="kw">let </span>target_name = TargetCrd::target_name_by_config(<span class="kw-2">&amp;</span><span class="self">self</span>.target_config);
 
         <span class="kw">match </span><span class="self">self</span>.target_api.get(<span class="kw-2">&amp;</span>target_name).<span class="kw">await </span>{
             <span class="prelude-val">Ok</span>(target) =&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(target)),

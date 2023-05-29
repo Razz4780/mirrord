@@ -972,6 +972,7 @@
 <a href="#972" id="972">972</a>
 <a href="#973" id="973">973</a>
 <a href="#974" id="974">974</a>
+<a href="#975" id="975">975</a>
 </pre><pre class="rust"><code><span class="attr">#![feature(c_variadic)]
 #![feature(once_cell)]
 #![feature(result_option_inspect)]
@@ -1404,8 +1405,9 @@
         .set(config.feature.network.incoming.ignore_localhost)
         .expect(<span class="string">&quot;Setting INCOMING_IGNORE_LOCALHOST singleton&quot;</span>);
 
+    <span class="kw">let </span>targetless = config.target.path.is_none();
     TARGETLESS
-        .set(config.target.is_none())
+        .set(targetless)
         .expect(<span class="string">&quot;Setting TARGETLESS singleton&quot;</span>);
 
     INCOMING_IGNORE_PORTS
@@ -1414,7 +1416,7 @@
 
     FILE_FILTER.get_or_init(|| {
         <span class="kw">let </span><span class="kw-2">mut </span>fs_config = config.feature.fs.clone();
-        <span class="kw">if </span>config.target.is_none() {
+        <span class="kw">if </span>targetless {
             fs_config.mode = FsModeConfig::LocalWithOverrides;
         }
         FileFilter::new(fs_config)

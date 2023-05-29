@@ -322,6 +322,47 @@
 <a href="#322" id="322">322</a>
 <a href="#323" id="323">323</a>
 <a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
+<a href="#362" id="362">362</a>
+<a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::str::FromStr;
 
 <span class="kw">use </span>schemars::JsonSchema;
@@ -365,10 +406,16 @@
     },
 }
 
-<span class="attr">#[derive(Serialize, Deserialize, Clone, Eq, PartialEq, Hash, Debug)]
+<span class="comment">// - Only path is `Some` -&gt; use current namespace.
+// - Only namespace is `Some` -&gt; this should only happen in `mirrord ls`. In `mirrord exec`
+//   namespace without a path does not mean anything and therefore should be prevented by returning
+//   an error. The error is not returned when parsing the configuration because it&#39;s not an error
+//   for `mirrord ls`.
+// - Both are `None` -&gt; targetless.
+</span><span class="attr">#[derive(Serialize, Deserialize, Clone, Eq, PartialEq, Hash, Debug)]
 #[cfg_attr(feature = <span class="string">&quot;schema&quot;</span>, derive(schemars::JsonSchema))]
 </span><span class="kw">pub struct </span>TargetConfig {
-    <span class="kw">pub </span>path: Target,
+    <span class="kw">pub </span>path: <span class="prelude-ty">Option</span>&lt;Target&gt;,
     <span class="kw">pub </span>namespace: <span class="prelude-ty">Option</span>&lt;String&gt;,
 }
 
@@ -383,83 +430,36 @@
 }
 
 <span class="kw">impl </span>TargetFileConfig {
-    <span class="doccomment">/// Get the final path.
-    /// Will return the environment variable&#39;s value if set, if not the value from the
-    /// configuration (passed argument), and if that is not set as well, `None`.
-    ///
-    /// # Arguments
-    ///
-    /// * `path_from_config_file` - The optional value read from the config file.
-    </span><span class="kw">fn </span>get_optional_path(path_from_config_file: <span class="prelude-ty">Option</span>&lt;Target&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;Target&gt;&gt; {
+    <span class="doccomment">/// Get the target path from the env var, `Ok(None)` if not set, `Err` if invalid value.
+    </span><span class="kw">fn </span>get_target_path_from_env() -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;Target&gt;&gt; {
         FromEnvWithError::new(<span class="string">&quot;MIRRORD_IMPERSONATED_TARGET&quot;</span>)
-            .or(path_from_config_file)
             .source_value()
             .transpose()
     }
 
-    <span class="doccomment">/// Get the final namespace.
-    /// Will return the environment variable&#39;s value if set, if not the value from the
-    /// configuration (passed argument), and if that is not set as well, `None`.
-    ///
-    /// # Arguments
-    ///
-    /// * `namespace_from_config_file` - The optional value read from the config file.
-    </span><span class="kw">fn </span>get_optional_namespace(
-        namespace_from_config_file: <span class="prelude-ty">Option</span>&lt;String&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;String&gt;&gt; {
+    <span class="doccomment">/// Get the target namespace from the env var, `Ok(None)` if not set, `Err` if invalid value.
+    </span><span class="kw">fn </span>get_target_namespace_from_env() -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;String&gt;&gt; {
         FromEnv::new(<span class="string">&quot;MIRRORD_TARGET_NAMESPACE&quot;</span>)
-            .or(namespace_from_config_file)
             .source_value()
             .transpose()
-    }
-
-    <span class="doccomment">/// Take the final values (after taking into account the values from the file and from env), and
-    /// return the optional `TargetConfig` (`None` if targetless).
-    ///
-    /// # Errors
-    /// * `ConfigError::TargetNamespaceWithoutTarget` - if namespace is some but path is `None`,
-    ///   because the target namespace does not mean anything without a target path. The user might
-    ///   have meant the agent namespace.
-    </span><span class="kw">fn </span>from_final_path_and_namespace(
-        path: <span class="prelude-ty">Option</span>&lt;Target&gt;,
-        namespace: <span class="prelude-ty">Option</span>&lt;String&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;TargetConfig&gt;&gt; {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(path) = path {
-            <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(TargetConfig { path, namespace }))
-        } <span class="kw">else if </span>namespace.is_some() {
-            <span class="prelude-val">Err</span>(ConfigError::TargetNamespaceWithoutTarget)
-        } <span class="kw">else </span>{
-            <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
-        }
     }
 }
 
 <span class="kw">impl </span>MirrordConfig <span class="kw">for </span>TargetFileConfig {
-    <span class="kw">type </span>Generated = <span class="prelude-ty">Option</span>&lt;TargetConfig&gt;;
+    <span class="kw">type </span>Generated = TargetConfig;
 
     <span class="doccomment">/// Generate the final config object, out of the configuration parsed from a configuration file,
     /// factoring in environment variables (which are also set by the front end - CLI/IDE-plugin).
-    ///
-    /// `None` if no target specified.
-    /// Specifying target namespace without target is not allowed and results in an error that
-    /// explains to the user what to do instead.
     </span><span class="kw">fn </span>generate_config(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Generated&gt; {
-        <span class="kw">match </span><span class="self">self </span>{
-            TargetFileConfig::Simple(path) =&gt; {
-                <span class="comment">// Namespace was not specified via file, get it from env var if set.
-                </span><span class="kw">let </span>namespace: <span class="prelude-ty">Option</span>&lt;String&gt; = FromEnv::new(<span class="string">&quot;MIRRORD_TARGET_NAMESPACE&quot;</span>)
-                    .source_value()
-                    .transpose()<span class="question-mark">?</span>;
-                <span class="kw">let </span>path = <span class="self">Self</span>::get_optional_path(path)<span class="question-mark">?</span>;
-                <span class="self">Self</span>::from_final_path_and_namespace(path, namespace)
-            }
-            TargetFileConfig::Advanced { path, namespace } =&gt; {
-                <span class="macro">debug_assert!</span>(namespace.is_some()); <span class="comment">// Should only be advanced if namespace there.
-                </span><span class="kw">let </span>path = <span class="self">Self</span>::get_optional_path(path)<span class="question-mark">?</span>;
-                <span class="kw">let </span>namespace = <span class="self">Self</span>::get_optional_namespace(namespace)<span class="question-mark">?</span>;
-                <span class="self">Self</span>::from_final_path_and_namespace(path, namespace)
-            }
-        }
+        <span class="kw">let </span>(path_from_conf_file, namespace_from_conf_file) = <span class="kw">match </span><span class="self">self </span>{
+            TargetFileConfig::Simple(path) =&gt; (path, <span class="prelude-val">None</span>),
+            TargetFileConfig::Advanced { path, namespace } =&gt; (path, namespace),
+        };
+
+        <span class="comment">// Env overrides configuration if both there.
+        </span><span class="kw">let </span>path = <span class="self">Self</span>::get_target_path_from_env()<span class="question-mark">?</span>.or(path_from_conf_file);
+        <span class="kw">let </span>namespace = <span class="self">Self</span>::get_target_namespace_from_env()<span class="question-mark">?</span>.or(namespace_from_conf_file);
+        <span class="prelude-val">Ok</span>(TargetConfig { path, namespace })
     }
 }
 
@@ -597,40 +597,51 @@ mirrord-layer failed to parse the provided target!
     <span class="kw">use crate</span>::{config::MirrordConfig, util::testing::with_env_vars};
 
     <span class="attr">#[rstest]
-    #[case(<span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)] </span><span class="comment">// Nothing specified - no target config (targetless mode).
-    </span><span class="attr">#[should_panic]
-    #[case(<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(<span class="string">&quot;ns&quot;</span>), <span class="prelude-val">None</span>)] </span><span class="comment">// Namespace without target - error.
+    #[case(<span class="prelude-val">None</span>, <span class="prelude-val">None</span>,
+        TargetConfig {
+            path: <span class="prelude-val">None</span>,
+            namespace: <span class="prelude-val">None
+        </span>}
+    )] </span><span class="comment">// Nothing specified - no target config (targetless mode).
+    </span><span class="attr">#[case(
+        <span class="prelude-val">None</span>,
+        <span class="prelude-val">Some</span>(<span class="string">&quot;ns&quot;</span>),
+        TargetConfig{
+            path: <span class="prelude-val">None</span>,
+            namespace: <span class="prelude-val">Some</span>(<span class="string">&quot;ns&quot;</span>.to_string())
+        }
+    )] </span><span class="comment">// Namespace without target - error.
     </span><span class="attr">#[case(
         <span class="prelude-val">Some</span>(<span class="string">&quot;pod/foo&quot;</span>),
         <span class="prelude-val">None</span>,
-        <span class="prelude-val">Some</span>(TargetConfig{
-            path: Target::Pod(PodTarget {pod: <span class="string">&quot;foo&quot;</span>.to_string(), container: <span class="prelude-val">None</span>}),
+        TargetConfig{
+            path: <span class="prelude-val">Some</span>(Target::Pod(PodTarget {pod: <span class="string">&quot;foo&quot;</span>.to_string(), container: <span class="prelude-val">None</span>})),
             namespace: <span class="prelude-val">None
-        </span>})
+        </span>}
     )] </span><span class="comment">// Only pod specified
     </span><span class="attr">#[case(
         <span class="prelude-val">Some</span>(<span class="string">&quot;pod/foo/container/bar&quot;</span>),
         <span class="prelude-val">None</span>,
-        <span class="prelude-val">Some</span>(TargetConfig{
-            path: Target::Pod(PodTarget {
+        TargetConfig{
+            path: <span class="prelude-val">Some</span>(Target::Pod(PodTarget {
                 pod: <span class="string">&quot;foo&quot;</span>.to_string(),
                 container: <span class="prelude-val">Some</span>(<span class="string">&quot;bar&quot;</span>.to_string())
-            }),
+            })),
             namespace: <span class="prelude-val">None
-        </span>})
+        </span>}
     )] </span><span class="comment">// Pod and container specified.
     </span><span class="attr">#[case(
         <span class="prelude-val">Some</span>(<span class="string">&quot;pod/foo&quot;</span>),
         <span class="prelude-val">Some</span>(<span class="string">&quot;baz&quot;</span>),
-        <span class="prelude-val">Some</span>(TargetConfig{
-            path: Target::Pod(PodTarget {pod: <span class="string">&quot;foo&quot;</span>.to_string(), container: <span class="prelude-val">None</span>}),
+        TargetConfig{
+            path: <span class="prelude-val">Some</span>(Target::Pod(PodTarget {pod: <span class="string">&quot;foo&quot;</span>.to_string(), container: <span class="prelude-val">None</span>})),
             namespace: <span class="prelude-val">Some</span>(<span class="string">&quot;baz&quot;</span>.to_string())
-        })
+        }
     )] </span><span class="comment">// Pod and namespace specified.
     </span><span class="kw">fn </span>default(
         <span class="attr">#[case] </span>path_env: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
         <span class="attr">#[case] </span>namespace_env: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
-        <span class="attr">#[case] </span>expected_target_config: <span class="prelude-ty">Option</span>&lt;TargetConfig&gt;,
+        <span class="attr">#[case] </span>expected_target_config: TargetConfig,
     ) {
         with_env_vars(
             <span class="macro">vec!</span>[
@@ -643,6 +654,77 @@ mirrord-layer failed to parse the provided target!
 
                 <span class="macro">assert_eq!</span>(expected_target_config, generated_target_config);
             },
+        );
+    }
+
+    <span class="doccomment">/// Parse a json string, generate a `TargetConfig` out of it, and compare to expected config.
+    </span><span class="kw">fn </span>verify_config(config_json_string: <span class="kw-2">&amp;</span>str, expected_target_config: <span class="kw-2">&amp;</span>TargetConfig) {
+        <span class="kw">let </span>target_file_config: TargetFileConfig =
+            serde_json::from_str(config_json_string).unwrap();
+        <span class="kw">let </span>target_config: TargetConfig = target_file_config.generate_config().unwrap();
+        <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>target_config, expected_target_config);
+    }
+
+    <span class="doccomment">/// Test parsing the configuration when the env vars are not set.
+    </span><span class="attr">#[rstest]
+    </span><span class="comment">// advanced variant, namespace only.
+    </span><span class="attr">#[case(
+        <span class="string">r#&quot;{ &quot;namespace&quot;: &quot;my-test-namespace&quot; }&quot;#</span>,
+        TargetConfig {
+            path: <span class="prelude-val">None</span>,
+            namespace: <span class="prelude-val">Some</span>(<span class="string">&quot;my-test-namespace&quot;</span>.to_string())
+        }
+    )]
+    </span><span class="comment">// simple variant of file config - path string, not an object.
+    </span><span class="attr">#[case(
+        <span class="string">r#&quot;&quot;pod/my-cool-pod&quot;&quot;#</span>,
+        TargetConfig{
+            path: <span class="prelude-val">Some</span>(Target::Pod(PodTarget {pod: <span class="string">&quot;my-cool-pod&quot;</span>.to_string(), container: <span class="prelude-val">None</span>})),
+            namespace: <span class="prelude-val">None
+        </span>}
+    )]
+    </span><span class="comment">// advanced variant of file config.
+    </span><span class="attr">#[case(
+        <span class="string">r#&quot;{ &quot;path&quot;: &quot;pod/my-cool-pod&quot; }&quot;#</span>,
+        TargetConfig{
+            path: <span class="prelude-val">Some</span>(Target::Pod(PodTarget {pod: <span class="string">&quot;my-cool-pod&quot;</span>.to_string(), container: <span class="prelude-val">None</span>})),
+            namespace: <span class="prelude-val">None
+        </span>}
+    )]
+    </span><span class="comment">// advanced variant of file config, with object as path.
+    </span><span class="attr">#[case(
+        <span class="string">r#&quot;{
+            &quot;path&quot;: {
+                &quot;pod&quot;: &quot;my-cool-pod&quot;
+            }
+        }&quot;#</span>,
+        TargetConfig{
+            path: <span class="prelude-val">Some</span>(Target::Pod(PodTarget {pod: <span class="string">&quot;my-cool-pod&quot;</span>.to_string(), container: <span class="prelude-val">None</span>})),
+            namespace: <span class="prelude-val">None
+        </span>}
+    )]
+    </span><span class="kw">fn </span>parse_target_config_from_json(
+        <span class="attr">#[case] </span>config_json_string: <span class="kw-2">&amp;</span>str,
+        <span class="attr">#[case] </span><span class="kw-2">mut </span>expected_target_config: TargetConfig,
+    ) {
+        <span class="comment">// First test without env vars.
+        </span>with_env_vars(
+            <span class="macro">vec!</span>[
+                (<span class="string">&quot;MIRRORD_IMPERSONATED_TARGET&quot;</span>, <span class="prelude-val">None</span>),
+                (<span class="string">&quot;MIRRORD_TARGET_NAMESPACE&quot;</span>, <span class="prelude-val">None</span>),
+            ],
+            || verify_config(config_json_string, <span class="kw-2">&amp;</span>expected_target_config),
+        );
+
+        <span class="comment">// Now test that the namespace is set (overridden) by the env var.
+        </span><span class="kw">let </span>namespace = <span class="string">&quot;override-namespace&quot;</span>;
+        expected_target_config.namespace = <span class="prelude-val">Some</span>(namespace.to_string());
+        with_env_vars(
+            <span class="macro">vec!</span>[
+                (<span class="string">&quot;MIRRORD_IMPERSONATED_TARGET&quot;</span>, <span class="prelude-val">None</span>),
+                (<span class="string">&quot;MIRRORD_TARGET_NAMESPACE&quot;</span>, <span class="prelude-val">Some</span>(namespace)),
+            ],
+            || verify_config(config_json_string, <span class="kw-2">&amp;</span>expected_target_config),
         );
     }
 }

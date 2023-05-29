@@ -178,8 +178,6 @@
 <a href="#178" id="178">178</a>
 <a href="#179" id="179">179</a>
 <a href="#180" id="180">180</a>
-<a href="#181" id="181">181</a>
-<a href="#182" id="182">182</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::path::Path;
 <span class="attr">#[cfg(feature = <span class="string">&quot;incluster&quot;</span>)]
 </span><span class="kw">use </span>std::{net::SocketAddr, time::Duration};
@@ -211,7 +209,7 @@
 <span class="kw">pub struct </span>KubernetesAPI {
     client: Client,
     agent: AgentConfig,
-    target: <span class="prelude-ty">Option</span>&lt;TargetConfig&gt;,
+    target: TargetConfig,
 }
 
 <span class="kw">impl </span>KubernetesAPI {
@@ -229,7 +227,7 @@
         ))
     }
 
-    <span class="kw">pub fn </span>new(client: Client, agent: AgentConfig, target: <span class="prelude-ty">Option</span>&lt;TargetConfig&gt;) -&gt; <span class="self">Self </span>{
+    <span class="kw">pub fn </span>new(client: Client, agent: AgentConfig, target: TargetConfig) -&gt; <span class="self">Self </span>{
         KubernetesAPI {
             client,
             agent,
@@ -295,11 +293,9 @@
     <span class="kw">where
         </span>P: Progress + Send + Sync,
     {
-        <span class="kw">let </span>runtime_data = <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>target_config) = <span class="self">self</span>.target {
+        <span class="kw">let </span>runtime_data = <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>path) = <span class="self">self</span>.target.path {
             <span class="prelude-val">Some</span>(
-                target_config
-                    .path
-                    .runtime_data(<span class="kw-2">&amp;</span><span class="self">self</span>.client, target_config.namespace.as_deref())
+                path.runtime_data(<span class="kw-2">&amp;</span><span class="self">self</span>.client, <span class="self">self</span>.target.namespace.as_deref())
                     .<span class="kw">await</span><span class="question-mark">?</span>,
             )
         } <span class="kw">else </span>{

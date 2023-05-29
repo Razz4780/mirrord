@@ -62,16 +62,6 @@
 <a href="#62" id="62">62</a>
 <a href="#63" id="63">63</a>
 <a href="#64" id="64">64</a>
-<a href="#65" id="65">65</a>
-<a href="#66" id="66">66</a>
-<a href="#67" id="67">67</a>
-<a href="#68" id="68">68</a>
-<a href="#69" id="69">69</a>
-<a href="#70" id="70">70</a>
-<a href="#71" id="71">71</a>
-<a href="#72" id="72">72</a>
-<a href="#73" id="73">73</a>
-<a href="#74" id="74">74</a>
 </pre><pre class="rust"><code><span class="kw">pub mod </span>deprecated;
 <span class="kw">pub mod </span>from_env;
 <span class="kw">pub mod </span>source;
@@ -84,16 +74,6 @@
 </span><span class="kw">pub enum </span>ConfigError {
     <span class="attr">#[error(<span class="string">&quot;invalid target provided `{0}`!&quot;</span>)]
     </span>InvalidTarget(String),
-
-    <span class="attr">#[error(
-        <span class="string">&quot;A target namespace was specified, but no target was specified. If you want to set the 
-        namespace in which the agent will be created, please set the agent namespace, not the 
-        target namespace. That value can be set with agent.namespace in the configuration file, 
-        the -a argument of the CLI, or the MIRRORD_AGENT_NAMESPACE environment variable.
-         
-        If you are not trying to run targetless, please specify a target instead.&quot;
-    </span>)]
-    </span>TargetNamespaceWithoutTarget,
 
     <span class="attr">#[error(<span class="string">&quot;value for {1:?} not provided in {0:?} (env override {2:?})&quot;</span>)]
     </span>ValueNotProvided(<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str&gt;),

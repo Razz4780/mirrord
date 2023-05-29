@@ -379,6 +379,8 @@
 <a href="#379" id="379">379</a>
 <a href="#380" id="380">380</a>
 <a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
 </pre><pre class="rust"><code><span class="doccomment">/// Controls which files are ignored (open local) by mirrord file operations.
 ///
 /// There are 3 ways of setting this up:
@@ -436,6 +438,7 @@
         <span class="string">r&quot;^/etc/.*$&quot;</span>,
         <span class="string">r&quot;^/usr/.*$&quot;</span>,
         <span class="string">r&quot;^/bin/.*$&quot;</span>,
+        <span class="string">r&quot;^/sbin/.*$&quot;</span>,
         <span class="string">r&quot;^/dev/.*$&quot;</span>,
         <span class="string">r&quot;^/opt/.*$&quot;</span>,
         <span class="string">r&quot;^/home/.*$&quot;</span>,
@@ -467,6 +470,7 @@
         <span class="string">r&quot;^/Library&quot;</span>,
         <span class="string">r&quot;^/Applications&quot;</span>,
         <span class="string">r&quot;^/System&quot;</span>,
+        <span class="string">r&quot;^/var/run/com.apple&quot;</span>,
         <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;^{}&quot;</span>, temp_dir.to_string_lossy()),
         <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;^.*{}.*$&quot;</span>, current_dir.to_string_lossy()),
         <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;^.*{}.*$&quot;</span>, current_binary.to_string_lossy()),

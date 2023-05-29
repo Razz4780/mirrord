@@ -280,6 +280,13 @@
 <a href="#280" id="280">280</a>
 <a href="#281" id="281">281</a>
 <a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::{
     collections::{HashMap, HashSet},
     time::Duration,
@@ -301,7 +308,10 @@
 
 <span class="kw">use crate</span>::{
     connection::{create_and_connect, AgentConnectInfo, AgentConnection},
-    error::{CliError, CliError::IncompatibleWithTargetless},
+    error::{
+        CliError,
+        CliError::{IncompatibleWithTargetless, TargetNamespaceWithoutTarget},
+    },
     extract::extract_library,
     <span class="prelude-ty">Result</span>,
 };
@@ -529,9 +539,13 @@
     ///
     /// # Errors
     ///
-    /// [`IncompatibleWithTargetless`]
+    /// * [`IncompatibleWithTargetless`]
+    /// * [`TargetNamespaceWithoutTarget`]
     </span><span class="kw">fn </span>check_config_for_targetless_agent(config: <span class="kw-2">&amp;</span>LayerConfig) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">if </span>config.target.is_none() {
+        <span class="kw">if </span>config.target.path.is_none() {
+            <span class="kw">if </span>config.target.namespace.is_some() {
+                <span class="prelude-val">Err</span>(TargetNamespaceWithoutTarget)<span class="question-mark">?
+            </span>}
             <span class="kw">if </span>config.feature.network.incoming.is_steal() {
                 <span class="prelude-val">Err</span>(IncompatibleWithTargetless(<span class="string">&quot;Steal mode&quot;</span>.into()))<span class="question-mark">?
             </span>}

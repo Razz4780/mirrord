@@ -172,7 +172,7 @@
             AgentConnection { sender, receiver },
         ))
     } <span class="kw">else </span>{
-        <span class="kw">if </span><span class="macro">matches!</span>(config.target, <span class="prelude-val">Some</span>(mirrord_config::target::TargetConfig{ path: mirrord_config::target::Target::Deployment{..}, ..})) {
+        <span class="kw">if </span><span class="macro">matches!</span>(config.target, mirrord_config::target::TargetConfig{ path: <span class="prelude-val">Some</span>(mirrord_config::target::Target::Deployment{..}), ..}) {
             <span class="comment">// progress.subtask(&quot;text&quot;).done_with(&quot;text&quot;);
             </span><span class="macro">eprintln!</span>(<span class="string">&quot;When targeting multi-pod deployments, mirrord impersonates the first pod in the deployment.\n \
                       Support for multi-pod impersonation requires the mirrord operator, which is part of mirrord for Teams.\n \
