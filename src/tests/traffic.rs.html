@@ -659,14 +659,14 @@
     <span class="attr">#[rstest]
     #[tokio::test(flavor = <span class="string">&quot;multi_thread&quot;</span>, worker_threads = <span class="number">2</span>)]
     </span><span class="kw">pub async fn </span>go18_outgoing_traffic_single_request_enabled(<span class="attr">#[future] </span>service: KubeService) {
-        <span class="kw">let </span>command = <span class="macro">vec!</span>[<span class="string">&quot;go-e2e-outgoing/18&quot;</span>];
+        <span class="kw">let </span>command = <span class="macro">vec!</span>[<span class="string">&quot;go-e2e-outgoing/18.go_test_app&quot;</span>];
         test_go(service, command).<span class="kw">await</span>;
     }
 
     <span class="attr">#[rstest]
     #[tokio::test(flavor = <span class="string">&quot;multi_thread&quot;</span>, worker_threads = <span class="number">2</span>)]
     </span><span class="kw">pub async fn </span>go19_outgoing_traffic_single_request_enabled(<span class="attr">#[future] </span>service: KubeService) {
-        <span class="kw">let </span>command = <span class="macro">vec!</span>[<span class="string">&quot;go-e2e-outgoing/19&quot;</span>];
+        <span class="kw">let </span>command = <span class="macro">vec!</span>[<span class="string">&quot;go-e2e-outgoing/19.go_test_app&quot;</span>];
         test_go(service, command).<span class="kw">await</span>;
     }
 
@@ -674,7 +674,7 @@
     #[tokio::test(flavor = <span class="string">&quot;multi_thread&quot;</span>, worker_threads = <span class="number">2</span>)]
     #[timeout(Duration::from_secs(<span class="number">60</span>))]
     </span><span class="kw">pub async fn </span>go20_outgoing_traffic_single_request_enabled(<span class="attr">#[future] </span>service: KubeService) {
-        <span class="kw">let </span>command = <span class="macro">vec!</span>[<span class="string">&quot;go-e2e-outgoing/20&quot;</span>];
+        <span class="kw">let </span>command = <span class="macro">vec!</span>[<span class="string">&quot;go-e2e-outgoing/20.go_test_app&quot;</span>];
         test_go(service, command).<span class="kw">await</span>;
     }
 
@@ -682,7 +682,7 @@
     #[tokio::test(flavor = <span class="string">&quot;multi_thread&quot;</span>, worker_threads = <span class="number">2</span>)]
     #[timeout(Duration::from_secs(<span class="number">60</span>))]
     </span><span class="kw">pub async fn </span>go18_dns_lookup(<span class="attr">#[future] </span>service: KubeService) {
-        <span class="kw">let </span>command = <span class="macro">vec!</span>[<span class="string">&quot;go-e2e-dns/18&quot;</span>];
+        <span class="kw">let </span>command = <span class="macro">vec!</span>[<span class="string">&quot;go-e2e-dns/18.go_test_app&quot;</span>];
         test_go(service, command).<span class="kw">await</span>;
     }
 
@@ -690,7 +690,7 @@
     #[tokio::test(flavor = <span class="string">&quot;multi_thread&quot;</span>, worker_threads = <span class="number">2</span>)]
     #[timeout(Duration::from_secs(<span class="number">60</span>))]
     </span><span class="kw">pub async fn </span>go19_dns_lookup(<span class="attr">#[future] </span>service: KubeService) {
-        <span class="kw">let </span>command = <span class="macro">vec!</span>[<span class="string">&quot;go-e2e-dns/19&quot;</span>];
+        <span class="kw">let </span>command = <span class="macro">vec!</span>[<span class="string">&quot;go-e2e-dns/19.go_test_app&quot;</span>];
         test_go(service, command).<span class="kw">await</span>;
     }
 
@@ -698,7 +698,7 @@
     #[tokio::test(flavor = <span class="string">&quot;multi_thread&quot;</span>, worker_threads = <span class="number">2</span>)]
     #[timeout(Duration::from_secs(<span class="number">60</span>))]
     </span><span class="kw">pub async fn </span>go20_dns_lookup(<span class="attr">#[future] </span>service: KubeService) {
-        <span class="kw">let </span>command = <span class="macro">vec!</span>[<span class="string">&quot;go-e2e-dns/20&quot;</span>];
+        <span class="kw">let </span>command = <span class="macro">vec!</span>[<span class="string">&quot;go-e2e-dns/20.go_test_app&quot;</span>];
         test_go(service, command).<span class="kw">await</span>;
     }
 

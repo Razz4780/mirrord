@@ -1217,9 +1217,9 @@
                 Application::NodeHTTP2 =&gt; {
                     <span class="macro">vec!</span>[<span class="string">&quot;node&quot;</span>, <span class="string">&quot;node-e2e/http2/test_http2_traffic_steal.mjs&quot;</span>]
                 }
-                Application::Go18HTTP =&gt; <span class="macro">vec!</span>[<span class="string">&quot;go-e2e/18&quot;</span>],
-                Application::Go19HTTP =&gt; <span class="macro">vec!</span>[<span class="string">&quot;go-e2e/19&quot;</span>],
-                Application::Go20HTTP =&gt; <span class="macro">vec!</span>[<span class="string">&quot;go-e2e/20&quot;</span>],
+                Application::Go18HTTP =&gt; <span class="macro">vec!</span>[<span class="string">&quot;go-e2e/18.go_test_app&quot;</span>],
+                Application::Go19HTTP =&gt; <span class="macro">vec!</span>[<span class="string">&quot;go-e2e/19.go_test_app&quot;</span>],
+                Application::Go20HTTP =&gt; <span class="macro">vec!</span>[<span class="string">&quot;go-e2e/20.go_test_app&quot;</span>],
                 Application::CurlToKubeApi =&gt; {
                     <span class="macro">vec!</span>[<span class="string">&quot;curl&quot;</span>, <span class="string">&quot;https://kubernetes/api&quot;</span>, <span class="string">&quot;--insecure&quot;</span>]
                 }
@@ -1276,9 +1276,9 @@
                 }
                 <span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
                 </span>FileOps::Rust =&gt; <span class="macro">vec!</span>[<span class="string">&quot;../target/debug/rust-e2e-fileops&quot;</span>],
-                FileOps::GoDir18 =&gt; <span class="macro">vec!</span>[<span class="string">&quot;go-e2e-dir/18&quot;</span>],
-                FileOps::GoDir19 =&gt; <span class="macro">vec!</span>[<span class="string">&quot;go-e2e-dir/19&quot;</span>],
-                FileOps::GoDir20 =&gt; <span class="macro">vec!</span>[<span class="string">&quot;go-e2e-dir/20&quot;</span>],
+                FileOps::GoDir18 =&gt; <span class="macro">vec!</span>[<span class="string">&quot;go-e2e-dir/18.go_test_app&quot;</span>],
+                FileOps::GoDir19 =&gt; <span class="macro">vec!</span>[<span class="string">&quot;go-e2e-dir/19.go_test_app&quot;</span>],
+                FileOps::GoDir20 =&gt; <span class="macro">vec!</span>[<span class="string">&quot;go-e2e-dir/20.go_test_app&quot;</span>],
             }
         }
 
@@ -1294,9 +1294,9 @@
     <span class="kw">impl </span>EnvApp {
         <span class="kw">pub fn </span>command(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;<span class="kw-2">&amp;</span>str&gt; {
             <span class="kw">match </span><span class="self">self </span>{
-                <span class="self">Self</span>::Go18 =&gt; <span class="macro">vec!</span>[<span class="string">&quot;go-e2e-env/18&quot;</span>],
-                <span class="self">Self</span>::Go19 =&gt; <span class="macro">vec!</span>[<span class="string">&quot;go-e2e-env/19&quot;</span>],
-                <span class="self">Self</span>::Go20 =&gt; <span class="macro">vec!</span>[<span class="string">&quot;go-e2e-env/20&quot;</span>],
+                <span class="self">Self</span>::Go18 =&gt; <span class="macro">vec!</span>[<span class="string">&quot;go-e2e-env/18.go_test_app&quot;</span>],
+                <span class="self">Self</span>::Go19 =&gt; <span class="macro">vec!</span>[<span class="string">&quot;go-e2e-env/19.go_test_app&quot;</span>],
+                <span class="self">Self</span>::Go20 =&gt; <span class="macro">vec!</span>[<span class="string">&quot;go-e2e-env/20.go_test_app&quot;</span>],
                 <span class="self">Self</span>::Bash =&gt; <span class="macro">vec!</span>[<span class="string">&quot;bash&quot;</span>, <span class="string">&quot;bash-e2e/env.sh&quot;</span>],
                 <span class="self">Self</span>::BashInclude =&gt; <span class="macro">vec!</span>[<span class="string">&quot;bash&quot;</span>, <span class="string">&quot;bash-e2e/env.sh&quot;</span>, <span class="string">&quot;include&quot;</span>],
                 <span class="self">Self</span>::BashExclude =&gt; <span class="macro">vec!</span>[<span class="string">&quot;bash&quot;</span>, <span class="string">&quot;bash-e2e/env.sh&quot;</span>, <span class="string">&quot;exclude&quot;</span>],
