@@ -6,6 +6,59 @@ env:
   CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
 
 jobs:
+  integration_tests:
+    runs-on: ubuntu-latest
+    env:
+      MIRRORD_TEST_USE_EXISTING_LIB: ../../target/debug/libmirrord_layer.dylib
+    steps:
+      - uses: actions/checkout@v3 # Checkout the mirrord repo.
+      - uses: actions-rust-lang/setup-rust-toolchain@v1 # Install rust.
+        with:
+          target: x86_64-unknown-linux-gnu
+      - run: |
+          cd mirrord/layer/tests/apps/issue1123
+          rustc issue1123.rs --out-dir target
+      - run: |
+          cd mirrord/layer/tests/apps/issue1054
+          rustc issue1054.rs --out-dir target
+      - uses: actions/setup-node@v3 # For http mirroring test.
+        with:
+          node-version: 14
+      - run: npm install express # For http mirroring test with node.
+      - uses: actions/setup-python@v3 # For http mirroring tests with Flask and FastAPI.
+      - run: pip3 install flask # For http mirroring test with Flask.
+      - run: pip3 install fastapi # For http mirroring test with FastAPI.
+      - run: pip3 install uvicorn[standard] # For http mirroring test with FastAPI.
+      - uses: actions/setup-go@v3
+        with:
+          go-version: "1.20.0-rc.3"
+      - run: |
+          go version
+      - run: | # Build Go test apps.
+          ./scripts/build_go_apps.sh 20
+      - uses: actions/setup-go@v3
+        with:
+          go-version: "1.19.5"
+      - run: |
+          go version
+      - run: | # Build Go test apps.
+          ./scripts/build_go_apps.sh 19
+      - uses: actions/setup-go@v3
+        with:
+          go-version: "1.18.10"
+      - run: |
+          go version
+      - run: | # Build Go test apps.
+          ./scripts/build_go_apps.sh 18
+      - run: |
+          cd mirrord/layer/tests/apps/fileops
+          cargo build
+      - run: |
+          cd mirrord/layer/tests/apps/outgoing
+          cargo build
+      - run: cargo build -p mirrord-layer
+      - run: cargo test -p mirrord-layer
+
   integration_tests_macos:
     runs-on: macos-12
     env:
