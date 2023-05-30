@@ -9,7 +9,7 @@ jobs:
   integration_tests:
     runs-on: ubuntu-latest
     env:
-      MIRRORD_TEST_USE_EXISTING_LIB: ../../target/debug/libmirrord_layer.dylib
+      MIRRORD_TEST_USE_EXISTING_LIB: ../../target/debug/libmirrord_layer.so
     steps:
       - uses: actions/checkout@v3 # Checkout the mirrord repo.
       - uses: actions-rust-lang/setup-rust-toolchain@v1 # Install rust.
