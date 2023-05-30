@@ -197,9 +197,14 @@ impl LayerConnection {
         // So accept the next connection which will be the one by the library that was
         // loaded to the python process that actually runs the application.
         let (msg, codec) = tokio::select! {
-            Some(msg) = codec.next() => (msg, codec),
+            Some(msg) = codec.next() => {
+                println!("Got first message from the first codec");
+                (msg, codec)
+            },
             mut codec = Self::accept_library_connection(listener) => {
+                println!("Got second connection");
                 let msg = codec.next().await.expect("no message received from the second library connection");
+                println!("Got first message from the second codec");
                 (msg, codec)
             }
         };
@@ -1011,9 +1016,12 @@ impl Application {
             .get_test_process_and_listener(dylib_path, extra_env_vars, configuration_file)
             .await;
 
+        println!("Got test process and listener");
         let layer_connection =
             LayerConnection::get_initialized_connection_with_port(&listener, self.get_app_port())
                 .await;
+
+        println!("Got initialized connection and port");
 
         (test_process, layer_connection)
     }
