@@ -8,6 +8,8 @@ env:
 jobs:
   integration_tests_macos:
     runs-on: macos-12
+    env:
+      MIRRORD_TEST_USE_EXISTING_LIB: ../../target/debug/libmirrord_layer.dylib
     steps:
       - uses: actions/checkout@v3 # Checkout the mirrord repo.
       - uses: actions-rust-lang/setup-rust-toolchain@v1 # Install Rust.
