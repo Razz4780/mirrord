@@ -1376,9 +1376,9 @@
         </span><span class="kw">let </span><span class="kw-2">mut </span>base_env = HashMap::new();
         base_env.insert(<span class="string">&quot;MIRRORD_AGENT_IMAGE&quot;</span>, <span class="string">&quot;test&quot;</span>);
         base_env.insert(<span class="string">&quot;MIRRORD_CHECK_VERSION&quot;</span>, <span class="string">&quot;false&quot;</span>);
-        base_env.insert(<span class="string">&quot;MIRRORD_AGENT_RUST_LOG&quot;</span>, <span class="string">&quot;warn,mirrord=trace&quot;</span>);
+        base_env.insert(<span class="string">&quot;MIRRORD_AGENT_RUST_LOG&quot;</span>, <span class="string">&quot;warn,mirrord=debug&quot;</span>);
         base_env.insert(<span class="string">&quot;MIRRORD_AGENT_COMMUNICATION_TIMEOUT&quot;</span>, <span class="string">&quot;180&quot;</span>);
-        base_env.insert(<span class="string">&quot;RUST_LOG&quot;</span>, <span class="string">&quot;warn,mirrord=trace&quot;</span>);
+        base_env.insert(<span class="string">&quot;RUST_LOG&quot;</span>, <span class="string">&quot;warn,mirrord=debug&quot;</span>);
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(env) = env {
             <span class="kw">for </span>(key, value) <span class="kw">in </span>env {

@@ -904,7 +904,7 @@
     sessions: TCPSessionMap,
     <span class="comment">//todo: impl drop for index allocator and connection id..
     </span>connection_id_to_tcp_identifier: HashMap&lt;ConnectionId, TcpSessionIdentifier&gt;,
-    index_allocator: IndexAllocator&lt;ConnectionId&gt;,
+    index_allocator: IndexAllocator&lt;ConnectionId, <span class="number">100</span>&gt;,
 }
 
 <span class="kw">impl </span>TcpConnectionSniffer {

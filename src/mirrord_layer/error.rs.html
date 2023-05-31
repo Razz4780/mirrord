@@ -335,6 +335,9 @@
 <a href="#335" id="335">335</a>
 <a href="#336" id="336">336</a>
 <a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::{env::VarError, net::SocketAddr, ptr, str::ParseBoolError};
 
 <span class="kw">use </span>errno::set_errno;
@@ -600,10 +603,13 @@
                     </span>mirrord_protocol::RemoteError::ConnectTimedOut(<span class="kw">_</span>) =&gt; libc::ENETUNREACH,
                     <span class="kw">_ </span>=&gt; libc::EINVAL,
                 },
-                ResponseError::DnsLookup(dns_fail) =&gt; <span class="kw">match </span>dns_fail.kind {
-                    mirrord_protocol::ResolveErrorKindInternal::Timeout =&gt; libc::EAI_AGAIN,
-                    <span class="kw">_ </span>=&gt; libc::EAI_FAIL,
-                },
+                ResponseError::DnsLookup(dns_fail) =&gt; {
+                    <span class="kw">return match </span>dns_fail.kind {
+                        mirrord_protocol::ResolveErrorKindInternal::Timeout =&gt; libc::EAI_AGAIN,
+                        <span class="kw">_ </span>=&gt; libc::EAI_FAIL,
+                        <span class="comment">// TODO: Add more error kinds, next time we break protocol compatibility.
+                    </span>} <span class="kw">as _</span>;
+                }
                 <span class="comment">// for listen, EINVAL means &quot;socket is already connected.&quot;
                 // Will not happen, because this ResponseError is not return from any hook, so it
                 // never appears as HookError::ResponseError(PortAlreadyStolen(_)).

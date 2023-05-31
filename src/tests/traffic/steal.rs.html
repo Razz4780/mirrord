@@ -522,7 +522,7 @@
     /// then run test with MIRRORD_TESTS_USE_BINARY=../target/universal-apple-darwin/debug/mirrord
     </span><span class="attr">#[rstest]
     #[tokio::test(flavor = <span class="string">&quot;multi_thread&quot;</span>, worker_threads = <span class="number">2</span>)]
-    #[timeout(Duration::from_secs(<span class="number">45</span>))]
+    #[timeout(Duration::from_secs(<span class="number">120</span>))]
     </span><span class="kw">async fn </span>filter_with_single_client_and_only_matching_requests(
         <span class="attr">#[future] </span>service: KubeService,
         <span class="attr">#[future] </span>kube_client: Client,
@@ -567,7 +567,7 @@
 
     <span class="attr">#[rstest]
     #[tokio::test(flavor = <span class="string">&quot;multi_thread&quot;</span>, worker_threads = <span class="number">2</span>)]
-    #[timeout(Duration::from_secs(<span class="number">45</span>))]
+    #[timeout(Duration::from_secs(<span class="number">120</span>))]
     </span><span class="kw">async fn </span>test_filter_with_single_client_and_only_matching_requests_http2(
         <span class="attr">#[future] </span>http2_service: KubeService,
         <span class="attr">#[future] </span>kube_client: Client,
@@ -634,7 +634,7 @@
     /// then run test with MIRRORD_TESTS_USE_BINARY=../target/universal-apple-darwin/debug/mirrord
     </span><span class="attr">#[rstest]
     #[tokio::test(flavor = <span class="string">&quot;multi_thread&quot;</span>, worker_threads = <span class="number">2</span>)]
-    #[timeout(Duration::from_secs(<span class="number">45</span>))]
+    #[timeout(Duration::from_secs(<span class="number">120</span>))]
     </span><span class="kw">async fn </span>filter_with_single_client_and_some_matching_requests(
         <span class="attr">#[future] </span>service: KubeService,
         <span class="attr">#[future] </span>kube_client: Client,

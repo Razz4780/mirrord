@@ -818,7 +818,7 @@
     <span class="kw">pub </span>open_files: HashMap&lt;u64, RemoteFile&gt;,
     <span class="kw">pub </span>dir_streams: HashMap&lt;u64, Enumerate&lt;ReadDir&gt;&gt;,
     <span class="kw">pub </span>getdents_streams: HashMap&lt;u64, GetDEnts64Stream&gt;,
-    index_allocator: IndexAllocator&lt;u64&gt;,
+    index_allocator: IndexAllocator&lt;u64, <span class="number">100</span>&gt;,
 }
 
 <span class="kw">pub fn </span>get_root_path_from_optional_pid(pid: <span class="prelude-ty">Option</span>&lt;u64&gt;) -&gt; PathBuf {

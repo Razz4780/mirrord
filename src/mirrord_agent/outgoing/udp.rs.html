@@ -414,7 +414,7 @@
         <span class="kw-2">mut </span>layer_rx: Receiver&lt;Layer&gt;,
         daemon_tx: Sender&lt;Daemon&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>allocator = IndexAllocator::&lt;ConnectionId&gt;::default();
+        <span class="kw">let </span><span class="kw-2">mut </span>allocator = IndexAllocator::&lt;ConnectionId, <span class="number">100</span>&gt;::default();
 
         <span class="comment">// TODO: Right now we&#39;re manually keeping these 2 maps in sync (aviram suggested using
         // `Weak` for `writers`).

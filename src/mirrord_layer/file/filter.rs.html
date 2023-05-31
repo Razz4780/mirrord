@@ -381,6 +381,14 @@
 <a href="#381" id="381">381</a>
 <a href="#382" id="382">382</a>
 <a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
 </pre><pre class="rust"><code><span class="doccomment">/// Controls which files are ignored (open local) by mirrord file operations.
 ///
 /// There are 3 ways of setting this up:
@@ -442,9 +450,6 @@
         <span class="string">r&quot;^/dev/.*$&quot;</span>,
         <span class="string">r&quot;^/opt/.*$&quot;</span>,
         <span class="string">r&quot;^/home/.*$&quot;</span>,
-        <span class="comment">// don&#39;t use `/.*$` so lstat on the directory will also be local
-        </span><span class="string">r&quot;^/private(/|$)&quot;</span>,
-        <span class="string">r&quot;^/var/folders(/|$)&quot;</span>,
         <span class="string">r&quot;^/tmp(/|$)&quot;</span>,
         <span class="string">r&quot;^/snap/.*$&quot;</span>,
         <span class="comment">// support for nixOS.
@@ -466,11 +471,22 @@
         <span class="comment">// asdf
         </span><span class="string">r&quot;.*/\.tool-versions$&quot;</span>,
         <span class="comment">// macOS
+        </span><span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
+        </span><span class="string">&quot;^/Volumes(/|$)&quot;</span>,
+        <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
+        </span><span class="string">r&quot;^/private(/|$)&quot;</span>,
+        <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
+        </span><span class="string">r&quot;^/var/folders(/|$)&quot;</span>,
+        <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
         </span><span class="string">r&quot;^/Users&quot;</span>,
-        <span class="string">r&quot;^/Library&quot;</span>,
-        <span class="string">r&quot;^/Applications&quot;</span>,
-        <span class="string">r&quot;^/System&quot;</span>,
-        <span class="string">r&quot;^/var/run/com.apple&quot;</span>,
+        <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
+        </span><span class="string">r&quot;^/Library&quot;</span>,
+        <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
+        </span><span class="string">r&quot;^/Applications&quot;</span>,
+        <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
+        </span><span class="string">r&quot;^/System&quot;</span>,
+        <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
+        </span><span class="string">r&quot;^/var/run/com.apple&quot;</span>,
         <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;^{}&quot;</span>, temp_dir.to_string_lossy()),
         <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;^.*{}.*$&quot;</span>, current_dir.to_string_lossy()),
         <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;^.*{}.*$&quot;</span>, current_binary.to_string_lossy()),
@@ -676,11 +692,11 @@
     #[case(FsModeConfig::LocalWithOverrides, <span class="string">&quot;/pain/write.a&quot;</span>, <span class="bool-val">true</span>, <span class="bool-val">true</span>)]
     #[case(FsModeConfig::LocalWithOverrides, <span class="string">&quot;/pain/local/test.a&quot;</span>, <span class="bool-val">true</span>, <span class="bool-val">true</span>)]
     #[case(FsModeConfig::LocalWithOverrides, <span class="string">&quot;/opt/test.a&quot;</span>, <span class="bool-val">true</span>, <span class="bool-val">true</span>)]
-    #[case(FsModeConfig::Read, <span class="string">&quot;/Users/a/.aws/cli/cache/121.json&quot;</span>, <span class="bool-val">true</span>, <span class="bool-val">true</span>)]
-    #[case(FsModeConfig::Write, <span class="string">&quot;/Users/a/.aws/cli/cache/121.json&quot;</span>, <span class="bool-val">true</span>, <span class="bool-val">true</span>)]
+    #[case(FsModeConfig::Read, <span class="string">&quot;/usr/a/.aws/cli/cache/121.json&quot;</span>, <span class="bool-val">true</span>, <span class="bool-val">true</span>)]
+    #[case(FsModeConfig::Write, <span class="string">&quot;/usr/a/.aws/cli/cache/121.json&quot;</span>, <span class="bool-val">true</span>, <span class="bool-val">true</span>)]
     #[case(
         FsModeConfig::LocalWithOverrides,
-        <span class="string">&quot;/Users/a/.aws/cli/cache/121.json&quot;</span>,
+        <span class="string">&quot;/usr/a/.aws/cli/cache/121.json&quot;</span>,
         <span class="bool-val">true</span>,
         <span class="bool-val">true
     </span>)]
@@ -727,19 +743,19 @@
     }
 
     <span class="attr">#[rstest]
-    #[case(FsModeConfig::Read, <span class="string">&quot;/Users/a/.aws/cli/cache/121.json&quot;</span>, <span class="bool-val">true</span>, <span class="bool-val">true</span>)]
-    #[case(FsModeConfig::Write, <span class="string">&quot;/Users/a/.aws/cli/cache/121.json&quot;</span>, <span class="bool-val">true</span>, <span class="bool-val">true</span>)]
+    #[case(FsModeConfig::Read, <span class="string">&quot;/usr/a/.aws/cli/cache/121.json&quot;</span>, <span class="bool-val">true</span>, <span class="bool-val">true</span>)]
+    #[case(FsModeConfig::Write, <span class="string">&quot;/usr/a/.aws/cli/cache/121.json&quot;</span>, <span class="bool-val">true</span>, <span class="bool-val">true</span>)]
     #[case(
         FsModeConfig::LocalWithOverrides,
-        <span class="string">&quot;/Users/a/.aws/cli/cache/121.json&quot;</span>,
+        <span class="string">&quot;/usr/a/.aws/cli/cache/121.json&quot;</span>,
         <span class="bool-val">true</span>,
         <span class="bool-val">true
     </span>)]
-    #[case(FsModeConfig::Read, <span class="string">&quot;/Users/a/.aws/cli/cache/121.json&quot;</span>, <span class="bool-val">false</span>, <span class="bool-val">false</span>)]
-    #[case(FsModeConfig::Write, <span class="string">&quot;/Users/a/.aws/cli/cache/121.json&quot;</span>, <span class="bool-val">false</span>, <span class="bool-val">false</span>)]
+    #[case(FsModeConfig::Read, <span class="string">&quot;/usr/a/.aws/cli/cache/121.json&quot;</span>, <span class="bool-val">false</span>, <span class="bool-val">false</span>)]
+    #[case(FsModeConfig::Write, <span class="string">&quot;/usr/a/.aws/cli/cache/121.json&quot;</span>, <span class="bool-val">false</span>, <span class="bool-val">false</span>)]
     #[case(
         FsModeConfig::LocalWithOverrides,
-        <span class="string">&quot;/Users/a/.aws/cli/cache/1241.json&quot;</span>,
+        <span class="string">&quot;/usr/a/.aws/cli/cache/1241.json&quot;</span>,
         <span class="bool-val">false</span>,
         <span class="bool-val">false
     </span>)]

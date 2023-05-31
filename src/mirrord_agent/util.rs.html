@@ -262,9 +262,33 @@
 <a href="#262" id="262">262</a>
 <a href="#263" id="263">263</a>
 <a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::{
     clone::Clone,
-    collections::{HashMap, HashSet},
+    collections::{HashMap, HashSet, VecDeque},
     future::Future,
     hash::Hash,
     path::PathBuf,
@@ -350,22 +374,28 @@
     }
 }
 
-<span class="attr">#[derive(Debug)]
-</span><span class="kw">pub struct </span>IndexAllocator&lt;T&gt;
+<span class="doccomment">/// `IndexAllocator` is a helper struct that allocates unique indices for a given type.
+/// It keeps tracked of the indices that were freed, and reuses them when possible.
+/// You can provide a buffer of indices using the second generic `N` to avoid re-using indices
+/// too fast.
+/// TODO: Consider just having a simple IndexAllocator that keeps track of last index and increases
+/// by 1 as it&#39;d be hard to exhaust u64. (which is usually T)
+</span><span class="attr">#[derive(Debug)]
+</span><span class="kw">pub struct </span>IndexAllocator&lt;T, <span class="kw">const </span>N: usize&gt;
 <span class="kw">where
     </span>T: Num,
 {
     index: T,
-    vacant_indices: Vec&lt;T&gt;,
+    vacant_indices: VecDeque&lt;T&gt;,
 }
 
-<span class="kw">impl</span>&lt;T&gt; IndexAllocator&lt;T&gt;
+<span class="kw">impl</span>&lt;T, <span class="kw">const </span>N: usize&gt; IndexAllocator&lt;T, N&gt;
 <span class="kw">where
     </span>T: Num + CheckedAdd + Clone,
 {
     <span class="doccomment">/// Returns the next available index, returns None if not available (reached max)
     </span><span class="kw">pub fn </span>next_index(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;T&gt; {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(i) = <span class="self">self</span>.vacant_indices.pop() {
+        <span class="kw">if </span><span class="self">self</span>.vacant_indices.len() &gt; N &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>(i) = <span class="self">self</span>.vacant_indices.pop_front() {
             <span class="kw">return </span><span class="prelude-val">Some</span>(i);
         }
         <span class="kw">match </span><span class="self">self</span>.index.checked_add(<span class="kw-2">&amp;</span>T::one()) {
@@ -379,11 +409,11 @@
     }
 
     <span class="kw">pub fn </span>free_index(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: T) {
-        <span class="self">self</span>.vacant_indices.push(index)
+        <span class="self">self</span>.vacant_indices.push_back(index)
     }
 }
 
-<span class="kw">impl</span>&lt;T&gt; Default <span class="kw">for </span>IndexAllocator&lt;T&gt;
+<span class="kw">impl</span>&lt;T, <span class="kw">const </span>N: usize&gt; Default <span class="kw">for </span>IndexAllocator&lt;T, N&gt;
 <span class="kw">where
     </span>T: Num,
 {
@@ -507,7 +537,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>sanity() {
-        <span class="kw">let </span><span class="kw-2">mut </span>index_allocator: IndexAllocator&lt;u32&gt; = Default::default();
+        <span class="kw">let </span><span class="kw-2">mut </span>index_allocator: IndexAllocator&lt;u32, <span class="number">0</span>&gt; = Default::default();
         <span class="kw">let </span>index = index_allocator.next_index().unwrap();
         <span class="macro">assert_eq!</span>(<span class="number">0</span>, index);
         <span class="kw">let </span>index = index_allocator.next_index().unwrap();
@@ -518,8 +548,26 @@
     }
 
     <span class="attr">#[test]
+    </span><span class="kw">fn </span>sanity_buffer() {
+        <span class="kw">let </span><span class="kw-2">mut </span>index_allocator: IndexAllocator&lt;u32, <span class="number">2</span>&gt; = Default::default();
+        <span class="kw">let </span>index = index_allocator.next_index().unwrap();
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, index);
+        <span class="kw">let </span>index = index_allocator.next_index().unwrap();
+        <span class="macro">assert_eq!</span>(<span class="number">1</span>, index);
+        index_allocator.free_index(<span class="number">0</span>);
+        <span class="kw">let </span>index = index_allocator.next_index().unwrap();
+        <span class="macro">assert_eq!</span>(<span class="number">2</span>, index);
+        <span class="kw">let </span>index = index_allocator.next_index().unwrap();
+        <span class="macro">assert_eq!</span>(<span class="number">3</span>, index);
+        index_allocator.free_index(<span class="number">1</span>);
+        index_allocator.free_index(<span class="number">2</span>);
+        <span class="kw">let </span>index = index_allocator.next_index().unwrap();
+        <span class="macro">assert_eq!</span>(<span class="number">0</span>, index);
+    }
+
+    <span class="attr">#[test]
     </span><span class="kw">fn </span>check_max() {
-        <span class="kw">let </span><span class="kw-2">mut </span>index_allocator: IndexAllocator&lt;u8&gt; = Default::default();
+        <span class="kw">let </span><span class="kw-2">mut </span>index_allocator: IndexAllocator&lt;u8, <span class="number">0</span>&gt; = Default::default();
         <span class="kw">for _ in </span><span class="number">0</span>..=u8::MAX - <span class="number">1 </span>{
             index_allocator.next_index().unwrap();
         }

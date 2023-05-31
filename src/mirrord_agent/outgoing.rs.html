@@ -280,7 +280,7 @@
 <span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(allocator, writers, readers, daemon_tx))]
 </span><span class="kw">async fn </span>layer_recv(
     layer_message: LayerTcpOutgoing,
-    allocator: <span class="kw-2">&amp;mut </span>IndexAllocator&lt;ConnectionId&gt;,
+    allocator: <span class="kw-2">&amp;mut </span>IndexAllocator&lt;ConnectionId, <span class="number">100</span>&gt;,
     writers: <span class="kw-2">&amp;mut </span>HashMap&lt;ConnectionId, WriteHalf&lt;SocketStream&gt;&gt;,
     readers: <span class="kw-2">&amp;mut </span>StreamMap&lt;ConnectionId, ReaderStream&lt;ReadHalf&lt;SocketStream&gt;&gt;&gt;,
     daemon_tx: Sender&lt;DaemonTcpOutgoing&gt;,
@@ -394,7 +394,7 @@
         daemon_tx: Sender&lt;Daemon&gt;,
         pid: <span class="prelude-ty">Option</span>&lt;u64&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>allocator: IndexAllocator&lt;ConnectionId&gt; = Default::default();
+        <span class="kw">let </span><span class="kw-2">mut </span>allocator: IndexAllocator&lt;ConnectionId, <span class="number">100</span>&gt; = Default::default();
 
         <span class="comment">// TODO: Right now we&#39;re manually keeping these 2 maps in sync (aviram suggested using
         // `Weak` for `writers`).

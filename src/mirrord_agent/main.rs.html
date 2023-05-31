@@ -790,7 +790,7 @@
 </span><span class="attr">#[derive(Debug)]
 </span><span class="kw">struct </span>State {
     clients: HashSet&lt;ClientId&gt;,
-    index_allocator: IndexAllocator&lt;ClientId&gt;,
+    index_allocator: IndexAllocator&lt;ClientId, <span class="number">100</span>&gt;,
     <span class="doccomment">/// Handle to the target container if there is one.
     /// This is optional because it is acceptable not to pass the container runtime and id if not
     /// pausing. When those args are not passed, container is [`None`].

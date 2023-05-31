@@ -736,7 +736,7 @@
     <span class="doccomment">/// Connected clients (layer instances) and the channels which the stealer task uses to send
     /// back messages (stealer -&gt; agent -&gt; layer).
     </span>clients: HashMap&lt;ClientId, Sender&lt;DaemonTcp&gt;&gt;,
-    index_allocator: IndexAllocator&lt;ConnectionId&gt;,
+    index_allocator: IndexAllocator&lt;ConnectionId, <span class="number">100</span>&gt;,
 
     <span class="doccomment">/// Intercepts the connections, instead of letting them go through their normal pathways, this
     /// is used to steal the traffic.
