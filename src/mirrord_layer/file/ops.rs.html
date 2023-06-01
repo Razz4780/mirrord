@@ -526,29 +526,19 @@
 <a href="#526" id="526">526</a>
 <a href="#527" id="527">527</a>
 <a href="#528" id="528">528</a>
-<a href="#529" id="529">529</a>
-<a href="#530" id="530">530</a>
-<a href="#531" id="531">531</a>
-<a href="#532" id="532">532</a>
-<a href="#533" id="533">533</a>
-<a href="#534" id="534">534</a>
-<a href="#535" id="535">535</a>
-<a href="#536" id="536">536</a>
-<a href="#537" id="537">537</a>
-<a href="#538" id="538">538</a>
-<a href="#539" id="539">539</a>
 </pre><pre class="rust"><code><span class="kw">use </span>core::ffi::CStr;
-<span class="kw">use </span>std::{ffi::CString, io::SeekFrom, os::unix::io::RawFd, path::PathBuf};
+<span class="kw">use </span>std::{env, ffi::CString, io::SeekFrom, os::unix::io::RawFd, path::PathBuf};
 
-<span class="kw">use </span>libc::{c_int, c_uint, AT_FDCWD, FILE, O_CREAT, O_RDONLY, S_IRUSR, S_IWUSR, S_IXUSR};
+<span class="kw">use </span>libc::{c_int, unlink, AT_FDCWD, FILE};
 <span class="kw">use </span>mirrord_protocol::file::{
     OpenFileResponse, OpenOptionsInternal, ReadFileResponse, SeekFileResponse, WriteFileResponse,
     XstatFsResponse, XstatResponse,
 };
+<span class="kw">use </span>rand::distributions::{Alphanumeric, DistString};
 <span class="kw">use </span>tokio::sync::oneshot;
 <span class="kw">use </span>tracing::{error, trace};
 
-<span class="kw">use super</span>::{filter::FILE_FILTER, <span class="kw-2">*</span>};
+<span class="kw">use super</span>::{filter::FILE_FILTER, hooks::FN_OPEN, <span class="kw-2">*</span>};
 <span class="kw">use crate</span>::{
     common::blocking_send_hook_message,
     detour::{Bypass, Detour},
@@ -656,38 +646,29 @@
     )
 }
 
-<span class="doccomment">/// The pair [`libc::shm_open`], [`libc::shm_unlink`] are used to create a temporary file (in
-/// `/dev/shm/`), and then remove it, as we only care about the `fd`. This is done to preserve
-/// `open_flags`, as [`libc::memfd_create`] will always return a `File` with read and write
-/// permissions (which is undesirable).
+<span class="doccomment">/// Create temporary local file to get a valid local fd.
 </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>)]
-</span><span class="kw">unsafe fn </span>create_local_fake_file(fake_local_file_name: CString, remote_fd: u64) -&gt; Detour&lt;RawFd&gt; {
-    <span class="kw">let </span>local_file_fd = <span class="kw">unsafe </span>{
-        <span class="comment">// `mode` is access rights: user, root, ...
-        </span><span class="kw">let </span>local_file_fd = libc::shm_open(
-            fake_local_file_name.as_ptr(),
-            O_RDONLY | O_CREAT,
-            (S_IRUSR | S_IWUSR | S_IXUSR) <span class="kw">as </span>c_uint,
-        );
-
-        libc::shm_unlink(fake_local_file_name.as_ptr());
-
-        local_file_fd
-    };
-
-    <span class="comment">// Close the remote file if the call to `libc::shm_open` failed and we have an invalid local fd.
-    </span><span class="kw">if </span>local_file_fd == -<span class="number">1 </span>{
-        close_remote_file_on_failure(remote_fd)<span class="question-mark">?</span>;
+</span><span class="kw">fn </span>create_local_fake_file(remote_fd: u64) -&gt; Detour&lt;RawFd&gt; {
+    <span class="kw">let </span>random_string = Alphanumeric.sample_string(<span class="kw-2">&amp;mut </span>rand::thread_rng(), <span class="number">16</span>);
+    <span class="kw">let </span>file_name = <span class="macro">format!</span>(<span class="string">&quot;{remote_fd}-{random_string}&quot;</span>);
+    <span class="kw">let </span>file_path = env::temp_dir().join(file_name);
+    <span class="kw">let </span>file_c_string = CString::new(file_path.to_string_lossy().to_string())<span class="question-mark">?</span>;
+    <span class="kw">let </span>file_path_ptr = file_c_string.as_ptr();
+    <span class="kw">let </span>local_file_fd: RawFd = <span class="kw">unsafe </span>{ FN_OPEN(file_path_ptr, O_RDONLY | O_CREAT) };
+    <span class="kw">if </span>local_file_fd == -<span class="number">1 </span>{
+        <span class="comment">// Close the remote file if creating a tmp local file failed and we have an invalid local fd
+        </span>close_remote_file_on_failure(remote_fd)<span class="question-mark">?</span>;
         Detour::Error(HookError::LocalFileCreation(remote_fd))
     } <span class="kw">else </span>{
+        <span class="kw">unsafe </span>{ unlink(file_path_ptr) };
         Detour::Success(local_file_fd)
     }
 }
 
 <span class="doccomment">/// Close the remote file if the call to [`libc::shm_open`] failed and we have an invalid local fd.
-</span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;error&quot;</span>)]
+</span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>)]
 </span><span class="kw">fn </span>close_remote_file_on_failure(fd: u64) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-    <span class="macro">error!</span>(<span class="string">&quot;Call to `libc::shm_open` resulted in an error, closing the file remotely!&quot;</span>);
+    <span class="macro">error!</span>(<span class="string">&quot;Creating a temporary local file resulted in an error, closing the file remotely!&quot;</span>);
     RemoteFile::remote_close(fd)
 }
 
@@ -722,8 +703,7 @@
     <span class="comment">// TODO: Need a way to say &quot;open a directory&quot;, right now `is_dir` always returns false.
     // This requires having a fake directory name (`/fake`, for example), instead of just converting
     // the fd to a string.
-    </span><span class="kw">let </span>fake_local_file_name = CString::new(remote_fd.to_string())<span class="question-mark">?</span>;
-    <span class="kw">let </span>local_file_fd = <span class="kw">unsafe </span>{ create_local_fake_file(fake_local_file_name, remote_fd) }<span class="question-mark">?</span>;
+    </span><span class="kw">let </span>local_file_fd = create_local_fake_file(remote_fd)<span class="question-mark">?</span>;
 
     OPEN_FILES.insert(
         local_file_fd,
@@ -781,8 +761,7 @@
 
     <span class="kw">let </span>OpenDirResponse { fd: remote_dir_fd } = dir_channel_rx.blocking_recv()<span class="question-mark">??</span>;
 
-    <span class="kw">let </span>fake_local_dir_name = CString::new(fd.to_string())<span class="question-mark">?</span>;
-    <span class="kw">let </span>local_dir_fd = <span class="kw">unsafe </span>{ create_local_fake_file(fake_local_dir_name, remote_dir_fd) }<span class="question-mark">?</span>;
+    <span class="kw">let </span>local_dir_fd = create_local_fake_file(remote_dir_fd)<span class="question-mark">?</span>;
     OPEN_DIRS.insert(local_dir_fd <span class="kw">as </span>usize, remote_dir_fd);
 
     <span class="comment">// According to docs, when using fdopendir, the fd is now managed by OS - i.e closed
@@ -853,8 +832,7 @@
         blocking_send_file_message(FileOperation::OpenRelative(requesting_file))<span class="question-mark">?</span>;
 
         <span class="kw">let </span>OpenFileResponse { fd: remote_fd } = file_channel_rx.blocking_recv()<span class="question-mark">??</span>;
-        <span class="kw">let </span>fake_local_file_name = CString::new(remote_fd.to_string())<span class="question-mark">?</span>;
-        <span class="kw">let </span>local_file_fd = <span class="kw">unsafe </span>{ create_local_fake_file(fake_local_file_name, remote_fd) }<span class="question-mark">?</span>;
+        <span class="kw">let </span>local_file_fd = create_local_fake_file(remote_fd)<span class="question-mark">?</span>;
 
         OPEN_FILES.insert(
             local_file_fd,

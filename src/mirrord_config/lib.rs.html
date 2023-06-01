@@ -494,28 +494,137 @@
 <a href="#494" id="494">494</a>
 <a href="#495" id="495">495</a>
 <a href="#496" id="496">496</a>
+<a href="#497" id="497">497</a>
+<a href="#498" id="498">498</a>
+<a href="#499" id="499">499</a>
+<a href="#500" id="500">500</a>
+<a href="#501" id="501">501</a>
+<a href="#502" id="502">502</a>
+<a href="#503" id="503">503</a>
+<a href="#504" id="504">504</a>
+<a href="#505" id="505">505</a>
+<a href="#506" id="506">506</a>
+<a href="#507" id="507">507</a>
+<a href="#508" id="508">508</a>
+<a href="#509" id="509">509</a>
+<a href="#510" id="510">510</a>
+<a href="#511" id="511">511</a>
+<a href="#512" id="512">512</a>
+<a href="#513" id="513">513</a>
+<a href="#514" id="514">514</a>
+<a href="#515" id="515">515</a>
+<a href="#516" id="516">516</a>
+<a href="#517" id="517">517</a>
+<a href="#518" id="518">518</a>
+<a href="#519" id="519">519</a>
+<a href="#520" id="520">520</a>
+<a href="#521" id="521">521</a>
+<a href="#522" id="522">522</a>
+<a href="#523" id="523">523</a>
+<a href="#524" id="524">524</a>
+<a href="#525" id="525">525</a>
+<a href="#526" id="526">526</a>
+<a href="#527" id="527">527</a>
+<a href="#528" id="528">528</a>
+<a href="#529" id="529">529</a>
+<a href="#530" id="530">530</a>
+<a href="#531" id="531">531</a>
+<a href="#532" id="532">532</a>
+<a href="#533" id="533">533</a>
+<a href="#534" id="534">534</a>
+<a href="#535" id="535">535</a>
+<a href="#536" id="536">536</a>
+<a href="#537" id="537">537</a>
+<a href="#538" id="538">538</a>
+<a href="#539" id="539">539</a>
+<a href="#540" id="540">540</a>
+<a href="#541" id="541">541</a>
+<a href="#542" id="542">542</a>
+<a href="#543" id="543">543</a>
+<a href="#544" id="544">544</a>
+<a href="#545" id="545">545</a>
+<a href="#546" id="546">546</a>
+<a href="#547" id="547">547</a>
+<a href="#548" id="548">548</a>
+<a href="#549" id="549">549</a>
+<a href="#550" id="550">550</a>
+<a href="#551" id="551">551</a>
+<a href="#552" id="552">552</a>
+<a href="#553" id="553">553</a>
+<a href="#554" id="554">554</a>
+<a href="#555" id="555">555</a>
+<a href="#556" id="556">556</a>
+<a href="#557" id="557">557</a>
+<a href="#558" id="558">558</a>
+<a href="#559" id="559">559</a>
+<a href="#560" id="560">560</a>
+<a href="#561" id="561">561</a>
+<a href="#562" id="562">562</a>
+<a href="#563" id="563">563</a>
+<a href="#564" id="564">564</a>
+<a href="#565" id="565">565</a>
+<a href="#566" id="566">566</a>
+<a href="#567" id="567">567</a>
+<a href="#568" id="568">568</a>
+<a href="#569" id="569">569</a>
+<a href="#570" id="570">570</a>
+<a href="#571" id="571">571</a>
+<a href="#572" id="572">572</a>
+<a href="#573" id="573">573</a>
+<a href="#574" id="574">574</a>
+<a href="#575" id="575">575</a>
+<a href="#576" id="576">576</a>
+<a href="#577" id="577">577</a>
+<a href="#578" id="578">578</a>
+<a href="#579" id="579">579</a>
+<a href="#580" id="580">580</a>
+<a href="#581" id="581">581</a>
+<a href="#582" id="582">582</a>
+<a href="#583" id="583">583</a>
+<a href="#584" id="584">584</a>
+<a href="#585" id="585">585</a>
+<a href="#586" id="586">586</a>
+<a href="#587" id="587">587</a>
+<a href="#588" id="588">588</a>
+<a href="#589" id="589">589</a>
+<a href="#590" id="590">590</a>
+<a href="#591" id="591">591</a>
+<a href="#592" id="592">592</a>
+<a href="#593" id="593">593</a>
+<a href="#594" id="594">594</a>
+<a href="#595" id="595">595</a>
+<a href="#596" id="596">596</a>
+<a href="#597" id="597">597</a>
+<a href="#598" id="598">598</a>
+<a href="#599" id="599">599</a>
+<a href="#600" id="600">600</a>
+<a href="#601" id="601">601</a>
+<a href="#602" id="602">602</a>
+<a href="#603" id="603">603</a>
+<a href="#604" id="604">604</a>
+<a href="#605" id="605">605</a>
+<a href="#606" id="606">606</a>
+<a href="#607" id="607">607</a>
+<a href="#608" id="608">608</a>
+<a href="#609" id="609">609</a>
+<a href="#610" id="610">610</a>
 </pre><pre class="rust"><code><span class="attr">#![feature(slice_concat_trait)]
 #![feature(once_cell)]
 #![feature(result_option_inspect)]
 #![warn(clippy::indexing_slicing)]
-
+</span><span class="doccomment">//! &lt;!--${internal}--&gt;
+//! To generate the `mirrord-schema.json` file see
+//! [`tests::check_schema_file_exists_and_is_valid_or_create_it`].
+//!
+//! Remember to re-generate the `mirrord-schema.json` if you make **ANY** changes to this lib,
+//! including if you only made documentation changes.
 </span><span class="kw">pub mod </span>agent;
 <span class="kw">pub mod </span>config;
-<span class="kw">pub mod </span>env;
 <span class="kw">pub mod </span>feature;
-<span class="kw">pub mod </span>fs;
-<span class="kw">pub mod </span>incoming;
-<span class="kw">pub mod </span>network;
-<span class="kw">pub mod </span>outgoing;
 <span class="kw">pub mod </span>target;
 <span class="kw">pub mod </span>util;
 
-<span class="doccomment">/// To generate the `mirrord-schema.json` file see
-/// [`tests::check_schema_file_exists_and_is_valid_or_create_it`].
-///
-/// Remember to re-generate the `mirrord-schema.json` if you make **ANY** changes to this lib,
-/// including if you only made documentation changes.
-</span><span class="kw">use </span>std::path::Path;
+<span class="kw">use </span>std::path::Path;
 
 <span class="kw">use </span>config::{ConfigError, MirrordConfig};
 <span class="kw">use </span>mirrord_config_derive::MirrordConfig;
@@ -526,117 +635,229 @@
     target::TargetConfig, util::VecOrSingle,
 };
 
-<span class="doccomment">/// Main struct for mirrord-layer&#39;s configuration
+<span class="doccomment">/// mirrord allows for a high degree of customization when it comes to which features you want to
+/// enable, and how they should function.
 ///
-/// ## Examples
+/// All of the configuration fields have a default value, so a minimal configuration would be no
+/// configuration at all.
 ///
-/// - Run mirrord with read-only file operations, mirroring traffic, skipping unwanted processes:
+/// To help you get started, here are examples of a basic configuration file, and a complete
+/// configuration file containing all fields.
 ///
-/// ```toml
-/// # mirrord-config.toml
+/// ### Basic `config.json` {#root-basic}
 ///
-/// target = &quot;pod/sample-pod-1234&quot;
-/// skip_processes = [&quot;ide-debugger&quot;, &quot;ide-service&quot;] # we don&#39;t want mirrord to hook into these
-///
-/// [agent]
-/// log_level = &quot;debug&quot;
-/// ttl = 1024 # seconds
-///
-/// [feature]
-/// fs = &quot;read&quot; # default
-///
-/// [feature.network]
-/// incoming = &quot;mirror&quot; # default
+/// ```json
+/// {
+///   &quot;target&quot;: &quot;pod/bear-pod&quot;,
+///   &quot;feature&quot;: {
+///     &quot;env&quot;: true,
+///     &quot;fs&quot;: &quot;read&quot;,
+///     &quot;network&quot;: true
+///   }
+/// }
 /// ```
 ///
-/// - Run mirrord with read-write file operations, stealing traffic, accept local TLS certificates,
-///   use a custom mirrord-agent image:
+/// ### Complete `config.json` {#root-complete}
 ///
-/// ```toml
-/// # mirrord-config.toml
-///
-/// target = &quot;pod/sample-pod-1234&quot;
-/// accept_invalid_certificates = true
-///
-/// [agent]
-/// log_level = &quot;trace&quot;
-/// ttl = 1024 # seconds
-/// image = &quot;registry/mirrord-agent-custom:latest&quot;
-/// image_pull_policy = &quot;Always&quot;
-///
-/// [feature]
-/// fs = &quot;write&quot;
-///
-/// [feature.network]
-/// incoming = &quot;steal&quot;
+/// ```json
+/// {
+///   &quot;accept_invalid_certificates&quot;: false,
+///   &quot;skip_processes&quot;: &quot;ide-debugger&quot;,
+///   &quot;pause&quot;: false,
+///   &quot;target&quot;: {
+///     &quot;path&quot;: &quot;pod/bear-pod&quot;,
+///     &quot;namespace&quot;: &quot;default&quot;
+///   },
+///   &quot;connect_tcp&quot;: null,
+///   &quot;agent&quot;: {
+///     &quot;log_level&quot;: &quot;info&quot;,
+///     &quot;namespace&quot;: &quot;default&quot;,
+///     &quot;image&quot;: &quot;ghcr.io/metalbear-co/mirrord:latest&quot;,
+///     &quot;image_pull_policy&quot;: &quot;IfNotPresent&quot;,
+///     &quot;image_pull_secrets&quot;: [ { &quot;secret-key&quot;: &quot;secret&quot; } ],
+///     &quot;ttl&quot;: 30,
+///     &quot;ephemeral&quot;: false,
+///     &quot;communication_timeout&quot;: 30,
+///     &quot;startup_timeout&quot;: 360,
+///     &quot;network_interface&quot;: &quot;eth0&quot;,
+///     &quot;flush_connections&quot;: true
+///   },
+///   &quot;feature&quot;: {
+///     &quot;env&quot;: {
+///       &quot;include&quot;: &quot;DATABASE_USER;PUBLIC_ENV&quot;,
+///       &quot;exclude&quot;: &quot;DATABASE_PASSWORD;SECRET_ENV&quot;,
+///       &quot;overrides&quot;: {
+///         &quot;DATABASE_CONNECTION&quot;: &quot;db://localhost:7777/my-db&quot;,
+///         &quot;LOCAL_BEAR&quot;: &quot;panda&quot;
+///       }
+///     },
+///     &quot;fs&quot;: {
+///       &quot;mode&quot;: &quot;write&quot;,
+///       &quot;read_write&quot;: &quot;.+\.json&quot; ,
+///       &quot;read_only&quot;: [ &quot;.+\.yaml&quot;, &quot;.+important-file\.txt&quot; ],
+///       &quot;local&quot;: [ &quot;.+\.js&quot;, &quot;.+\.mjs&quot; ]
+///     },
+///     &quot;network&quot;: {
+///       &quot;incoming&quot;: {
+///         &quot;mode&quot;: &quot;steal&quot;,
+///         &quot;http_header_filter&quot;: {
+///           &quot;filter&quot;: &quot;host: api\..+&quot;,
+///           &quot;ports&quot;: [80, 8080]
+///         },
+///         &quot;port_mapping&quot;: [[ 7777, 8888 ]],
+///         &quot;ignore_localhost&quot;: false,
+///         &quot;ignore_ports&quot;: [9999, 10000]
+///       },
+///       &quot;outgoing&quot;: {
+///         &quot;tcp&quot;: true,
+///         &quot;udp&quot;: true,
+///         &quot;ignore_localhost&quot;: false,
+///         &quot;unix_streams&quot;: &quot;bear.+&quot;
+///       },
+///       &quot;dns&quot;: false
+///     },
+///     &quot;capture_error_trace&quot;: false
+///   },
+///   &quot;operator&quot;: true,
+///   &quot;kubeconfig&quot;: &quot;~/.kube/config&quot;,
+///   &quot;sip_binaries&quot;: &quot;bash&quot;
+/// }
 /// ```
+///
+/// # Options {#root-options}
 </span><span class="attr">#[derive(MirrordConfig, Clone, Debug)]
 #[config(map_to = <span class="string">&quot;LayerFileConfig&quot;</span>, derive = <span class="string">&quot;JsonSchema&quot;</span>)]
 #[cfg_attr(test, config(derive = <span class="string">&quot;PartialEq, Eq&quot;</span>))]
 </span><span class="kw">pub struct </span>LayerConfig {
-    <span class="doccomment">/// Controls whether or not mirrord accepts invalid TLS certificates (e.g. self-signed
+    <span class="doccomment">/// ## accept_invalid_certificates {#root-accept_invalid_certificates}
+    ///
+    /// Controls whether or not mirrord accepts invalid TLS certificates (e.g. self-signed
     /// certificates).
+    ///
+    /// Defaults to `false`.
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_ACCEPT_INVALID_CERTIFICATES&quot;</span>, default = <span class="bool-val">false</span>)]
     </span><span class="kw">pub </span>accept_invalid_certificates: bool,
 
-    <span class="doccomment">/// Allows mirrord to skip unwanted processes.
+    <span class="doccomment">/// ## skip_processes {#root-skip_processes}
+    ///
+    /// Allows mirrord to skip unwanted processes.
     ///
     /// Useful when process A spawns process B, and the user wants mirrord to operate only on
     /// process B.
+    /// Accepts a single value, or multiple values separated by `;`.
+    ///
+    ///```json
+    /// {
+    ///  &quot;skip_processes&quot;: &quot;bash;node&quot;
+    /// }
+    /// ```
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_SKIP_PROCESSES&quot;</span>)]
     </span><span class="kw">pub </span>skip_processes: <span class="prelude-ty">Option</span>&lt;VecOrSingle&lt;String&gt;&gt;,
 
-    <span class="doccomment">/// Specifies the running pod to mirror.
-    ///
-    /// Supports:
-    /// - `pod/{sample-pod}/[container]/{sample-container}`;
-    /// - `podname/{sample-pod}/[container]/{sample-container}`;
-    /// - `deployment/{sample-deployment}/[container]/{sample-container}`;
-    </span><span class="attr">#[config(nested)]
-    </span><span class="kw">pub </span>target: TargetConfig,
-
-    <span class="doccomment">/// Controls target pause feature. Unstable.
+    <span class="doccomment">/// ## pause {#root-pause}
+    /// Controls target pause feature. Unstable.
     ///
     /// With this feature enabled, the remote container is paused while this layer is connected to
     /// the agent.
+    ///
+    /// Defaults to `false`.
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_PAUSE&quot;</span>, default = <span class="bool-val">false</span>, unstable)]
     </span><span class="kw">pub </span>pause: bool,
 
-    <span class="doccomment">/// IP:PORT to connect to instead of using k8s api, for testing purposes.
+    <span class="doccomment">/// ## connect_tcp {#root-connect_tpc}
+    ///
+    /// IP:PORT to connect to instead of using k8s api, for testing purposes.
+    ///
+    /// ```json
+    /// {
+    ///   &quot;connect_tcp&quot;: &quot;10.10.0.100:7777&quot;
+    /// }
+    /// ```
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_CONNECT_TCP&quot;</span>)]
     </span><span class="kw">pub </span>connect_tcp: <span class="prelude-ty">Option</span>&lt;String&gt;,
 
-    <span class="doccomment">/// Agent name that already exists that we can connect to.
+    <span class="doccomment">/// &lt;!--${internal}--&gt;
+    ///
+    /// ## connect_agent_name {#root-connect_agent_name}
+    ///
+    /// Agent name that already exists that we can connect to.
+    ///
+    /// Keep in mind that the intention here is to allow reusing a long living mirrord-agent pod,
+    /// and **not** to connect multiple (simultaneos) mirrord instances to a single
+    /// mirrord-agent, as the later is not properly supported without the use of
+    /// [mirrord-operator](https://metalbear.co/#waitlist-form).
+    ///
+    /// ```json
+    /// {
+    ///   &quot;connect_agent_name&quot;: &quot;mirrord-agent-still-alive&quot;
+    /// }
+    /// ```
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_CONNECT_AGENT&quot;</span>)]
     </span><span class="kw">pub </span>connect_agent_name: <span class="prelude-ty">Option</span>&lt;String&gt;,
 
-    <span class="doccomment">/// Agent listen port that already exists that we can connect to.
+    <span class="doccomment">/// &lt;!--${internal}--&gt;
+    ///
+    /// ## connect_agent_port {#root-connect_agent_port}
+    ///
+    /// Agent listen port that already exists that we can connect to.
+    ///
+    /// ```json
+    /// {
+    ///   &quot;connect_agent_port&quot;: &quot;8888&quot;
+    /// }
+    /// ```
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_CONNECT_PORT&quot;</span>)]
     </span><span class="kw">pub </span>connect_agent_port: <span class="prelude-ty">Option</span>&lt;u16&gt;,
 
-    <span class="doccomment">/// Agent configuration, see [`agent::AgentFileConfig`].
-    </span><span class="attr">#[config(nested)]
-    </span><span class="kw">pub </span>agent: AgentConfig,
-
-    <span class="doccomment">/// Controls mirrord features, see [`feature::FeatureFileConfig`].
-    </span><span class="attr">#[config(nested)]
-    </span><span class="kw">pub </span>feature: FeatureConfig,
-
-    <span class="doccomment">/// Allow to lookup if operator is installed on cluster and use it
+    <span class="doccomment">/// ## operator {#root-operator}
+    ///
+    /// Allow to lookup if operator is installed on cluster and use it.
+    ///
+    /// Defaults to `true`.
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_OPERATOR_ENABLE&quot;</span>, default = <span class="bool-val">true</span>)]
     </span><span class="kw">pub </span>operator: bool,
 
-    <span class="doccomment">/// Path to a kubeconfig file, if not specified, will use KUBECONFIG or ~/.kube/config or the
-    /// in-cluster config.
+    <span class="doccomment">/// ## kubeconfig {#root-kubeconfig}
+    ///
+    /// Path to a kubeconfig file, if not specified, will use `KUBECONFIG`, or `~/.kube/config`, or
+    /// the in-cluster config.
+    ///
+    /// ```json
+    /// {
+    ///  &quot;kubeconfig&quot;: &quot;~/bear/kube-config&quot;
+    /// }
+    /// ```
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_KUBECONFIG&quot;</span>)]
     </span><span class="kw">pub </span>kubeconfig: <span class="prelude-ty">Option</span>&lt;String&gt;,
 
-    <span class="doccomment">/// Binaries to patch (macOS SIP).
-    /// Use this when mirrord isn&#39;t loaded to protected binaries
-    /// that weren&#39;t automatically patched.
-    /// Runs `endswith` on the binary path (so `bash` would apply to any binary
-    /// ending with `bash` while `/usr/bin/bash` would apply only for that binary).
+    <span class="doccomment">/// ## sip_binaries {#root-sip_binaries}
+    ///
+    /// Binaries to patch (macOS SIP).
+    ///
+    /// Use this when mirrord isn&#39;t loaded to protected binaries that weren&#39;t automatically
+    /// patched.
+    ///
+    /// Runs `endswith` on the binary path (so `bash` would apply to any binary ending with `bash`
+    /// while `/usr/bin/bash` would apply only for that binary).
+    ///
+    /// ```json
+    /// {
+    ///  &quot;sip_binaries&quot;: &quot;bash;python&quot;
+    /// }
+    /// ```
     </span><span class="kw">pub </span>sip_binaries: <span class="prelude-ty">Option</span>&lt;VecOrSingle&lt;String&gt;&gt;,
+
+    <span class="doccomment">/// ## target {#root-target}
+    </span><span class="attr">#[config(nested)]
+    </span><span class="kw">pub </span>target: TargetConfig,
+
+    <span class="doccomment">/// ## agent {#root-agent}
+    </span><span class="attr">#[config(nested)]
+    </span><span class="kw">pub </span>agent: AgentConfig,
+
+    <span class="doccomment">/// # feature {#root-feature}
+    </span><span class="attr">#[config(nested)]
+    </span><span class="kw">pub </span>feature: FeatureConfig,
 }
 
 <span class="kw">impl </span>LayerConfig {
@@ -681,11 +902,15 @@
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use crate</span>::{
         agent::AgentFileConfig,
-        feature::FeatureFileConfig,
-        fs::{FsModeConfig, FsUserConfig},
-        incoming::{IncomingAdvancedFileConfig, IncomingFileConfig, IncomingMode},
-        network::NetworkFileConfig,
-        outgoing::OutgoingFileConfig,
+        feature::{
+            fs::{FsModeConfig, FsUserConfig},
+            network::{
+                incoming::{IncomingAdvancedFileConfig, IncomingFileConfig, IncomingMode},
+                outgoing::OutgoingFileConfig,
+                NetworkFileConfig,
+            },
+            FeatureFileConfig,
+        },
         target::{PodTarget, Target, TargetFileConfig},
         util::ToggleableConfig,
     };
@@ -904,7 +1129,8 @@
         <span class="macro">assert_eq!</span>(config, expect);
     }
 
-    <span class="doccomment">/// Helper for printing the config schema.
+    <span class="doccomment">/// &lt;!--${internal}--&gt;
+    /// Helper for printing the config schema.
     ///
     /// Run it with:
     ///
@@ -920,7 +1146,8 @@
 
     <span class="kw">const </span>SCHEMA_FILE_PATH: <span class="kw-2">&amp;</span>str = <span class="string">&quot;../../mirrord-schema.json&quot;</span>;
 
-    <span class="doccomment">/// Writes the config schema to a file (uploaded to the schema store).
+    <span class="doccomment">/// &lt;!--${internal}--&gt;
+    /// Writes the config schema to a file (uploaded to the schema store).
     </span><span class="kw">fn </span>write_schema_to_file(schema: <span class="kw-2">&amp;</span>RootSchema) -&gt; File {
         <span class="macro">println!</span>(<span class="string">&quot;Writing schema to file.&quot;</span>);
 
@@ -940,7 +1167,8 @@
         file
     }
 
-    <span class="doccomment">/// Checks if a schema file already exists, otherwise generates the schema and creates the file.
+    <span class="doccomment">/// &lt;!--${internal}--&gt;
+    /// Checks if a schema file already exists, otherwise generates the schema and creates the file.
     ///
     /// It also checks and updates when the schema file is outdated.
     ///

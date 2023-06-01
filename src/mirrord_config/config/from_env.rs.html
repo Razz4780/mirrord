@@ -67,6 +67,7 @@
 <a href="#67" id="67">67</a>
 <a href="#68" id="68">68</a>
 <a href="#69" id="69">69</a>
+<a href="#70" id="70">70</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::{marker::PhantomData, str::FromStr};
 
 <span class="kw">use </span><span class="kw">crate</span>::config::{source::MirrordConfigSource, ConfigError, <span class="prelude-ty">Result</span>};
@@ -94,9 +95,10 @@
     }
 }
 
-<span class="doccomment">/// This is the same as `FromEnv` but doesn&#39;t discard the error
-/// returned from parse. This is for parsing `Target`.
-/// I (A.H) couldn&#39;t find any better way to do this since you can&#39;t
+<span class="doccomment">/// &lt;!--${internal}--&gt;
+/// This is the same as `FromEnv` but doesn&#39;t discard the error returned from parse.
+///
+/// This is for parsing `Target`. I (A.H) couldn&#39;t find any better way to do this since you can&#39;t
 /// do specialization on associated types.
 </span><span class="attr">#[derive(Clone)]
 </span><span class="kw">pub struct </span>FromEnvWithError&lt;T&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, PhantomData&lt;T&gt;);

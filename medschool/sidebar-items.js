@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["DocsError"],"fn":["docs_from_attributes","get_ident_from_field_skipping_generics","main","parse_files","pretty_docs"],"struct":["PartialField","PartialType"]};

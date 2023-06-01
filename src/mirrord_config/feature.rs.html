@@ -78,84 +78,98 @@
 <a href="#78" id="78">78</a>
 <a href="#79" id="79">79</a>
 <a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
 </pre><pre class="rust"><code><span class="kw">use </span>mirrord_config_derive::MirrordConfig;
 <span class="kw">use </span>schemars::JsonSchema;
 
-<span class="kw">use crate</span>::{
-    config::source::MirrordConfigSource, env::EnvConfig, fs::FsConfig, network::NetworkConfig,
-};
+<span class="kw">use </span><span class="self">self</span>::{env::EnvConfig, fs::FsConfig, network::NetworkConfig};
+<span class="kw">use </span><span class="kw">crate</span>::config::source::MirrordConfigSource;
 
-<span class="doccomment">/// Configuration for mirrord features.
+<span class="kw">pub mod </span>env;
+<span class="kw">pub mod </span>fs;
+<span class="kw">pub mod </span>network;
+
+<span class="doccomment">/// Controls mirrord features.
 ///
-/// For more information, check the [technical reference](https://mirrord.dev/docs/reference/)
-/// of the feature.
+/// See the
+/// [technical reference, Technical Reference](https://mirrord.dev/docs/reference/)
+/// to learn more about what each feature does.
 ///
-/// ## Examples
+/// The [`env`](#feature-env), [`fs`](#feature-fs) and [`network`](#feature-network) options
+/// have support for a shortened version, that you can see [here](#root-shortened).
 ///
-/// - Exclude &quot;SECRET&quot; environment variable, enable read-write file operations, mirror network
-///   traffic (default option), and generate a crash report (if there is any crash):
-///
-/// ```toml
-/// # mirrord-config.toml
-///
-/// [feature]
-/// fs = &quot;write&quot;
-/// capture_error_trace = true
-///
-/// [feature.env]
-/// exclude = &quot;SECRET&quot;
-/// ```
-///
-/// - Include only &quot;DATABASE_URL&quot;, and &quot;PORT&quot; environment variables, enable read-write file
-///   operations (only for `.txt` files), and enable both incoming and outgoing network traffic
-///   (mirror):
-///
-/// ```toml
-/// # mirrord-config.toml
-///
-/// [feature.env]
-/// include = &quot;DATABASE_URL;PORT&quot;
-///
-/// [feature.fs]
-/// mode = &quot;write&quot;
-/// include = &quot;^.*\.txt$&quot;
-///
-/// [feature.network]
-/// incoming = &quot;mirror&quot; # default, included here for effect
-///
-/// [feature.network.outgoing]
-/// tcp = true
-/// udp = true
+/// ```json
+/// {
+///   &quot;feature&quot;: {
+///     &quot;env&quot;: {
+///       &quot;include&quot;: &quot;DATABASE_USER;PUBLIC_ENV&quot;,
+///       &quot;exclude&quot;: &quot;DATABASE_PASSWORD;SECRET_ENV&quot;,
+///       &quot;overrides&quot;: {
+///         &quot;DATABASE_CONNECTION&quot;: &quot;db://localhost:7777/my-db&quot;,
+///         &quot;LOCAL_BEAR&quot;: &quot;panda&quot;
+///       }
+///     },
+///     &quot;fs&quot;: {
+///       &quot;mode&quot;: &quot;write&quot;,
+///       &quot;read_write&quot;: &quot;.+\.json&quot; ,
+///       &quot;read_only&quot;: [ &quot;.+\.yaml&quot;, &quot;.+important-file\.txt&quot; ],
+///       &quot;local&quot;: [ &quot;.+\.js&quot;, &quot;.+\.mjs&quot; ]
+///     },
+///     &quot;network&quot;: {
+///       &quot;incoming&quot;: {
+///         &quot;mode&quot;: &quot;steal&quot;,
+///         &quot;http_header_filter&quot;: {
+///           &quot;filter&quot;: &quot;host: api\..+&quot;,
+///           &quot;ports&quot;: [80, 8080]
+///         },
+///         &quot;port_mapping&quot;: [[ 7777, 8888 ]],
+///         &quot;ignore_localhost&quot;: false,
+///         &quot;ignore_ports&quot;: [9999, 10000]
+///       },
+///       &quot;outgoing&quot;: {
+///         &quot;tcp&quot;: true,
+///         &quot;udp&quot;: true,
+///         &quot;ignore_localhost&quot;: false,
+///         &quot;unix_streams&quot;: &quot;bear.+&quot;
+///       },
+///       &quot;dns&quot;: false
+///     },
+///     &quot;capture_error_trace&quot;: false
+///   }
+/// }
 /// ```
 </span><span class="attr">#[derive(MirrordConfig, Clone, Debug)]
 #[config(map_to = <span class="string">&quot;FeatureFileConfig&quot;</span>, derive = <span class="string">&quot;JsonSchema&quot;</span>)]
 #[cfg_attr(test, config(derive = <span class="string">&quot;PartialEq, Eq&quot;</span>))]
 </span><span class="kw">pub struct </span>FeatureConfig {
-    <span class="doccomment">/// Controls the environment variables feature, see [`EnvConfig`].
+    <span class="doccomment">/// ## feature.capture_error_trace {#feature-capture_error_trace}
     ///
-    /// For more information, check the environment variables
-    /// [technical reference](https://mirrord.dev/docs/reference/env/).
+    /// Controls the crash reporting feature.
+    ///
+    /// With this feature enabled, mirrord generates a nice crash report log.
+    ///
+    /// Defaults to `false`.
+    </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_CAPTURE_ERROR_TRACE&quot;</span>, default = <span class="bool-val">false</span>)]
+    </span><span class="kw">pub </span>capture_error_trace: bool,
+
+    <span class="doccomment">/// ## feature.env {#feature-env}
     </span><span class="attr">#[config(nested, toggleable)]
     </span><span class="kw">pub </span>env: EnvConfig,
 
-    <span class="doccomment">/// Controls the file operations feature, see [`FsConfig`].
-    ///
-    /// For more information, check the file operations
-    /// [technical reference](https://mirrord.dev/docs/reference/fileops/).
+    <span class="comment">// TODO(alex) [high] 2023-05-18: This links to `FsConfig`, not `FsUserConfig` as I thought
+    // before.
+    </span><span class="doccomment">/// ## feature.fs {#feature-fs}
     </span><span class="attr">#[config(nested, toggleable)]
     </span><span class="kw">pub </span>fs: FsConfig,
 
-    <span class="doccomment">/// Controls the network feature, see [`NetworkConfig`].
-    ///
-    /// For more information, check the network traffic
-    /// [technical reference](https://mirrord.dev/docs/reference/traffic/).
+    <span class="doccomment">/// ## feature.network {#feature-network}
     </span><span class="attr">#[config(nested, toggleable)]
     </span><span class="kw">pub </span>network: NetworkConfig,
-
-    <span class="doccomment">/// Controls the crash reporting feature.
-    ///
-    /// With this feature enabled, mirrord generates a nice crash report log.
-    </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_CAPTURE_ERROR_TRACE&quot;</span>, default = <span class="bool-val">false</span>)]
-    </span><span class="kw">pub </span>capture_error_trace: bool,
 }
 </code></pre></div></section></main></body></html>

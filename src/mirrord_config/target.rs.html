@@ -363,6 +363,39 @@
 <a href="#363" id="363">363</a>
 <a href="#364" id="364">364</a>
 <a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a>
+<a href="#398" id="398">398</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::str::FromStr;
 
 <span class="kw">use </span>schemars::JsonSchema;
@@ -377,29 +410,17 @@
     util::string_or_struct_option,
 };
 
-<span class="doccomment">/// Specifies the target to mirror. See [`Target`].
-///
-/// ## Examples
-///
-/// - Mirror pod `hello-world-abcd-1234` in the `hello` namespace:
-///
-/// ```toml
-/// # mirrord-config.toml
-///
-/// [target]
-/// path = &quot;pod/hello-world-abcd-1234&quot;
-/// namespace = &quot;hello&quot;
-/// ```
-</span><span class="attr">#[derive(Deserialize, PartialEq, Eq, Clone, Debug, JsonSchema)]
+<span class="attr">#[derive(Deserialize, PartialEq, Eq, Clone, Debug, JsonSchema)]
 #[serde(untagged, rename_all = <span class="string">&quot;lowercase&quot;</span>)]
 </span><span class="kw">pub enum </span>TargetFileConfig {
     <span class="comment">// Generated when the value of the `target` field is a string, or when there is no target.
     // we need default else target value will be required in some scenarios.
     </span>Simple(<span class="attr">#[serde(default, deserialize_with = <span class="string">&quot;string_or_struct_option&quot;</span>)] </span><span class="prelude-ty">Option</span>&lt;Target&gt;),
     Advanced {
-        <span class="comment">// Path is optional so that it can also be specified via env var instead of via conf file,
-        // but it is not optional in a resulting [`TargetConfig`] object - either there is a path,
-        // or the target configuration is `None`.
+        <span class="doccomment">/// &lt;!--${internal}--&gt;
+        /// Path is optional so that it can also be specified via env var instead of via conf file,
+        /// but it is not optional in a resulting [`TargetConfig`] object - either there is a path,
+        /// or the target configuration is `None`.
         </span><span class="attr">#[serde(default, deserialize_with = <span class="string">&quot;string_or_struct_option&quot;</span>)]
         </span>path: <span class="prelude-ty">Option</span>&lt;Target&gt;,
         namespace: <span class="prelude-ty">Option</span>&lt;String&gt;,
@@ -412,11 +433,56 @@
 //   an error. The error is not returned when parsing the configuration because it&#39;s not an error
 //   for `mirrord ls`.
 // - Both are `None` -&gt; targetless.
+</span><span class="doccomment">/// Specifies the target and namespace to mirror, see [`path`](#target-path) for a list of
+/// accepted values for the `target` option.
+///
+/// The simplified configuration supports:
+///
+/// - `pod/{sample-pod}/[container]/{sample-container}`;
+/// - `podname/{sample-pod}/[container]/{sample-container}`;
+/// - `deployment/{sample-deployment}/[container]/{sample-container}`;
+///
+/// Shortened setup:
+///
+///```json
+/// {
+///  &quot;target&quot;: &quot;pod/bear-pod&quot;
+/// }
+/// ```
+///
+/// Complete setup:
+///
+/// ```json
+/// {
+///  &quot;target&quot;: {
+///    &quot;path&quot;: {
+///      &quot;pod&quot;: &quot;bear-pod&quot;
+///    },
+///    &quot;namespace&quot;: &quot;default&quot;
+///  }
+/// }
+/// ```
 </span><span class="attr">#[derive(Serialize, Deserialize, Clone, Eq, PartialEq, Hash, Debug)]
 #[cfg_attr(feature = <span class="string">&quot;schema&quot;</span>, derive(schemars::JsonSchema))]
 </span><span class="kw">pub struct </span>TargetConfig {
-    <span class="kw">pub </span>path: <span class="prelude-ty">Option</span>&lt;Target&gt;,
-    <span class="kw">pub </span>namespace: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    <span class="doccomment">/// ### target.path {#target-path}
+    ///
+    /// Specifies the running pod (or deployment) to mirror.
+    ///
+    /// Supports:
+    /// - `pod/{sample-pod}`;
+    /// - `podname/{sample-pod}`;
+    /// - `deployment/{sample-deployment}`;
+    /// - `container/{sample-container}`;
+    /// - `containername/{sample-container}`.
+    </span><span class="kw">pub </span>path: <span class="prelude-ty">Option</span>&lt;Target&gt;,
+
+    <span class="doccomment">/// ### target.namespace {#target-namespace}
+    ///
+    /// Namespace where the target lives.
+    ///
+    /// Defaults to `&quot;default&quot;`.
+    </span><span class="kw">pub </span>namespace: <span class="prelude-ty">Option</span>&lt;String&gt;,
 }
 
 <span class="kw">impl </span>Default <span class="kw">for </span>TargetFileConfig {
@@ -487,7 +553,10 @@ mirrord-layer failed to parse the provided target!
     &gt;&gt; check if the provided target is in the correct namespace.
 &quot;#</span>;
 
-<span class="doccomment">/// Specifies the running pod (or deployment) to mirror.
+<span class="doccomment">/// &lt;!--${internal}--&gt;
+/// ## path
+///
+/// Specifies the running pod (or deployment) to mirror.
 ///
 /// Supports:
 /// - `pod/{sample-pod}`;
@@ -495,22 +564,15 @@ mirrord-layer failed to parse the provided target!
 /// - `deployment/{sample-deployment}`;
 /// - `container/{sample-container}`;
 /// - `containername/{sample-container}`.
-///
-/// ## Examples
-///
-/// - Mirror pod `hello-world-abcd-1234`:
-///
-/// ```toml
-/// # mirrord-config.toml
-///
-/// target = &quot;pod/hello-world-abcd-1234&quot;
-/// ```
 </span><span class="attr">#[derive(Serialize, Deserialize, Clone, Eq, PartialEq, Hash, Debug, JsonSchema)]
 #[serde(untagged)]
 </span><span class="kw">pub enum </span>Target {
-    <span class="doccomment">/// Mirror a deployment.
+    <span class="doccomment">/// &lt;!--${internal}--&gt;
+    /// Mirror a deployment.
     </span>Deployment(DeploymentTarget),
-    <span class="doccomment">/// Mirror a pod.
+
+    <span class="doccomment">/// &lt;!--${internal}--&gt;
+    /// Mirror a pod.
     </span>Pod(PodTarget),
 }
 
@@ -531,10 +593,12 @@ mirrord-layer failed to parse the provided target!
     }
 }
 
-<span class="doccomment">/// Mirror the pod specified by [`PodTarget::pod`].
+<span class="doccomment">/// &lt;!--${internal}--&gt;
+/// Mirror the pod specified by [`PodTarget::pod`].
 </span><span class="attr">#[derive(Serialize, Deserialize, Clone, Eq, PartialEq, Hash, Debug, JsonSchema)]
 </span><span class="kw">pub struct </span>PodTarget {
-    <span class="doccomment">/// Pod to mirror.
+    <span class="doccomment">/// &lt;!--${internal}--&gt;
+    /// Pod to mirror.
     </span><span class="kw">pub </span>pod: String,
     <span class="kw">pub </span>container: <span class="prelude-ty">Option</span>&lt;String&gt;,
 }
@@ -560,10 +624,12 @@ mirrord-layer failed to parse the provided target!
     }
 }
 
-<span class="doccomment">/// Mirror the deployment specified by [`DeploymentTarget::deployment`].
+<span class="doccomment">/// &lt;!--${internal}--&gt;
+/// Mirror the deployment specified by [`DeploymentTarget::deployment`].
 </span><span class="attr">#[derive(Serialize, Deserialize, Clone, Eq, PartialEq, Hash, Debug, JsonSchema)]
 </span><span class="kw">pub struct </span>DeploymentTarget {
-    <span class="doccomment">/// Deployment to mirror.
+    <span class="doccomment">/// &lt;!--${internal}--&gt;
+    /// Deployment to mirror.
     </span><span class="kw">pub </span>deployment: String,
     <span class="kw">pub </span>container: <span class="prelude-ty">Option</span>&lt;String&gt;,
 }

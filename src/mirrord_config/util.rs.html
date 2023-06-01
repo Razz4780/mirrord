@@ -207,6 +207,7 @@
 <a href="#207" id="207">207</a>
 <a href="#208" id="208">208</a>
 <a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::{fmt, marker::PhantomData, slice::Join, str::FromStr};
 
 <span class="kw">use </span>schemars::JsonSchema;
@@ -372,7 +373,8 @@
 
     <span class="kw">static </span>SERIAL_TEST: LazyLock&lt;Mutex&lt;()&gt;&gt; = LazyLock::new(Default::default);
 
-    <span class="doccomment">/// Sets environment variables to the given value for the duration of the closure.
+    <span class="doccomment">/// &lt;!--${internal}--&gt;
+    /// Sets environment variables to the given value for the duration of the closure.
     /// Restores the previous values when the closure completes or panics, before unwinding the
     /// panic.
     </span><span class="kw">pub fn </span>with_env_vars&lt;F&gt;(kvs: Vec&lt;(<span class="kw-2">&amp;</span>str, <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;)&gt;, closure: F)

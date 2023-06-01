@@ -651,6 +651,69 @@
 <a href="#651" id="651">651</a>
 <a href="#652" id="652">652</a>
 <a href="#653" id="653">653</a>
+<a href="#654" id="654">654</a>
+<a href="#655" id="655">655</a>
+<a href="#656" id="656">656</a>
+<a href="#657" id="657">657</a>
+<a href="#658" id="658">658</a>
+<a href="#659" id="659">659</a>
+<a href="#660" id="660">660</a>
+<a href="#661" id="661">661</a>
+<a href="#662" id="662">662</a>
+<a href="#663" id="663">663</a>
+<a href="#664" id="664">664</a>
+<a href="#665" id="665">665</a>
+<a href="#666" id="666">666</a>
+<a href="#667" id="667">667</a>
+<a href="#668" id="668">668</a>
+<a href="#669" id="669">669</a>
+<a href="#670" id="670">670</a>
+<a href="#671" id="671">671</a>
+<a href="#672" id="672">672</a>
+<a href="#673" id="673">673</a>
+<a href="#674" id="674">674</a>
+<a href="#675" id="675">675</a>
+<a href="#676" id="676">676</a>
+<a href="#677" id="677">677</a>
+<a href="#678" id="678">678</a>
+<a href="#679" id="679">679</a>
+<a href="#680" id="680">680</a>
+<a href="#681" id="681">681</a>
+<a href="#682" id="682">682</a>
+<a href="#683" id="683">683</a>
+<a href="#684" id="684">684</a>
+<a href="#685" id="685">685</a>
+<a href="#686" id="686">686</a>
+<a href="#687" id="687">687</a>
+<a href="#688" id="688">688</a>
+<a href="#689" id="689">689</a>
+<a href="#690" id="690">690</a>
+<a href="#691" id="691">691</a>
+<a href="#692" id="692">692</a>
+<a href="#693" id="693">693</a>
+<a href="#694" id="694">694</a>
+<a href="#695" id="695">695</a>
+<a href="#696" id="696">696</a>
+<a href="#697" id="697">697</a>
+<a href="#698" id="698">698</a>
+<a href="#699" id="699">699</a>
+<a href="#700" id="700">700</a>
+<a href="#701" id="701">701</a>
+<a href="#702" id="702">702</a>
+<a href="#703" id="703">703</a>
+<a href="#704" id="704">704</a>
+<a href="#705" id="705">705</a>
+<a href="#706" id="706">706</a>
+<a href="#707" id="707">707</a>
+<a href="#708" id="708">708</a>
+<a href="#709" id="709">709</a>
+<a href="#710" id="710">710</a>
+<a href="#711" id="711">711</a>
+<a href="#712" id="712">712</a>
+<a href="#713" id="713">713</a>
+<a href="#714" id="714">714</a>
+<a href="#715" id="715">715</a>
+<a href="#716" id="716">716</a>
 </pre><pre class="rust"><code><span class="attr">#![warn(clippy::indexing_slicing)]
 #![cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
 
@@ -661,7 +724,7 @@
 <span class="kw">mod </span>main {
     <span class="kw">use </span>std::{
         collections::HashSet,
-        env::temp_dir,
+        env,
         io::{<span class="self">self</span>, Read},
         os::{macos::fs::MetadataExt, unix::fs::PermissionsExt},
         path::{Path, PathBuf},
@@ -687,23 +750,37 @@
     <span class="doccomment">/// Where patched files are stored, relative to the temp dir (`/tmp/mirrord-bin/...`).
     </span><span class="kw">pub const </span>MIRRORD_PATCH_DIR: <span class="kw-2">&amp;</span>str = <span class="string">&quot;mirrord-bin&quot;</span>;
 
+    <span class="kw">pub const </span>FRAMEWORKS_ENV_VAR_NAME: <span class="kw-2">&amp;</span>str = <span class="string">&quot;DYLD_FALLBACK_FRAMEWORK_PATH&quot;</span>;
+
     <span class="doccomment">/// The path of mirrord&#39;s internal temp binary dir, where we put SIP-patched binaries and
     /// scripts.
-    </span><span class="kw">pub static </span>MIRRORD_TEMP_BIN_DIR: Lazy&lt;String&gt; = Lazy::new(|| {
-        std::env::temp_dir()
-            .join(MIRRORD_PATCH_DIR)
-            <span class="comment">// lossy: we assume our temp dir path does not contain non-unicode chars.
-            </span>.to_string_lossy()
+    </span><span class="kw">pub static </span>MIRRORD_TEMP_BIN_DIR_PATH_BUF: Lazy&lt;PathBuf&gt; =
+        Lazy::new(|| env::temp_dir().join(MIRRORD_PATCH_DIR));
+
+    <span class="doccomment">/// Get the `PathBuf` of the `mirrord-bin` dir, and return a `String` prefix to remove, without
+    /// a trailing `/`, so that the stripped path starts with a `/`
+    </span><span class="kw">fn </span>get_temp_bin_str_prefix(path: <span class="kw-2">&amp;</span>Path) -&gt; String {
+        <span class="comment">// lossy: we assume our temp dir path does not contain non-unicode chars.
+        </span>path.to_string_lossy()
             .to_string()
             .trim_end_matches(<span class="string">&#39;/&#39;</span>)
             .to_string()
-    });
+    }
 
-    <span class="doccomment">/// Path of current executable, None if fetching failed.
-    </span><span class="kw">pub static </span>CURRENT_EXE: Lazy&lt;<span class="prelude-ty">Option</span>&lt;String&gt;&gt; = Lazy::new(|| {
-        std::env::current_exe()
-            .ok()
-            .map(|path_buf| path_buf.to_string_lossy().to_string())
+    <span class="doccomment">/// The string path of mirrord&#39;s internal temp binary dir, where we put SIP-patched binaries and
+    /// scripts, without a trailing `/`.
+    </span><span class="kw">pub static </span>MIRRORD_TEMP_BIN_DIR_STRING: Lazy&lt;String&gt; =
+        Lazy::new(|| get_temp_bin_str_prefix(<span class="kw-2">&amp;</span>MIRRORD_TEMP_BIN_DIR_PATH_BUF));
+
+    <span class="doccomment">/// Canonicalized version of `MIRRORD_TEMP_BIN_DIR`.
+    </span><span class="kw">pub static </span>MIRRORD_TEMP_BIN_DIR_CANONIC_STRING: Lazy&lt;String&gt; = Lazy::new(|| {
+        MIRRORD_TEMP_BIN_DIR_PATH_BUF
+            <span class="comment">// Resolve symbolic links! (specifically /var -&gt; private/var).
+            </span>.canonicalize()
+            .as_deref()
+            .map(get_temp_bin_str_prefix)
+            <span class="comment">// If canonicalization fails, we use the uncanonicalized path string.
+            </span>.unwrap_or(MIRRORD_TEMP_BIN_DIR_STRING.to_string())
     });
 
     <span class="doccomment">/// Check if a cpu subtype (already parsed with the correct endianness) is arm64e, given its
@@ -1026,23 +1103,52 @@
         get_sip_status_rec(path, <span class="kw-2">&amp;mut </span>seen_paths, patch_binaries)
     }
 
+    <span class="doccomment">/// When patching a bundled mac application, it try to load libraries from its frameworks
+    /// directory. The patch might cause it to search under the `mirrord-bin` temp dir.
+    ///
+    /// To make sure it can find the libraries, we set (or add to) the
+    /// `DYLD_FALLBACK_FRAMEWORK_PATH` env var.
+    ///
+    /// Example, if we&#39;re running `/Applications/Postman.app/Contents/MacOS/Postman`, we&#39;ll add
+    /// `/Applications/Postman.app/Contents/Frameworks` to that env var.
+    </span><span class="kw">fn </span>set_fallback_frameworks_path_if_mac_app(path: <span class="kw-2">&amp;</span>Path) {
+        <span class="kw">for </span>ancestor <span class="kw">in </span>path.ancestors() {
+            <span class="kw">if </span>ancestor
+                .extension()
+                .map(|ext| ext == <span class="string">&quot;app&quot;</span>)
+                .unwrap_or_default()
+            {
+                <span class="kw">let </span>frameworks_dir = ancestor
+                    .join(<span class="string">&quot;Contents/Frameworks&quot;</span>)
+                    .to_string_lossy()
+                    .to_string();
+                <span class="kw">let </span>new_value = <span class="kw">if let </span><span class="prelude-val">Ok</span>(existing_value) = env::var(FRAMEWORKS_ENV_VAR_NAME) {
+                    <span class="macro">format!</span>(<span class="string">&quot;{existing_value}:{frameworks_dir}&quot;</span>)
+                } <span class="kw">else </span>{
+                    frameworks_dir
+                };
+                env::set_var(FRAMEWORKS_ENV_VAR_NAME, new_value);
+                <span class="kw">break</span>;
+            }
+        }
+    }
+
     <span class="doccomment">/// Only call this function on a file that is SomeSIP.
     /// Patch shebang scripts recursively and patch final binary.
-    </span><span class="kw">fn </span>patch_some_sip(
-        path: <span class="kw-2">&amp;</span>PathBuf,
-        shebang_target: <span class="prelude-ty">Option</span>&lt;Box&lt;SipStatus&gt;&gt;,
-        tmp_dir: PathBuf,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;String&gt; {
+    </span><span class="kw">fn </span>patch_some_sip(path: <span class="kw-2">&amp;</span>PathBuf, shebang_target: <span class="prelude-ty">Option</span>&lt;Box&lt;SipStatus&gt;&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;String&gt; {
         <span class="comment">// TODO: Change output to be with hash of the contents, so that old versions of changed
         //       files do not get used. (Also change back existing file logic to always use.)
 
-        // if which does not work, just use the given path as is.
-        </span><span class="kw">let </span>complete_path =
-            which(path.to_string_lossy().to_string()).unwrap_or_else(|<span class="kw">_</span>| path.to_owned());
+        </span><span class="macro">trace!</span>(
+            <span class="string">&quot;Using temp dir: {} for sip patches&quot;</span>,
+            MIRRORD_TEMP_BIN_DIR_CANONIC_STRING.as_str()
+        );
+
+        set_fallback_frameworks_path_if_mac_app(path);
 
         <span class="comment">// Strip root path from binary path, as when joined it will clear the previous.
-        </span><span class="kw">let </span>output = <span class="kw-2">&amp;</span>tmp_dir.join(
-            complete_path.strip_prefix(<span class="string">&quot;/&quot;</span>).unwrap_or(<span class="kw-2">&amp;</span>complete_path), <span class="comment">// No prefix - no problem.
+        </span><span class="kw">let </span>output = MIRRORD_TEMP_BIN_DIR_PATH_BUF.join(
+            path.strip_prefix(<span class="string">&quot;/&quot;</span>).unwrap_or(path), <span class="comment">// No prefix - no problem.
         </span>);
 
         <span class="comment">// A string of the path of new created file to run instead of the SIPed file.
@@ -1096,7 +1202,7 @@
                         path,
                         patched_path_string,
                     );
-                    <span class="kw">let </span>new_target = patch_some_sip(<span class="kw-2">&amp;</span>target_path, shebang_target, tmp_dir)<span class="question-mark">?</span>;
+                    <span class="kw">let </span>new_target = patch_some_sip(<span class="kw-2">&amp;</span>target_path, shebang_target)<span class="question-mark">?</span>;
                     patch_script(path, output, <span class="kw-2">&amp;</span>new_target)<span class="question-mark">?</span>;
                     <span class="prelude-val">Ok</span>(patched_path_string)
                 } <span class="kw">else </span>{
@@ -1117,9 +1223,7 @@
     </span><span class="kw">pub fn </span>sip_patch(binary_path: <span class="kw-2">&amp;</span>str, patch_binaries: <span class="kw-2">&amp;</span>Vec&lt;String&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;String&gt;&gt; {
         <span class="kw">match </span>get_sip_status(binary_path, patch_binaries) {
             <span class="prelude-val">Ok</span>(SipStatus::SomeSIP(path, shebang_target)) =&gt; {
-                <span class="kw">let </span>tmp_dir = temp_dir().join(MIRRORD_PATCH_DIR);
-                <span class="macro">trace!</span>(<span class="string">&quot;Using temp dir: {:?} for sip patches&quot;</span>, <span class="kw-2">&amp;</span>tmp_dir);
-                <span class="prelude-val">Some</span>(patch_some_sip(<span class="kw-2">&amp;</span>path, shebang_target, tmp_dir)).transpose()
+                <span class="prelude-val">Some</span>(patch_some_sip(<span class="kw-2">&amp;</span>path, shebang_target)).transpose()
             }
             <span class="prelude-val">Ok</span>(SipStatus::NoSIP) =&gt; {
                 <span class="macro">trace!</span>(<span class="string">&quot;No SIP detected on {:?}&quot;</span>, binary_path);
@@ -1224,7 +1328,8 @@
         <span class="attr">#[test]
         </span><span class="kw">fn </span>patch_script_with_shebang() {
             <span class="kw">let </span><span class="kw-2">mut </span>original_file = tempfile::NamedTempFile::new().unwrap();
-            <span class="kw">let </span>patched_path = temp_dir().join(original_file.path().strip_prefix(<span class="string">&quot;/&quot;</span>).unwrap());
+            <span class="kw">let </span>patched_path =
+                env::temp_dir().join(original_file.path().strip_prefix(<span class="string">&quot;/&quot;</span>).unwrap());
             original_file
                 .write_all(<span class="string">&quot;#!/usr/bin/env bash\n&quot;</span>.as_ref())
                 .unwrap();
@@ -1299,6 +1404,27 @@
             script.flush().unwrap();
             <span class="kw">let </span>res = sip_patch(script.path().to_str().unwrap(), <span class="kw-2">&amp;</span>Vec::new());
             <span class="macro">assert!</span>(<span class="macro">matches!</span>(res, <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)));
+        }
+
+        <span class="attr">#[test]
+        </span><span class="kw">fn </span>set_fallback_frameworks_path() {
+            <span class="kw">let </span>example_path = <span class="string">&quot;/Applications/Postman.app/Contents/MacOS/Postman&quot;</span>;
+            <span class="kw">let </span>frameworks_path = <span class="string">&quot;/Applications/Postman.app/Contents/Frameworks&quot;</span>;
+            <span class="kw">let </span>is_frameworks_path = |<span class="kw-2">&amp;</span>path: <span class="kw-2">&amp;</span><span class="lifetime">&#39;_ </span><span class="kw-2">&amp;</span>str| path == frameworks_path;
+
+            <span class="comment">// Verify that the path was not there before.
+            </span><span class="macro">assert!</span>(!env::var(FRAMEWORKS_ENV_VAR_NAME)
+                .map(|value| value.split(<span class="string">&quot;:&quot;</span>).find(is_frameworks_path).is_some())
+                .unwrap_or_default());
+
+            set_fallback_frameworks_path_if_mac_app(Path::new(example_path));
+
+            <span class="comment">// Verify that the path is there after.
+            </span><span class="macro">assert!</span>(env::var(FRAMEWORKS_ENV_VAR_NAME)
+                .unwrap()
+                .split(<span class="string">&quot;:&quot;</span>)
+                .find(is_frameworks_path)
+                .is_some());
         }
     }
 }

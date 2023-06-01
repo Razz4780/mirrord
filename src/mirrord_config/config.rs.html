@@ -62,6 +62,11 @@
 <a href="#62" id="62">62</a>
 <a href="#63" id="63">63</a>
 <a href="#64" id="64">64</a>
+<a href="#65" id="65">65</a>
+<a href="#66" id="66">66</a>
+<a href="#67" id="67">67</a>
+<a href="#68" id="68">68</a>
+<a href="#69" id="69">69</a>
 </pre><pre class="rust"><code><span class="kw">pub mod </span>deprecated;
 <span class="kw">pub mod </span>from_env;
 <span class="kw">pub mod </span>source;
@@ -69,7 +74,8 @@
 
 <span class="kw">use </span>thiserror::Error;
 
-<span class="doccomment">/// Error that would be returned from [MirrordConfig::generate_config]
+<span class="doccomment">/// &lt;!--${internal}--&gt;
+/// Error that would be returned from [MirrordConfig::generate_config]
 </span><span class="attr">#[derive(Error, Debug)]
 </span><span class="kw">pub enum </span>ConfigError {
     <span class="attr">#[error(<span class="string">&quot;invalid target provided `{0}`!&quot;</span>)]
@@ -102,12 +108,15 @@
 
 <span class="kw">pub type </span><span class="prelude-ty">Result</span>&lt;T, E = ConfigError&gt; = std::result::Result&lt;T, E&gt;;
 
-<span class="doccomment">/// Main configuration creation trait of mirrord-config
+<span class="doccomment">/// &lt;!--${internal}--&gt;
+/// Main configuration creation trait of mirrord-config
 </span><span class="kw">pub trait </span>MirrordConfig {
-    <span class="doccomment">/// The resulting struct you plan on using in the rest of your code
+    <span class="doccomment">/// &lt;!--${internal}--&gt;
+    /// The resulting struct you plan on using in the rest of your code
     </span><span class="kw">type </span>Generated;
 
-    <span class="doccomment">/// Load configuration from all sources and output as [Self::Generated]
+    <span class="doccomment">/// &lt;!--${internal}--&gt;
+    /// Load configuration from all sources and output as [Self::Generated]
     </span><span class="kw">fn </span>generate_config(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Generated&gt;;
 }
 
@@ -122,7 +131,8 @@
     }
 }
 
-<span class="doccomment">/// Lookup trait for accessing type implementing [MirrordConfig] from [MirrordConfig::Generated]
+<span class="doccomment">/// &lt;!--${internal}--&gt;
+/// Lookup trait for accessing type implementing [MirrordConfig] from [MirrordConfig::Generated]
 </span><span class="kw">pub trait </span>FromMirrordConfig {
     <span class="kw">type </span>Generator: MirrordConfig;
 }

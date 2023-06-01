@@ -400,7 +400,7 @@
 </span><span class="kw">use </span>std::{env, sync::OnceLock};
 
 <span class="kw">use </span>mirrord_config::{
-    fs::{FsConfig, FsModeConfig},
+    feature::fs::{FsConfig, FsModeConfig},
     util::VecOrSingle,
 };
 <span class="kw">use </span>regex::{RegexSet, RegexSetBuilder};
@@ -625,7 +625,7 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-    <span class="kw">use </span>mirrord_config::{fs::FsConfig, util::VecOrSingle};
+    <span class="kw">use </span>mirrord_config::{feature::fs::FsConfig, util::VecOrSingle};
     <span class="kw">use </span>rstest::<span class="kw-2">*</span>;
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;

@@ -146,6 +146,90 @@
 <a href="#146" id="146">146</a>
 <a href="#147" id="147">147</a>
 <a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::collections::HashMap;
 
 <span class="kw">use </span>mirrord_config_derive::MirrordConfig;
@@ -154,78 +238,161 @@
 <span class="kw">use </span><span class="kw">crate</span>::config::source::MirrordConfigSource;
 
 <span class="doccomment">/// Configuration for the mirrord-agent pod that is spawned in the Kubernetes cluster.
+///
+/// We provide sane defaults for this option, so you don&#39;t have to set up anything here.
+///
+/// ```json
+/// {
+///   &quot;agent&quot;: {
+///     &quot;log_level&quot;: &quot;info&quot;,
+///     &quot;namespace&quot;: &quot;default&quot;,
+///     &quot;image&quot;: &quot;ghcr.io/metalbear-co/mirrord:latest&quot;,
+///     &quot;image_pull_policy&quot;: &quot;IfNotPresent&quot;,
+///     &quot;image_pull_secrets&quot;: [ { &quot;secret-key&quot;: &quot;secret&quot; } ],
+///     &quot;ttl&quot;: 30,
+///     &quot;ephemeral&quot;: false,
+///     &quot;communication_timeout&quot;: 30,
+///     &quot;startup_timeout&quot;: 360,
+///     &quot;network_interface&quot;: &quot;eth0&quot;,
+///     &quot;pause&quot;: false,
+///     &quot;flush_connections&quot;: false,
+///   }
+/// }
+/// ```
 </span><span class="attr">#[derive(MirrordConfig, Clone, Debug)]
 #[config(map_to = <span class="string">&quot;AgentFileConfig&quot;</span>, derive = <span class="string">&quot;JsonSchema&quot;</span>)]
 #[cfg_attr(test, config(derive = <span class="string">&quot;PartialEq, Eq&quot;</span>))]
 </span><span class="kw">pub struct </span>AgentConfig {
-    <span class="doccomment">/// Log level for the agent.
+    <span class="doccomment">/// ### agent.log_level {#agent-log_level}
     ///
-    /// Supports anything that would work with `RUST_LOG`.
+    /// Log level for the agent.
+    ///
+    ///
+    /// Supports `&quot;trace&quot;`, `&quot;debug&quot;`, `&quot;info&quot;`, `&quot;warn&quot;`, `&quot;error&quot;`, or any string that would work
+    /// with `RUST_LOG`.
+    ///
+    /// ```json
+    /// {
+    ///   &quot;agent&quot;: {
+    ///     &quot;log_level&quot;: &quot;mirrord=debug,warn&quot;
+    ///   }
+    /// }
+    /// ```
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_AGENT_RUST_LOG&quot;</span>, default = <span class="string">&quot;info&quot;</span>)]
     </span><span class="kw">pub </span>log_level: String,
 
-    <span class="doccomment">/// Namespace where the agent shall live.
+    <span class="doccomment">/// ### agent.namespace {#agent-namespace}
+    ///
+    /// Namespace where the agent shall live.
     ///
     /// Defaults to the current kubernetes namespace.
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_AGENT_NAMESPACE&quot;</span>)]
     </span><span class="kw">pub </span>namespace: <span class="prelude-ty">Option</span>&lt;String&gt;,
 
-    <span class="doccomment">/// Name of the agent&#39;s docker image.
+    <span class="doccomment">/// ### agent.image {#agent-image}
+    ///
+    /// Name of the agent&#39;s docker image.
     ///
     /// Useful when a custom build of mirrord-agent is required, or when using an internal
     /// registry.
     ///
-    /// Defaults to the latest stable image.
+    /// Defaults to the latest stable image `&quot;ghcr.io/metalbear-co/mirrord:latest&quot;`.
+    ///
+    /// ```json
+    /// {
+    ///   &quot;agent&quot;: {
+    ///     &quot;image&quot;: &quot;internal.repo/images/mirrord:latest&quot;
+    ///   }
+    /// }
+    /// ```
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_AGENT_IMAGE&quot;</span>)]
     </span><span class="kw">pub </span>image: <span class="prelude-ty">Option</span>&lt;String&gt;,
 
-    <span class="doccomment">/// Controls when a new agent image is downloaded.
+    <span class="doccomment">/// ### agent.image_pull_policy {#agent-image_pull_policy}
     ///
-    /// Supports any valid kubernetes [image pull
-    /// policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy)
+    /// Controls when a new agent image is downloaded.
+    ///
+    /// Supports `&quot;IfNotPresent&quot;`, `&quot;Always&quot;`, `&quot;Never&quot;`, or any valid kubernetes
+    /// [image pull policy](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy)
+    ///
+    /// Defaults to `&quot;IfNotPresent&quot;`
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_AGENT_IMAGE_PULL_POLICY&quot;</span>, default = <span class="string">&quot;IfNotPresent&quot;</span>)]
     </span><span class="kw">pub </span>image_pull_policy: String,
 
-    <span class="doccomment">/// List of secrets the agent pod has access to.
+    <span class="doccomment">/// ### agent.image_pull_secrets {#agent-image_pull_secrets}
     ///
-    /// Takes an array of hash with the format `{ name: &lt;secret-name&gt; }`. Read more [here](https://kubernetes.io/docs/concepts/containers/images/).
+    /// List of secrets the agent pod has access to.
+    ///
+    /// Takes an array of hash with the format `{ name: &lt;secret-name&gt; }`.
+    ///
+    /// Read more [here](https://kubernetes.io/docs/concepts/containers/images/).
+    ///
+    /// ```json
+    /// {
+    ///   &quot;agent&quot;: {
+    ///     &quot;image_pull_secrets&quot;: [
+    ///       { &quot;very-secret&quot;: &quot;secret-key&quot; },
+    ///       { &quot;very-secret&quot;: &quot;keep-your-secrets&quot; }
+    ///     ]
+    ///   }
+    /// }
+    /// ```
     </span><span class="kw">pub </span>image_pull_secrets: <span class="prelude-ty">Option</span>&lt;Vec&lt;HashMap&lt;String, String&gt;&gt;&gt;,
 
-    <span class="doccomment">/// Controls how long the agent pod persists for after the agent exits (in seconds).
+    <span class="doccomment">/// ### agent.ttl {#agent-ttl}
+    ///
+    /// Controls how long the agent pod persists for after the agent exits (in seconds).
     ///
     /// Can be useful for collecting logs.
+    ///
+    /// Defaults to `1`.
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_AGENT_TTL&quot;</span>, default = <span class="number">1</span>)]
     </span><span class="kw">pub </span>ttl: u16,
 
-    <span class="doccomment">/// Runs the agent as an [ephemeral
-    /// container](https://kubernetes.io/docs/concepts/workloads/pods/ephemeral-containers/)
+    <span class="doccomment">/// ### agent.ephemeral {#agent-ephemeral}
+    ///
+    /// Runs the agent as an
+    /// [ephemeral container](https://kubernetes.io/docs/concepts/workloads/pods/ephemeral-containers/)
+    ///
+    /// Defaults to `false`.
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_EPHEMERAL_CONTAINER&quot;</span>, default = <span class="bool-val">false</span>)]
     </span><span class="kw">pub </span>ephemeral: bool,
 
-    <span class="doccomment">/// Controls how long the agent lives when there are no connections.
+    <span class="doccomment">/// ### agent.communication_timeout {#agent-communication_timeout}
+    ///
+    /// Controls how long the agent lives when there are no connections.
     ///
     /// Each connection has its own heartbeat mechanism, so even if the local application has no
     /// messages, the agent stays alive until there are no more heartbeat messages.
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_AGENT_COMMUNICATION_TIMEOUT&quot;</span>)]
     </span><span class="kw">pub </span>communication_timeout: <span class="prelude-ty">Option</span>&lt;u16&gt;,
 
-    <span class="doccomment">/// Controls how long to wait for the agent to finish initialization.
+    <span class="doccomment">/// ### agent.startup_timeout {#agent-startup_timeout}
+    ///
+    /// Controls how long to wait for the agent to finish initialization.
     ///
     /// If initialization takes longer than this value, mirrord exits.
+    ///
+    /// Defaults to `60`.
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_AGENT_STARTUP_TIMEOUT&quot;</span>, default = <span class="number">60</span>)]
     </span><span class="kw">pub </span>startup_timeout: u64,
 
-    <span class="doccomment">/// Which network interface to use for mirroring.
+    <span class="doccomment">/// ### agent.network_interface {#agent-network_interface}
     ///
-    /// The default behavior is try to access the internet and use that interface
-    /// and if that fails it uses eth0.
+    /// Which network interface to use for mirroring.
+    ///
+    /// The default behavior is try to access the internet and use that interface. If that fails
+    /// it uses `eth0`.
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_AGENT_NETWORK_INTERFACE&quot;</span>)]
     </span><span class="kw">pub </span>network_interface: <span class="prelude-ty">Option</span>&lt;String&gt;,
 
-    <span class="doccomment">/// Flushes existing connections when starting to steal, might fix issues where connections
+    <span class="doccomment">/// ### agent.flush_connections {#agent-flush_connections}
+    ///
+    /// Flushes existing connections when starting to steal, might fix issues where connections
     /// aren&#39;t stolen (due to being already established)
     ///
-    /// Temporary fix for issue [#1029](https://github.com/metalbear-co/mirrord/issues/1029).
+    /// Defaults to `true`.
+    </span><span class="comment">// Temporary fix for issue [#1029](https://github.com/metalbear-co/mirrord/issues/1029).
     </span><span class="attr">#[config(
         env = <span class="string">&quot;MIRRORD_AGENT_STEALER_FLUSH_CONNECTIONS&quot;</span>,
         default = <span class="bool-val">true</span>,
@@ -233,7 +400,8 @@
     )]
     </span><span class="kw">pub </span>flush_connections: bool,
 
-    <span class="doccomment">/// Create an agent that returns an error after accepting the first client. For testing
+    <span class="doccomment">/// &lt;!--${internal}--&gt;
+    /// Create an agent that returns an error after accepting the first client. For testing
     /// purposes. Only supported with job agents (not with ephemeral agents).
     </span><span class="attr">#[cfg(all(debug_assertions, not(test)))] </span><span class="comment">// not(test) so that it&#39;s not included in the schema json.
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_AGENT_TEST_ERROR&quot;</span>, default = <span class="bool-val">false</span>, unstable)]
