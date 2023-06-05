@@ -446,7 +446,7 @@
     std::thread::spawn(<span class="kw">move </span>|| {
         on_start_fn();
 
-        <span class="kw">let </span>rt = tokio::runtime::Builder::new_multi_thread()
+        <span class="kw">let </span>rt = tokio::runtime::Builder::new_current_thread()
             .enable_all()
             .thread_name(thread_name)
             .on_thread_start(on_start_fn)
