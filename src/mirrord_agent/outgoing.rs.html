@@ -231,6 +231,15 @@
 <a href="#231" id="231">231</a>
 <a href="#232" id="232">232</a>
 <a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
+<a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::{collections::HashMap, thread, time::Duration};
 
 <span class="kw">use </span>mirrord_protocol::{
@@ -418,12 +427,21 @@
                     <span class="macro">trace!</span>(<span class="string">&quot;interceptor_task -&gt; read connection_id {:#?}&quot;</span>, connection_id);
 
                     <span class="kw">match </span>remote_read {
-                        <span class="prelude-val">Some</span>(read) =&gt; {
-                            <span class="kw">let </span>daemon_read = read
-                                .map_err(ResponseError::from)
-                                .map(|bytes| DaemonRead { connection_id, bytes: bytes.to_vec() });
+                        <span class="comment">// TODO: PROTOCOL
+                        // We shouldn&#39;t return it as a `Result&lt;T, ResponseError&gt;` since we lose track of connection id
+                        // and it doesn&#39;t really make sense to do it, but we don&#39;t want to break the protocol
+                        // so we&#39;ll still wrap it with Ok() and if we error we just close the connection.
+                        </span><span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(read)) =&gt; {
+                            <span class="kw">let </span>daemon_read = DaemonRead { connection_id, bytes: read.to_vec() };
 
-                            <span class="kw">let </span>daemon_message = DaemonTcpOutgoing::Read(daemon_read);
+                            <span class="kw">let </span>daemon_message = DaemonTcpOutgoing::Read(<span class="prelude-val">Ok</span>(daemon_read));
+                            daemon_tx.send(daemon_message).<span class="kw">await</span><span class="question-mark">?
+                        </span>},
+                        <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(err)) =&gt; {
+                            <span class="macro">warn!</span>(<span class="string">&quot;interceptor_task -&gt; read connection_id {:#?} failed with {:#?}&quot;</span>, connection_id, err);
+                            writers.remove(<span class="kw-2">&amp;</span>connection_id);
+
+                            <span class="kw">let </span>daemon_message = DaemonTcpOutgoing::Close(connection_id);
                             daemon_tx.send(daemon_message).<span class="kw">await</span><span class="question-mark">?
                         </span>}
                         <span class="prelude-val">None </span>=&gt; {

@@ -979,6 +979,11 @@
 <a href="#979" id="979">979</a>
 <a href="#980" id="980">980</a>
 <a href="#981" id="981">981</a>
+<a href="#982" id="982">982</a>
+<a href="#983" id="983">983</a>
+<a href="#984" id="984">984</a>
+<a href="#985" id="985">985</a>
+<a href="#986" id="986">986</a>
 </pre><pre class="rust"><code><span class="attr">#![feature(stmt_expr_attributes)]
 #![warn(clippy::indexing_slicing)]
 
@@ -1001,7 +1006,7 @@
         time::Duration,
     };
 
-    <span class="kw">use </span>chrono::Utc;
+    <span class="kw">use </span>chrono::{Timelike, Utc};
     <span class="kw">use </span>futures_util::stream::TryStreamExt;
     <span class="kw">use </span>k8s_openapi::api::{
         apps::v1::Deployment,
@@ -1065,6 +1070,12 @@
             .map(char::from)
             .collect::&lt;String&gt;()
             .to_ascii_lowercase()
+    }
+
+    <span class="doccomment">/// Returns string with time format of hh:mm:ss
+    </span><span class="kw">fn </span>format_time() -&gt; String {
+        <span class="kw">let </span>now = Utc::now();
+        <span class="macro">format!</span>(<span class="string">&quot;{:02}:{:02}:{:02}&quot;</span>, now.hour(), now.minute(), now.second())
     }
 
     <span class="attr">#[derive(Debug)]
@@ -1168,7 +1179,7 @@
                     }
 
                     <span class="kw">let </span>string = String::from_utf8_lossy(<span class="kw-2">&amp;</span>buf[..n]);
-                    <span class="macro">eprintln!</span>(<span class="string">&quot;stderr {:?} {pid}: {}&quot;</span>, Utc::now(), string);
+                    <span class="macro">eprintln!</span>(<span class="string">&quot;stderr {} {pid}: {}&quot;</span>, format_time(), string);
                     {
                         stderr_data_reader.lock().unwrap().push_str(<span class="kw-2">&amp;</span>string);
                     }
@@ -1183,7 +1194,7 @@
                         <span class="kw">break</span>;
                     }
                     <span class="kw">let </span>string = String::from_utf8_lossy(<span class="kw-2">&amp;</span>buf[..n]);
-                    <span class="macro">println!</span>(<span class="string">&quot;stdout {:?} {pid}: {}&quot;</span>, Utc::now(), string);
+                    <span class="macro">print!</span>(<span class="string">&quot;stdout {} {pid}: {}&quot;</span>, format_time(), string);
                     {
                         stdout_data_reader.lock().unwrap().push_str(<span class="kw-2">&amp;</span>string);
                     }
@@ -1534,10 +1545,9 @@
         <span class="attr">#[future] </span>kube_client: Client,
     ) -&gt; KubeService {
         <span class="kw">let </span>delete_after_fail = std::env::var_os(PRESERVE_FAILED_ENV_NAME).is_none();
-
         <span class="macro">println!</span>(
-            <span class="string">&quot;{:?} creating service {service_name:?} in namespace {namespace:?}&quot;</span>,
-            Utc::now()
+            <span class="string">&quot;{} creating service {service_name:?} in namespace {namespace:?}&quot;</span>,
+            format_time()
         );
 
         <span class="kw">let </span>kube_client = kube_client.<span class="kw">await</span>;

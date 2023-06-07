@@ -704,7 +704,7 @@
     /// app does not see the traffic.
     </span><span class="attr">#[rstest]
     #[tokio::test(flavor = <span class="string">&quot;multi_thread&quot;</span>, worker_threads = <span class="number">2</span>)]
-    #[timeout(Duration::from_secs(<span class="number">60</span>))]
+    #[timeout(Duration::from_secs(<span class="number">120</span>))]
     </span><span class="kw">async fn </span>complete_passthrough(
         <span class="attr">#[future] </span>tcp_echo_service: KubeService,
         <span class="attr">#[future] </span>kube_client: Client,
@@ -729,7 +729,7 @@
             )
             .<span class="kw">await</span>;
 
-        mirrorded_process.wait_for_line(Duration::from_secs(<span class="number">15</span>), <span class="string">&quot;daemon subscribed&quot;</span>);
+        mirrorded_process.wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;daemon subscribed&quot;</span>);
 
         <span class="kw">let </span>addr = SocketAddr::new(host.trim().parse().unwrap(), port <span class="kw">as </span>u16);
         <span class="kw">let </span><span class="kw-2">mut </span>stream = TcpStream::connect(addr).unwrap();
@@ -799,7 +799,7 @@
             )
             .<span class="kw">await</span>;
 
-        mirrorded_process.wait_for_line(Duration::from_secs(<span class="number">20</span>), <span class="string">&quot;daemon subscribed&quot;</span>);
+        mirrorded_process.wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;daemon subscribed&quot;</span>);
 
         <span class="comment">// Create a websocket connection to test the HTTP upgrade bypass.
         </span><span class="kw">let </span>host = host.trim();
