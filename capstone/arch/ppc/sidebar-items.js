@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["ArchExtraMode","ArchMode","ArchSyntax","PpcBc","PpcBh","PpcInsn","PpcOperand"],"mod":["PpcInsnGroup","PpcReg"],"struct":["ArchCapstoneBuilder","PpcInsnDetail","PpcOpCrx","PpcOpMem","PpcOperandIterator"]};

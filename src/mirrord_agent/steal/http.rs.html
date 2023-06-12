@@ -215,6 +215,11 @@
 <a href="#215" id="215">215</a>
 <a href="#216" id="216">216</a>
 <a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Home for most of the HTTP stealer implementation / modules.
 //!
 //! # [`HttpV`]
@@ -230,7 +235,6 @@
 
 <span class="kw">use </span>bytes::Bytes;
 <span class="kw">use </span>dashmap::DashMap;
-<span class="kw">use </span>fancy_regex::Regex;
 <span class="kw">use </span>http_body_util::Full;
 <span class="kw">use </span>hyper::{body::Incoming, Request, Response};
 <span class="kw">use </span>mirrord_protocol::ConnectionId;
@@ -254,6 +258,8 @@
 <span class="kw">mod </span>reversible_stream;
 <span class="kw">mod </span>v1;
 <span class="kw">mod </span>v2;
+
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use </span>filter::HttpFilter;
 
 <span class="doccomment">/// Handy alias due to [`ReversibleStream`] being generic, avoiding value mismatches.
 </span><span class="kw">type </span>DefaultReversibleStream = ReversibleStream&lt;MINIMAL_HEADER_SIZE&gt;;
@@ -282,7 +288,7 @@
         stream: DefaultReversibleStream,
         original_destination: SocketAddr,
         connection_id: ConnectionId,
-        filters: Arc&lt;DashMap&lt;ClientId, Regex&gt;&gt;,
+        filters: Arc&lt;DashMap&lt;ClientId, HttpFilter&gt;&gt;,
         matched_tx: Sender&lt;HandlerHttpRequest&gt;,
         connection_close_sender: Sender&lt;ConnectionId&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(), HttpTrafficError&gt;;
@@ -356,7 +362,7 @@
 </span><span class="attr">#[derive(Debug)]
 </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">struct </span>HttpFilterManager {
     <span class="doccomment">/// Filters that we&#39;re going to be matching against (specified by the user).
-    </span>client_filters: Arc&lt;DashMap&lt;ClientId, Regex&gt;&gt;,
+    </span>client_filters: Arc&lt;DashMap&lt;ClientId, HttpFilter&gt;&gt;,
 
     <span class="doccomment">/// We clone this to pass them down to the hyper tasks.
     </span>matched_tx: Sender&lt;HandlerHttpRequest&gt;,
@@ -370,10 +376,10 @@
     </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(matched_tx))]
     </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>new(
         client_id: ClientId,
-        filter: Regex,
+        filter: HttpFilter,
         matched_tx: Sender&lt;HandlerHttpRequest&gt;,
     ) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>client_filters = Arc::new(DashMap::with_capacity(<span class="number">128</span>));
+        <span class="kw">let </span>client_filters = Arc::new(DashMap::new());
         client_filters.insert(client_id, filter);
 
         <span class="self">Self </span>{
@@ -387,7 +393,11 @@
     /// [`HttpFilterManager::client_filters`] are shared between hyper tasks, so adding a new one
     /// here will impact the tasks as well.
     </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(<span class="self">self</span>))]
-    </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>add_client(<span class="kw-2">&amp;mut </span><span class="self">self</span>, client_id: ClientId, filter: Regex) -&gt; <span class="prelude-ty">Option</span>&lt;Regex&gt; {
+    </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>add_client(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        client_id: ClientId,
+        filter: HttpFilter,
+    ) -&gt; <span class="prelude-ty">Option</span>&lt;HttpFilter&gt; {
         <span class="self">self</span>.client_filters.insert(client_id, filter)
     }
 
@@ -396,7 +406,7 @@
     /// [`HttpFilterManager::client_filters`] are shared between hyper tasks, so removing a client
     /// here will impact the tasks as well.
     </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(<span class="self">self</span>))]
-    </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>remove_client(<span class="kw-2">&amp;mut </span><span class="self">self</span>, client_id: <span class="kw-2">&amp;</span>ClientId) -&gt; <span class="prelude-ty">Option</span>&lt;(ClientId, Regex)&gt; {
+    </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>remove_client(<span class="kw-2">&amp;mut </span><span class="self">self</span>, client_id: <span class="kw-2">&amp;</span>ClientId) -&gt; <span class="prelude-ty">Option</span>&lt;(ClientId, HttpFilter)&gt; {
         <span class="self">self</span>.client_filters.remove(client_id)
     }
 

@@ -246,15 +246,6 @@
 <a href="#246" id="246">246</a>
 <a href="#247" id="247">247</a>
 <a href="#248" id="248">248</a>
-<a href="#249" id="249">249</a>
-<a href="#250" id="250">250</a>
-<a href="#251" id="251">251</a>
-<a href="#252" id="252">252</a>
-<a href="#253" id="253">253</a>
-<a href="#254" id="254">254</a>
-<a href="#255" id="255">255</a>
-<a href="#256" id="256">256</a>
-<a href="#257" id="257">257</a>
 </pre><pre class="rust"><code><span class="doccomment">//! The core part of the whole HTTP traffic stealing feature.
 //!
 //! # [`HyperHandler`]
@@ -265,7 +256,6 @@
 
 <span class="kw">use </span>bytes::Bytes;
 <span class="kw">use </span>dashmap::DashMap;
-<span class="kw">use </span>fancy_regex::Regex;
 <span class="kw">use </span>futures::TryFutureExt;
 <span class="kw">use </span>http_body_util::{BodyExt, Full};
 <span class="kw">use </span>hyper::{
@@ -280,7 +270,11 @@
 };
 <span class="kw">use </span>tracing::error;
 
-<span class="kw">use super</span>::{error::HttpTrafficError, HttpV};
+<span class="kw">use super</span>::{
+    error::HttpTrafficError,
+    filter::{HttpFilter, RequestMatch},
+    HttpV,
+};
 <span class="kw">use crate</span>::{
     steal::{HandlerHttpRequest, MatchedHttpRequest},
     util::ClientId,
@@ -299,7 +293,7 @@
 {
     <span class="doccomment">/// The (shared with the stealer) HTTP filter regexes that are used to filter traffic for this
     /// particular connection.
-    </span><span class="kw">pub</span>(<span class="kw">super</span>) filters: Arc&lt;DashMap&lt;ClientId, Regex&gt;&gt;,
+    </span><span class="kw">pub</span>(<span class="kw">super</span>) filters: Arc&lt;DashMap&lt;ClientId, HttpFilter&gt;&gt;,
 
     <span class="doccomment">/// [`Sender`] part of the channel used to communicate with the agent that we have a
     /// [`MatchedHttpRequest`], and it should be forwarded to the layer.
@@ -333,31 +327,19 @@
     </span><span class="kw">pub</span>(<span class="kw">super</span>) unprocessed_bytes: Bytes,
 }
 
-<span class="doccomment">/// Checks if the [`Request`]&#39;s [`HeaderMap`] contains a header that matches any of the `filters`.
-</span><span class="kw">fn </span>header_matches(
+<span class="doccomment">/// Checks if the [`Request`]&#39;s  matches any of the `filters`.
+</span><span class="kw">fn </span>match_request(
     request: <span class="kw-2">&amp;</span>Request&lt;Incoming&gt;,
-    filters: <span class="kw-2">&amp;</span>Arc&lt;DashMap&lt;ClientId, Regex&gt;&gt;,
+    filters: <span class="kw-2">&amp;</span>Arc&lt;DashMap&lt;ClientId, HttpFilter&gt;&gt;,
 ) -&gt; <span class="prelude-ty">Option</span>&lt;ClientId&gt; {
-    request
-        .headers()
-        .iter()
-        .map(|(header_name, header_value)| {
-            header_value
-                .to_str()
-                .map(|header_value| <span class="macro">format!</span>(<span class="string">&quot;{header_name}: {header_value}&quot;</span>))
-        })
-        .find_map(|header| {
-            filters.iter().find_map(|filter| {
-                filter
-                    .is_match(
-                        header
-                            .as_ref()
-                            .expect(<span class="string">&quot;The header value has to be convertible to `String`!&quot;</span>),
-                    )
-                    .expect(<span class="string">&quot;Something went wrong in the regex matcher!&quot;</span>)
-                    .then_some(<span class="kw-2">*</span>filter.key())
-            })
-        })
+    <span class="kw">let </span><span class="kw-2">mut </span>request = request.into();
+    filters.iter().find_map(|entry| {
+        <span class="kw">if </span>entry.value().matches(<span class="kw-2">&amp;mut </span>request) {
+            <span class="prelude-val">Some</span>(<span class="kw-2">*</span>entry.key())
+        } <span class="kw">else </span>{
+            <span class="prelude-val">None
+        </span>}
+    })
 }
 
 <span class="doccomment">/// Remove headers that would be invalid due to us fiddling with the `body`, and rebuilds the
@@ -489,7 +471,7 @@
         request: Request&lt;Incoming&gt;,
         original_destination: SocketAddr,
         upgrade_tx: <span class="prelude-ty">Option</span>&lt;oneshot::Sender&lt;RawHyperConnection&gt;&gt;,
-        filters: Arc&lt;DashMap&lt;ClientId, Regex&gt;&gt;,
+        filters: Arc&lt;DashMap&lt;ClientId, HttpFilter&gt;&gt;,
         port: Port,
         connection_id: ConnectionId,
         request_id: RequestId,
@@ -497,7 +479,7 @@
     ) -&gt; <span class="prelude-ty">Result</span>&lt;Response&lt;Full&lt;Bytes&gt;&gt;, HttpTrafficError&gt; {
         <span class="kw">if </span>V::is_upgrade(<span class="kw-2">&amp;</span>request) {
             <span class="self">Self</span>::unmatched_request(request, upgrade_tx, original_destination).<span class="kw">await
-        </span>} <span class="kw">else if let </span><span class="prelude-val">Some</span>(client_id) = header_matches(<span class="kw-2">&amp;</span>request, <span class="kw-2">&amp;</span>filters) {
+        </span>} <span class="kw">else if let </span><span class="prelude-val">Some</span>(client_id) = match_request(<span class="kw-2">&amp;</span>request, <span class="kw-2">&amp;</span>filters) {
             <span class="kw">let </span>request = MatchedHttpRequest {
                 port,
                 connection_id,

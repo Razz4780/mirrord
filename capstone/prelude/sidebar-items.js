@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":["Capstone","InsnDetail","InsnGroupId","InsnId","RegId"],"type":["CsResult","InsnGroupIdInt","InsnIdInt","RegIdInt"]};

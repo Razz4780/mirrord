@@ -212,7 +212,6 @@
 <a href="#212" id="212">212</a>
 <a href="#213" id="213">213</a>
 <a href="#214" id="214">214</a>
-<a href="#215" id="215">215</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Holds the implementation of [`Service`] for [`HyperHandler`] (HTTP/1).
 //!
 //! # [`HttpV1`]
@@ -223,7 +222,6 @@
 
 <span class="kw">use </span>bytes::Bytes;
 <span class="kw">use </span>dashmap::DashMap;
-<span class="kw">use </span>fancy_regex::Regex;
 <span class="kw">use </span>futures::TryFutureExt;
 <span class="kw">use </span>http_body_util::Full;
 <span class="kw">use </span>hyper::{
@@ -246,7 +244,7 @@
 <span class="kw">use super</span>::{
     filter::close_connection,
     hyper_handler::{collect_response, prepare_response, HyperHandler},
-    DefaultReversibleStream, HttpV, RawHyperConnection,
+    DefaultReversibleStream, HttpFilter, HttpV, RawHyperConnection,
 };
 <span class="kw">use crate</span>::{
     steal::{http::error::HttpTrafficError, HandlerHttpRequest},
@@ -276,7 +274,7 @@
         stream: DefaultReversibleStream,
         original_destination: SocketAddr,
         connection_id: ConnectionId,
-        filters: Arc&lt;DashMap&lt;ClientId, Regex&gt;&gt;,
+        filters: Arc&lt;DashMap&lt;ClientId, HttpFilter&gt;&gt;,
         matched_tx: Sender&lt;HandlerHttpRequest&gt;,
         connection_close_sender: Sender&lt;ConnectionId&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(), HttpTrafficError&gt; {
@@ -386,7 +384,7 @@
     <span class="doccomment">/// Creates a new [`HyperHandler`] specifically tuned to handle HTTP/1 requests.
     </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>)]
     </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>new(
-        filters: Arc&lt;DashMap&lt;ClientId, Regex&gt;&gt;,
+        filters: Arc&lt;DashMap&lt;ClientId, HttpFilter&gt;&gt;,
         matched_tx: Sender&lt;HandlerHttpRequest&gt;,
         connection_id: ConnectionId,
         port: Port,

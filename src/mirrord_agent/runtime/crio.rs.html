@@ -109,12 +109,31 @@
 <a href="#109" id="109">109</a>
 <a href="#110" id="110">110</a>
 <a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
 </pre><pre class="rust"><code><span class="kw">use </span>bytes::Bytes;
 <span class="kw">use </span>futures::TryFutureExt;
 <span class="kw">use </span>http::{Request, Response};
 <span class="kw">use </span>http_body_util::{BodyExt, Empty};
 <span class="kw">use </span>hyper::{body::Incoming, client::conn};
 <span class="kw">use </span>k8s_cri::v1alpha2::{runtime_service_client::RuntimeServiceClient, ContainerStatusRequest};
+<span class="kw">use </span>serde::Deserialize;
 <span class="kw">use </span>tokio::net::UnixStream;
 <span class="kw">use </span>tonic::transport::{Endpoint, Uri};
 <span class="kw">use </span>tower::service_fn;
@@ -130,6 +149,11 @@
 <span class="attr">#[derive(Debug)]
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>CriOContainer {
     <span class="kw">pub </span>container_id: String,
+}
+
+<span class="attr">#[derive(Deserialize, Debug)]
+</span><span class="kw">struct </span>ContainerStatus {
+    pid: u64,
 }
 
 <span class="kw">impl </span>CriOContainer {
@@ -178,11 +202,23 @@
             .<span class="kw">await</span><span class="question-mark">?
             </span>.into_inner();
 
-        <span class="kw">let </span>pid: u64 = status
-            .info
-            .get(<span class="string">&quot;pid&quot;</span>)
-            .and_then(|val| val.parse().ok())
-            .ok_or(AgentError::MissingContainerInfo)<span class="question-mark">?</span>;
+        <span class="comment">// Not sure if the `.get(&quot;pid&quot;)` logic works as on OpenShift
+        // we observed that the `pid` exists in the `info` field which is JSON encoded.
+        // for now we&#39;re adding a fallback
+        </span><span class="kw">let </span>pid: u64 = <span class="kw">match </span>status.info.get(<span class="string">&quot;pid&quot;</span>) {
+            <span class="prelude-val">Some</span>(val) =&gt; val.parse().map_err(|err| {
+                AgentError::MissingContainerInfo(<span class="macro">format!</span>(<span class="string">&quot;Failed to parse pid: {err:?}&quot;</span>))
+            })<span class="question-mark">?</span>,
+            <span class="prelude-val">None </span>=&gt; {
+                <span class="kw">let </span>info_json = status.info.get(<span class="string">&quot;info&quot;</span>).ok_or_else(|| {
+                    AgentError::MissingContainerInfo(<span class="string">&quot;no info found in status&quot;</span>.into())
+                })<span class="question-mark">?</span>;
+                <span class="kw">let </span>info: ContainerStatus = serde_json::from_str(info_json).map_err(|err| {
+                    AgentError::MissingContainerInfo(<span class="macro">format!</span>(<span class="string">&quot;Failed to parse pid: {err:?}&quot;</span>))
+                })<span class="question-mark">?</span>;
+                info.pid
+            }
+        };
 
         <span class="prelude-val">Ok</span>(ContainerInfo::new(pid, Default::default()))
     }

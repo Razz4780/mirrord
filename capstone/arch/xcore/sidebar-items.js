@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["ArchExtraMode","ArchMode","ArchSyntax","XcoreInsn","XcoreOperand"],"mod":["XcoreInsnGroup","XcoreReg"],"struct":["ArchCapstoneBuilder","XcoreInsnDetail","XcoreOpMem","XcoreOperandIterator"]};

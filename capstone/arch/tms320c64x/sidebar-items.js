@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["ArchExtraMode","ArchMode","ArchSyntax","Tms320c64xFuntionalUnit","Tms320c64xInsn","Tms320c64xMemDirection","Tms320c64xMemDisplay","Tms320c64xMemDisplayType","Tms320c64xMemModify","Tms320c64xOperand"],"mod":["Tms320c64xInsnGroup","Tms320c64xReg"],"struct":["ArchCapstoneBuilder","Tms320c64xInsnDetail","Tms320c64xOpMem","Tms320c64xOperandIterator"]};

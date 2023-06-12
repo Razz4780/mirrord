@@ -320,17 +320,17 @@
 <span class="kw">use </span>actix_codec::{Decoder, Encoder};
 <span class="kw">use </span>bincode::{error::DecodeError, Decode, Encode};
 <span class="kw">use </span>bytes::{Buf, BufMut, BytesMut};
+<span class="kw">use </span>mirrord_macros::protocol_break;
 
-<span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
-</span><span class="kw">use </span><span class="kw">crate</span>::file::{GetDEnts64Request, GetDEnts64Response};
 <span class="kw">use crate</span>::{
     dns::{GetAddrInfoRequest, GetAddrInfoResponse},
     file::{
         AccessFileRequest, AccessFileResponse, CloseDirRequest, CloseFileRequest, FdOpenDirRequest,
-        OpenDirResponse, OpenFileRequest, OpenFileResponse, OpenRelativeFileRequest,
-        ReadDirRequest, ReadDirResponse, ReadFileRequest, ReadFileResponse, ReadLimitedFileRequest,
-        SeekFileRequest, SeekFileResponse, WriteFileRequest, WriteFileResponse,
-        WriteLimitedFileRequest, XstatFsRequest, XstatFsResponse, XstatRequest, XstatResponse,
+        GetDEnts64Request, GetDEnts64Response, OpenDirResponse, OpenFileRequest, OpenFileResponse,
+        OpenRelativeFileRequest, ReadDirRequest, ReadDirResponse, ReadFileRequest,
+        ReadFileResponse, ReadLimitedFileRequest, SeekFileRequest, SeekFileResponse,
+        WriteFileRequest, WriteFileResponse, WriteLimitedFileRequest, XstatFsRequest,
+        XstatFsResponse, XstatRequest, XstatResponse,
     },
     outgoing::{
         tcp::{DaemonTcpOutgoing, LayerTcpOutgoing},
@@ -391,8 +391,7 @@
     FdOpenDir(FdOpenDirRequest),
     ReadDir(ReadDirRequest),
     CloseDir(CloseDirRequest),
-    <span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
-    </span>GetDEnts64(GetDEnts64Request),
+    GetDEnts64(GetDEnts64Request),
 }
 
 <span class="doccomment">/// `-layer` --&gt; `-agent` messages.
@@ -427,11 +426,12 @@
     XstatFs(RemoteResult&lt;XstatFsResponse&gt;),
     ReadDir(RemoteResult&lt;ReadDirResponse&gt;),
     OpenDir(RemoteResult&lt;OpenDirResponse&gt;),
-    <span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
-    </span>GetDEnts64(RemoteResult&lt;GetDEnts64Response&gt;),
+    GetDEnts64(RemoteResult&lt;GetDEnts64Response&gt;),
 }
+
 <span class="doccomment">/// `-agent` --&gt; `-layer` messages.
 </span><span class="attr">#[derive(Encode, Decode, Debug, PartialEq, Eq, Clone)]
+#[protocol_break(<span class="number">2</span>)]
 </span><span class="kw">pub enum </span>DaemonMessage {
     Close(String),
     Tcp(DaemonTcp),

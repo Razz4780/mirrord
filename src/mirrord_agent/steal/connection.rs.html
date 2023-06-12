@@ -673,6 +673,9 @@
 <a href="#673" id="673">673</a>
 <a href="#674" id="674">674</a>
 <a href="#675" id="675">675</a>
+<a href="#676" id="676">676</a>
+<a href="#677" id="677">677</a>
+<a href="#678" id="678">678</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::{
     collections::HashSet,
     io,
@@ -704,7 +707,7 @@
     error::Result,
     steal::{
         connection::StealSubscription::{HttpFiltered, Unfiltered},
-        http::HttpFilterManager,
+        http::{HttpFilter, HttpFilterManager},
     },
     AgentError::{AgentInvariantViolated, HttpRequestReceiverClosed},
 };
@@ -1115,7 +1118,7 @@
                             <span class="prelude-val">Err</span>(PortAlreadyStolen(port))
                         }
                         <span class="prelude-val">Some</span>(HttpFiltered(manager)) =&gt; {
-                            manager.add_client(client_id, regex);
+                            manager.add_client(client_id, HttpFilter::new_header_filter(regex));
                             <span class="prelude-val">Ok</span>(port)
                         }
                         <span class="prelude-val">None </span>=&gt; {
@@ -1123,7 +1126,7 @@
 
                             <span class="kw">let </span>manager = HttpFiltered(HttpFilterManager::new(
                                 client_id,
-                                regex,
+                                HttpFilter::new_header_filter(regex),
                                 <span class="self">self</span>.http_request_sender.clone(),
                             ));
 
@@ -1133,6 +1136,9 @@
                     },
                     <span class="prelude-val">Err</span>(fail) =&gt; <span class="prelude-val">Err</span>(From::from(BadHttpFilterRegex(filter, fail.to_string()))),
                 }
+            }
+            StealType::FilteredHttpMany(_port, _filter) =&gt; {
+                <span class="macro">todo!</span>(<span class="string">&quot;advanced filter isn&#39;t implemented yet&quot;</span>);
             }
         };
 

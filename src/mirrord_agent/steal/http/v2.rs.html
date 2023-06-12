@@ -155,7 +155,6 @@
 <a href="#155" id="155">155</a>
 <a href="#156" id="156">156</a>
 <a href="#157" id="157">157</a>
-<a href="#158" id="158">158</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Holds the implementation of [`Service`] for [`HyperHandler`] (HTTP/2).
 //!
 //! # [`HttpV2`]
@@ -166,7 +165,6 @@
 
 <span class="kw">use </span>bytes::Bytes;
 <span class="kw">use </span>dashmap::DashMap;
-<span class="kw">use </span>fancy_regex::Regex;
 <span class="kw">use </span>futures::TryFutureExt;
 <span class="kw">use </span>http_body_util::Full;
 <span class="kw">use </span>hyper::{
@@ -184,7 +182,7 @@
 <span class="kw">use </span>tracing::error;
 
 <span class="kw">use super</span>::{
-    filter::{close_connection, TokioExecutor},
+    filter::{close_connection, HttpFilter, TokioExecutor},
     hyper_handler::{collect_response, prepare_response, HyperHandler},
     DefaultReversibleStream, HttpV, RawHyperConnection,
 };
@@ -206,7 +204,7 @@
         stream: DefaultReversibleStream,
         original_destination: SocketAddr,
         connection_id: ConnectionId,
-        filters: Arc&lt;DashMap&lt;ClientId, Regex&gt;&gt;,
+        filters: Arc&lt;DashMap&lt;ClientId, HttpFilter&gt;&gt;,
         matched_tx: Sender&lt;HandlerHttpRequest&gt;,
         connection_close_sender: Sender&lt;ConnectionId&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(), HttpTrafficError&gt; {
@@ -273,7 +271,7 @@
     <span class="doccomment">/// Creates a new [`HyperHandler`] specifically tuned to handle HTTP/2 requests.
     </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>)]
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(
-        filters: Arc&lt;DashMap&lt;ClientId, Regex&gt;&gt;,
+        filters: Arc&lt;DashMap&lt;ClientId, HttpFilter&gt;&gt;,
         matched_tx: Sender&lt;HandlerHttpRequest&gt;,
         connection_id: ConnectionId,
         port: Port,

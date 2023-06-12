@@ -311,6 +311,20 @@
 <a href="#311" id="311">311</a>
 <a href="#312" id="312">312</a>
 <a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
 </pre><pre class="rust"><code><span class="kw">use </span>core::fmt::Display;
 <span class="kw">use </span>std::{fmt, net::IpAddr};
 
@@ -321,6 +335,7 @@
     body::Incoming, http, http::response::Parts, HeaderMap, Method, Request, Response, StatusCode,
     Uri, Version,
 };
+<span class="kw">use </span>mirrord_macros::protocol_break;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>tracing::error;
 
@@ -406,13 +421,26 @@
     }
 }
 
+<span class="doccomment">/// Describes different types of HTTP filtering available
+</span><span class="attr">#[derive(Encode, Decode, Debug, PartialEq, Eq, Clone)]
+</span><span class="kw">pub enum </span>HTTPFilter {
+    <span class="doccomment">/// Filter by header (&quot;User-Agent: B&quot;)
+    </span>Header(Filter),
+    <span class="doccomment">/// Filter by path (&quot;/api/v1&quot;)
+    </span>Path(Filter),
+}
+
 <span class="doccomment">/// Describes the stealing subscription to a port:
 </span><span class="attr">#[derive(Encode, Decode, Debug, PartialEq, Eq, Clone)]
+#[protocol_break(<span class="number">2</span>)]
 </span><span class="kw">pub enum </span>StealType {
     <span class="doccomment">/// Steal all traffic to this port.
     </span>All(Port),
-    <span class="doccomment">/// Steal HTTP traffic matching a given filter.
+    <span class="doccomment">/// Steal HTTP traffic matching a given filter (header based). - REMOVE THIS WHEN BREAKING
+    /// PROTOCOL
     </span>FilteredHttp(Port, Filter),
+    <span class="doccomment">/// Steal HTTP traffic matching a given filter - supporting more than once kind of filter
+    </span>FilteredHttpMany(Port, HTTPFilter),
 }
 
 <span class="doccomment">/// Messages related to Steal Tcp handler from client.
