@@ -103,7 +103,77 @@
 <a href="#103" id="103">103</a>
 <a href="#104" id="104">104</a>
 <a href="#105" id="105">105</a>
-</pre><pre class="rust"><code><span class="kw">use </span>std::{ops::Deref, str::FromStr};
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+</pre><pre class="rust"><code><span class="kw">use </span>std::{collections::HashSet, ops::Deref, str::FromStr};
 
 <span class="kw">use </span>mirrord_config_derive::MirrordConfig;
 <span class="kw">use </span>schemars::JsonSchema;
@@ -117,6 +187,7 @@
 <span class="comment">// TODO(alex) [high] 2023-05-18: Wrong example (incomplete) here and in the oficial docs.
 </span><span class="doccomment">/// Filter configuration for the HTTP traffic stealer feature.
 ///
+/// DEPRECATED - USE http_filter instead, unless using old operator/agent version (pre 3.46.0)
 /// Allows the user to set a filter (regex) for the HTTP headers, so that the stealer traffic
 /// feature only captures HTTP requests that match the specified filter, forwarding unmatched
 /// requests to their original destinations.
@@ -136,14 +207,16 @@
 </span><span class="kw">pub struct </span>HttpHeaderFilterConfig {
     <span class="doccomment">/// ##### feature.network.incoming.http_header_filter.filter {#feature-network-incoming-http_header_filter-filter}
     ///
-    /// Used to match against the requests captured by the mirrord-agent pod.
     ///
     /// Supports regexes validated by the
     /// [`fancy-regex`](https://docs.rs/fancy-regex/latest/fancy_regex/) crate.
     ///
     /// The HTTP traffic feature converts the HTTP headers to `HeaderKey: HeaderValue`,
     /// case-insensitive.
-    </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_HTTP_HEADER_FILTER&quot;</span>)]
+    </span><span class="attr">#[config(
+        env = <span class="string">&quot;MIRRORD_HTTP_HEADER_FILTER&quot;</span>,
+        deprecated = <span class="string">&quot;use http_filter instead&quot;
+    </span>)]
     </span><span class="kw">pub </span>filter: <span class="prelude-ty">Option</span>&lt;String&gt;,
 
     <span class="doccomment">/// ##### feature.network.incoming.http_header_filter.ports {#feature-network-incoming-http_header_filter-ports}
@@ -153,6 +226,61 @@
     /// Other ports will still be stolen (when `&quot;steal`&quot; is being used), they&#39;re just not checked
     /// for HTTP filtering.
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_HTTP_HEADER_FILTER_PORTS&quot;</span>, default)]
+    </span><span class="kw">pub </span>ports: PortList,
+}
+
+<span class="doccomment">/// Filter configuration for the HTTP traffic stealer feature.
+///
+/// Allows the user to set a filter (regex) for the HTTP headers, so that the stealer traffic
+/// feature only captures HTTP requests that match the specified filter, forwarding unmatched
+/// requests to their original destinations.
+///
+/// Only does something when [`feature.network.incoming.mode`](#feature-network-incoming-mode) is
+/// set as `&quot;steal&quot;`, ignored otherwise.
+///
+/// for example, to filter based on header:
+/// ```json
+/// {
+///   &quot;header_filter&quot;: &quot;host: api\..+&quot;,
+/// }
+/// ```
+///
+/// for example, to filter based on path
+/// ```json
+/// {
+///   &quot;path_filter&quot;: &quot;host: api\..+&quot;,
+/// }
+/// ```
+</span><span class="attr">#[derive(MirrordConfig, Default, PartialEq, Eq, Clone, Debug)]
+#[config(map_to = <span class="string">&quot;HttpFilterFileConfig&quot;</span>, derive = <span class="string">&quot;JsonSchema&quot;</span>)]
+#[cfg_attr(test, config(derive = <span class="string">&quot;PartialEq, Eq&quot;</span>))]
+</span><span class="kw">pub struct </span>HttpFilterConfig {
+    <span class="doccomment">/// ##### feature.network.incoming.http_filter.header_filter {#feature-network-incoming-http-header-filter}
+    ///
+    ///
+    /// Supports regexes validated by the
+    /// [`fancy-regex`](https://docs.rs/fancy-regex/latest/fancy_regex/) crate.
+    ///
+    /// The HTTP traffic feature converts the HTTP headers to `HeaderKey: HeaderValue`,
+    /// case-insensitive.
+    </span><span class="kw">pub </span>header_filter: <span class="prelude-ty">Option</span>&lt;String&gt;,
+
+    <span class="doccomment">/// ##### feature.network.incoming.http_filter.path_filter {#feature-network-incoming-http-path-filter}
+    ///
+    ///
+    /// Supports regexes validated by the
+    /// [`fancy-regex`](https://docs.rs/fancy-regex/latest/fancy_regex/) crate.
+    ///
+    /// Case insensitive.
+    </span><span class="kw">pub </span>path_filter: <span class="prelude-ty">Option</span>&lt;String&gt;,
+
+    <span class="doccomment">/// ##### feature.network.incoming.http_header_filter.ports {#feature-network-incoming-http_header_filter-ports}
+    ///
+    /// Activate the HTTP traffic filter only for these ports.
+    ///
+    /// Other ports will still be stolen (when `&quot;steal`&quot; is being used), they&#39;re just not checked
+    /// for HTTP filtering.
+    </span><span class="attr">#[config(default)]
     </span><span class="kw">pub </span>ports: PortList,
 }
 
@@ -181,6 +309,12 @@
     }
 }
 
+<span class="kw">impl </span>MirrordToggleableConfig <span class="kw">for </span>HttpFilterFileConfig {
+    <span class="kw">fn </span>disabled_config() -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Generated, ConfigError&gt; {
+        <span class="prelude-val">Ok</span>(HttpFilterConfig::default())
+    }
+}
+
 <span class="kw">impl </span>Default <span class="kw">for </span>PortList {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>(VecOrSingle::Multiple(<span class="macro">vec!</span>[<span class="number">80</span>, <span class="number">8080</span>]))
@@ -206,6 +340,12 @@
 <span class="kw">impl </span>From&lt;PortList&gt; <span class="kw">for </span>Vec&lt;u16&gt; {
     <span class="kw">fn </span>from(value: PortList) -&gt; <span class="self">Self </span>{
         value.<span class="number">0</span>.to_vec()
+    }
+}
+
+<span class="kw">impl </span>From&lt;PortList&gt; <span class="kw">for </span>HashSet&lt;u16&gt; {
+    <span class="kw">fn </span>from(value: PortList) -&gt; <span class="self">Self </span>{
+        value.<span class="number">0</span>.into()
     }
 }
 </code></pre></div></section></main></body></html>

@@ -156,6 +156,46 @@
 <a href="#156" id="156">156</a>
 <a href="#157" id="157">157</a>
 <a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::{fs::File, path::PathBuf, time::Duration};
 
 <span class="kw">use </span>kube::Api;
@@ -163,12 +203,13 @@
 <span class="kw">use </span>mirrord_kube::{api::kubernetes::create_kube_api, error::KubeApiError};
 <span class="kw">use </span>mirrord_operator::{
     client::OperatorApiError,
-    crd::{MirrordOperatorCrd, MirrordOperatorSpec, OPERATOR_STATUS_NAME},
-    license::License,
-    setup::{Operator, OperatorNamespace, OperatorSetup},
+    crd::{LicenseInfoOwned, MirrordOperatorCrd, MirrordOperatorSpec, OPERATOR_STATUS_NAME},
+    setup::{Operator, OperatorNamespace, OperatorSetup, SetupOptions},
 };
 <span class="kw">use </span>mirrord_progress::{Progress, TaskProgress};
 <span class="kw">use </span>prettytable::{row, Table};
+<span class="kw">use </span>tokio::fs;
+<span class="kw">use </span>tracing::warn;
 
 <span class="kw">use crate</span>::{
     config::{OperatorArgs, OperatorCommand},
@@ -181,7 +222,8 @@
     accept_tos: bool,
     file: <span class="prelude-ty">Option</span>&lt;PathBuf&gt;,
     namespace: OperatorNamespace,
-    license_key: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    license: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    offline: bool,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="kw">if </span>!accept_tos {
         <span class="macro">eprintln!</span>(<span class="string">&quot;Please note that mirrord operator installation requires an active subscription for the mirrord Operator provided by MetalBear Tech LTD.\nThe service ToS can be read here - https://metalbear.co/legal/terms\nPass --accept-tos to accept the TOS&quot;</span>);
@@ -189,26 +231,17 @@
         <span class="kw">return </span><span class="prelude-val">Ok</span>(());
     }
 
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(license_key) = license_key {
-        <span class="kw">let </span>license = License::fetch_async(license_key.clone())
-            .<span class="kw">await
-            </span>.map_err(CliError::LicenseError)<span class="question-mark">?</span>;
-
-        <span class="macro">eprintln!</span>(
-            <span class="string">&quot;Installing with license for {} ({})&quot;</span>,
-            license.name, license.organization
-        );
-
-        <span class="kw">if </span>license.is_expired() {
-            <span class="macro">eprintln!</span>(<span class="string">&quot;Using an expired license for operator, deployment will not function when installed&quot;</span>);
-        }
-
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(license) = license {
         <span class="macro">eprintln!</span>(
             <span class="string">&quot;Intalling mirrord operator with namespace: {}&quot;</span>,
             namespace.name()
         );
 
-        <span class="kw">let </span>operator = Operator::new(license_key, namespace);
+        <span class="kw">let </span>operator = Operator::new(SetupOptions {
+            license,
+            namespace,
+            offline,
+        });
 
         <span class="kw">match </span>file {
             <span class="prelude-val">Some</span>(path) =&gt; {
@@ -217,15 +250,13 @@
             <span class="prelude-val">None </span>=&gt; operator.to_writer(std::io::stdout()).unwrap(), <span class="comment">/* unwrap because failing to write to std out.. well.. */
         </span>}
     } <span class="kw">else </span>{
-        <span class="macro">eprintln!</span>(<span class="string">&quot;--license-key is required to install on cluster&quot;</span>);
+        <span class="macro">eprintln!</span>(<span class="string">&quot;--license-key or --license-path is required to install on cluster&quot;</span>);
     }
 
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">async fn </span>operator_status(config: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-    <span class="kw">let </span>progress = TaskProgress::new(<span class="string">&quot;Operator Status&quot;</span>).fail_on_drop(<span class="bool-val">true</span>);
-
+<span class="kw">async fn </span>get_status_api(config: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Api&lt;MirrordOperatorCrd&gt;&gt; {
     <span class="kw">let </span>kube_api = <span class="kw">if let </span><span class="prelude-val">Some</span>(config_path) = config {
         <span class="kw">let </span>config = LayerFileConfig::from_path(config_path)<span class="question-mark">?</span>.generate_config()<span class="question-mark">?</span>;
         create_kube_api(config.accept_invalid_certificates, config.kubeconfig)
@@ -235,7 +266,13 @@
     .<span class="kw">await
     </span>.map_err(CliError::KubernetesApiFailed)<span class="question-mark">?</span>;
 
-    <span class="kw">let </span>status_api: Api&lt;MirrordOperatorCrd&gt; = Api::all(kube_api);
+    <span class="prelude-val">Ok</span>(Api::all(kube_api))
+}
+
+<span class="kw">async fn </span>operator_status(config: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">let </span>progress = TaskProgress::new(<span class="string">&quot;Operator Status&quot;</span>).fail_on_drop(<span class="bool-val">true</span>);
+
+    <span class="kw">let </span>status_api = get_status_api(config).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="kw">let </span>status_progress = progress.subtask(<span class="string">&quot;fetching status&quot;</span>);
 
@@ -262,11 +299,13 @@
         operator_version,
         default_namespace,
         license:
-            License {
+            LicenseInfoOwned {
                 name,
                 organization,
                 expire_at,
+                ..
             },
+        ..
     } = mirrord_status.spec;
 
     <span class="kw">let </span>expire_at = expire_at.format(<span class="string">&quot;%e-%b-%Y&quot;</span>);
@@ -282,22 +321,46 @@ Operator License
 &quot;#
     </span>);
 
+    <span class="kw">let </span><span class="prelude-val">Some</span>(status) = mirrord_status.status <span class="kw">else </span>{
+        <span class="kw">return </span><span class="prelude-val">Ok</span>(());
+    };
+
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(statistics) = status.statistics {
+        <span class="macro">println!</span>(<span class="string">&quot;Operator Daily Users: {}&quot;</span>, statistics.dau);
+        <span class="macro">println!</span>(<span class="string">&quot;Operator Monthly Users: {}&quot;</span>, statistics.mau);
+    }
+
     <span class="kw">let </span><span class="kw-2">mut </span>sessions = Table::new();
 
     sessions.add_row(<span class="macro">row!</span>[<span class="string">&quot;Session ID&quot;</span>, <span class="string">&quot;Target&quot;</span>, <span class="string">&quot;User&quot;</span>, <span class="string">&quot;Session Duration&quot;</span>]);
 
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(status) = mirrord_status.status {
-        <span class="kw">for </span>session <span class="kw">in </span><span class="kw-2">&amp;</span>status.sessions {
-            sessions.add_row(<span class="macro">row!</span>[
-                session.id.as_deref().unwrap_or(<span class="string">&quot;&quot;</span>),
-                <span class="kw-2">&amp;</span>session.target,
-                <span class="kw-2">&amp;</span>session.user,
-                humantime::format_duration(Duration::from_secs(session.duration_secs)),
-            ]);
-        }
+    <span class="kw">for </span>session <span class="kw">in </span><span class="kw-2">&amp;</span>status.sessions {
+        sessions.add_row(<span class="macro">row!</span>[
+            session.id.as_deref().unwrap_or(<span class="string">&quot;&quot;</span>),
+            <span class="kw-2">&amp;</span>session.target,
+            <span class="kw-2">&amp;</span>session.user,
+            humantime::format_duration(Duration::from_secs(session.duration_secs)),
+        ]);
     }
 
     sessions.printstd();
+
+    <span class="prelude-val">Ok</span>(())
+}
+
+<span class="kw">async fn </span>operator_telemetry_export(config: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">let </span>status_api = get_status_api(config).<span class="kw">await</span><span class="question-mark">?</span>;
+
+    <span class="kw">let </span>status = status_api
+        .get_subresource(<span class="string">&quot;telemetry-export&quot;</span>, OPERATOR_STATUS_NAME)
+        .<span class="kw">await
+        </span>.map_err(KubeApiError::KubeError)
+        .map_err(OperatorApiError::KubeApiError)
+        .map_err(CliError::OperatorConnectionFailed)<span class="question-mark">?</span>;
+
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(exports) = status.spec.telemetry_exports {
+        <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, serde_json::to_string(<span class="kw-2">&amp;</span>exports)<span class="question-mark">?</span>);
+    }
 
     <span class="prelude-val">Ok</span>(())
 }
@@ -310,8 +373,25 @@ Operator License
             file,
             namespace,
             license_key,
-        } =&gt; operator_setup(accept_tos, file, namespace, license_key).<span class="kw">await</span>,
+            license_path,
+            offline,
+        } =&gt; {
+            <span class="kw">let </span>license = <span class="kw">match </span>license_path {
+                <span class="prelude-val">Some</span>(path) =&gt; fs::read_to_string(<span class="kw-2">&amp;</span>path)
+                    .<span class="kw">await
+                    </span>.inspect_err(|err| {
+                        <span class="macro">warn!</span>(<span class="string">&quot;Unable to read license at path {}: {err}&quot;</span>, path.display())
+                    })
+                    .ok(),
+                <span class="prelude-val">None </span>=&gt; license_key,
+            };
+
+            operator_setup(accept_tos, file, namespace, license, offline).<span class="kw">await
+        </span>}
         OperatorCommand::Status { config_file } =&gt; operator_status(config_file).<span class="kw">await</span>,
+        OperatorCommand::TelemetryExport { config_file } =&gt; {
+            operator_telemetry_export(config_file).<span class="kw">await
+        </span>}
     }
 }
 </code></pre></div></section></main></body></html>

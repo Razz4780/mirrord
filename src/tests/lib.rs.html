@@ -984,6 +984,15 @@
 <a href="#984" id="984">984</a>
 <a href="#985" id="985">985</a>
 <a href="#986" id="986">986</a>
+<a href="#987" id="987">987</a>
+<a href="#988" id="988">988</a>
+<a href="#989" id="989">989</a>
+<a href="#990" id="990">990</a>
+<a href="#991" id="991">991</a>
+<a href="#992" id="992">992</a>
+<a href="#993" id="993">993</a>
+<a href="#994" id="994">994</a>
+<a href="#995" id="995">995</a>
 </pre><pre class="rust"><code><span class="attr">#![feature(stmt_expr_attributes)]
 #![warn(clippy::indexing_slicing)]
 
@@ -1001,6 +1010,7 @@
         collections::HashMap,
         fmt::Debug,
         net::Ipv4Addr,
+        path::PathBuf,
         process::Stdio,
         sync::{Arc, Condvar, Mutex},
         time::Duration,
@@ -1968,6 +1978,14 @@
             headers.clone(),
         )
         .<span class="kw">await</span>;
+    }
+
+    <span class="attr">#[fixture]
+    #[once]
+    </span><span class="kw">pub fn </span>config_dir() -&gt; PathBuf {
+        <span class="kw">let </span><span class="kw-2">mut </span>config_path = PathBuf::from(<span class="macro">env!</span>(<span class="string">&quot;CARGO_MANIFEST_DIR&quot;</span>));
+        config_path.push(<span class="string">&quot;configs&quot;</span>);
+        config_path
     }
 }
 </code></pre></div></section></main></body></html>

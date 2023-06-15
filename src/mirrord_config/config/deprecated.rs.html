@@ -41,7 +41,7 @@
 
     <span class="kw">fn </span>source_value(<span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value&gt;&gt; {
         <span class="self">self</span>.<span class="number">1</span>.source_value().map(|result| {
-            <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.<span class="number">0</span>);
+            <span class="macro">tracing::warn!</span>(<span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.<span class="number">0</span>);
             result
         })
     }

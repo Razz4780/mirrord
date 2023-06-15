@@ -423,7 +423,7 @@
 
 <span class="doccomment">/// Describes different types of HTTP filtering available
 </span><span class="attr">#[derive(Encode, Decode, Debug, PartialEq, Eq, Clone)]
-</span><span class="kw">pub enum </span>HTTPFilter {
+</span><span class="kw">pub enum </span>HttpFilter {
     <span class="doccomment">/// Filter by header (&quot;User-Agent: B&quot;)
     </span>Header(Filter),
     <span class="doccomment">/// Filter by path (&quot;/api/v1&quot;)
@@ -440,7 +440,7 @@
     /// PROTOCOL
     </span>FilteredHttp(Port, Filter),
     <span class="doccomment">/// Steal HTTP traffic matching a given filter - supporting more than once kind of filter
-    </span>FilteredHttpMany(Port, HTTPFilter),
+    </span>FilteredHttpEx(Port, HttpFilter),
 }
 
 <span class="doccomment">/// Messages related to Steal Tcp handler from client.

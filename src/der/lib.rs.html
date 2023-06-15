@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/der-0.6.1/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="der" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/RustCrypto/media/6ee8e381/logo.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../der/index.html"><img src="https://raw.githubusercontent.com/RustCrypto/media/6ee8e381/logo.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/der-0.7.6/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="der" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/RustCrypto/media/6ee8e381/logo.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../der/index.html"><img src="https://raw.githubusercontent.com/RustCrypto/media/6ee8e381/logo.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -400,15 +400,8 @@
 <a href="#400" id="400">400</a>
 <a href="#401" id="401">401</a>
 <a href="#402" id="402">402</a>
-<a href="#403" id="403">403</a>
-<a href="#404" id="404">404</a>
-<a href="#405" id="405">405</a>
-<a href="#406" id="406">406</a>
-<a href="#407" id="407">407</a>
-<a href="#408" id="408">408</a>
-<a href="#409" id="409">409</a>
 </pre><pre class="rust"><code><span class="attr">#![no_std]
-#![cfg_attr(docsrs, feature(doc_cfg))]
+#![cfg_attr(docsrs, feature(doc_auto_cfg))]
 #![doc = <span class="macro">include_str!</span>(<span class="string">&quot;../README.md&quot;</span>)]
 #![doc(
     html_logo_url = <span class="string">&quot;https://raw.githubusercontent.com/RustCrypto/media/6ee8e381/logo.svg&quot;</span>,
@@ -424,6 +417,7 @@
     clippy::checked_conversions,
     clippy::implicit_saturating_sub,
     clippy::integer_arithmetic,
+    clippy::mod_module_files,
     clippy::panic,
     clippy::panic_in_result_fn,
     clippy::unwrap_used,
@@ -465,7 +459,7 @@
 //! - [`VideotexStringRef`]: ASN.1 `VideotexString`.
 //! - [`SequenceOf`]: ASN.1 `SEQUENCE OF`.
 //! - [`SetOf`], [`SetOfVec`]: ASN.1 `SET OF`.
-//! - [`UIntRef`]: ASN.1 unsigned `INTEGER` with raw access to encoded bytes.
+//! - [`UintRef`]: ASN.1 unsigned `INTEGER` with raw access to encoded bytes.
 //! - [`UtcTime`]: ASN.1 `UTCTime`.
 //! - [`Utf8StringRef`]: ASN.1 `UTF8String`.
 //!
@@ -548,32 +542,19 @@
 //!     }
 //! }
 //!
-//! impl&lt;&#39;a&gt; Sequence&lt;&#39;a&gt; for AlgorithmIdentifier&lt;&#39;a&gt; {
-//!     // The `Sequence::fields` method is used for encoding and functions as
-//!     // a visitor for all of the fields in a message.
-//!     //
-//!     // To implement it, you must define a slice containing `Encode`
-//!     // trait objects, then pass it to the provided `field_encoder`
-//!     // function, which is implemented by the `der` crate and handles
-//!     // message serialization.
-//!     //
-//!     // Trait objects are used because they allow for slices containing
-//!     // heterogeneous field types, and a callback is used to allow for the
-//!     // construction of temporary field encoder types. The latter means
-//!     // that the fields of your Rust struct don&#39;t necessarily need to
-//!     // impl the `Encode` trait, but if they don&#39;t you must construct
-//!     // a temporary wrapper value which does.
-//!     //
-//!     // Types which impl the `Sequence` trait receive blanket impls of both
-//!     // the `Encode` and `Tagged` traits (where the latter is impl&#39;d as
-//!     // `Tagged::TAG = der::Tag::Sequence`.
-//!     fn fields&lt;F, T&gt;(&amp;self, field_encoder: F) -&gt; der::Result&lt;T&gt;
-//!     where
-//!         F: FnOnce(&amp;[&amp;dyn Encode]) -&gt; der::Result&lt;T&gt;,
-//!     {
-//!         field_encoder(&amp;[&amp;self.algorithm, &amp;self.parameters])
+//! impl&lt;&#39;a&gt; ::der::EncodeValue for AlgorithmIdentifier&lt;&#39;a&gt; {
+//!     fn value_len(&amp;self) -&gt; ::der::Result&lt;::der::Length&gt; {
+//!         self.algorithm.encoded_len()? + self.parameters.encoded_len()?
+//!     }
+//!
+//!     fn encode_value(&amp;self, writer: &amp;mut impl ::der::Writer) -&gt; ::der::Result&lt;()&gt; {
+//!         self.algorithm.encode(writer)?;
+//!         self.parameters.encode(writer)?;
+//!         Ok(())
 //!     }
 //! }
+//!
+//! impl&lt;&#39;a&gt; Sequence&lt;&#39;a&gt; for AlgorithmIdentifier&lt;&#39;a&gt; {}
 //!
 //! // Example parameters value: OID for the NIST P-256 elliptic curve.
 //! let parameters = &quot;1.2.840.10045.3.1.7&quot;.parse::&lt;ObjectIdentifier&gt;().unwrap();
@@ -591,7 +572,7 @@
 //! // If you would prefer to avoid allocations, you can create a byte array
 //! // as backing storage instead, pass that to `der::Encoder::new`, and then
 //! // encode the `parameters` value using `encoder.encode(parameters)`.
-//! let der_encoded_parameters = parameters.to_vec().unwrap();
+//! let der_encoded_parameters = parameters.to_der().unwrap();
 //!
 //! let algorithm_identifier = AlgorithmIdentifier {
 //!     // OID for `id-ecPublicKey`, if you&#39;re curious
@@ -610,7 +591,7 @@
 //! // reference to it, then encode the message using
 //! // `encoder.encode(algorithm_identifier)`, then finally `encoder.finish()`
 //! // to obtain a byte slice containing the encoded message.
-//! let der_encoded_algorithm_identifier = algorithm_identifier.to_vec().unwrap();
+//! let der_encoded_algorithm_identifier = algorithm_identifier.to_der().unwrap();
 //!
 //! // Deserialize the `AlgorithmIdentifier` we just serialized from ASN.1 DER
 //! // using `der::Decode::from_bytes`.
@@ -664,7 +645,7 @@
 //! };
 //!
 //! // Encode
-//! let der_encoded_algorithm_identifier = algorithm_identifier.to_vec().unwrap();
+//! let der_encoded_algorithm_identifier = algorithm_identifier.to_der().unwrap();
 //!
 //! // Decode
 //! let decoded_algorithm_identifier = AlgorithmIdentifier::from_der(
@@ -737,7 +718,7 @@
 //! [`SequenceOf`]: asn1::SequenceOf
 //! [`SetOf`]: asn1::SetOf
 //! [`SetOfVec`]: asn1::SetOfVec
-//! [`UIntRef`]: asn1::UIntRef
+//! [`UintRef`]: asn1::UintRef
 //! [`UtcTime`]: asn1::UtcTime
 //! [`Utf8StringRef`]: asn1::Utf8StringRef
 
@@ -749,9 +730,10 @@
 </span><span class="kw">extern crate </span>std;
 
 <span class="kw">pub mod </span>asn1;
+<span class="kw">pub mod </span>referenced;
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod </span>arrayvec;
-<span class="kw">mod </span>byte_slice;
+<span class="kw">mod </span>bytes_ref;
 <span class="kw">mod </span>datetime;
 <span class="kw">mod </span>decode;
 <span class="kw">mod </span>encode;
@@ -761,12 +743,16 @@
 <span class="kw">mod </span>length;
 <span class="kw">mod </span>ord;
 <span class="kw">mod </span>reader;
-<span class="kw">mod </span>str_slice;
+<span class="kw">mod </span>str_ref;
 <span class="kw">mod </span>tag;
 <span class="kw">mod </span>writer;
 
 <span class="attr">#[cfg(feature = <span class="string">&quot;alloc&quot;</span>)]
+</span><span class="kw">mod </span>bytes_owned;
+<span class="attr">#[cfg(feature = <span class="string">&quot;alloc&quot;</span>)]
 </span><span class="kw">mod </span>document;
+<span class="attr">#[cfg(feature = <span class="string">&quot;alloc&quot;</span>)]
+</span><span class="kw">mod </span>str_owned;
 
 <span class="kw">pub use crate</span>::{
     asn1::{AnyRef, Choice, Sequence},
@@ -776,37 +762,35 @@
     encode_ref::{EncodeRef, EncodeValueRef},
     error::{Error, ErrorKind, <span class="prelude-ty">Result</span>},
     header::Header,
-    length::Length,
+    length::{IndefiniteLength, Length},
     ord::{DerOrd, ValueOrd},
-    reader::{slice::SliceReader, Reader},
+    reader::{nested::NestedReader, slice::SliceReader, Reader},
     tag::{Class, FixedTag, Tag, TagMode, TagNumber, Tagged},
     writer::{slice::SliceWriter, Writer},
 };
 
 <span class="attr">#[cfg(feature = <span class="string">&quot;alloc&quot;</span>)]
-</span><span class="kw">pub use </span><span class="kw">crate</span>::document::Document;
+</span><span class="kw">pub use crate</span>::{asn1::Any, document::Document};
 
 <span class="attr">#[cfg(feature = <span class="string">&quot;bigint&quot;</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">&quot;bigint&quot;</span>)))]
 </span><span class="kw">pub use </span>crypto_bigint <span class="kw">as </span>bigint;
 
 <span class="attr">#[cfg(feature = <span class="string">&quot;derive&quot;</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">&quot;derive&quot;</span>)))]
 </span><span class="kw">pub use </span>der_derive::{Choice, Enumerated, Sequence, ValueOrd};
 
+<span class="attr">#[cfg(feature = <span class="string">&quot;flagset&quot;</span>)]
+</span><span class="kw">pub use </span>flagset;
+
 <span class="attr">#[cfg(feature = <span class="string">&quot;oid&quot;</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">&quot;oid&quot;</span>)))]
 </span><span class="kw">pub use </span>const_oid <span class="kw">as </span>oid;
 
 <span class="attr">#[cfg(feature = <span class="string">&quot;pem&quot;</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">&quot;pem&quot;</span>)))]
 </span><span class="kw">pub use </span>{
     <span class="kw">crate</span>::{decode::DecodePem, encode::EncodePem, reader::pem::PemReader, writer::pem::PemWriter},
     pem_rfc7468 <span class="kw">as </span>pem,
 };
 
 <span class="attr">#[cfg(feature = <span class="string">&quot;time&quot;</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">&quot;time&quot;</span>)))]
 </span><span class="kw">pub use </span>time;
 
 <span class="attr">#[cfg(feature = <span class="string">&quot;zeroize&quot;</span>)]
@@ -815,5 +799,7 @@
 <span class="attr">#[cfg(all(feature = <span class="string">&quot;alloc&quot;</span>, feature = <span class="string">&quot;zeroize&quot;</span>))]
 </span><span class="kw">pub use </span><span class="kw">crate</span>::document::SecretDocument;
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use crate</span>::{arrayvec::ArrayVec, byte_slice::ByteSlice, str_slice::StrSlice};
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use crate</span>::{arrayvec::ArrayVec, bytes_ref::BytesRef, str_ref::StrRef};
+<span class="attr">#[cfg(feature = <span class="string">&quot;alloc&quot;</span>)]
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use crate</span>::{bytes_owned::BytesOwned, str_owned::StrOwned};
 </code></pre></div></section></main></body></html>

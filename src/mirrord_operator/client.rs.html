@@ -260,9 +260,30 @@
 <a href="#260" id="260">260</a>
 <a href="#261" id="261">261</a>
 <a href="#262" id="262">262</a>
-</pre><pre class="rust"><code><span class="kw">use </span>futures::{SinkExt, StreamExt};
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+</pre><pre class="rust"><code><span class="kw">use </span>base64::{engine::general_purpose, Engine <span class="kw">as _</span>};
+<span class="kw">use </span>futures::{SinkExt, StreamExt};
 <span class="kw">use </span>http::request::Request;
 <span class="kw">use </span>kube::{error::ErrorResponse, Api, Client};
+<span class="kw">use </span>mirrord_auth::{credential_store::CredentialStoreSync, error::AuthenticationError};
 <span class="kw">use </span>mirrord_config::{target::TargetConfig, LayerConfig};
 <span class="kw">use </span>mirrord_kube::{
     api::{get_k8s_resource_api, kubernetes::create_kube_api},
@@ -299,6 +320,8 @@
     </span>InvalidMessage(Message),
     <span class="attr">#[error(<span class="string">&quot;Receiver&lt;DaemonMessage&gt; was dropped&quot;</span>)]
     </span>DaemonReceiverDropped,
+    <span class="attr">#[error(transparent)]
+    </span>Authentication(<span class="attr">#[from] </span>AuthenticationError),
 }
 
 <span class="kw">type </span><span class="prelude-ty">Result</span>&lt;T, E = OperatorApiError&gt; = std::result::Result&lt;T, E&gt;;
@@ -321,7 +344,9 @@
         <span class="kw">let </span>operator_api = OperatorApi::new(config).<span class="kw">await</span><span class="question-mark">?</span>;
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(target) = operator_api.fetch_target().<span class="kw">await</span><span class="question-mark">? </span>{
-            <span class="kw">let </span>operator_version = Version::parse(<span class="kw-2">&amp;</span>operator_api.get_version().<span class="kw">await</span><span class="question-mark">?</span>).unwrap(); <span class="comment">// TODO: Remove unwrap
+            <span class="kw">let </span>status = operator_api.get_status().<span class="kw">await</span><span class="question-mark">?</span>;
+
+            <span class="kw">let </span>operator_version = Version::parse(<span class="kw-2">&amp;</span>status.spec.operator_version).unwrap(); <span class="comment">// TODO: Remove unwrap
 
             // This is printed multiple times when the local process forks. Can be solved by e.g.
             // propagating an env var, don&#39;t think it&#39;s worth the extra complexity though
@@ -339,7 +364,11 @@
                     progress.subtask(<span class="string">&quot;comparing versions&quot;</span>).print_message(MessageKind::Warning, <span class="prelude-val">Some</span>(<span class="string">&quot;Consider either updating your operator version to match your mirrord plugin/CLI version, or downgrading your mirrord plugin/CLI.&quot;</span>));
                 }
             }
-            operator_api.connect_target(target).<span class="kw">await</span>.map(<span class="prelude-val">Some</span>)
+
+            operator_api
+                .connect_target(target, status.spec.license.fingerprint)
+                .<span class="kw">await
+                </span>.map(<span class="prelude-val">Some</span>)
         } <span class="kw">else </span>{
             <span class="comment">// No operator found
             </span><span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
@@ -395,13 +424,12 @@
         })
     }
 
-    <span class="kw">async fn </span>get_version(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;String&gt; {
+    <span class="kw">async fn </span>get_status(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;MirrordOperatorCrd&gt; {
         <span class="self">self</span>.version_api
             .get(OPERATOR_STATUS_NAME)
             .<span class="kw">await
             </span>.map_err(KubeApiError::KubeError)
             .map_err(OperatorApiError::KubeApiError)
-            .map(|status| status.spec.operator_version)
     }
 
     <span class="kw">async fn </span>fetch_target(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;TargetCrd&gt;&gt; {
@@ -418,19 +446,29 @@
     </span><span class="kw">async fn </span>connect_target(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         target: TargetCrd,
+        credential_name: <span class="prelude-ty">Option</span>&lt;String&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(mpsc::Sender&lt;ClientMessage&gt;, mpsc::Receiver&lt;DaemonMessage&gt;)&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>builder = Request::builder()
+            .uri(<span class="macro">format!</span>(
+                <span class="string">&quot;{}/{}?connect=true&quot;</span>,
+                <span class="self">self</span>.target_api.resource_url(),
+                target.name()
+            ))
+            .header(<span class="string">&quot;x-session-id&quot;</span>, <span class="self">Self</span>::session_id());
+
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(credential_name) = credential_name {
+            <span class="kw">let </span>client_credentials = CredentialStoreSync::get_client_certificate::&lt;
+                MirrordOperatorCrd,
+            &gt;(<span class="kw-2">&amp;</span><span class="self">self</span>.client, credential_name)
+            .<span class="kw">await
+            </span>.map(|certificate_der| general_purpose::STANDARD.encode(certificate_der))<span class="question-mark">?</span>;
+
+            builder = builder.header(<span class="string">&quot;x-client-der&quot;</span>, client_credentials);
+        }
+
         <span class="kw">let </span>connection = <span class="self">self
             </span>.client
-            .connect(
-                Request::builder()
-                    .uri(<span class="macro">format!</span>(
-                        <span class="string">&quot;{}/{}?connect=true&quot;</span>,
-                        <span class="self">self</span>.target_api.resource_url(),
-                        target.name()
-                    ))
-                    .header(<span class="string">&quot;x-session-id&quot;</span>, <span class="self">Self</span>::session_id())
-                    .body(<span class="macro">vec!</span>[])<span class="question-mark">?</span>,
-            )
+            .connect(builder.body(<span class="macro">vec!</span>[])<span class="question-mark">?</span>)
             .<span class="kw">await
             </span>.map_err(KubeApiError::from)<span class="question-mark">?</span>;
 

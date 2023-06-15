@@ -608,6 +608,97 @@
 <a href="#608" id="608">608</a>
 <a href="#609" id="609">609</a>
 <a href="#610" id="610">610</a>
+<a href="#611" id="611">611</a>
+<a href="#612" id="612">612</a>
+<a href="#613" id="613">613</a>
+<a href="#614" id="614">614</a>
+<a href="#615" id="615">615</a>
+<a href="#616" id="616">616</a>
+<a href="#617" id="617">617</a>
+<a href="#618" id="618">618</a>
+<a href="#619" id="619">619</a>
+<a href="#620" id="620">620</a>
+<a href="#621" id="621">621</a>
+<a href="#622" id="622">622</a>
+<a href="#623" id="623">623</a>
+<a href="#624" id="624">624</a>
+<a href="#625" id="625">625</a>
+<a href="#626" id="626">626</a>
+<a href="#627" id="627">627</a>
+<a href="#628" id="628">628</a>
+<a href="#629" id="629">629</a>
+<a href="#630" id="630">630</a>
+<a href="#631" id="631">631</a>
+<a href="#632" id="632">632</a>
+<a href="#633" id="633">633</a>
+<a href="#634" id="634">634</a>
+<a href="#635" id="635">635</a>
+<a href="#636" id="636">636</a>
+<a href="#637" id="637">637</a>
+<a href="#638" id="638">638</a>
+<a href="#639" id="639">639</a>
+<a href="#640" id="640">640</a>
+<a href="#641" id="641">641</a>
+<a href="#642" id="642">642</a>
+<a href="#643" id="643">643</a>
+<a href="#644" id="644">644</a>
+<a href="#645" id="645">645</a>
+<a href="#646" id="646">646</a>
+<a href="#647" id="647">647</a>
+<a href="#648" id="648">648</a>
+<a href="#649" id="649">649</a>
+<a href="#650" id="650">650</a>
+<a href="#651" id="651">651</a>
+<a href="#652" id="652">652</a>
+<a href="#653" id="653">653</a>
+<a href="#654" id="654">654</a>
+<a href="#655" id="655">655</a>
+<a href="#656" id="656">656</a>
+<a href="#657" id="657">657</a>
+<a href="#658" id="658">658</a>
+<a href="#659" id="659">659</a>
+<a href="#660" id="660">660</a>
+<a href="#661" id="661">661</a>
+<a href="#662" id="662">662</a>
+<a href="#663" id="663">663</a>
+<a href="#664" id="664">664</a>
+<a href="#665" id="665">665</a>
+<a href="#666" id="666">666</a>
+<a href="#667" id="667">667</a>
+<a href="#668" id="668">668</a>
+<a href="#669" id="669">669</a>
+<a href="#670" id="670">670</a>
+<a href="#671" id="671">671</a>
+<a href="#672" id="672">672</a>
+<a href="#673" id="673">673</a>
+<a href="#674" id="674">674</a>
+<a href="#675" id="675">675</a>
+<a href="#676" id="676">676</a>
+<a href="#677" id="677">677</a>
+<a href="#678" id="678">678</a>
+<a href="#679" id="679">679</a>
+<a href="#680" id="680">680</a>
+<a href="#681" id="681">681</a>
+<a href="#682" id="682">682</a>
+<a href="#683" id="683">683</a>
+<a href="#684" id="684">684</a>
+<a href="#685" id="685">685</a>
+<a href="#686" id="686">686</a>
+<a href="#687" id="687">687</a>
+<a href="#688" id="688">688</a>
+<a href="#689" id="689">689</a>
+<a href="#690" id="690">690</a>
+<a href="#691" id="691">691</a>
+<a href="#692" id="692">692</a>
+<a href="#693" id="693">693</a>
+<a href="#694" id="694">694</a>
+<a href="#695" id="695">695</a>
+<a href="#696" id="696">696</a>
+<a href="#697" id="697">697</a>
+<a href="#698" id="698">698</a>
+<a href="#699" id="699">699</a>
+<a href="#700" id="700">700</a>
+<a href="#701" id="701">701</a>
 </pre><pre class="rust"><code><span class="attr">#![feature(slice_concat_trait)]
 #![feature(once_cell)]
 #![feature(result_option_inspect)]
@@ -629,11 +720,25 @@
 <span class="kw">use </span>config::{ConfigError, MirrordConfig};
 <span class="kw">use </span>mirrord_config_derive::MirrordConfig;
 <span class="kw">use </span>schemars::JsonSchema;
+<span class="kw">use </span>tracing::warn;
 
 <span class="kw">use crate</span>::{
     agent::AgentConfig, config::source::MirrordConfigSource, feature::FeatureConfig,
     target::TargetConfig, util::VecOrSingle,
 };
+
+<span class="kw">const </span>PAUSE_WITHOUT_STEAL_WARNING: <span class="kw-2">&amp;</span>str =
+    <span class="string">&quot;--pause specified without --steal: Incoming requests to the application will
+    not be handled. The target container running the deployed application is paused,
+    and responses from the local application are dropped.
+
+    Attention: if network based liveness/readiness probes are defined for the
+    target, they will fail under this configuration.
+
+    To have the local application handle incoming requests you can run again with
+    `--steal`. To have the deployed application handle requests, run again without
+    specifying `--pause`.
+    &quot;</span>;
 
 <span class="doccomment">/// mirrord allows for a high degree of customization when it comes to which features you want to
 /// enable, and how they should function.
@@ -867,6 +972,82 @@
         } <span class="kw">else </span>{
             LayerFileConfig::default().generate_config()
         }
+    }
+
+    <span class="doccomment">/// Verify that there are no conflicting settings.
+    /// We don&#39;t call it from `from_env` since we want to verify it only once (from cli)
+    </span><span class="kw">pub fn </span>verify(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), ConfigError&gt; {
+        <span class="kw">if </span><span class="self">self</span>.pause {
+            <span class="kw">if </span><span class="self">self</span>.agent.ephemeral {
+                <span class="prelude-val">Err</span>(ConfigError::Conflict(<span class="string">&quot;Pausing is not yet supported together with an ephemeral agent container.
+                Mutually exclusive arguments `--pause` and `--ephemeral-container` passed together.&quot;</span>.to_string()))<span class="question-mark">?</span>;
+            }
+            <span class="kw">if </span>!<span class="self">self</span>.feature.network.incoming.is_steal() {
+                <span class="macro">warn!</span>(<span class="string">&quot;{PAUSE_WITHOUT_STEAL_WARNING}&quot;</span>);
+            }
+        }
+        <span class="kw">if </span><span class="self">self
+            </span>.feature
+            .network
+            .incoming
+            .http_filter
+            .path_filter
+            .is_some()
+            &amp;&amp; <span class="self">self
+                </span>.feature
+                .network
+                .incoming
+                .http_filter
+                .header_filter
+                .is_some()
+        {
+            <span class="prelude-val">Err</span>(ConfigError::Conflict(
+                <span class="string">&quot;Cannot use both HTTP header filter and path filter at the same time&quot;</span>.to_string(),
+            ))<span class="question-mark">?</span>;
+        }
+        <span class="kw">if </span><span class="self">self
+            </span>.feature
+            .network
+            .incoming
+            .http_header_filter
+            .filter
+            .is_some()
+            &amp;&amp; (<span class="self">self
+                </span>.feature
+                .network
+                .incoming
+                .http_filter
+                .path_filter
+                .is_some()
+                || <span class="self">self
+                    </span>.feature
+                    .network
+                    .incoming
+                    .http_filter
+                    .header_filter
+                    .is_some())
+        {
+            <span class="prelude-val">Err</span>(ConfigError::Conflict(<span class="string">&quot;Cannot use old http filter and new http filter at the same time. Use only `http_filter` instead of `http_header_filter`&quot;</span>.to_string()))<span class="question-mark">?</span>;
+        }
+        <span class="kw">if </span><span class="self">self</span>.target.path.is_none() {
+            <span class="kw">if </span><span class="self">self</span>.target.namespace.is_some() {
+                <span class="prelude-val">Err</span>(ConfigError::TargetNamespaceWithoutTarget)<span class="question-mark">?</span>;
+            }
+            <span class="kw">if </span><span class="self">self</span>.feature.network.incoming.is_steal() {
+                <span class="prelude-val">Err</span>(ConfigError::Conflict(<span class="string">&quot;Steal mode is not compatible with a targetless agent, please either disable this option or specify a target.&quot;</span>.into()))<span class="question-mark">?</span>;
+            }
+            <span class="kw">if </span><span class="self">self</span>.agent.ephemeral {
+                <span class="prelude-val">Err</span>(ConfigError::Conflict(
+                    <span class="string">&quot;Using an ephemeral container for the agent is not compatible with a targetless agent, please either disable this option or specify a target.&quot;</span>.into(),
+                ))<span class="question-mark">?</span>;
+            }
+            <span class="kw">if </span><span class="self">self</span>.pause {
+                <span class="prelude-val">Err</span>(ConfigError::Conflict(
+                    <span class="string">&quot;The target pause feature is not compatible with a targetless agent, please either disable this option or specify a target.&quot;</span>.into(),
+                ))<span class="question-mark">?</span>;
+            }
+        }
+        <span class="prelude-val">Ok</span>(())
     }
 }
 
@@ -1108,6 +1289,7 @@
                         IncomingAdvancedFileConfig {
                             mode: <span class="prelude-val">Some</span>(IncomingMode::Mirror),
                             http_header_filter: <span class="prelude-val">None</span>,
+                            http_filter: <span class="prelude-val">None</span>,
                             port_mapping: <span class="prelude-val">None</span>,
                             ignore_localhost: <span class="prelude-val">None</span>,
                             ignore_ports: <span class="prelude-val">None</span>,

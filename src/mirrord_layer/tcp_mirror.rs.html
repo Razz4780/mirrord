@@ -224,6 +224,8 @@
 <a href="#224" id="224">224</a>
 <a href="#225" id="225">225</a>
 <a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::{
     borrow::Borrow,
     collections::HashSet,
@@ -429,8 +431,10 @@
         <span class="self">self</span>.apply_port_mapping(<span class="kw-2">&amp;mut </span>listen);
         <span class="kw">let </span>request_port = listen.requested_port;
 
-        <span class="kw">if </span>!<span class="self">self</span>.ports_mut().insert(listen) {
-            <span class="macro">info!</span>(<span class="string">&quot;Port {request_port} already listening, might be on different address&quot;</span>,);
+        <span class="kw">if </span><span class="self">self</span>.ports_mut().replace(listen).is_some() {
+            <span class="comment">// This can also be because we currently don&#39;t inform the tcp handler when an app closes
+            // a socket (stops listening).
+            </span><span class="macro">info!</span>(<span class="string">&quot;Received listen hook message for port {request_port} while already listening. Might be on different address&quot;</span>,);
             <span class="kw">return </span><span class="prelude-val">Ok</span>(());
         }
 

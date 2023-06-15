@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["HttpHeaderFilterConfig","HttpHeaderFilterFileConfig","PortList"]};
+window.SIDEBAR_ITEMS = {"struct":["HttpFilterConfig","HttpFilterFileConfig","HttpHeaderFilterConfig","HttpHeaderFilterFileConfig","PortList"]};

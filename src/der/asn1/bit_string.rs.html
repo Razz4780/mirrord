@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/der-0.6.1/src/asn1/bit_string.rs`."><title>bit_string.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="der" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/RustCrypto/media/6ee8e381/logo.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../der/index.html"><img src="https://raw.githubusercontent.com/RustCrypto/media/6ee8e381/logo.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/der-0.7.6/src/asn1/bit_string.rs`."><title>bit_string.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="der" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/RustCrypto/media/6ee8e381/logo.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../der/index.html"><img src="https://raw.githubusercontent.com/RustCrypto/media/6ee8e381/logo.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -502,16 +502,61 @@
 <a href="#502" id="502">502</a>
 <a href="#503" id="503">503</a>
 <a href="#504" id="504">504</a>
+<a href="#505" id="505">505</a>
+<a href="#506" id="506">506</a>
+<a href="#507" id="507">507</a>
+<a href="#508" id="508">508</a>
+<a href="#509" id="509">509</a>
+<a href="#510" id="510">510</a>
+<a href="#511" id="511">511</a>
+<a href="#512" id="512">512</a>
+<a href="#513" id="513">513</a>
+<a href="#514" id="514">514</a>
+<a href="#515" id="515">515</a>
+<a href="#516" id="516">516</a>
+<a href="#517" id="517">517</a>
+<a href="#518" id="518">518</a>
+<a href="#519" id="519">519</a>
+<a href="#520" id="520">520</a>
+<a href="#521" id="521">521</a>
+<a href="#522" id="522">522</a>
+<a href="#523" id="523">523</a>
+<a href="#524" id="524">524</a>
+<a href="#525" id="525">525</a>
+<a href="#526" id="526">526</a>
+<a href="#527" id="527">527</a>
+<a href="#528" id="528">528</a>
+<a href="#529" id="529">529</a>
+<a href="#530" id="530">530</a>
+<a href="#531" id="531">531</a>
+<a href="#532" id="532">532</a>
+<a href="#533" id="533">533</a>
+<a href="#534" id="534">534</a>
+<a href="#535" id="535">535</a>
+<a href="#536" id="536">536</a>
+<a href="#537" id="537">537</a>
+<a href="#538" id="538">538</a>
+<a href="#539" id="539">539</a>
+<a href="#540" id="540">540</a>
+<a href="#541" id="541">541</a>
+<a href="#542" id="542">542</a>
+<a href="#543" id="543">543</a>
+<a href="#544" id="544">544</a>
+<a href="#545" id="545">545</a>
+<a href="#546" id="546">546</a>
+<a href="#547" id="547">547</a>
+<a href="#548" id="548">548</a>
+<a href="#549" id="549">549</a>
+<a href="#550" id="550">550</a>
+<a href="#551" id="551">551</a>
+<a href="#552" id="552">552</a>
 </pre><pre class="rust"><code><span class="doccomment">//! ASN.1 `BIT STRING` support.
 
 </span><span class="kw">use crate</span>::{
-    asn1::AnyRef, ByteSlice, DecodeValue, DerOrd, EncodeValue, Error, ErrorKind, FixedTag, Header,
-    Length, Reader, <span class="prelude-ty">Result</span>, Tag, ValueOrd, Writer,
+    BytesRef, DecodeValue, DerOrd, EncodeValue, Error, ErrorKind, FixedTag, Header, Length, Reader,
+    <span class="prelude-ty">Result</span>, Tag, ValueOrd, Writer,
 };
 <span class="kw">use </span>core::{cmp::Ordering, iter::FusedIterator};
-
-<span class="attr">#[cfg(feature = <span class="string">&quot;alloc&quot;</span>)]
-</span><span class="kw">use </span>alloc::vec::Vec;
 
 <span class="doccomment">/// ASN.1 `BIT STRING` type.
 ///
@@ -528,7 +573,7 @@
     </span>bit_length: usize,
 
     <span class="doccomment">/// Bitstring represented as a slice of bytes.
-    </span>inner: ByteSlice&lt;<span class="lifetime">&#39;a</span>&gt;,
+    </span>inner: BytesRef&lt;<span class="lifetime">&#39;a</span>&gt;,
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; BitStringRef&lt;<span class="lifetime">&#39;a</span>&gt; {
@@ -544,7 +589,7 @@
             <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="self">Self</span>::TAG.value_error());
         }
 
-        <span class="kw">let </span>inner = ByteSlice::new(bytes).map_err(|<span class="kw">_</span>| <span class="self">Self</span>::TAG.length_error())<span class="question-mark">?</span>;
+        <span class="kw">let </span>inner = BytesRef::new(bytes).map_err(|<span class="kw">_</span>| <span class="self">Self</span>::TAG.length_error())<span class="question-mark">?</span>;
 
         <span class="kw">let </span>bit_length = usize::try_from(inner.len())<span class="question-mark">?
             </span>.checked_mul(<span class="number">8</span>)
@@ -624,6 +669,8 @@
     }
 }
 
+<span class="macro">impl_any_conversions!</span>(BitStringRef&lt;<span class="lifetime">&#39;a</span>&gt;, <span class="lifetime">&#39;a</span>);
+
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; DecodeValue&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>BitStringRef&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">fn </span>decode_value&lt;R: Reader&lt;<span class="lifetime">&#39;a</span>&gt;&gt;(reader: <span class="kw-2">&amp;mut </span>R, header: Header) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
         <span class="kw">let </span>header = Header {
@@ -632,7 +679,7 @@
         };
 
         <span class="kw">let </span>unused_bits = reader.read_byte()<span class="question-mark">?</span>;
-        <span class="kw">let </span>inner = ByteSlice::decode_value(reader, header)<span class="question-mark">?</span>;
+        <span class="kw">let </span>inner = BytesRef::decode_value(reader, header)<span class="question-mark">?</span>;
         <span class="self">Self</span>::new(unused_bits, inner.as_slice())
     }
 }
@@ -642,7 +689,7 @@
         <span class="self">self</span>.byte_len() + Length::ONE
     }
 
-    <span class="kw">fn </span>encode_value(<span class="kw-2">&amp;</span><span class="self">self</span>, writer: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Writer) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">fn </span>encode_value(<span class="kw-2">&amp;</span><span class="self">self</span>, writer: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>Writer) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         writer.write_byte(<span class="self">self</span>.unused_bits)<span class="question-mark">?</span>;
         writer.write(<span class="self">self</span>.raw_bytes())
     }
@@ -663,14 +710,6 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; TryFrom&lt;AnyRef&lt;<span class="lifetime">&#39;a</span>&gt;&gt; <span class="kw">for </span>BitStringRef&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">type </span>Error = Error;
-
-    <span class="kw">fn </span>try_from(any: AnyRef&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;BitStringRef&lt;<span class="lifetime">&#39;a</span>&gt;&gt; {
-        any.decode_into()
-    }
-}
-
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; TryFrom&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8]&gt; <span class="kw">for </span>BitStringRef&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">type </span>Error = Error;
 
@@ -684,7 +723,7 @@
     <span class="kw">type </span>Error = Error;
 
     <span class="kw">fn </span>try_from(bytes: &amp;&amp;<span class="lifetime">&#39;a </span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;BitStringRef&lt;<span class="lifetime">&#39;a</span>&gt;&gt; {
-        BitStringRef::from_bytes(<span class="kw-2">*</span>bytes)
+        BitStringRef::from_bytes(bytes)
     }
 }
 
@@ -702,141 +741,198 @@
     <span class="kw">const </span>TAG: Tag = Tag::BitString;
 }
 
-<span class="doccomment">/// Owned form of ASN.1 `BIT STRING` type.
-///
-/// This type provides the same functionality as [`BitStringRef`] but owns the
-/// backing data.
-</span><span class="attr">#[cfg(feature = <span class="string">&quot;alloc&quot;</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">&quot;alloc&quot;</span>)))]
-#[derive(Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
-</span><span class="kw">pub struct </span>BitString {
-    <span class="doccomment">/// Number of unused bits in the final octet.
-    </span>unused_bits: u8,
+<span class="comment">// Implement by hand because the derive would create invalid values.
+// Use the constructor to create a valid value.
+</span><span class="attr">#[cfg(feature = <span class="string">&quot;arbitrary&quot;</span>)]
+</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; arbitrary::Arbitrary&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>BitStringRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">fn </span>arbitrary(u: <span class="kw-2">&amp;mut </span>arbitrary::Unstructured&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; arbitrary::Result&lt;<span class="self">Self</span>&gt; {
+        <span class="self">Self</span>::new(
+            u.int_in_range(<span class="number">0</span>..=<span class="self">Self</span>::MAX_UNUSED_BITS)<span class="question-mark">?</span>,
+            BytesRef::arbitrary(u)<span class="question-mark">?</span>.as_slice(),
+        )
+        .map_err(|<span class="kw">_</span>| arbitrary::Error::IncorrectFormat)
+    }
 
-    <span class="doccomment">/// Length of this `BIT STRING` in bits.
-    </span>bit_length: usize,
-
-    <span class="doccomment">/// Bitstring represented as a slice of bytes.
-    </span>inner: Vec&lt;u8&gt;,
+    <span class="kw">fn </span>size_hint(depth: usize) -&gt; (usize, <span class="prelude-ty">Option</span>&lt;usize&gt;) {
+        arbitrary::size_hint::and(u8::size_hint(depth), BytesRef::size_hint(depth))
+    }
 }
 
 <span class="attr">#[cfg(feature = <span class="string">&quot;alloc&quot;</span>)]
-</span><span class="kw">impl </span>BitString {
-    <span class="doccomment">/// Maximum number of unused bits allowed.
-    </span><span class="kw">pub const </span>MAX_UNUSED_BITS: u8 = <span class="number">7</span>;
+</span><span class="kw">pub use </span><span class="self">self</span>::allocating::BitString;
 
-    <span class="doccomment">/// Create a new ASN.1 `BIT STRING` from a byte slice.
+<span class="attr">#[cfg(feature = <span class="string">&quot;alloc&quot;</span>)]
+</span><span class="kw">mod </span>allocating {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span><span class="kw">crate</span>::referenced::<span class="kw-2">*</span>;
+    <span class="kw">use </span>alloc::vec::Vec;
+
+    <span class="doccomment">/// Owned form of ASN.1 `BIT STRING` type.
     ///
-    /// Accepts an optional number of &quot;unused bits&quot; (0-7) which are omitted
-    /// from the final octet. This number is 0 if the value is octet-aligned.
-    </span><span class="kw">pub fn </span>new(unused_bits: u8, bytes: <span class="kw">impl </span>Into&lt;Vec&lt;u8&gt;&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">let </span>inner = bytes.into();
+    /// This type provides the same functionality as [`BitStringRef`] but owns the
+    /// backing data.
+    </span><span class="attr">#[derive(Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
+    </span><span class="kw">pub struct </span>BitString {
+        <span class="doccomment">/// Number of unused bits in the final octet.
+        </span>unused_bits: u8,
 
-        <span class="comment">// Ensure parameters parse successfully as a `BitStringRef`.
-        </span><span class="kw">let </span>bit_length = BitStringRef::new(unused_bits, <span class="kw-2">&amp;</span>inner)<span class="question-mark">?</span>.bit_length;
+        <span class="doccomment">/// Length of this `BIT STRING` in bits.
+        </span>bit_length: usize,
 
-        <span class="prelude-val">Ok</span>(BitString {
-            unused_bits,
-            bit_length,
-            inner,
-        })
+        <span class="doccomment">/// Bitstring represented as a slice of bytes.
+        </span>inner: Vec&lt;u8&gt;,
     }
 
-    <span class="doccomment">/// Create a new ASN.1 `BIT STRING` from the given bytes.
-    ///
-    /// The &quot;unused bits&quot; are set to 0.
-    </span><span class="kw">pub fn </span>from_bytes(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
-        <span class="self">Self</span>::new(<span class="number">0</span>, bytes)
-    }
+    <span class="kw">impl </span>BitString {
+        <span class="doccomment">/// Maximum number of unused bits allowed.
+        </span><span class="kw">pub const </span>MAX_UNUSED_BITS: u8 = <span class="number">7</span>;
 
-    <span class="doccomment">/// Get the number of unused bits in the octet serialization of this
-    /// `BIT STRING`.
-    </span><span class="kw">pub fn </span>unused_bits(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u8 {
-        <span class="self">self</span>.unused_bits
-    }
+        <span class="doccomment">/// Create a new ASN.1 `BIT STRING` from a byte slice.
+        ///
+        /// Accepts an optional number of &quot;unused bits&quot; (0-7) which are omitted
+        /// from the final octet. This number is 0 if the value is octet-aligned.
+        </span><span class="kw">pub fn </span>new(unused_bits: u8, bytes: <span class="kw">impl </span>Into&lt;Vec&lt;u8&gt;&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
+            <span class="kw">let </span>inner = bytes.into();
 
-    <span class="doccomment">/// Is the number of unused bits a value other than 0?
-    </span><span class="kw">pub fn </span>has_unused_bits(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="self">self</span>.unused_bits != <span class="number">0
-    </span>}
+            <span class="comment">// Ensure parameters parse successfully as a `BitStringRef`.
+            </span><span class="kw">let </span>bit_length = BitStringRef::new(unused_bits, <span class="kw-2">&amp;</span>inner)<span class="question-mark">?</span>.bit_length;
 
-    <span class="doccomment">/// Get the length of this `BIT STRING` in bits.
-    </span><span class="kw">pub fn </span>bit_len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-        <span class="self">self</span>.bit_length
-    }
+            <span class="prelude-val">Ok</span>(BitString {
+                unused_bits,
+                bit_length,
+                inner,
+            })
+        }
 
-    <span class="doccomment">/// Is the inner byte slice empty?
-    </span><span class="kw">pub fn </span>is_empty(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="self">self</span>.inner.is_empty()
-    }
+        <span class="doccomment">/// Create a new ASN.1 `BIT STRING` from the given bytes.
+        ///
+        /// The &quot;unused bits&quot; are set to 0.
+        </span><span class="kw">pub fn </span>from_bytes(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
+            <span class="self">Self</span>::new(<span class="number">0</span>, bytes)
+        }
 
-    <span class="doccomment">/// Borrow the inner byte slice.
-    ///
-    /// Returns `None` if the number of unused bits is *not* equal to zero,
-    /// i.e. if the `BIT STRING` is not octet aligned.
-    ///
-    /// Use [`BitString::raw_bytes`] to obtain access to the raw value
-    /// regardless of the presence of unused bits.
-    </span><span class="kw">pub fn </span>as_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>[u8]&gt; {
-        <span class="kw">if </span><span class="self">self</span>.has_unused_bits() {
-            <span class="prelude-val">None
-        </span>} <span class="kw">else </span>{
-            <span class="prelude-val">Some</span>(<span class="self">self</span>.raw_bytes())
+        <span class="doccomment">/// Get the number of unused bits in the octet serialization of this
+        /// `BIT STRING`.
+        </span><span class="kw">pub fn </span>unused_bits(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u8 {
+            <span class="self">self</span>.unused_bits
+        }
+
+        <span class="doccomment">/// Is the number of unused bits a value other than 0?
+        </span><span class="kw">pub fn </span>has_unused_bits(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+            <span class="self">self</span>.unused_bits != <span class="number">0
+        </span>}
+
+        <span class="doccomment">/// Get the length of this `BIT STRING` in bits.
+        </span><span class="kw">pub fn </span>bit_len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+            <span class="self">self</span>.bit_length
+        }
+
+        <span class="doccomment">/// Is the inner byte slice empty?
+        </span><span class="kw">pub fn </span>is_empty(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+            <span class="self">self</span>.inner.is_empty()
+        }
+
+        <span class="doccomment">/// Borrow the inner byte slice.
+        ///
+        /// Returns `None` if the number of unused bits is *not* equal to zero,
+        /// i.e. if the `BIT STRING` is not octet aligned.
+        ///
+        /// Use [`BitString::raw_bytes`] to obtain access to the raw value
+        /// regardless of the presence of unused bits.
+        </span><span class="kw">pub fn </span>as_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>[u8]&gt; {
+            <span class="kw">if </span><span class="self">self</span>.has_unused_bits() {
+                <span class="prelude-val">None
+            </span>} <span class="kw">else </span>{
+                <span class="prelude-val">Some</span>(<span class="self">self</span>.raw_bytes())
+            }
+        }
+
+        <span class="doccomment">/// Borrow the raw bytes of this `BIT STRING`.
+        </span><span class="kw">pub fn </span>raw_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u8] {
+            <span class="self">self</span>.inner.as_slice()
+        }
+
+        <span class="doccomment">/// Iterator over the bits of this `BIT STRING`.
+        </span><span class="kw">pub fn </span>bits(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; BitStringIter&lt;<span class="lifetime">&#39;_</span>&gt; {
+            BitStringRef::from(<span class="self">self</span>).bits()
         }
     }
 
-    <span class="doccomment">/// Borrow the raw bytes of this `BIT STRING`.
-    </span><span class="kw">pub fn </span>raw_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u8] {
-        <span class="self">self</span>.inner.as_slice()
+    <span class="macro">impl_any_conversions!</span>(BitString);
+
+    <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; DecodeValue&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>BitString {
+        <span class="kw">fn </span>decode_value&lt;R: Reader&lt;<span class="lifetime">&#39;a</span>&gt;&gt;(reader: <span class="kw-2">&amp;mut </span>R, header: Header) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
+            <span class="kw">let </span>inner_len = (header.length - Length::ONE)<span class="question-mark">?</span>;
+            <span class="kw">let </span>unused_bits = reader.read_byte()<span class="question-mark">?</span>;
+            <span class="kw">let </span>inner = reader.read_vec(inner_len)<span class="question-mark">?</span>;
+            <span class="self">Self</span>::new(unused_bits, inner)
+        }
     }
 
-    <span class="doccomment">/// Iterator over the bits of this `BIT STRING`.
-    </span><span class="kw">pub fn </span>bits(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; BitStringIter&lt;<span class="lifetime">&#39;_</span>&gt; {
-        BitStringRef::from(<span class="self">self</span>).bits()
+    <span class="kw">impl </span>EncodeValue <span class="kw">for </span>BitString {
+        <span class="kw">fn </span>value_len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Length&gt; {
+            Length::ONE + Length::try_from(<span class="self">self</span>.inner.len())<span class="question-mark">?
+        </span>}
+
+        <span class="kw">fn </span>encode_value(<span class="kw-2">&amp;</span><span class="self">self</span>, writer: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>Writer) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+            writer.write_byte(<span class="self">self</span>.unused_bits)<span class="question-mark">?</span>;
+            writer.write(<span class="kw-2">&amp;</span><span class="self">self</span>.inner)
+        }
     }
-}
 
-<span class="attr">#[cfg(feature = <span class="string">&quot;alloc&quot;</span>)]
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; DecodeValue&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>BitString {
-    <span class="kw">fn </span>decode_value&lt;R: Reader&lt;<span class="lifetime">&#39;a</span>&gt;&gt;(reader: <span class="kw-2">&amp;mut </span>R, header: Header) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">let </span>inner_len = (header.length - Length::ONE)<span class="question-mark">?</span>;
-        <span class="kw">let </span>unused_bits = reader.read_byte()<span class="question-mark">?</span>;
-        <span class="kw">let </span>inner = reader.read_vec(inner_len)<span class="question-mark">?</span>;
-        <span class="self">Self</span>::new(unused_bits, inner)
+    <span class="kw">impl </span>FixedTag <span class="kw">for </span>BitString {
+        <span class="kw">const </span>TAG: Tag = Tag::BitString;
     }
-}
 
-<span class="attr">#[cfg(feature = <span class="string">&quot;alloc&quot;</span>)]
-</span><span class="kw">impl </span>EncodeValue <span class="kw">for </span>BitString {
-    <span class="kw">fn </span>value_len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Length&gt; {
-        Length::ONE + Length::try_from(<span class="self">self</span>.inner.len())<span class="question-mark">?
-    </span>}
-
-    <span class="kw">fn </span>encode_value(<span class="kw-2">&amp;</span><span class="self">self</span>, writer: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Writer) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        writer.write_byte(<span class="self">self</span>.unused_bits)<span class="question-mark">?</span>;
-        writer.write(<span class="kw-2">&amp;</span><span class="self">self</span>.inner)
+    <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; From&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>BitString&gt; <span class="kw">for </span>BitStringRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">fn </span>from(bit_string: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>BitString) -&gt; BitStringRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+            <span class="comment">// Ensured to parse successfully in constructor
+            </span>BitStringRef::new(bit_string.unused_bits, <span class="kw-2">&amp;</span>bit_string.inner)
+                .expect(<span class="string">&quot;invalid BIT STRING&quot;</span>)
+        }
     }
-}
 
-<span class="attr">#[cfg(feature = <span class="string">&quot;alloc&quot;</span>)]
-</span><span class="kw">impl </span>FixedTag <span class="kw">for </span>BitString {
-    <span class="kw">const </span>TAG: Tag = Tag::BitString;
-}
-
-<span class="attr">#[cfg(feature = <span class="string">&quot;alloc&quot;</span>)]
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; From&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>BitString&gt; <span class="kw">for </span>BitStringRef&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">fn </span>from(bit_string: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>BitString) -&gt; BitStringRef&lt;<span class="lifetime">&#39;a</span>&gt; {
-        <span class="comment">// Ensured to parse successfully in constructor
-        </span>BitStringRef::new(bit_string.unused_bits, <span class="kw-2">&amp;</span>bit_string.inner).expect(<span class="string">&quot;invalid BIT STRING&quot;</span>)
+    <span class="kw">impl </span>ValueOrd <span class="kw">for </span>BitString {
+        <span class="kw">fn </span>value_cmp(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Ordering&gt; {
+            <span class="kw">match </span><span class="self">self</span>.unused_bits.cmp(<span class="kw-2">&amp;</span>other.unused_bits) {
+                Ordering::Equal =&gt; <span class="self">self</span>.inner.der_cmp(<span class="kw-2">&amp;</span>other.inner),
+                ordering =&gt; <span class="prelude-val">Ok</span>(ordering),
+            }
+        }
     }
-}
 
-<span class="attr">#[cfg(feature = <span class="string">&quot;alloc&quot;</span>)]
-</span><span class="kw">impl </span>ValueOrd <span class="kw">for </span>BitString {
-    <span class="kw">fn </span>value_cmp(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Ordering&gt; {
-        <span class="kw">match </span><span class="self">self</span>.unused_bits.cmp(<span class="kw-2">&amp;</span>other.unused_bits) {
-            Ordering::Equal =&gt; <span class="self">self</span>.inner.der_cmp(<span class="kw-2">&amp;</span>other.inner),
-            ordering =&gt; <span class="prelude-val">Ok</span>(ordering),
+    <span class="comment">// Implement by hand because the derive would create invalid values.
+    // Use the constructor to create a valid value.
+    </span><span class="attr">#[cfg(feature = <span class="string">&quot;arbitrary&quot;</span>)]
+    </span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; arbitrary::Arbitrary&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>BitString {
+        <span class="kw">fn </span>arbitrary(u: <span class="kw-2">&amp;mut </span>arbitrary::Unstructured&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; arbitrary::Result&lt;<span class="self">Self</span>&gt; {
+            <span class="self">Self</span>::new(
+                u.int_in_range(<span class="number">0</span>..=<span class="self">Self</span>::MAX_UNUSED_BITS)<span class="question-mark">?</span>,
+                BytesRef::arbitrary(u)<span class="question-mark">?</span>.as_slice(),
+            )
+            .map_err(|<span class="kw">_</span>| arbitrary::Error::IncorrectFormat)
+        }
+
+        <span class="kw">fn </span>size_hint(depth: usize) -&gt; (usize, <span class="prelude-ty">Option</span>&lt;usize&gt;) {
+            arbitrary::size_hint::and(u8::size_hint(depth), BytesRef::size_hint(depth))
+        }
+    }
+
+    <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; RefToOwned&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>BitStringRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">type </span>Owned = BitString;
+        <span class="kw">fn </span>ref_to_owned(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Owned {
+            BitString {
+                unused_bits: <span class="self">self</span>.unused_bits,
+                bit_length: <span class="self">self</span>.bit_length,
+                inner: Vec::from(<span class="self">self</span>.inner.as_slice()),
+            }
+        }
+    }
+
+    <span class="kw">impl </span>OwnedToRef <span class="kw">for </span>BitString {
+        <span class="kw">type </span>Borrowed&lt;<span class="lifetime">&#39;a</span>&gt; = BitStringRef&lt;<span class="lifetime">&#39;a</span>&gt;;
+        <span class="kw">fn </span>owned_to_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Borrowed&lt;<span class="lifetime">&#39;_</span>&gt; {
+            <span class="self">self</span>.into()
         }
     }
 }
@@ -949,7 +1045,7 @@
         BitStringRef::new((lead % <span class="number">8</span>) <span class="kw">as </span>u8, buff)<span class="question-mark">?</span>.value_len()
     }
 
-    <span class="kw">fn </span>encode_value(<span class="kw-2">&amp;</span><span class="self">self</span>, writer: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Writer) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">fn </span>encode_value(<span class="kw-2">&amp;</span><span class="self">self</span>, writer: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>Writer) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">let </span>(lead, buff) = encode_flagset(<span class="self">self</span>);
         <span class="kw">let </span>buff = <span class="kw-2">&amp;</span>buff[..buff.len() - lead / <span class="number">8</span>];
         BitStringRef::new((lead % <span class="number">8</span>) <span class="kw">as </span>u8, buff)<span class="question-mark">?</span>.encode_value(writer)
@@ -990,7 +1086,7 @@
         <span class="macro">assert_eq!</span>(bits.len(), <span class="number">18</span>);
 
         <span class="kw">for </span>bit <span class="kw">in </span>[<span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>] {
-            <span class="macro">assert_eq!</span>(bits.next().unwrap() <span class="kw">as </span>u8, bit)
+            <span class="macro">assert_eq!</span>(u8::from(bits.next().unwrap()), bit)
         }
 
         <span class="comment">// Ensure `None` is returned on successive calls

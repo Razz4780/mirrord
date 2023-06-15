@@ -208,7 +208,20 @@
 <a href="#208" id="208">208</a>
 <a href="#209" id="209">209</a>
 <a href="#210" id="210">210</a>
-</pre><pre class="rust"><code><span class="kw">use </span>std::{fmt, marker::PhantomData, slice::Join, str::FromStr};
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+</pre><pre class="rust"><code><span class="kw">use </span>std::{collections::HashSet, fmt, hash::Hash, marker::PhantomData, slice::Join, str::FromStr};
 
 <span class="kw">use </span>schemars::JsonSchema;
 <span class="kw">use </span>serde::{
@@ -283,6 +296,19 @@
         <span class="kw">match </span><span class="self">self </span>{
             VecOrSingle::Single(val) =&gt; <span class="macro">vec!</span>[val],
             VecOrSingle::Multiple(vals) =&gt; vals,
+        }
+    }
+}
+
+<span class="kw">impl</span>&lt;T: Hash + Eq&gt; From&lt;VecOrSingle&lt;T&gt;&gt; <span class="kw">for </span>HashSet&lt;T&gt; {
+    <span class="kw">fn </span>from(value: VecOrSingle&lt;T&gt;) -&gt; <span class="self">Self </span>{
+        <span class="kw">match </span>value {
+            VecOrSingle::Single(val) =&gt; {
+                <span class="kw">let </span><span class="kw-2">mut </span>set = HashSet::with_capacity(<span class="number">1</span>);
+                set.insert(val);
+                set
+            }
+            VecOrSingle::Multiple(vals) =&gt; vals.into_iter().collect(),
         }
     }
 }

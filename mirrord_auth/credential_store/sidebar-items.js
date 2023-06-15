@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"opaque":[""],"static":["CREDENTIALS_DIR","CREDENTIALS_PATH"],"struct":["CredentialStore","CredentialStoreSync"]};

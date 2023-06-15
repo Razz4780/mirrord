@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["hazmat"],"struct":["Error"],"trait":["DigestSigner","DigestVerifier","Keypair","PrehashSignature","RandomizedDigestSigner","RandomizedSigner","Signature","Signer","SignerMut","Verifier"],"type":["Result"]};
+window.SIDEBAR_ITEMS = {"mod":["hazmat"],"struct":["Error"],"trait":["Keypair","KeypairRef","SignatureEncoding","Signer","SignerMut","Verifier"],"type":["Result"]};

@@ -81,6 +81,7 @@
 <a href="#81" id="81">81</a>
 <a href="#82" id="82">82</a>
 <a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
 </pre><pre class="rust"><code><span class="kw">use </span>mirrord_config::{util::VecOrSingle, LayerConfig};
 <span class="kw">use </span>tracing::trace;
 
@@ -106,6 +107,7 @@
     <span class="doccomment">/// Only load sip patch required hooks
     </span><span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
     </span>SIPOnly,
+
     <span class="doccomment">/// Skip on current process
     </span>Skip,
 }

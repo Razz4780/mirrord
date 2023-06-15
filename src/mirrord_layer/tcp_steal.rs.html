@@ -372,6 +372,16 @@
 <a href="#372" id="372">372</a>
 <a href="#373" id="373">373</a>
 <a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::{
     collections::{HashMap, HashSet},
     net::SocketAddr,
@@ -382,8 +392,8 @@
 <span class="kw">use </span>hyper::{body::Incoming, Response, StatusCode};
 <span class="kw">use </span>mirrord_protocol::{
     tcp::{
-        Filter, HttpRequest, HttpResponse, LayerTcpSteal, NewTcpConnection,
-        StealType::{All, FilteredHttp},
+        Filter, HttpFilter, HttpRequest, HttpResponse, LayerTcpSteal, NewTcpConnection,
+        StealType::{All, FilteredHttp, FilteredHttpEx},
         TcpClose, TcpData,
     },
     ClientMessage, ConnectionId, Port, RequestId,
@@ -406,6 +416,7 @@
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod </span>http_forwarding;
 
+<span class="kw">use </span><span class="self">self</span>::http::{HttpFilterSettings, LayerHttpFilter};
 <span class="kw">use </span><span class="kw">crate</span>::tcp_steal::http_forwarding::HttpForwarderError;
 
 <span class="kw">mod </span>http;
@@ -476,11 +487,8 @@
     /// This sender is cloned and moved into those tasks.
     </span>http_response_sender: Sender&lt;HttpResponse&gt;,
 
-    <span class="doccomment">/// A string with a header regex to filter HTTP requests by.
-    </span>http_filter: <span class="prelude-ty">Option</span>&lt;String&gt;,
-
-    <span class="doccomment">/// These ports would be filtered with the `http_filter`, if it&#39;s Some.
-    </span>http_ports: Vec&lt;u16&gt;,
+    <span class="doccomment">/// HTTP filter settings
+    </span>http_filter_settings: HttpFilterSettings,
 
     <span class="doccomment">/// LocalPort:RemotePort mapping.
     </span>port_mapping: BiMap&lt;u16, u16&gt;,
@@ -597,13 +605,27 @@
         <span class="self">self</span>.apply_port_mapping(<span class="kw-2">&amp;mut </span>listen);
         <span class="kw">let </span>request_port = listen.requested_port;
 
-        <span class="kw">if </span>!<span class="self">self</span>.ports_mut().insert(listen) {
-            <span class="macro">info!</span>(<span class="string">&quot;Port {request_port} already listening, might be on different address&quot;</span>);
+        <span class="kw">if </span><span class="self">self</span>.ports_mut().replace(listen).is_some() {
+            <span class="comment">// This can also be because we currently don&#39;t inform the tcp handler when an app closes
+            // a socket (stops listening).
+            </span><span class="macro">info!</span>(<span class="string">&quot;Received listen hook message for port {request_port} while already listening. Might be on different address&quot;</span>,);
             <span class="kw">return </span><span class="prelude-val">Ok</span>(());
         }
 
-        <span class="kw">let </span>steal_type = <span class="kw">if </span><span class="self">self</span>.http_ports.contains(<span class="kw-2">&amp;</span>original_port) &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>(filter_str) = <span class="self">self</span>.http_filter.take() {
-            FilteredHttp(request_port, Filter::new(filter_str)<span class="question-mark">?</span>)
+        <span class="kw">let </span>steal_type = <span class="kw">if </span><span class="self">self</span>.http_filter_settings.ports.contains(<span class="kw-2">&amp;</span>original_port) {
+            <span class="kw">match </span><span class="self">self</span>.http_filter_settings.filter {
+                LayerHttpFilter::None =&gt; All(request_port),
+                LayerHttpFilter::HeaderDeprecated(<span class="kw-2">ref </span>header) =&gt; {
+                    FilteredHttp(request_port, Filter::new(header.clone())<span class="question-mark">?</span>)
+                }
+                LayerHttpFilter::Header(<span class="kw-2">ref </span>header) =&gt; FilteredHttpEx(
+                    request_port,
+                    HttpFilter::Header(Filter::new(header.clone())<span class="question-mark">?</span>),
+                ),
+                LayerHttpFilter::Path(<span class="kw-2">ref </span>path) =&gt; {
+                    FilteredHttpEx(request_port, HttpFilter::Path(Filter::new(path.clone())<span class="question-mark">?</span>))
+                }
+            }
         } <span class="kw">else </span>{
             All(request_port)
         };
@@ -618,10 +640,9 @@
 
 <span class="kw">impl </span>TcpStealHandler {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(
-        http_filter: <span class="prelude-ty">Option</span>&lt;String&gt;,
-        http_ports: Vec&lt;u16&gt;,
         http_response_sender: Sender&lt;HttpResponse&gt;,
         port_mapping: BiMap&lt;u16, u16&gt;,
+        http_filter_settings: HttpFilterSettings,
     ) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             ports: Default::default(),
@@ -629,8 +650,7 @@
             read_streams: Default::default(),
             http_request_senders: Default::default(),
             http_response_sender,
-            http_filter,
-            http_ports,
+            http_filter_settings,
             port_mapping,
         }
     }

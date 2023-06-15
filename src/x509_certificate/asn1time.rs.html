@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/x509-certificate-0.16.0/src/asn1time.rs`."><title>asn1time.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="x509_certificate" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../x509_certificate/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/x509-certificate-0.19.0/src/asn1time.rs`."><title>asn1time.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="x509_certificate" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../x509_certificate/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -614,6 +614,24 @@
 <a href="#614" id="614">614</a>
 <a href="#615" id="615">615</a>
 <a href="#616" id="616">616</a>
+<a href="#617" id="617">617</a>
+<a href="#618" id="618">618</a>
+<a href="#619" id="619">619</a>
+<a href="#620" id="620">620</a>
+<a href="#621" id="621">621</a>
+<a href="#622" id="622">622</a>
+<a href="#623" id="623">623</a>
+<a href="#624" id="624">624</a>
+<a href="#625" id="625">625</a>
+<a href="#626" id="626">626</a>
+<a href="#627" id="627">627</a>
+<a href="#628" id="628">628</a>
+<a href="#629" id="629">629</a>
+<a href="#630" id="630">630</a>
+<a href="#631" id="631">631</a>
+<a href="#632" id="632">632</a>
+<a href="#633" id="633">633</a>
+<a href="#634" id="634">634</a>
 </pre><pre class="rust"><code><span class="comment">// This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -658,6 +676,18 @@
 <span class="kw">impl </span>Time {
     <span class="kw">pub fn </span>take_from&lt;S: Source&gt;(cons: <span class="kw-2">&amp;mut </span>Constructed&lt;S&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, DecodeError&lt;S::Error&gt;&gt; {
         cons.take_primitive(|tag, prim| <span class="kw">match </span>tag {
+            Tag::UTC_TIME =&gt; <span class="prelude-val">Ok</span>(<span class="self">Self</span>::UtcTime(UtcTime::from_primitive(prim)<span class="question-mark">?</span>)),
+            Tag::GENERALIZED_TIME =&gt; <span class="prelude-val">Ok</span>(<span class="self">Self</span>::GeneralTime(
+                GeneralizedTime::from_primitive_no_fractional_or_timezone_offsets(prim)<span class="question-mark">?</span>,
+            )),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(prim.content_err(<span class="macro">format!</span>(<span class="string">&quot;expected UTCTime or GeneralizedTime; got {}&quot;</span>, tag))),
+        })
+    }
+
+    <span class="kw">pub fn </span>take_opt_from&lt;S: Source&gt;(
+        cons: <span class="kw-2">&amp;mut </span>Constructed&lt;S&gt;,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt;, DecodeError&lt;S::Error&gt;&gt; {
+        cons.take_opt_primitive(|tag, prim| <span class="kw">match </span>tag {
             Tag::UTC_TIME =&gt; <span class="prelude-val">Ok</span>(<span class="self">Self</span>::UtcTime(UtcTime::from_primitive(prim)<span class="question-mark">?</span>)),
             Tag::GENERALIZED_TIME =&gt; <span class="prelude-val">Ok</span>(<span class="self">Self</span>::GeneralTime(
                 GeneralizedTime::from_primitive_no_fractional_or_timezone_offsets(prim)<span class="question-mark">?</span>,
@@ -874,15 +904,19 @@
                     <span class="kw">let </span>offset_seconds = (offset_hours * <span class="number">3600 </span>+ offset_minutes * <span class="number">60</span>) <span class="kw">as </span>i32;
 
                     Zone::Offset(<span class="kw">if </span>east {
-                        chrono::FixedOffset::east_opt(offset_seconds).ok_or_else(|| source.content_err(<span class="string">&quot;bad timezone time&quot;</span>))<span class="question-mark">?
+                        chrono::FixedOffset::east_opt(offset_seconds)
+                            .ok_or_else(|| source.content_err(<span class="string">&quot;bad timezone time&quot;</span>))<span class="question-mark">?
                     </span>} <span class="kw">else </span>{
-                        chrono::FixedOffset::west_opt(offset_seconds).ok_or_else(|| source.content_err(<span class="string">&quot;bad timezone offset&quot;</span>))<span class="question-mark">?
+                        chrono::FixedOffset::west_opt(offset_seconds)
+                            .ok_or_else(|| source.content_err(<span class="string">&quot;bad timezone offset&quot;</span>))<span class="question-mark">?
                     </span>})
                 }
             }
         };
 
-        <span class="kw">if let </span>chrono::LocalResult::Single(dt) = chrono::Utc.with_ymd_and_hms(year, month, day, hour, minute, second) {
+        <span class="kw">if let </span>chrono::LocalResult::Single(dt) =
+            chrono::Utc.with_ymd_and_hms(year, month, day, hour, minute, second)
+        {
             <span class="kw">if let </span><span class="prelude-val">Some</span>(dt) = dt.with_nanosecond(nano) {
                 <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
                     time: dt.naive_utc(),
@@ -989,7 +1023,9 @@
             <span class="kw">return </span><span class="prelude-val">Err</span>(prim.content_err(<span class="string">&quot;UTCTime must end with `Z`&quot;</span>));
         }
 
-        <span class="kw">if let </span>chrono::LocalResult::Single(dt) = chrono::Utc.with_ymd_and_hms(year, month, day, hour, minute, second) {
+        <span class="kw">if let </span>chrono::LocalResult::Single(dt) =
+            chrono::Utc.with_ymd_and_hms(year, month, day, hour, minute, second)
+        {
             <span class="prelude-val">Ok</span>(<span class="self">Self</span>(dt))
         } <span class="kw">else </span>{
             <span class="prelude-val">Err</span>(prim.content_err(<span class="string">&quot;invalid year month day hour minute second value&quot;</span>))

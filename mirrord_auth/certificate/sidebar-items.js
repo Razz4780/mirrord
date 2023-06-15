@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["x509_deserialize","x509_serialize"],"struct":["Certificate"]};

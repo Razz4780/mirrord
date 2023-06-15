@@ -255,38 +255,6 @@
 <a href="#255" id="255">255</a>
 <a href="#256" id="256">256</a>
 <a href="#257" id="257">257</a>
-<a href="#258" id="258">258</a>
-<a href="#259" id="259">259</a>
-<a href="#260" id="260">260</a>
-<a href="#261" id="261">261</a>
-<a href="#262" id="262">262</a>
-<a href="#263" id="263">263</a>
-<a href="#264" id="264">264</a>
-<a href="#265" id="265">265</a>
-<a href="#266" id="266">266</a>
-<a href="#267" id="267">267</a>
-<a href="#268" id="268">268</a>
-<a href="#269" id="269">269</a>
-<a href="#270" id="270">270</a>
-<a href="#271" id="271">271</a>
-<a href="#272" id="272">272</a>
-<a href="#273" id="273">273</a>
-<a href="#274" id="274">274</a>
-<a href="#275" id="275">275</a>
-<a href="#276" id="276">276</a>
-<a href="#277" id="277">277</a>
-<a href="#278" id="278">278</a>
-<a href="#279" id="279">279</a>
-<a href="#280" id="280">280</a>
-<a href="#281" id="281">281</a>
-<a href="#282" id="282">282</a>
-<a href="#283" id="283">283</a>
-<a href="#284" id="284">284</a>
-<a href="#285" id="285">285</a>
-<a href="#286" id="286">286</a>
-<a href="#287" id="287">287</a>
-<a href="#288" id="288">288</a>
-<a href="#289" id="289">289</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::{
     collections::{HashMap, HashSet},
     time::Duration,
@@ -308,10 +276,7 @@
 
 <span class="kw">use crate</span>::{
     connection::{create_and_connect, AgentConnectInfo, AgentConnection},
-    error::{
-        CliError,
-        CliError::{IncompatibleWithTargetless, TargetNamespaceWithoutTarget},
-    },
+    error::CliError,
     extract::extract_library,
     <span class="prelude-ty">Result</span>,
 };
@@ -346,7 +311,7 @@
     <span class="kw">where
         </span>P: Progress + Send + Sync,
     {
-        <span class="self">Self</span>::check_config_for_targetless_agent(config)<span class="question-mark">?</span>;
+        config.verify()<span class="question-mark">?</span>;
         <span class="kw">let </span>lib_path = extract_library(<span class="prelude-val">None</span>, progress, <span class="bool-val">true</span>)<span class="question-mark">?</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>env_vars = HashMap::new();
         <span class="kw">let </span>(connect_info, <span class="kw-2">mut </span>connection) = create_and_connect(config, progress).<span class="kw">await</span><span class="question-mark">?</span>;
@@ -532,35 +497,6 @@
             }
             msg =&gt; <span class="prelude-val">Err</span>(CliError::InvalidMessage(<span class="macro">format!</span>(<span class="string">&quot;{msg:#?}&quot;</span>))),
         }
-    }
-
-    <span class="doccomment">/// Some features are incompatible with targetless agents, return error if they are set and
-    /// there is no target.
-    ///
-    /// # Errors
-    ///
-    /// * [`IncompatibleWithTargetless`]
-    /// * [`TargetNamespaceWithoutTarget`]
-    </span><span class="kw">fn </span>check_config_for_targetless_agent(config: <span class="kw-2">&amp;</span>LayerConfig) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">if </span>config.target.path.is_none() {
-            <span class="kw">if </span>config.target.namespace.is_some() {
-                <span class="prelude-val">Err</span>(TargetNamespaceWithoutTarget)<span class="question-mark">?
-            </span>}
-            <span class="kw">if </span>config.feature.network.incoming.is_steal() {
-                <span class="prelude-val">Err</span>(IncompatibleWithTargetless(<span class="string">&quot;Steal mode&quot;</span>.into()))<span class="question-mark">?
-            </span>}
-            <span class="kw">if </span>config.agent.ephemeral {
-                <span class="prelude-val">Err</span>(IncompatibleWithTargetless(
-                    <span class="string">&quot;Using an ephemeral container for the agent&quot;</span>.into(),
-                ))<span class="question-mark">?
-            </span>}
-            <span class="kw">if </span>config.pause {
-                <span class="prelude-val">Err</span>(IncompatibleWithTargetless(
-                    <span class="string">&quot;The target pause feature&quot;</span>.into(),
-                ))<span class="question-mark">?
-            </span>}
-        }
-        <span class="prelude-val">Ok</span>(())
     }
 
     <span class="doccomment">/// Wait for the internal proxy to exit.

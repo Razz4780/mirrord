@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"trait":["PrehashSigner","PrehashVerifier","RandomizedPrehashSigner"]};
+window.SIDEBAR_ITEMS = {"trait":["PrehashSigner","PrehashVerifier"]};

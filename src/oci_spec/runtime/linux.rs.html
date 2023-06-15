@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/oci-spec-0.6.1/src/runtime/linux.rs`."><title>linux.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="oci_spec" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../oci_spec/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/oci-spec-0.6.0/src/runtime/linux.rs`."><title>linux.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="oci_spec" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../oci_spec/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1378,55 +1378,12 @@
 <a href="#1378" id="1378">1378</a>
 <a href="#1379" id="1379">1379</a>
 <a href="#1380" id="1380">1380</a>
-<a href="#1381" id="1381">1381</a>
-<a href="#1382" id="1382">1382</a>
-<a href="#1383" id="1383">1383</a>
-<a href="#1384" id="1384">1384</a>
-<a href="#1385" id="1385">1385</a>
-<a href="#1386" id="1386">1386</a>
-<a href="#1387" id="1387">1387</a>
-<a href="#1388" id="1388">1388</a>
-<a href="#1389" id="1389">1389</a>
-<a href="#1390" id="1390">1390</a>
-<a href="#1391" id="1391">1391</a>
-<a href="#1392" id="1392">1392</a>
-<a href="#1393" id="1393">1393</a>
-<a href="#1394" id="1394">1394</a>
-<a href="#1395" id="1395">1395</a>
-<a href="#1396" id="1396">1396</a>
-<a href="#1397" id="1397">1397</a>
-<a href="#1398" id="1398">1398</a>
-<a href="#1399" id="1399">1399</a>
-<a href="#1400" id="1400">1400</a>
-<a href="#1401" id="1401">1401</a>
-<a href="#1402" id="1402">1402</a>
-<a href="#1403" id="1403">1403</a>
-<a href="#1404" id="1404">1404</a>
-<a href="#1405" id="1405">1405</a>
-<a href="#1406" id="1406">1406</a>
-<a href="#1407" id="1407">1407</a>
-<a href="#1408" id="1408">1408</a>
-<a href="#1409" id="1409">1409</a>
-<a href="#1410" id="1410">1410</a>
-<a href="#1411" id="1411">1411</a>
-<a href="#1412" id="1412">1412</a>
-<a href="#1413" id="1413">1413</a>
-<a href="#1414" id="1414">1414</a>
-<a href="#1415" id="1415">1415</a>
-<a href="#1416" id="1416">1416</a>
-<a href="#1417" id="1417">1417</a>
-<a href="#1418" id="1418">1418</a>
-<a href="#1419" id="1419">1419</a>
-<a href="#1420" id="1420">1420</a>
-<a href="#1421" id="1421">1421</a>
-<a href="#1422" id="1422">1422</a>
-<a href="#1423" id="1423">1423</a>
 </pre><pre class="rust"><code><span class="kw">use </span><span class="kw">crate</span>::error::{oci_error, OciSpecError};
 
 <span class="kw">use </span>derive_builder::Builder;
 <span class="kw">use </span>getset::{CopyGetters, Getters, Setters};
 <span class="kw">use </span>serde::{Deserialize, Serialize};
-<span class="kw">use </span>std::{collections::HashMap, convert::TryFrom, path::PathBuf, vec};
+<span class="kw">use </span>std::{collections::HashMap, convert::TryFrom, path::PathBuf};
 
 <span class="attr">#[derive(Builder, Clone, Debug, Deserialize, Eq, Getters, Setters, PartialEq, Serialize)]
 #[serde(rename_all = <span class="string">&quot;camelCase&quot;</span>)]
@@ -1507,10 +1464,6 @@
     </span><span class="doccomment">/// Personality contains configuration for the Linux personality
     /// syscall.
     </span>personality: <span class="prelude-ty">Option</span>&lt;LinuxPersonality&gt;,
-
-    <span class="attr">#[serde(default, skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
-    </span><span class="doccomment">/// TimeOffsets specifies the offset for supporting time namespaces.
-    </span>time_offsets: <span class="prelude-ty">Option</span>&lt;HashMap&lt;String, String&gt;&gt;,
 }
 
 <span class="comment">// Default impl for Linux (see funtions for more info)
@@ -1555,34 +1508,6 @@
             seccomp: <span class="prelude-val">None</span>,
             intel_rdt: <span class="prelude-val">None</span>,
             personality: <span class="prelude-val">None</span>,
-            time_offsets: <span class="prelude-val">None</span>,
-        }
-    }
-}
-
-<span class="kw">impl </span>Linux {
-    <span class="doccomment">/// Return rootless Linux configuration.
-    </span><span class="kw">pub fn </span>rootless(uid: u32, gid: u32) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span><span class="kw-2">mut </span>namespaces = get_default_namespaces();
-        namespaces.retain(|ns| ns.typ != LinuxNamespaceType::Network);
-        namespaces.push(LinuxNamespace {
-            typ: LinuxNamespaceType::User,
-            ..Default::default()
-        });
-        <span class="self">Self </span>{
-            resources: <span class="prelude-val">None</span>,
-            uid_mappings: <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[LinuxIdMapping {
-                container_id: <span class="number">0</span>,
-                host_id: uid,
-                size: <span class="number">1</span>,
-            }]),
-            gid_mappings: <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[LinuxIdMapping {
-                container_id: <span class="number">0</span>,
-                host_id: gid,
-                size: <span class="number">1</span>,
-            }]),
-            namespaces: <span class="prelude-val">Some</span>(namespaces),
-            ..Default::default()
         }
     }
 }
@@ -1634,8 +1559,7 @@
     </span>P,
 }
 
-<span class="attr">#[allow(clippy::derivable_impls)] </span><span class="comment">// because making it clear that All is the default
-</span><span class="kw">impl </span>Default <span class="kw">for </span>LinuxDeviceType {
+<span class="kw">impl </span>Default <span class="kw">for </span>LinuxDeviceType {
     <span class="kw">fn </span>default() -&gt; LinuxDeviceType {
         LinuxDeviceType::A
     }
@@ -1681,18 +1605,16 @@
     </span><span class="doccomment">/// Allow or deny
     </span>allow: bool,
 
-    <span class="attr">#[serde(default, rename = <span class="string">&quot;type&quot;</span>, skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
+    <span class="attr">#[serde(default, rename = <span class="string">&quot;type&quot;</span>)]
     #[getset(get_copy = <span class="string">&quot;pub&quot;</span>, set = <span class="string">&quot;pub&quot;</span>)]
     </span><span class="doccomment">/// Device type, block, char, etc.
     </span>typ: <span class="prelude-ty">Option</span>&lt;LinuxDeviceType&gt;,
 
-    <span class="attr">#[serde(default, skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
-    #[getset(get_copy = <span class="string">&quot;pub&quot;</span>, set = <span class="string">&quot;pub&quot;</span>)]
+    <span class="attr">#[getset(get_copy = <span class="string">&quot;pub&quot;</span>, set = <span class="string">&quot;pub&quot;</span>)]
     </span><span class="doccomment">/// Device&#39;s major number
     </span>major: <span class="prelude-ty">Option</span>&lt;i64&gt;,
 
-    <span class="attr">#[serde(default, skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
-    #[getset(get_copy = <span class="string">&quot;pub&quot;</span>, set = <span class="string">&quot;pub&quot;</span>)]
+    <span class="attr">#[getset(get_copy = <span class="string">&quot;pub&quot;</span>, set = <span class="string">&quot;pub&quot;</span>)]
     </span><span class="doccomment">/// Device&#39;s minor number
     </span>minor: <span class="prelude-ty">Option</span>&lt;i64&gt;,
 
@@ -2210,9 +2132,6 @@
 
     <span class="doccomment">/// Network Namespace for isolating network devices, ports, stacks etc.
     </span>Network = <span class="number">0x40000000</span>,
-
-    <span class="doccomment">/// Time Namespace for isolating the clocks
-    </span>Time = <span class="number">0x00000080</span>,
 }
 
 <span class="kw">impl </span>TryFrom&lt;<span class="kw-2">&amp;</span>str&gt; <span class="kw">for </span>LinuxNamespaceType {
@@ -2227,10 +2146,10 @@
             <span class="string">&quot;user&quot; </span>=&gt; <span class="prelude-val">Ok</span>(LinuxNamespaceType::User),
             <span class="string">&quot;pid&quot; </span>=&gt; <span class="prelude-val">Ok</span>(LinuxNamespaceType::Pid),
             <span class="string">&quot;net&quot; </span>=&gt; <span class="prelude-val">Ok</span>(LinuxNamespaceType::Network),
-            <span class="string">&quot;time&quot; </span>=&gt; <span class="prelude-val">Ok</span>(LinuxNamespaceType::Time),
             <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(oci_error(<span class="macro">format!</span>(
-                <span class="string">&quot;unknown namespace {namespace}, could not convert&quot;
-            </span>))),
+                <span class="string">&quot;unknown namespace {}, could not convert&quot;</span>,
+                namespace
+            ))),
         }
     }
 }
@@ -2295,10 +2214,6 @@
         },
         LinuxNamespace {
             typ: LinuxNamespaceType::Mount,
-            path: Default::default(),
-        },
-        LinuxNamespace {
-            typ: LinuxNamespaceType::Cgroup,
             path: Default::default(),
         },
     ]
@@ -2598,7 +2513,6 @@
     PartialEq,
     Serialize,
 )]
-#[serde(rename_all = <span class="string">&quot;camelCase&quot;</span>)]
 #[builder(
     default,
     pattern = <span class="string">&quot;owned&quot;</span>,
@@ -2698,7 +2612,7 @@
 /// features and flags enabling Intel RDT CMT and MBM features.
 /// Intel RDT features are available in Linux 4.14 and newer kernel versions.
 </span><span class="kw">pub struct </span>LinuxIntelRdt {
-    <span class="attr">#[serde(default, skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>, rename = <span class="string">&quot;closID&quot;</span>)]
+    <span class="attr">#[serde(default, skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
     </span><span class="doccomment">/// The identity for RDT Class of Service.
     </span>clos_id: <span class="prelude-ty">Option</span>&lt;String&gt;,
 

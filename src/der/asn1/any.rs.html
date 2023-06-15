@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/der-0.6.1/src/asn1/any.rs`."><title>any.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="der" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/RustCrypto/media/6ee8e381/logo.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../der/index.html"><img src="https://raw.githubusercontent.com/RustCrypto/media/6ee8e381/logo.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/der-0.7.6/src/asn1/any.rs`."><title>any.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fbd14db5c88ed452.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="der" data-themes="" data-resource-suffix="" data-rustdoc-version="1.70.0-nightly (478cbb42b 2023-03-28)" data-search-js="search-bc5a112813b5d712.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" data-theme-light-css="light-db279b6232be9c13.css" data-theme-dark-css="dark-cf923f49f397b216.css" data-theme-ayu-css="ayu-be46fdc453a55015.css" ></div><script src="../../../static.files/storage-d4a1a279bad1a0c0.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-9ade54abd4bd73c8.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/RustCrypto/media/6ee8e381/logo.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../der/index.html"><img src="https://raw.githubusercontent.com/RustCrypto/media/6ee8e381/logo.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -282,19 +282,49 @@
 <a href="#282" id="282">282</a>
 <a href="#283" id="283">283</a>
 <a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
 </pre><pre class="rust"><code><span class="doccomment">//! ASN.1 `ANY` type.
 
+</span><span class="attr">#![cfg_attr(feature = <span class="string">&quot;arbitrary&quot;</span>, allow(clippy::integer_arithmetic))]
+
 </span><span class="kw">use crate</span>::{
-    asn1::<span class="kw-2">*</span>, ByteSlice, Choice, Decode, DecodeValue, DerOrd, EncodeValue, Error, ErrorKind,
-    FixedTag, Header, Length, Reader, <span class="prelude-ty">Result</span>, SliceReader, Tag, Tagged, ValueOrd, Writer,
+    BytesRef, Choice, Decode, DecodeValue, DerOrd, EncodeValue, Error, ErrorKind, Header, Length,
+    Reader, <span class="prelude-ty">Result</span>, SliceReader, Tag, Tagged, ValueOrd, Writer,
 };
 <span class="kw">use </span>core::cmp::Ordering;
 
 <span class="attr">#[cfg(feature = <span class="string">&quot;alloc&quot;</span>)]
-</span><span class="kw">use </span>alloc::vec::Vec;
-
-<span class="attr">#[cfg(feature = <span class="string">&quot;oid&quot;</span>)]
-</span><span class="kw">use </span><span class="kw">crate</span>::asn1::ObjectIdentifier;
+</span><span class="kw">use </span><span class="kw">crate</span>::SliceWriter;
 
 <span class="doccomment">/// ASN.1 `ANY`: represents any explicitly tagged ASN.1 value.
 ///
@@ -307,30 +337,31 @@
 /// Nevertheless, this crate defines an `ANY` type as it remains a familiar
 /// and useful concept which is still extensively used in things like
 /// PKI-related RFCs.
-</span><span class="attr">#[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
+</span><span class="attr">#[cfg_attr(feature = <span class="string">&quot;arbitrary&quot;</span>, derive(arbitrary::Arbitrary))]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
 </span><span class="kw">pub struct </span>AnyRef&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="doccomment">/// Tag representing the type of the encoded value.
     </span>tag: Tag,
 
     <span class="doccomment">/// Inner value encoded as bytes.
-    </span>value: ByteSlice&lt;<span class="lifetime">&#39;a</span>&gt;,
+    </span>value: BytesRef&lt;<span class="lifetime">&#39;a</span>&gt;,
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; AnyRef&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="doccomment">/// [`AnyRef`] representation of the ASN.1 `NULL` type.
     </span><span class="kw">pub const </span>NULL: <span class="self">Self </span>= <span class="self">Self </span>{
         tag: Tag::Null,
-        value: ByteSlice::EMPTY,
+        value: BytesRef::EMPTY,
     };
 
     <span class="doccomment">/// Create a new [`AnyRef`] from the provided [`Tag`] and DER bytes.
     </span><span class="kw">pub fn </span>new(tag: Tag, bytes: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">let </span>value = ByteSlice::new(bytes).map_err(|<span class="kw">_</span>| ErrorKind::Length { tag })<span class="question-mark">?</span>;
+        <span class="kw">let </span>value = BytesRef::new(bytes).map_err(|<span class="kw">_</span>| ErrorKind::Length { tag })<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="self">Self </span>{ tag, value })
     }
 
-    <span class="doccomment">/// Infallible creation of an [`AnyRef`] from a [`ByteSlice`].
-    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>from_tag_and_value(tag: Tag, value: ByteSlice&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="self">Self </span>{
+    <span class="doccomment">/// Infallible creation of an [`AnyRef`] from a [`BytesRef`].
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>from_tag_and_value(tag: Tag, value: BytesRef&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{ tag, value }
     }
 
@@ -340,11 +371,14 @@
     }
 
     <span class="doccomment">/// Attempt to decode this [`AnyRef`] type into the inner value.
-    </span><span class="kw">pub fn </span>decode_into&lt;T&gt;(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;T&gt;
+    </span><span class="kw">pub fn </span>decode_as&lt;T&gt;(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;T&gt;
     <span class="kw">where
-        </span>T: DecodeValue&lt;<span class="lifetime">&#39;a</span>&gt; + FixedTag,
+        </span>T: Choice&lt;<span class="lifetime">&#39;a</span>&gt; + DecodeValue&lt;<span class="lifetime">&#39;a</span>&gt;,
     {
-        <span class="self">self</span>.tag.assert_eq(T::TAG)<span class="question-mark">?</span>;
+        <span class="kw">if </span>!T::can_decode(<span class="self">self</span>.tag) {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="self">self</span>.tag.unexpected_error(<span class="prelude-val">None</span>));
+        }
+
         <span class="kw">let </span>header = Header {
             tag: <span class="self">self</span>.tag,
             length: <span class="self">self</span>.value.len(),
@@ -360,68 +394,6 @@
         <span class="self">self </span>== <span class="self">Self</span>::NULL
     }
 
-    <span class="doccomment">/// Attempt to decode an ASN.1 `BIT STRING`.
-    </span><span class="kw">pub fn </span>bit_string(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;BitStringRef&lt;<span class="lifetime">&#39;a</span>&gt;&gt; {
-        <span class="self">self</span>.try_into()
-    }
-
-    <span class="doccomment">/// Attempt to decode an ASN.1 `CONTEXT-SPECIFIC` field.
-    </span><span class="kw">pub fn </span>context_specific&lt;T&gt;(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;ContextSpecific&lt;T&gt;&gt;
-    <span class="kw">where
-        </span>T: Decode&lt;<span class="lifetime">&#39;a</span>&gt;,
-    {
-        <span class="self">self</span>.try_into()
-    }
-
-    <span class="doccomment">/// Attempt to decode an ASN.1 `GeneralizedTime`.
-    </span><span class="kw">pub fn </span>generalized_time(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;GeneralizedTime&gt; {
-        <span class="self">self</span>.try_into()
-    }
-
-    <span class="doccomment">/// Attempt to decode an ASN.1 `IA5String`.
-    </span><span class="kw">pub fn </span>ia5_string(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Ia5StringRef&lt;<span class="lifetime">&#39;a</span>&gt;&gt; {
-        <span class="self">self</span>.try_into()
-    }
-
-    <span class="doccomment">/// Attempt to decode an ASN.1 `OCTET STRING`.
-    </span><span class="kw">pub fn </span>octet_string(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;OctetStringRef&lt;<span class="lifetime">&#39;a</span>&gt;&gt; {
-        <span class="self">self</span>.try_into()
-    }
-
-    <span class="doccomment">/// Attempt to decode an ASN.1 `OBJECT IDENTIFIER`.
-    </span><span class="attr">#[cfg(feature = <span class="string">&quot;oid&quot;</span>)]
-    #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">&quot;oid&quot;</span>)))]
-    </span><span class="kw">pub fn </span>oid(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;ObjectIdentifier&gt; {
-        <span class="self">self</span>.try_into()
-    }
-
-    <span class="doccomment">/// Attempt to decode an ASN.1 `OPTIONAL` value.
-    </span><span class="kw">pub fn </span>optional&lt;T&gt;(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;T&gt;&gt;
-    <span class="kw">where
-        </span>T: Choice&lt;<span class="lifetime">&#39;a</span>&gt; + TryFrom&lt;<span class="self">Self</span>, Error = Error&gt;,
-    {
-        <span class="kw">if </span>T::can_decode(<span class="self">self</span>.tag) {
-            T::try_from(<span class="self">self</span>).map(<span class="prelude-val">Some</span>)
-        } <span class="kw">else </span>{
-            <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
-        }
-    }
-
-    <span class="doccomment">/// Attempt to decode an ASN.1 `PrintableString`.
-    </span><span class="kw">pub fn </span>printable_string(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;PrintableStringRef&lt;<span class="lifetime">&#39;a</span>&gt;&gt; {
-        <span class="self">self</span>.try_into()
-    }
-
-    <span class="doccomment">/// Attempt to decode an ASN.1 `TeletexString`.
-    </span><span class="kw">pub fn </span>teletex_string(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;TeletexStringRef&lt;<span class="lifetime">&#39;a</span>&gt;&gt; {
-        <span class="self">self</span>.try_into()
-    }
-
-    <span class="doccomment">/// Attempt to decode an ASN.1 `VideotexString`.
-    </span><span class="kw">pub fn </span>videotex_string(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;VideotexStringRef&lt;<span class="lifetime">&#39;a</span>&gt;&gt; {
-        <span class="self">self</span>.try_into()
-    }
-
     <span class="doccomment">/// Attempt to decode this value an ASN.1 `SEQUENCE`, creating a new
     /// nested reader and calling the provided argument with it.
     </span><span class="kw">pub fn </span>sequence&lt;F, T&gt;(<span class="self">self</span>, f: F) -&gt; <span class="prelude-ty">Result</span>&lt;T&gt;
@@ -432,16 +404,6 @@
         <span class="kw">let </span><span class="kw-2">mut </span>reader = SliceReader::new(<span class="self">self</span>.value.as_slice())<span class="question-mark">?</span>;
         <span class="kw">let </span>result = f(<span class="kw-2">&amp;mut </span>reader)<span class="question-mark">?</span>;
         reader.finish(result)
-    }
-
-    <span class="doccomment">/// Attempt to decode an ASN.1 `UTCTime`.
-    </span><span class="kw">pub fn </span>utc_time(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;UtcTime&gt; {
-        <span class="self">self</span>.try_into()
-    }
-
-    <span class="doccomment">/// Attempt to decode an ASN.1 `UTF8String`.
-    </span><span class="kw">pub fn </span>utf8_string(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Utf8StringRef&lt;<span class="lifetime">&#39;a</span>&gt;&gt; {
-        <span class="self">self</span>.try_into()
     }
 }
 
@@ -454,10 +416,15 @@
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Decode&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>AnyRef&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">fn </span>decode&lt;R: Reader&lt;<span class="lifetime">&#39;a</span>&gt;&gt;(reader: <span class="kw-2">&amp;mut </span>R) -&gt; <span class="prelude-ty">Result</span>&lt;AnyRef&lt;<span class="lifetime">&#39;a</span>&gt;&gt; {
         <span class="kw">let </span>header = Header::decode(reader)<span class="question-mark">?</span>;
+        <span class="self">Self</span>::decode_value(reader, header)
+    }
+}
 
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; DecodeValue&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>AnyRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">fn </span>decode_value&lt;R: Reader&lt;<span class="lifetime">&#39;a</span>&gt;&gt;(reader: <span class="kw-2">&amp;mut </span>R, header: Header) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
         <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
             tag: header.tag,
-            value: ByteSlice::decode_value(reader, header)<span class="question-mark">?</span>,
+            value: BytesRef::decode_value(reader, header)<span class="question-mark">?</span>,
         })
     }
 }
@@ -467,7 +434,7 @@
         <span class="prelude-val">Ok</span>(<span class="self">self</span>.value.len())
     }
 
-    <span class="kw">fn </span>encode_value(<span class="kw-2">&amp;</span><span class="self">self</span>, writer: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Writer) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">fn </span>encode_value(<span class="kw-2">&amp;</span><span class="self">self</span>, writer: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>Writer) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         writer.write(<span class="self">self</span>.value())
     }
 }
@@ -484,8 +451,8 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; From&lt;AnyRef&lt;<span class="lifetime">&#39;a</span>&gt;&gt; <span class="kw">for </span>ByteSlice&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">fn </span>from(any: AnyRef&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; ByteSlice&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; From&lt;AnyRef&lt;<span class="lifetime">&#39;a</span>&gt;&gt; <span class="kw">for </span>BytesRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">fn </span>from(any: AnyRef&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; BytesRef&lt;<span class="lifetime">&#39;a</span>&gt; {
         any.value
     }
 }
@@ -498,72 +465,167 @@
     }
 }
 
-<span class="doccomment">/// ASN.1 `ANY`: represents any explicitly tagged ASN.1 value.
-///
-/// This type provides the same functionality as [`AnyRef`] but owns the
-/// backing data.
-</span><span class="attr">#[cfg(feature = <span class="string">&quot;alloc&quot;</span>)]
-#[cfg_attr(docsrs, doc(cfg(feature = <span class="string">&quot;alloc&quot;</span>)))]
-#[derive(Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
-</span><span class="kw">pub struct </span>Any {
-    <span class="doccomment">/// Tag representing the type of the encoded value.
-    </span>tag: Tag,
-
-    <span class="doccomment">/// Inner value encoded as bytes.
-    </span>value: Vec&lt;u8&gt;,
-}
+<span class="attr">#[cfg(feature = <span class="string">&quot;alloc&quot;</span>)]
+</span><span class="kw">pub use </span><span class="self">self</span>::allocating::Any;
 
 <span class="attr">#[cfg(feature = <span class="string">&quot;alloc&quot;</span>)]
-</span><span class="kw">impl </span>Any {
-    <span class="doccomment">/// Create a new [`Any`] from the provided [`Tag`] and DER bytes.
-    </span><span class="kw">pub fn </span>new(tag: Tag, bytes: <span class="kw">impl </span>Into&lt;Vec&lt;u8&gt;&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">let </span>value = bytes.into();
+</span><span class="kw">mod </span>allocating {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use crate</span>::{referenced::<span class="kw-2">*</span>, BytesOwned};
+    <span class="kw">use </span>alloc::boxed::Box;
 
-        <span class="comment">// Ensure the tag and value are a valid `AnyRef`.
-        </span>AnyRef::new(tag, <span class="kw-2">&amp;</span>value)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(<span class="self">Self </span>{ tag, value })
-    }
-}
+    <span class="doccomment">/// ASN.1 `ANY`: represents any explicitly tagged ASN.1 value.
+    ///
+    /// This type provides the same functionality as [`AnyRef`] but owns the
+    /// backing data.
+    </span><span class="attr">#[cfg_attr(feature = <span class="string">&quot;arbitrary&quot;</span>, derive(arbitrary::Arbitrary))]
+    #[derive(Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
+    </span><span class="kw">pub struct </span>Any {
+        <span class="doccomment">/// Tag representing the type of the encoded value.
+        </span>tag: Tag,
 
-<span class="attr">#[cfg(feature = <span class="string">&quot;alloc&quot;</span>)]
-</span><span class="kw">impl </span>Choice&lt;<span class="lifetime">&#39;_</span>&gt; <span class="kw">for </span>Any {
-    <span class="kw">fn </span>can_decode(<span class="kw">_</span>: Tag) -&gt; bool {
-        <span class="bool-val">true
-    </span>}
-}
-
-<span class="attr">#[cfg(feature = <span class="string">&quot;alloc&quot;</span>)]
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Decode&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Any {
-    <span class="kw">fn </span>decode&lt;R: Reader&lt;<span class="lifetime">&#39;a</span>&gt;&gt;(reader: <span class="kw-2">&amp;mut </span>R) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">let </span>header = Header::decode(reader)<span class="question-mark">?</span>;
-        <span class="kw">let </span>value = reader.read_vec(header.length)<span class="question-mark">?</span>;
-        <span class="self">Self</span>::new(header.tag, value)
-    }
-}
-
-<span class="attr">#[cfg(feature = <span class="string">&quot;alloc&quot;</span>)]
-</span><span class="kw">impl </span>EncodeValue <span class="kw">for </span>Any {
-    <span class="kw">fn </span>value_len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Length&gt; {
-        <span class="self">self</span>.value.len().try_into()
+        <span class="doccomment">/// Inner value encoded as bytes.
+        </span>value: BytesOwned,
     }
 
-    <span class="kw">fn </span>encode_value(<span class="kw-2">&amp;</span><span class="self">self</span>, writer: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Writer) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        writer.write(<span class="kw-2">&amp;</span><span class="self">self</span>.value)
-    }
-}
+    <span class="kw">impl </span>Any {
+        <span class="doccomment">/// Create a new [`Any`] from the provided [`Tag`] and DER bytes.
+        </span><span class="kw">pub fn </span>new(tag: Tag, bytes: <span class="kw">impl </span>Into&lt;Box&lt;[u8]&gt;&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
+            <span class="kw">let </span>value = BytesOwned::new(bytes)<span class="question-mark">?</span>;
 
-<span class="attr">#[cfg(feature = <span class="string">&quot;alloc&quot;</span>)]
-</span><span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; From&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Any&gt; <span class="kw">for </span>AnyRef&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">fn </span>from(any: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Any) -&gt; AnyRef&lt;<span class="lifetime">&#39;a</span>&gt; {
-        <span class="comment">// Ensured to parse successfully in constructor
-        </span>AnyRef::new(any.tag, <span class="kw-2">&amp;</span>any.value).expect(<span class="string">&quot;invalid ANY&quot;</span>)
-    }
-}
+            <span class="comment">// Ensure the tag and value are a valid `AnyRef`.
+            </span>AnyRef::new(tag, value.as_slice())<span class="question-mark">?</span>;
+            <span class="prelude-val">Ok</span>(<span class="self">Self </span>{ tag, value })
+        }
 
-<span class="attr">#[cfg(feature = <span class="string">&quot;alloc&quot;</span>)]
-</span><span class="kw">impl </span>Tagged <span class="kw">for </span>Any {
-    <span class="kw">fn </span>tag(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Tag {
-        <span class="self">self</span>.tag
+        <span class="doccomment">/// Allow access to value
+        </span><span class="kw">pub fn </span>value(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u8] {
+            <span class="self">self</span>.value.as_slice()
+        }
+
+        <span class="doccomment">/// Attempt to decode this [`Any`] type into the inner value.
+        </span><span class="kw">pub fn </span>decode_as&lt;<span class="lifetime">&#39;a</span>, T&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;T&gt;
+        <span class="kw">where
+            </span>T: Choice&lt;<span class="lifetime">&#39;a</span>&gt; + DecodeValue&lt;<span class="lifetime">&#39;a</span>&gt;,
+        {
+            AnyRef::from(<span class="self">self</span>).decode_as()
+        }
+
+        <span class="doccomment">/// Encode the provided type as an [`Any`] value.
+        </span><span class="kw">pub fn </span>encode_from&lt;T&gt;(msg: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt;
+        <span class="kw">where
+            </span>T: Tagged + EncodeValue,
+        {
+            <span class="kw">let </span>encoded_len = usize::try_from(msg.value_len()<span class="question-mark">?</span>)<span class="question-mark">?</span>;
+            <span class="kw">let </span><span class="kw-2">mut </span>buf = <span class="macro">vec!</span>[<span class="number">0u8</span>; encoded_len];
+            <span class="kw">let </span><span class="kw-2">mut </span>writer = SliceWriter::new(<span class="kw-2">&amp;mut </span>buf);
+            msg.encode_value(<span class="kw-2">&amp;mut </span>writer)<span class="question-mark">?</span>;
+            writer.finish()<span class="question-mark">?</span>;
+            Any::new(msg.tag(), buf)
+        }
+
+        <span class="doccomment">/// Attempt to decode this value an ASN.1 `SEQUENCE`, creating a new
+        /// nested reader and calling the provided argument with it.
+        </span><span class="kw">pub fn </span>sequence&lt;<span class="lifetime">&#39;a</span>, F, T&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, f: F) -&gt; <span class="prelude-ty">Result</span>&lt;T&gt;
+        <span class="kw">where
+            </span>F: FnOnce(<span class="kw-2">&amp;mut </span>SliceReader&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;T&gt;,
+        {
+            AnyRef::from(<span class="self">self</span>).sequence(f)
+        }
+
+        <span class="doccomment">/// [`Any`] representation of the ASN.1 `NULL` type.
+        </span><span class="kw">pub fn </span>null() -&gt; <span class="self">Self </span>{
+            <span class="self">Self </span>{
+                tag: Tag::Null,
+                value: BytesOwned::default(),
+            }
+        }
+    }
+
+    <span class="kw">impl </span>Choice&lt;<span class="lifetime">&#39;_</span>&gt; <span class="kw">for </span>Any {
+        <span class="kw">fn </span>can_decode(<span class="kw">_</span>: Tag) -&gt; bool {
+            <span class="bool-val">true
+        </span>}
+    }
+
+    <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Decode&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Any {
+        <span class="kw">fn </span>decode&lt;R: Reader&lt;<span class="lifetime">&#39;a</span>&gt;&gt;(reader: <span class="kw-2">&amp;mut </span>R) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
+            <span class="kw">let </span>header = Header::decode(reader)<span class="question-mark">?</span>;
+            <span class="self">Self</span>::decode_value(reader, header)
+        }
+    }
+
+    <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; DecodeValue&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>Any {
+        <span class="kw">fn </span>decode_value&lt;R: Reader&lt;<span class="lifetime">&#39;a</span>&gt;&gt;(reader: <span class="kw-2">&amp;mut </span>R, header: Header) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
+            <span class="kw">let </span>value = reader.read_vec(header.length)<span class="question-mark">?</span>;
+            <span class="self">Self</span>::new(header.tag, value)
+        }
+    }
+
+    <span class="kw">impl </span>EncodeValue <span class="kw">for </span>Any {
+        <span class="kw">fn </span>value_len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Length&gt; {
+            <span class="prelude-val">Ok</span>(<span class="self">self</span>.value.len())
+        }
+
+        <span class="kw">fn </span>encode_value(<span class="kw-2">&amp;</span><span class="self">self</span>, writer: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>Writer) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+            writer.write(<span class="self">self</span>.value.as_slice())
+        }
+    }
+
+    <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; From&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Any&gt; <span class="kw">for </span>AnyRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">fn </span>from(any: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Any) -&gt; AnyRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+            <span class="comment">// Ensured to parse successfully in constructor
+            </span>AnyRef::new(any.tag, any.value.as_slice()).expect(<span class="string">&quot;invalid ANY&quot;</span>)
+        }
+    }
+
+    <span class="kw">impl </span>Tagged <span class="kw">for </span>Any {
+        <span class="kw">fn </span>tag(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Tag {
+            <span class="self">self</span>.tag
+        }
+    }
+
+    <span class="kw">impl </span>ValueOrd <span class="kw">for </span>Any {
+        <span class="kw">fn </span>value_cmp(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Ordering&gt; {
+            <span class="self">self</span>.value.der_cmp(<span class="kw-2">&amp;</span>other.value)
+        }
+    }
+
+    <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T&gt; From&lt;T&gt; <span class="kw">for </span>Any
+    <span class="kw">where
+        </span>T: Into&lt;AnyRef&lt;<span class="lifetime">&#39;a</span>&gt;&gt;,
+    {
+        <span class="kw">fn </span>from(input: T) -&gt; Any {
+            <span class="kw">let </span>anyref: AnyRef&lt;<span class="lifetime">&#39;a</span>&gt; = input.into();
+            <span class="self">Self </span>{
+                tag: anyref.tag(),
+                value: BytesOwned::from(anyref.value),
+            }
+        }
+    }
+
+    <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; RefToOwned&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>AnyRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+        <span class="kw">type </span>Owned = Any;
+        <span class="kw">fn </span>ref_to_owned(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Owned {
+            Any {
+                tag: <span class="self">self</span>.tag(),
+                value: BytesOwned::from(<span class="self">self</span>.value),
+            }
+        }
+    }
+
+    <span class="kw">impl </span>OwnedToRef <span class="kw">for </span>Any {
+        <span class="kw">type </span>Borrowed&lt;<span class="lifetime">&#39;a</span>&gt; = AnyRef&lt;<span class="lifetime">&#39;a</span>&gt;;
+        <span class="kw">fn </span>owned_to_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Borrowed&lt;<span class="lifetime">&#39;_</span>&gt; {
+            <span class="self">self</span>.into()
+        }
+    }
+
+    <span class="kw">impl </span>Any {
+        <span class="doccomment">/// Is this value an ASN.1 `NULL` value?
+        </span><span class="kw">pub fn </span>is_null(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+            <span class="self">self</span>.owned_to_ref() == AnyRef::NULL
+        }
     }
 }
 </code></pre></div></section></main></body></html>

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["v1","v2"],"opaque":[""],"static":["CALLSITE","META"],"struct":["ConnectionTask"],"trait":["HttpV"]};
+window.SIDEBAR_ITEMS = {"enum":["LayerHttpFilter"],"mod":["v1","v2"],"opaque":[""],"static":["CALLSITE","META"],"struct":["ConnectionTask","HttpFilterSettings"],"trait":["HttpV"]};
