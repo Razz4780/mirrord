@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"opaque":[""],"static":["CALLSITE","META"],"struct":["HttpV2"]};
+window.SIDEBAR_ITEMS = {"static":["CALLSITE"],"struct":["HttpV2"]};

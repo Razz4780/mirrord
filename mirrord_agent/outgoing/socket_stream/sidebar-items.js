@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["SocketStream"],"opaque":[""]};
+window.SIDEBAR_ITEMS = {"enum":["SocketStream"]};

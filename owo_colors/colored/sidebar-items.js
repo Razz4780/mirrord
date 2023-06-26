@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Color"]};
+window.SIDEBAR_ITEMS = {};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["BRANCHES","DNS_PORT"],"fn":["connect","resolve_dns"],"opaque":[""],"static":["CALLSITE","META","NAMESERVER"],"struct":["UdpOutgoingApi"],"type":["Daemon","Layer"]};
+window.SIDEBAR_ITEMS = {"constant":["BRANCHES","DNS_PORT"],"fn":["connect","resolve_dns"],"static":["CALLSITE","NAMESERVER"],"struct":["UdpOutgoingApi"],"type":["Daemon","Layer"]};

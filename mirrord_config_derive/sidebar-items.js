@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"derive":["MirrordConfig"],"mod":["config"],"static":["_DECLS"]};
+window.SIDEBAR_ITEMS = {"derive":["MirrordConfig"],"mod":["config"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["PAUSE_WITHOUT_STEAL_WARNING"],"mod":["agent","config","feature","target","util"],"static":["CALLSITE","META"],"struct":["LayerConfig","LayerFileConfig"]};
+window.SIDEBAR_ITEMS = {"constant":["PAUSE_WITHOUT_STEAL_WARNING"],"mod":["agent","config","feature","target","util"],"static":["CALLSITE"],"struct":["LayerConfig","LayerFileConfig"]};

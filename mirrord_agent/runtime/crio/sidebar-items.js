@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"opaque":[""],"static":["CALLSITE","CRIO_DEFAULT_SOCK_PATH","META"],"struct":["ContainerStatus","CriOContainer"]};
+window.SIDEBAR_ITEMS = {"static":["CALLSITE","CRIO_DEFAULT_SOCK_PATH"],"struct":["ContainerStatus","CriOContainer"]};

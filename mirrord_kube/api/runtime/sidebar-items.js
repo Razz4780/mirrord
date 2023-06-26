@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["ContainerRuntime"],"opaque":[""],"struct":["RuntimeData"],"trait":["RuntimeDataProvider"]};
+window.SIDEBAR_ITEMS = {"enum":["ContainerRuntime"],"struct":["RuntimeData"],"trait":["RuntimeDataProvider"]};

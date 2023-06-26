@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["build_regex_or_none","generate_local_set","generate_remote_ro_set"],"macro":["some_regex_match"],"static":["CALLSITE","FILE_FILTER","META"],"struct":["FileFilter"]};
+window.SIDEBAR_ITEMS = {"fn":["build_regex_or_none","generate_local_set","generate_remote_ro_set"],"macro":["some_regex_match"],"static":["CALLSITE","FILE_FILTER"],"struct":["FileFilter"]};

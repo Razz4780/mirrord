@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["collect_response","match_request","matched_request","prepare_response"],"opaque":[""],"static":["CALLSITE","META"],"struct":["HyperHandler","RawHyperConnection"]};
+window.SIDEBAR_ITEMS = {"fn":["collect_response","match_request","matched_request","prepare_response"],"static":["CALLSITE"],"struct":["HyperHandler","RawHyperConnection"]};

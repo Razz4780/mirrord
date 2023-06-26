@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"attr":["protocol_break"],"static":["_DECLS"]};
+window.SIDEBAR_ITEMS = {"attr":["protocol_break"]};

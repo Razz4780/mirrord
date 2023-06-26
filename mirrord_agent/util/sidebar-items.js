@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["enter_namespace","run_thread","run_thread_in_namespace"],"static":["CALLSITE","META"],"struct":["IndexAllocator","Subscriptions"],"type":["ClientId"]};
+window.SIDEBAR_ITEMS = {"fn":["enter_namespace","run_thread","run_thread_in_namespace"],"struct":["IndexAllocator","Subscriptions"],"type":["ClientId"]};

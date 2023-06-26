@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["ErrorKindInternal","RemoteError","ResolveErrorKindInternal","ResponseError","SerializationError"],"static":["CALLSITE","META"],"struct":["DnsLookupError","RemoteIOError"]};
+window.SIDEBAR_ITEMS = {"enum":["ErrorKindInternal","RemoteError","ResolveErrorKindInternal","ResponseError","SerializationError"],"static":["CALLSITE"],"struct":["DnsLookupError","RemoteIOError"]};

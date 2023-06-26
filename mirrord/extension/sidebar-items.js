@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["extension_exec"],"opaque":[""]};
+window.SIDEBAR_ITEMS = {"fn":["extension_exec"]};

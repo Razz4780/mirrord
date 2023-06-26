@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Command"],"mod":["api","connection","http","ip_tables","orig_dst"],"opaque":[""],"struct":["HandlerHttpRequest","MatchedHttpRequest","StealerCommand"]};
+window.SIDEBAR_ITEMS = {"enum":["Command"],"mod":["api","connection","http","ip_tables","orig_dst"],"struct":["HandlerHttpRequest","MatchedHttpRequest","StealerCommand"]};

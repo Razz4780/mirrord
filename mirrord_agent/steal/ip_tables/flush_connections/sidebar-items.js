@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"static":["CALLSITE","META"],"struct":["FlushConnections"]};
+window.SIDEBAR_ITEMS = {"static":["CALLSITE"],"struct":["FlushConnections"]};

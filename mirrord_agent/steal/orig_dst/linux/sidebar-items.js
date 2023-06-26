@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["mk_addr","ntoh16","ntoh32","so_original_dst"],"static":["CALLSITE","META"]};
+window.SIDEBAR_ITEMS = {"fn":["mk_addr","ntoh16","ntoh32","so_original_dst"]};

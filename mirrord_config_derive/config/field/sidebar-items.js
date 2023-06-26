@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"opaque":[""],"struct":["ConfigField"]};
+window.SIDEBAR_ITEMS = {"struct":["ConfigField"]};

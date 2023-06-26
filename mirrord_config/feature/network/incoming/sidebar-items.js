@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["IncomingFileConfig","IncomingMode"],"mod":["http_filter"],"struct":["IncomingAdvancedFileConfig","IncomingConfig","IncomingConfigParseError"]};
+window.SIDEBAR_ITEMS = {"enum":["ConcurrentSteal","IncomingFileConfig","IncomingMode"],"mod":["http_filter"],"struct":["ConcurrentStealParseError","IncomingAdvancedFileConfig","IncomingConfig","IncomingConfigParseError"]};

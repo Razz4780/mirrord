@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["DaemonTcp","HttpFilter","LayerTcp","LayerTcpSteal","StealType"],"opaque":[""],"static":["CALLSITE","META"],"struct":["Filter","HttpRequest","HttpResponse","InternalHttpRequest","InternalHttpResponse","NewTcpConnection","TcpClose","TcpData"]};
+window.SIDEBAR_ITEMS = {"enum":["DaemonTcp","HttpFilter","LayerTcp","LayerTcpSteal","StealType"],"static":["CALLSITE"],"struct":["Filter","HttpRequest","HttpResponse","InternalHttpRequest","InternalHttpResponse","NewTcpConnection","TcpClose","TcpData"]};

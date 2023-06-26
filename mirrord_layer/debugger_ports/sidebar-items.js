@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["MIRRORD_DETECT_DEBUGGER_PORT_ENV","MIRRORD_IGNORE_DEBUGGER_PORTS_ENV"],"enum":["DebuggerPorts","DebuggerType"],"static":["CALLSITE","META"]};
+window.SIDEBAR_ITEMS = {"constant":["MIRRORD_DETECT_DEBUGGER_PORT_ENV","MIRRORD_IGNORE_DEBUGGER_PORTS_ENV"],"enum":["DebuggerPorts","DebuggerType"],"static":["CALLSITE"]};

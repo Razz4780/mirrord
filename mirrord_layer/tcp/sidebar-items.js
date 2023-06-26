@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["TcpIncoming"],"opaque":[""],"static":["CALLSITE","META"],"struct":["Listen"],"trait":["TcpHandler"]};
+window.SIDEBAR_ITEMS = {"enum":["TcpIncoming"],"static":["CALLSITE"],"struct":["Listen"],"trait":["TcpHandler"]};

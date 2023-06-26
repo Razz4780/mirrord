@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["get_proc_environ","parse_raw_env","select_env_vars"],"opaque":[""],"static":["CALLSITE","META"],"struct":["EnvFilter"]};
+window.SIDEBAR_ITEMS = {"fn":["get_proc_environ","parse_raw_env","select_env_vars"],"struct":["EnvFilter"]};

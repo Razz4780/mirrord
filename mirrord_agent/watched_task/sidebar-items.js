@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"opaque":[""],"struct":["TaskStatus","WatchedTask"]};
+window.SIDEBAR_ITEMS = {"struct":["TaskStatus","WatchedTask"]};
