@@ -132,6 +132,7 @@ var sourcesIndex = JSON.parse('{\
 "enum_as_inner":["",[],["lib.rs"]],\
 "enum_dispatch":["",[],["attributed_parser.rs","cache.rs","enum_dispatch_arg_list.rs","enum_dispatch_item.rs","enum_dispatch_variant.rs","expansion.rs","filter_attrs.rs","lib.rs","supported_generics.rs","syn_utils.rs"]],\
 "env_logger":["",[["filter",[],["mod.rs","regex.rs"]],["fmt",[["humantime",[],["extern_impl.rs","mod.rs"]],["writer",[["termcolor",[],["extern_impl.rs","mod.rs"]]],["atty.rs","mod.rs"]]],["mod.rs"]]],["lib.rs"]],\
+"equivalent":["",[],["lib.rs"]],\
 "errno":["",[],["lib.rs","unix.rs"]],\
 "exec":["",[],["lib.rs"]],\
 "faccess":["",[],["lib.rs"]],\
@@ -188,7 +189,7 @@ var sourcesIndex = JSON.parse('{\
 "iana_time_zone":["",[],["ffi_utils.rs","lib.rs","tz_linux.rs"]],\
 "ident_case":["",[],["lib.rs"]],\
 "idna":["",[],["lib.rs","punycode.rs","uts46.rs"]],\
-"indexmap":["",[["map",[["core",[],["raw.rs"]]],["core.rs"]]],["arbitrary.rs","equivalent.rs","lib.rs","macros.rs","map.rs","mutable_keys.rs","set.rs","util.rs"]],\
+"indexmap":["",[["map",[["core",[],["raw.rs"]]],["core.rs","iter.rs","slice.rs"]],["set",[],["iter.rs","slice.rs"]]],["arbitrary.rs","lib.rs","macros.rs","map.rs","mutable_keys.rs","set.rs","util.rs"]],\
 "inout":["",[],["errors.rs","inout.rs","inout_buf.rs","lib.rs","reserved.rs"]],\
 "instant":["",[],["lib.rs","native.rs"]],\
 "io_lifetimes":["",[],["example_ffi.rs","lib.rs","portability.rs","raw.rs","traits.rs","views.rs"]],\

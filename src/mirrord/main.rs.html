@@ -401,6 +401,8 @@
 <a href="#401" id="401">401</a>
 <a href="#402" id="402">402</a>
 <a href="#403" id="403">403</a>
+<a href="#404" id="404">404</a>
+<a href="#405" id="405">405</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(let_chains)]
 #![feature(lazy_cell)]
 #![feature(result_option_inspect)]
@@ -684,8 +686,10 @@
 
     <span class="kw">let </span>namespace = args.namespace.as_deref().or(namespace.as_deref());
 
-    <span class="kw">let </span>pods = get_kube_pods(namespace, <span class="kw-2">&amp;</span>client).<span class="kw">await</span><span class="question-mark">?</span>;
-    <span class="kw">let </span>deployments = get_kube_deployments(namespace, <span class="kw-2">&amp;</span>client).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span>(pods, deployments) = <span class="macro">futures::try_join!</span>(
+        get_kube_pods(namespace, <span class="kw-2">&amp;</span>client),
+        get_kube_deployments(namespace, <span class="kw-2">&amp;</span>client)
+    )<span class="question-mark">?</span>;
 
     <span class="kw">let </span><span class="kw-2">mut </span>target_vector = pods
         .iter()

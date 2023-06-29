@@ -698,6 +698,9 @@
 <a href="#698" id="698">698</a>
 <a href="#699" id="699">699</a>
 <a href="#700" id="700">700</a>
+<a href="#701" id="701">701</a>
+<a href="#702" id="702">702</a>
+<a href="#703" id="703">703</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     collections::HashSet,
     io,
@@ -1218,6 +1221,9 @@
         };
         <span class="kw">if </span>port_unsubscribed {
             <span class="comment">// No remaining subscribers on this port.
+
+            // If there are ongoing connections, this will interrupt them. This is a known issue
+            // https://github.com/metalbear-co/mirrord/issues/1575
             </span><span class="self">self</span>.iptables()<span class="question-mark">?
                 </span>.remove_redirect(port, <span class="self">self</span>.stealer.local_addr()<span class="question-mark">?</span>.port())
                 .<span class="kw">await</span><span class="question-mark">?</span>;

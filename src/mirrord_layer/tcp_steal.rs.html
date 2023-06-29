@@ -382,6 +382,28 @@
 <a href="#382" id="382">382</a>
 <a href="#383" id="383">383</a>
 <a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a>
+<a href="#398" id="398">398</a>
+<a href="#399" id="399">399</a>
+<a href="#400" id="400">400</a>
+<a href="#401" id="401">401</a>
+<a href="#402" id="402">402</a>
+<a href="#403" id="403">403</a>
+<a href="#404" id="404">404</a>
+<a href="#405" id="405">405</a>
+<a href="#406" id="406">406</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     collections::{HashMap, HashSet},
     net::SocketAddr,
@@ -494,7 +516,7 @@
     </span>port_mapping: BiMap&lt;u16, u16&gt;,
 }
 
-<span class="kw">impl </span>TcpHandler <span class="kw">for </span>TcpStealHandler {
+<span class="kw">impl </span>TcpHandler&lt;<span class="bool-val">true</span>&gt; <span class="kw">for </span>TcpStealHandler {
     <span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(<span class="self">self</span>))]
     </span><span class="kw">async fn </span>handle_new_connection(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
@@ -606,9 +628,12 @@
         <span class="kw">let </span>request_port = listen.requested_port;
 
         <span class="kw">if </span><span class="self">self</span>.ports_mut().replace(listen).is_some() {
-            <span class="comment">// This can also be because we currently don&#39;t inform the tcp handler when an app closes
-            // a socket (stops listening).
-            </span><span class="macro">info!</span>(<span class="string">&quot;Received listen hook message for port {request_port} while already listening. Might be on different address&quot;</span>,);
+            <span class="comment">// Since this struct identifies listening sockets by their port (#1558), we can only
+            // forward the incoming traffic to one socket with that port.
+            </span><span class="macro">info!</span>(
+                <span class="string">&quot;Received listen hook message for port {request_port} while already listening. \
+                Might be on different address. Sending all incoming traffic to newest socket.&quot;
+            </span>);
             <span class="kw">return </span><span class="prelude-val">Ok</span>(());
         }
 
@@ -635,6 +660,26 @@
         )))
         .<span class="kw">await
         </span>.map_err(From::from)
+    }
+
+    <span class="kw">async fn </span>handle_server_side_socket_close(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        port: Port,
+        tx: <span class="kw-2">&amp;</span>Sender&lt;ClientMessage&gt;,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;(), LayerError&gt; {
+        <span class="kw">if </span><span class="self">self</span>.ports_mut().remove(<span class="kw-2">&amp;</span>port) {
+            <span class="comment">// There is a known issue - https://github.com/metalbear-co/mirrord/issues/1575 - where
+            // the agent is currently not able to keep ongoing connections, so once we send this
+            // message, any ongoing connections are going to be interrupted.
+            </span>tx.send(ClientMessage::TcpSteal(LayerTcpSteal::PortUnsubscribe(
+                port,
+            )))
+            .<span class="kw">await
+            </span>.map_err(From::from)
+        } <span class="kw">else </span>{
+            <span class="comment">// was not listening on closed socket, could be an outgoing socket.
+            </span><span class="prelude-val">Ok</span>(())
+        }
     }
 }
 
@@ -698,10 +743,9 @@
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         http_request: HttpRequest,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(), LayerError&gt; {
-        <span class="kw">let </span>listen = <span class="self">self
-            </span>.ports()
-            .get(<span class="kw-2">&amp;</span>http_request.port)
-            .ok_or(LayerError::PortNotFound(http_request.port))<span class="question-mark">?</span>;
+        <span class="kw">let </span>listen = <span class="self">self</span>.ports().get(<span class="kw-2">&amp;</span>http_request.port).ok_or(
+            LayerError::NewConnectionAfterSocketClose(http_request.connection_id),
+        )<span class="question-mark">?</span>;
         <span class="kw">let </span>addr: SocketAddr = listen.into();
         <span class="kw">let </span>connection_id = http_request.connection_id;
         <span class="kw">let </span>port = http_request.port;
