@@ -105,6 +105,14 @@
 <a href="#105" id="105">105</a>
 <a href="#106" id="106">106</a>
 <a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
 </pre></div><pre class="rust"><code><span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>http {
 
@@ -156,18 +164,22 @@
                 <span class="prelude-val">None</span>,
             )
             .<span class="kw">await</span>;
-        process.wait_for_line(Duration::from_secs(<span class="number">120</span>), <span class="string">&quot;daemon subscribed&quot;</span>);
+        process
+            .wait_for_line(Duration::from_secs(<span class="number">120</span>), <span class="string">&quot;daemon subscribed&quot;</span>)
+            .<span class="kw">await</span>;
         send_requests(<span class="kw-2">&amp;</span>url, <span class="bool-val">false</span>, Default::default()).<span class="kw">await</span>;
-        process.wait_for_line(Duration::from_secs(<span class="number">10</span>), <span class="string">&quot;GET&quot;</span>);
-        process.wait_for_line(Duration::from_secs(<span class="number">10</span>), <span class="string">&quot;POST&quot;</span>);
-        process.wait_for_line(Duration::from_secs(<span class="number">10</span>), <span class="string">&quot;PUT&quot;</span>);
-        process.wait_for_line(Duration::from_secs(<span class="number">10</span>), <span class="string">&quot;DELETE&quot;</span>);
+        process.wait_for_line(Duration::from_secs(<span class="number">10</span>), <span class="string">&quot;GET&quot;</span>).<span class="kw">await</span>;
+        process.wait_for_line(Duration::from_secs(<span class="number">10</span>), <span class="string">&quot;POST&quot;</span>).<span class="kw">await</span>;
+        process.wait_for_line(Duration::from_secs(<span class="number">10</span>), <span class="string">&quot;PUT&quot;</span>).<span class="kw">await</span>;
+        process
+            .wait_for_line(Duration::from_secs(<span class="number">10</span>), <span class="string">&quot;DELETE&quot;</span>)
+            .<span class="kw">await</span>;
         timeout(Duration::from_secs(<span class="number">40</span>), process.child.wait())
             .<span class="kw">await
             </span>.unwrap()
             .unwrap();
 
-        application.assert(<span class="kw-2">&amp;</span>process);
+        application.assert(<span class="kw-2">&amp;</span>process).<span class="kw">await</span>;
     }
 
     <span class="attr">#[ignore] </span><span class="comment">// TODO: create integration test instead.
@@ -198,18 +210,22 @@
                 <span class="prelude-val">None</span>,
             )
             .<span class="kw">await</span>;
-        process.wait_for_line(Duration::from_secs(<span class="number">300</span>), <span class="string">&quot;daemon subscribed&quot;</span>);
+        process
+            .wait_for_line(Duration::from_secs(<span class="number">300</span>), <span class="string">&quot;daemon subscribed&quot;</span>)
+            .<span class="kw">await</span>;
         send_requests(<span class="kw-2">&amp;</span>url, <span class="bool-val">false</span>, Default::default()).<span class="kw">await</span>;
-        process.wait_for_line(Duration::from_secs(<span class="number">10</span>), <span class="string">&quot;GET&quot;</span>);
-        process.wait_for_line(Duration::from_secs(<span class="number">10</span>), <span class="string">&quot;POST&quot;</span>);
-        process.wait_for_line(Duration::from_secs(<span class="number">10</span>), <span class="string">&quot;PUT&quot;</span>);
-        process.wait_for_line(Duration::from_secs(<span class="number">10</span>), <span class="string">&quot;DELETE&quot;</span>);
+        process.wait_for_line(Duration::from_secs(<span class="number">10</span>), <span class="string">&quot;GET&quot;</span>).<span class="kw">await</span>;
+        process.wait_for_line(Duration::from_secs(<span class="number">10</span>), <span class="string">&quot;POST&quot;</span>).<span class="kw">await</span>;
+        process.wait_for_line(Duration::from_secs(<span class="number">10</span>), <span class="string">&quot;PUT&quot;</span>).<span class="kw">await</span>;
+        process
+            .wait_for_line(Duration::from_secs(<span class="number">10</span>), <span class="string">&quot;DELETE&quot;</span>)
+            .<span class="kw">await</span>;
         timeout(Duration::from_secs(<span class="number">40</span>), process.child.wait())
             .<span class="kw">await
             </span>.unwrap()
             .unwrap();
 
-        application.assert(<span class="kw-2">&amp;</span>process);
+        application.assert(<span class="kw-2">&amp;</span>process).<span class="kw">await</span>;
     }
 }
 </code></pre></div></section></main></body></html>

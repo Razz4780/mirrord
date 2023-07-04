@@ -176,26 +176,6 @@
 <a href="#176" id="176">176</a>
 <a href="#177" id="177">177</a>
 <a href="#178" id="178">178</a>
-<a href="#179" id="179">179</a>
-<a href="#180" id="180">180</a>
-<a href="#181" id="181">181</a>
-<a href="#182" id="182">182</a>
-<a href="#183" id="183">183</a>
-<a href="#184" id="184">184</a>
-<a href="#185" id="185">185</a>
-<a href="#186" id="186">186</a>
-<a href="#187" id="187">187</a>
-<a href="#188" id="188">188</a>
-<a href="#189" id="189">189</a>
-<a href="#190" id="190">190</a>
-<a href="#191" id="191">191</a>
-<a href="#192" id="192">192</a>
-<a href="#193" id="193">193</a>
-<a href="#194" id="194">194</a>
-<a href="#195" id="195">195</a>
-<a href="#196" id="196">196</a>
-<a href="#197" id="197">197</a>
-<a href="#198" id="198">198</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{fs::File, path::PathBuf, time::Duration};
 
 <span class="kw">use </span>kube::Api;
@@ -233,7 +213,7 @@
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(license) = license {
         <span class="macro">eprintln!</span>(
-            <span class="string">&quot;Intalling mirrord operator with namespace: {}&quot;</span>,
+            <span class="string">&quot;Installing mirrord operator with namespace: {}&quot;</span>,
             namespace.name()
         );
 
@@ -348,23 +328,6 @@ Operator License
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">async fn </span>operator_telemetry_export(config: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-    <span class="kw">let </span>status_api = get_status_api(config).<span class="kw">await</span><span class="question-mark">?</span>;
-
-    <span class="kw">let </span>status = status_api
-        .get_subresource(<span class="string">&quot;telemetry-export&quot;</span>, OPERATOR_STATUS_NAME)
-        .<span class="kw">await
-        </span>.map_err(KubeApiError::KubeError)
-        .map_err(OperatorApiError::KubeApiError)
-        .map_err(CliError::OperatorConnectionFailed)<span class="question-mark">?</span>;
-
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(exports) = status.spec.telemetry_exports {
-        <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, serde_json::to_string(<span class="kw-2">&amp;</span>exports)<span class="question-mark">?</span>);
-    }
-
-    <span class="prelude-val">Ok</span>(())
-}
-
 <span class="doccomment">/// Handle commands related to the operator `mirrord operator ...`
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>operator_command(args: OperatorArgs) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="kw">match </span>args.command {
@@ -389,9 +352,6 @@ Operator License
             operator_setup(accept_tos, file, namespace, license, offline).<span class="kw">await
         </span>}
         OperatorCommand::Status { config_file } =&gt; operator_status(config_file).<span class="kw">await</span>,
-        OperatorCommand::TelemetryExport { config_file } =&gt; {
-            operator_telemetry_export(config_file).<span class="kw">await
-        </span>}
     }
 }
 </code></pre></div></section></main></body></html>

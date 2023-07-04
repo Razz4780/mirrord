@@ -54,7 +54,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>process = app.run_targetless(<span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
         <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
         <span class="macro">assert!</span>(res.success());
-        <span class="kw">let </span>stdout = process.get_stdout();
+        <span class="kw">let </span>stdout = process.get_stdout().<span class="kw">await</span>;
         <span class="macro">assert!</span>(stdout.contains(<span class="string">r#&quot;&quot;apiVersion&quot;: &quot;v1&quot;&quot;#</span>))
     }
 }

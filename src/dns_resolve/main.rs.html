@@ -12,7 +12,6 @@
 <a href="#12" id="12">12</a>
 <a href="#13" id="13">13</a>
 <a href="#14" id="14">14</a>
-<a href="#15" id="15">15</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::net::ToSocketAddrs;
 
 <span class="kw">fn </span>main() {
@@ -20,12 +19,11 @@
     <span class="macro">assert!</span>(domain_x_addrs.is_ok());
 
     <span class="kw">let </span>domain_y_addrs = (<span class="string">&quot;nonexistent-domain&quot;</span>, <span class="number">0</span>).to_socket_addrs();
-    <span class="comment">// we are asserting for libc::EAI_FAIL here, but we cant get the underlying error code
-    // however, it seems that libc::EAI_FAIL is mapped to the message asserted below
-    // refer: https://github.com/rust-lang/rust/blob/master/library/std/src/sys/solid/net.rs#L154
-    </span><span class="macro">assert_eq!</span>(
-        domain_y_addrs.unwrap_err().to_string(),
-        <span class="string">&quot;failed to lookup address information: Non-recoverable failure in name resolution&quot;
-    </span>);
+    <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
+    </span><span class="kw">let </span>error_text =
+        <span class="string">&quot;failed to lookup address information: nodename nor servname provided, or not known&quot;</span>;
+    <span class="attr">#[cfg(not(target_os = <span class="string">&quot;macos&quot;</span>))]
+    </span><span class="kw">let </span>error_text = <span class="string">&quot;failed to lookup address information: Name or service not known&quot;</span>;
+    <span class="macro">assert_eq!</span>(domain_y_addrs.unwrap_err().to_string(), error_text);
 }
 </code></pre></div></section></main></body></html>

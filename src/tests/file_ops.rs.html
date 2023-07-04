@@ -265,7 +265,7 @@
         .<span class="kw">await</span>;
         <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
         <span class="macro">assert!</span>(res.success());
-        ops.assert(process);
+        ops.assert(process).<span class="kw">await</span>;
     }
 
     <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
@@ -294,7 +294,7 @@
         .<span class="kw">await</span>;
         <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
         <span class="macro">assert!</span>(res.success());
-        process.assert_python_fileops_stderr();
+        process.assert_python_fileops_stderr().<span class="kw">await</span>;
     }
 
     <span class="attr">#[rstest]
@@ -327,7 +327,7 @@
         .<span class="kw">await</span>;
         <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
         <span class="macro">assert!</span>(res.success());
-        process.assert_python_fileops_stderr();
+        process.assert_python_fileops_stderr().<span class="kw">await</span>;
     }
 
     <span class="attr">#[rstest]
@@ -359,7 +359,7 @@
         .<span class="kw">await</span>;
         <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
         <span class="macro">assert!</span>(res.success());
-        process.assert_python_fileops_stderr();
+        process.assert_python_fileops_stderr().<span class="kw">await</span>;
     }
 
     <span class="comment">// Currently fails due to Layer &gt;&gt; AddressConversion in ci for some reason

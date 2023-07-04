@@ -38,10 +38,10 @@
     #[tokio::test(flavor = <span class="string">&quot;multi_thread&quot;</span>, worker_threads = <span class="number">2</span>)]
     </span><span class="kw">pub async fn </span>mirrord_ls(<span class="attr">#[future] </span>service: KubeService) {
         <span class="kw">let </span>service = service.<span class="kw">await</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>process = run_ls(<span class="prelude-val">None</span>, <span class="prelude-val">None</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>process = run_ls(<span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
         <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
         <span class="macro">assert!</span>(res.success());
-        <span class="kw">let </span>stdout = process.get_stdout();
+        <span class="kw">let </span>stdout = process.get_stdout().<span class="kw">await</span>;
         <span class="kw">let </span>targets: Vec&lt;String&gt; = serde_json::from_str(<span class="kw-2">&amp;</span>stdout).unwrap();
         <span class="kw">let </span>re = Regex::new(<span class="string">r&quot;^(pod|deployment)/.+(/container/.+)?$&quot;</span>).unwrap();
         targets

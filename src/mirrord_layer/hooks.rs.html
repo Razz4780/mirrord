@@ -130,6 +130,7 @@
 <a href="#130" id="130">130</a>
 <a href="#131" id="131">131</a>
 <a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{ptr::null_mut, sync::LazyLock};
 
 <span class="kw">use </span>frida_gum::{interceptor::Interceptor, Gum, Module, NativePointer};
@@ -218,8 +219,9 @@
         <span class="kw">let </span>function = Module::find_symbol_by_name(module, symbol)
             .ok_or_else(|| LayerError::NoSymbolName(symbol.to_string()))<span class="question-mark">?</span>;
 
-        <span class="self">self</span>.interceptor
-            .replace(function, NativePointer(detour), NativePointer(null_mut()))
+        <span class="comment">// on Go we use `replace_fast` since we don&#39;t use the original function.
+        </span><span class="self">self</span>.interceptor
+            .replace_fast(function, NativePointer(detour))
             .map_err(Into::into)
     }
 

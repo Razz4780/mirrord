@@ -85,7 +85,17 @@
 <a href="#85" id="85">85</a>
 <a href="#86" id="86">86</a>
 <a href="#87" id="87">87</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>mirrord_config_derive::MirrordConfig;
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span>mirrord_analytics::CollectAnalytics;
+<span class="kw">use </span>mirrord_config_derive::MirrordConfig;
 <span class="kw">use </span>schemars::JsonSchema;
 
 <span class="kw">use </span><span class="self">self</span>::{env::EnvConfig, fs::FsConfig, network::NetworkConfig};
@@ -171,5 +181,13 @@
     <span class="doccomment">/// ## feature.network {#feature-network}
     </span><span class="attr">#[config(nested, toggleable)]
     </span><span class="kw">pub </span>network: NetworkConfig,
+}
+
+<span class="kw">impl </span>CollectAnalytics <span class="kw">for </span><span class="kw-2">&amp;</span>FeatureConfig {
+    <span class="kw">fn </span>collect_analytics(<span class="kw-2">&amp;</span><span class="self">self</span>, analytics: <span class="kw-2">&amp;mut </span>mirrord_analytics::Analytics) {
+        analytics.add(<span class="string">&quot;env&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.env);
+        analytics.add(<span class="string">&quot;fs&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.fs);
+        analytics.add(<span class="string">&quot;network&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.network);
+    }
 }
 </code></pre></div></section></main></body></html>

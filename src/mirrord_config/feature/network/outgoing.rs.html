@@ -144,7 +144,23 @@
 <a href="#144" id="144">144</a>
 <a href="#145" id="145">145</a>
 <a href="#146" id="146">146</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>mirrord_config_derive::MirrordConfig;
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span>mirrord_analytics::CollectAnalytics;
+<span class="kw">use </span>mirrord_config_derive::MirrordConfig;
 <span class="kw">use </span>schemars::JsonSchema;
 
 <span class="kw">use crate</span>::{
@@ -228,6 +244,20 @@
     }
 }
 
+<span class="kw">impl </span>CollectAnalytics <span class="kw">for </span><span class="kw-2">&amp;</span>OutgoingConfig {
+    <span class="kw">fn </span>collect_analytics(<span class="kw-2">&amp;</span><span class="self">self</span>, analytics: <span class="kw-2">&amp;mut </span>mirrord_analytics::Analytics) {
+        analytics.add(<span class="string">&quot;tcp&quot;</span>, <span class="self">self</span>.tcp);
+        analytics.add(<span class="string">&quot;udp&quot;</span>, <span class="self">self</span>.udp);
+        analytics.add(<span class="string">&quot;ignore_localhost&quot;</span>, <span class="self">self</span>.ignore_localhost);
+        analytics.add(
+            <span class="string">&quot;unix_streams&quot;</span>,
+            <span class="self">self</span>.unix_streams
+                .as_ref()
+                .map(|v| v.len())
+                .unwrap_or_default(),
+        );
+    }
+}
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>rstest::rstest;

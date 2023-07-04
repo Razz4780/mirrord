@@ -1019,6 +1019,9 @@
 <a href="#1019" id="1019">1019</a>
 <a href="#1020" id="1020">1020</a>
 <a href="#1021" id="1021">1021</a>
+<a href="#1022" id="1022">1022</a>
+<a href="#1023" id="1023">1023</a>
+<a href="#1024" id="1024">1024</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(stmt_expr_attributes)]
 #![warn(clippy::indexing_slicing)]
 
@@ -1038,7 +1041,7 @@
         net::Ipv4Addr,
         path::PathBuf,
         process::Stdio,
-        sync::{Arc, Condvar, Mutex},
+        sync::{Arc, Condvar},
         time::Duration,
     };
 
@@ -1063,7 +1066,10 @@
     <span class="kw">use </span>tokio::{
         io::{AsyncReadExt, AsyncWriteExt, BufReader},
         process::{Child, Command},
-        sync::oneshot::{<span class="self">self</span>, Sender},
+        sync::{
+            oneshot::{<span class="self">self</span>, Sender},
+            Mutex,
+        },
     };
 
     <span class="kw">const </span>TEXT: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&quot;</span>;
@@ -1167,24 +1173,24 @@
     }
 
     <span class="kw">impl </span>TestProcess {
-        <span class="kw">pub fn </span>get_stdout(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
-            <span class="self">self</span>.stdout.lock().unwrap().clone()
+        <span class="kw">pub async fn </span>get_stdout(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+            <span class="self">self</span>.stdout.lock().<span class="kw">await</span>.clone()
         }
 
-        <span class="kw">pub fn </span>get_stderr(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
-            <span class="self">self</span>.stderr.lock().unwrap().clone()
+        <span class="kw">pub async fn </span>get_stderr(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+            <span class="self">self</span>.stderr.lock().<span class="kw">await</span>.clone()
         }
 
-        <span class="kw">pub fn </span>assert_log_level(<span class="kw-2">&amp;</span><span class="self">self</span>, stderr: bool, level: <span class="kw-2">&amp;</span>str) {
+        <span class="kw">pub async fn </span>assert_log_level(<span class="kw-2">&amp;</span><span class="self">self</span>, stderr: bool, level: <span class="kw-2">&amp;</span>str) {
             <span class="kw">if </span>stderr {
-                <span class="macro">assert!</span>(!<span class="self">self</span>.stderr.lock().unwrap().contains(level));
+                <span class="macro">assert!</span>(!<span class="self">self</span>.stderr.lock().<span class="kw">await</span>.contains(level));
             } <span class="kw">else </span>{
-                <span class="macro">assert!</span>(!<span class="self">self</span>.stdout.lock().unwrap().contains(level));
+                <span class="macro">assert!</span>(!<span class="self">self</span>.stdout.lock().<span class="kw">await</span>.contains(level));
             }
         }
 
-        <span class="kw">pub fn </span>assert_python_fileops_stderr(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-            <span class="macro">assert!</span>(!<span class="self">self</span>.stderr.lock().unwrap().contains(<span class="string">&quot;FAILED&quot;</span>));
+        <span class="kw">pub async fn </span>assert_python_fileops_stderr(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+            <span class="macro">assert!</span>(!<span class="self">self</span>.stderr.lock().<span class="kw">await</span>.contains(<span class="string">&quot;FAILED&quot;</span>));
         }
 
         <span class="kw">pub async fn </span>wait_assert_success(<span class="self">self</span>) {
@@ -1192,10 +1198,10 @@
             <span class="macro">assert!</span>(output.status.success());
         }
 
-        <span class="kw">pub fn </span>wait_for_line(<span class="kw-2">&amp;</span><span class="self">self</span>, timeout: Duration, line: <span class="kw-2">&amp;</span>str) {
+        <span class="kw">pub async fn </span>wait_for_line(<span class="kw-2">&amp;</span><span class="self">self</span>, timeout: Duration, line: <span class="kw-2">&amp;</span>str) {
             <span class="kw">let </span>now = std::time::Instant::now();
             <span class="kw">while </span>now.elapsed() &lt; timeout {
-                <span class="kw">let </span>stderr = <span class="self">self</span>.get_stderr();
+                <span class="kw">let </span>stderr = <span class="self">self</span>.get_stderr().<span class="kw">await</span>;
                 <span class="kw">if </span>stderr.contains(line) {
                     <span class="kw">return</span>;
                 }
@@ -1211,7 +1217,7 @@
             }
         }
 
-        <span class="kw">pub fn </span>from_child(<span class="kw-2">mut </span>child: Child, tempdir: TempDir) -&gt; TestProcess {
+        <span class="kw">pub async fn </span>from_child(<span class="kw-2">mut </span>child: Child, tempdir: TempDir) -&gt; TestProcess {
             <span class="kw">let </span>stderr_data = Arc::new(Mutex::new(String::new()));
             <span class="kw">let </span>stdout_data = Arc::new(Mutex::new(String::new()));
             <span class="kw">let </span>child_stderr = child.stderr.take().unwrap();
@@ -1232,7 +1238,7 @@
                     <span class="kw">let </span>string = String::from_utf8_lossy(<span class="kw-2">&amp;</span>buf[..n]);
                     <span class="macro">eprintln!</span>(<span class="string">&quot;stderr {} {pid}: {}&quot;</span>, format_time(), string);
                     {
-                        stderr_data_reader.lock().unwrap().push_str(<span class="kw-2">&amp;</span>string);
+                        stderr_data_reader.lock().<span class="kw">await</span>.push_str(<span class="kw-2">&amp;</span>string);
                     }
                 }
             });
@@ -1247,7 +1253,7 @@
                     <span class="kw">let </span>string = String::from_utf8_lossy(<span class="kw-2">&amp;</span>buf[..n]);
                     <span class="macro">print!</span>(<span class="string">&quot;stdout {} {pid}: {}&quot;</span>, format_time(), string);
                     {
-                        stdout_data_reader.lock().unwrap().push_str(<span class="kw-2">&amp;</span>string);
+                        stdout_data_reader.lock().<span class="kw">await</span>.push_str(<span class="kw-2">&amp;</span>string);
                     }
                 }
             });
@@ -1317,13 +1323,13 @@
             run_exec_with_target(<span class="self">self</span>.get_cmd(), target, namespace, args, env).<span class="kw">await
         </span>}
 
-        <span class="kw">pub fn </span>assert(<span class="kw-2">&amp;</span><span class="self">self</span>, process: <span class="kw-2">&amp;</span>TestProcess) {
+        <span class="kw">pub async fn </span>assert(<span class="kw-2">&amp;</span><span class="self">self</span>, process: <span class="kw-2">&amp;</span>TestProcess) {
             <span class="kw">match </span><span class="self">self </span>{
                 Application::PythonFastApiHTTP =&gt; {
-                    process.assert_log_level(<span class="bool-val">true</span>, <span class="string">&quot;ERROR&quot;</span>);
-                    process.assert_log_level(<span class="bool-val">false</span>, <span class="string">&quot;ERROR&quot;</span>);
-                    process.assert_log_level(<span class="bool-val">true</span>, <span class="string">&quot;CRITICAL&quot;</span>);
-                    process.assert_log_level(<span class="bool-val">false</span>, <span class="string">&quot;CRITICAL&quot;</span>);
+                    process.assert_log_level(<span class="bool-val">true</span>, <span class="string">&quot;ERROR&quot;</span>).<span class="kw">await</span>;
+                    process.assert_log_level(<span class="bool-val">false</span>, <span class="string">&quot;ERROR&quot;</span>).<span class="kw">await</span>;
+                    process.assert_log_level(<span class="bool-val">true</span>, <span class="string">&quot;CRITICAL&quot;</span>).<span class="kw">await</span>;
+                    process.assert_log_level(<span class="bool-val">false</span>, <span class="string">&quot;CRITICAL&quot;</span>).<span class="kw">await</span>;
                 }
                 <span class="kw">_ </span>=&gt; {}
             }
@@ -1355,9 +1361,9 @@
         }
 
         <span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
-        </span><span class="kw">pub fn </span>assert(<span class="kw-2">&amp;</span><span class="self">self</span>, process: TestProcess) {
+        </span><span class="kw">pub async fn </span>assert(<span class="kw-2">&amp;</span><span class="self">self</span>, process: TestProcess) {
             <span class="kw">match </span><span class="self">self </span>{
-                FileOps::Python =&gt; process.assert_python_fileops_stderr(),
+                FileOps::Python =&gt; process.assert_python_fileops_stderr().<span class="kw">await</span>,
                 <span class="kw">_ </span>=&gt; {}
             }
         }
@@ -1471,11 +1477,11 @@
             server.id().unwrap()
         );
         <span class="comment">// We need to hold temp dir until the process is finished
-        </span>TestProcess::from_child(server, temp_dir)
-    }
+        </span>TestProcess::from_child(server, temp_dir).<span class="kw">await
+    </span>}
 
     <span class="doccomment">/// Runs `mirrord ls` command and asserts if the json matches the expected format
-    </span><span class="kw">pub fn </span>run_ls(args: <span class="prelude-ty">Option</span>&lt;Vec&lt;<span class="kw-2">&amp;</span>str&gt;&gt;, namespace: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;) -&gt; TestProcess {
+    </span><span class="kw">pub async fn </span>run_ls(args: <span class="prelude-ty">Option</span>&lt;Vec&lt;<span class="kw-2">&amp;</span>str&gt;&gt;, namespace: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;) -&gt; TestProcess {
         <span class="kw">let </span>path = <span class="kw">match </span><span class="macro">option_env!</span>(<span class="string">&quot;MIRRORD_TESTS_USE_BINARY&quot;</span>) {
             <span class="prelude-val">None </span>=&gt; <span class="macro">env!</span>(<span class="string">&quot;CARGO_BIN_FILE_MIRRORD&quot;</span>),
             <span class="prelude-val">Some</span>(binary_path) =&gt; binary_path,
@@ -1500,8 +1506,8 @@
             <span class="string">&quot;executed mirrord with args {mirrord_args:?} pid {}&quot;</span>,
             process.id().unwrap()
         );
-        TestProcess::from_child(process, temp_dir)
-    }
+        TestProcess::from_child(process, temp_dir).<span class="kw">await
+    </span>}
 
     <span class="attr">#[fixture]
     </span><span class="kw">pub async fn </span>kube_client() -&gt; Client {
@@ -1515,7 +1521,7 @@
     </span><span class="kw">struct </span>ResourceGuard {
         <span class="doccomment">/// Used in the implementation of [`Drop`] for this struct to block until the background
         /// task exits.
-        </span>task_finished: Arc&lt;(Mutex&lt;bool&gt;, Condvar)&gt;,
+        </span>task_finished: Arc&lt;(std::sync::Mutex&lt;bool&gt;, Condvar)&gt;,
         <span class="doccomment">/// Used to inform the background task whether this guard was dropped during panic.
         </span>panic_tx: <span class="prelude-ty">Option</span>&lt;Sender&lt;bool&gt;&gt;,
     }
@@ -1532,7 +1538,7 @@
             api.create(<span class="kw-2">&amp;</span>PostParams::default(), data).<span class="kw">await</span><span class="question-mark">?</span>;
 
             <span class="kw">let </span>(panic_tx, panic_rx) = oneshot::channel::&lt;bool&gt;();
-            <span class="kw">let </span>task_finished = Arc::new((Mutex::new(<span class="bool-val">false</span>), Condvar::new()));
+            <span class="kw">let </span>task_finished = Arc::new((std::sync::Mutex::new(<span class="bool-val">false</span>), Condvar::new()));
             <span class="kw">let </span>finished = task_finished.clone();
 
             tokio::spawn(<span class="kw">async move </span>{

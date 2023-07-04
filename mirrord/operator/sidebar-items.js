@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["get_status_api","operator_command","operator_setup","operator_status","operator_telemetry_export"]};
+window.SIDEBAR_ITEMS = {"fn":["get_status_api","operator_command","operator_setup","operator_status"]};

@@ -353,6 +353,11 @@
 <a href="#353" id="353">353</a>
 <a href="#354" id="354">354</a>
 <a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{env::VarError, net::SocketAddr, ptr, str::ParseBoolError};
 
 <span class="kw">use </span>errno::set_errno;
@@ -412,8 +417,8 @@
     <span class="attr">#[error(<span class="string">&quot;mirrord-layer: IO failed with `{0}`!&quot;</span>)]
     </span>IO(<span class="attr">#[from] </span>std::io::Error),
 
-    <span class="attr">#[error(<span class="string">&quot;mirrord-layer: HOOK_SENDER is `None`!&quot;</span>)]
-    </span>EmptyHookSender,
+    <span class="attr">#[error(<span class="string">&quot;mirrord-layer: Could not get HOOK_SENDER, can&#39;t send a hook message!&quot;</span>)]
+    </span>CannotGetHookSender,
 
     <span class="attr">#[error(<span class="string">&quot;mirrord-layer: Converting int failed with `{0}`!&quot;</span>)]
     </span>TryFromInt(<span class="attr">#[from] </span>std::num::TryFromIntError),
@@ -613,7 +618,7 @@
             HookError::RecvError(<span class="kw">_</span>) =&gt; libc::EBADMSG,
             HookError::Null(<span class="kw">_</span>) =&gt; libc::EINVAL,
             HookError::TryFromInt(<span class="kw">_</span>) =&gt; libc::EINVAL,
-            HookError::EmptyHookSender =&gt; libc::EINVAL,
+            HookError::CannotGetHookSender =&gt; libc::EINVAL,
             HookError::IO(io_fail) =&gt; io_fail.raw_os_error().unwrap_or(libc::EIO),
             HookError::LockError =&gt; libc::EINVAL,
             HookError::ResponseError(response_fail) =&gt; <span class="kw">match </span>response_fail {
@@ -630,6 +635,11 @@
                 ResponseError::DnsLookup(dns_fail) =&gt; {
                     <span class="kw">return match </span>dns_fail.kind {
                         mirrord_protocol::ResolveErrorKindInternal::Timeout =&gt; libc::EAI_AGAIN,
+                        <span class="comment">// prevents an infinite loop that used to happen in some apps, don&#39;t know if
+                        // this is the correct mapping.
+                        </span>mirrord_protocol::ResolveErrorKindInternal::NoRecordsFound(<span class="kw">_</span>) =&gt; {
+                            libc::EAI_NONAME
+                        }
                         <span class="kw">_ </span>=&gt; libc::EAI_FAIL,
                         <span class="comment">// TODO: Add more error kinds, next time we break protocol compatibility.
                     </span>} <span class="kw">as _</span>;

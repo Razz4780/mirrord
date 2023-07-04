@@ -314,11 +314,6 @@
 <a href="#314" id="314">314</a>
 <a href="#315" id="315">315</a>
 <a href="#316" id="316">316</a>
-<a href="#317" id="317">317</a>
-<a href="#318" id="318">318</a>
-<a href="#319" id="319">319</a>
-<a href="#320" id="320">320</a>
-<a href="#321" id="321">321</a>
 </pre></div><pre class="rust"><code><span class="attr">#![deny(missing_docs)]
 
 </span><span class="kw">use </span>std::path::PathBuf;
@@ -490,9 +485,13 @@ Join our Discord server at https://discord.gg/metalbear, create a GitHub issue a
     </span><span class="attr">#[arg(long)]
     </span><span class="kw">pub </span>no_udp_outgoing: bool,
 
-    <span class="doccomment">/// Disable telemetry - this also disables version check. See https://github.com/metalbear-co/mirrord/blob/main/TELEMETRY.md
+    <span class="doccomment">/// Disable telemetry. See https://github.com/metalbear-co/mirrord/blob/main/TELEMETRY.md
     </span><span class="attr">#[arg(long)]
     </span><span class="kw">pub </span>no_telemetry: bool,
+
+    <span class="attr">#[arg(long)]
+    </span><span class="doccomment">/// Disable version check on startup.
+    </span><span class="kw">pub </span>disable_version_check: bool,
 
     <span class="doccomment">/// Load config from config file
     </span><span class="attr">#[arg(short = <span class="string">&#39;f&#39;</span>, long)]
@@ -539,20 +538,20 @@ Join our Discord server at https://discord.gg/metalbear, create a GitHub issue a
         </span><span class="attr">#[arg(long)]
         </span>accept_tos: bool,
 
-        <span class="doccomment">/// License key to be stored in mirrord-operator-license secret
+        <span class="doccomment">/// A mirrord for Teams license key
         </span><span class="attr">#[arg(long)]
         </span>license_key: <span class="prelude-ty">Option</span>&lt;String&gt;,
 
-        <span class="doccomment">/// License key file path to be stored in mirrord-operator-license secret
+        <span class="doccomment">/// Path to a file containing a mirrord for Teams license certificate
         </span><span class="attr">#[arg(long)]
         </span>license_path: <span class="prelude-ty">Option</span>&lt;PathBuf&gt;,
 
-        <span class="doccomment">/// Output to kubernetes specs to file instead of stdout and piping to kubectl
+        <span class="doccomment">/// Output Kubernetes specs to file instead of stdout
         </span><span class="attr">#[arg(short, long)]
         </span>file: <span class="prelude-ty">Option</span>&lt;PathBuf&gt;,
 
-        <span class="doccomment">/// Set namespace to setup operator in (this doesn&#39;t limit the namespaces the operator will
-        /// be able to access)
+        <span class="doccomment">/// Namespace to create the operator in (this doesn&#39;t limit the namespaces the operator
+        /// will be able to access)
         </span><span class="attr">#[arg(short, long, default_value = <span class="string">&quot;mirrord&quot;</span>)]
         </span>namespace: OperatorNamespace,
 
@@ -562,15 +561,6 @@ Join our Discord server at https://discord.gg/metalbear, create a GitHub issue a
     },
     <span class="doccomment">/// Print operator status
     </span>Status {
-        <span class="doccomment">/// Specify config file to use
-        </span><span class="attr">#[arg(short = <span class="string">&#39;f&#39;</span>)]
-        </span>config_file: <span class="prelude-ty">Option</span>&lt;String&gt;,
-    },
-    <span class="doccomment">/// Print telemtry export for offline operators
-    </span><span class="attr">#[command(
-        override_usage = <span class="string">&quot;mirrord operator telemetry-export [OPTIONS] &gt; telemetry-export.json&quot;
-    </span>)]
-    </span>TelemetryExport {
         <span class="doccomment">/// Specify config file to use
         </span><span class="attr">#[arg(short = <span class="string">&#39;f&#39;</span>)]
         </span>config_file: <span class="prelude-ty">Option</span>&lt;String&gt;,

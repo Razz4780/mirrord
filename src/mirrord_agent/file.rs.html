@@ -758,6 +758,15 @@
 <a href="#758" id="758">758</a>
 <a href="#759" id="759">759</a>
 <a href="#760" id="760">760</a>
+<a href="#761" id="761">761</a>
+<a href="#762" id="762">762</a>
+<a href="#763" id="763">763</a>
+<a href="#764" id="764">764</a>
+<a href="#765" id="765">765</a>
+<a href="#766" id="766">766</a>
+<a href="#767" id="767">767</a>
+<a href="#768" id="768">768</a>
+<a href="#769" id="769">769</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     <span class="self">self</span>,
     collections::{hash_map::Entry, HashMap},
@@ -1065,13 +1074,18 @@
             .and_then(|remote_file| {
                 <span class="kw">if let </span>RemoteFile::File(file) = remote_file {
                     <span class="kw">let </span><span class="kw-2">mut </span>buffer = <span class="macro">vec!</span>[<span class="number">0</span>; buffer_size <span class="kw">as </span>usize];
-                    <span class="kw">let </span>read_amount =
-                        file.read(<span class="kw-2">&amp;mut </span>buffer).map(|read_amount| ReadFileResponse {
-                            bytes: buffer,
-                            read_amount: read_amount <span class="kw">as </span>u64,
-                        })<span class="question-mark">?</span>;
+                    <span class="kw">let </span>read_amount = file.read(<span class="kw-2">&amp;mut </span>buffer)<span class="question-mark">?</span>;
 
-                    <span class="prelude-val">Ok</span>(read_amount)
+                    <span class="comment">// Truncate the buffer based on the actual number of bytes read
+                    </span>buffer.truncate(read_amount);
+
+                    <span class="comment">// Create the response with the read bytes and the read amount
+                    </span><span class="kw">let </span>response = ReadFileResponse {
+                        bytes: buffer,
+                        read_amount: read_amount <span class="kw">as </span>u64,
+                    };
+
+                    <span class="prelude-val">Ok</span>(response)
                 } <span class="kw">else </span>{
                     <span class="prelude-val">Err</span>(ResponseError::NotFile(fd))
                 }
@@ -1136,16 +1150,20 @@
                 <span class="kw">if let </span>RemoteFile::File(file) = remote_file {
                     <span class="kw">let </span><span class="kw-2">mut </span>buffer = <span class="macro">vec!</span>[<span class="number">0</span>; buffer_size <span class="kw">as </span>usize];
 
-                    <span class="kw">let </span>read_result = file.read_at(<span class="kw-2">&amp;mut </span>buffer, start_from).map(|read_amount| {
-                        <span class="comment">// We handle the extra bytes in the `pread` hook, so here we can just
-                        // return the full buffer.
-                        </span>ReadFileResponse {
-                            bytes: buffer,
-                            read_amount: read_amount <span class="kw">as </span>u64,
-                        }
-                    })<span class="question-mark">?</span>;
+                    <span class="kw">let </span>read_amount = file.read_at(<span class="kw-2">&amp;mut </span>buffer, start_from)<span class="question-mark">?</span>;
 
-                    <span class="prelude-val">Ok</span>(read_result)
+                    <span class="comment">// Truncate the buffer based on the actual number of bytes read
+                    </span>buffer.truncate(read_amount);
+
+                    <span class="comment">// Further optimization: Create the response with the read bytes and the read
+                    // amount We will no longer send entire buffer filled with
+                    // zeroes
+                    </span><span class="kw">let </span>response = ReadFileResponse {
+                        bytes: buffer,
+                        read_amount: read_amount <span class="kw">as </span>u64,
+                    };
+
+                    <span class="prelude-val">Ok</span>(response)
                 } <span class="kw">else </span>{
                     <span class="prelude-val">Err</span>(ResponseError::NotFile(fd))
                 }

@@ -104,24 +104,7 @@
 <a href="#104" id="104">104</a>
 <a href="#105" id="105">105</a>
 <a href="#106" id="106">106</a>
-<a href="#107" id="107">107</a>
-<a href="#108" id="108">108</a>
-<a href="#109" id="109">109</a>
-<a href="#110" id="110">110</a>
-<a href="#111" id="111">111</a>
-<a href="#112" id="112">112</a>
-<a href="#113" id="113">113</a>
-<a href="#114" id="114">114</a>
-<a href="#115" id="115">115</a>
-<a href="#116" id="116">116</a>
-<a href="#117" id="117">117</a>
-<a href="#118" id="118">118</a>
-<a href="#119" id="119">119</a>
-<a href="#120" id="120">120</a>
-<a href="#121" id="121">121</a>
-<a href="#122" id="122">122</a>
-<a href="#123" id="123">123</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>chrono::{serde::ts_milliseconds, DateTime, NaiveDate, Utc};
+</pre></div><pre class="rust"><code><span class="kw">use </span>chrono::NaiveDate;
 <span class="kw">use </span>kube::CustomResource;
 <span class="kw">use </span>mirrord_config::target::{Target, TargetConfig};
 <span class="kw">use </span>schemars::JsonSchema;
@@ -198,29 +181,12 @@
     <span class="kw">pub </span>operator_version: String,
     <span class="kw">pub </span>default_namespace: String,
     <span class="kw">pub </span>license: LicenseInfoOwned,
-    <span class="kw">pub </span>telemetry_exports: <span class="prelude-ty">Option</span>&lt;MirrordOperatorTelemetryReports&gt;,
 }
 
 <span class="attr">#[derive(Clone, Debug, Default, Deserialize, Serialize, JsonSchema)]
 </span><span class="kw">pub struct </span>MirrordOperatorStatus {
     <span class="kw">pub </span>sessions: Vec&lt;Session&gt;,
     <span class="kw">pub </span>statistics: <span class="prelude-ty">Option</span>&lt;MirrordOperatorStatusStatistics&gt;,
-}
-
-<span class="attr">#[derive(Clone, Debug, Default, Deserialize, Serialize, JsonSchema)]
-</span><span class="kw">pub struct </span>MirrordOperatorTelemetryReports {
-    <span class="kw">pub </span>id: String,
-    <span class="kw">pub </span>reports: Vec&lt;MirrordOperatorTelemetryReport&gt;,
-}
-
-<span class="attr">#[derive(Clone, Debug, Default, Deserialize, Serialize, JsonSchema)]
-</span><span class="kw">pub struct </span>MirrordOperatorTelemetryReport {
-    <span class="attr">#[serde(
-        serialize_with = <span class="string">&quot;ts_milliseconds::serialize&quot;</span>,
-        deserialize_with = <span class="string">&quot;ts_milliseconds::deserialize&quot;
-    </span>)]
-    </span><span class="kw">pub </span>timestamp: DateTime&lt;Utc&gt;,
-    <span class="kw">pub </span>report: String,
 }
 
 <span class="attr">#[derive(Clone, Debug, Default, Deserialize, Serialize, JsonSchema)]

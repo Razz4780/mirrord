@@ -668,6 +668,32 @@
 <a href="#668" id="668">668</a>
 <a href="#669" id="669">669</a>
 <a href="#670" id="670">670</a>
+<a href="#671" id="671">671</a>
+<a href="#672" id="672">672</a>
+<a href="#673" id="673">673</a>
+<a href="#674" id="674">674</a>
+<a href="#675" id="675">675</a>
+<a href="#676" id="676">676</a>
+<a href="#677" id="677">677</a>
+<a href="#678" id="678">678</a>
+<a href="#679" id="679">679</a>
+<a href="#680" id="680">680</a>
+<a href="#681" id="681">681</a>
+<a href="#682" id="682">682</a>
+<a href="#683" id="683">683</a>
+<a href="#684" id="684">684</a>
+<a href="#685" id="685">685</a>
+<a href="#686" id="686">686</a>
+<a href="#687" id="687">687</a>
+<a href="#688" id="688">688</a>
+<a href="#689" id="689">689</a>
+<a href="#690" id="690">690</a>
+<a href="#691" id="691">691</a>
+<a href="#692" id="692">692</a>
+<a href="#693" id="693">693</a>
+<a href="#694" id="694">694</a>
+<a href="#695" id="695">695</a>
+<a href="#696" id="696">696</a>
 </pre></div><pre class="rust"><code><span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>steal {
     <span class="kw">use </span>std::{
@@ -714,14 +740,16 @@
             .run(<span class="kw-2">&amp;</span>service.target, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>service.namespace), <span class="prelude-val">Some</span>(flags), <span class="prelude-val">None</span>)
             .<span class="kw">await</span>;
 
-        process.wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;daemon subscribed&quot;</span>);
+        process
+            .wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;daemon subscribed&quot;</span>)
+            .<span class="kw">await</span>;
         send_requests(<span class="kw-2">&amp;</span>url, <span class="bool-val">true</span>, Default::default()).<span class="kw">await</span>;
         tokio::time::timeout(Duration::from_secs(<span class="number">40</span>), process.child.wait())
             .<span class="kw">await
             </span>.unwrap()
             .unwrap();
 
-        application.assert(<span class="kw-2">&amp;</span>process);
+        application.assert(<span class="kw-2">&amp;</span>process).<span class="kw">await</span>;
     }
 
     <span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
@@ -755,14 +783,16 @@
             )
             .<span class="kw">await</span>;
 
-        process.wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;daemon subscribed&quot;</span>);
+        process
+            .wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;daemon subscribed&quot;</span>)
+            .<span class="kw">await</span>;
         send_requests(<span class="kw-2">&amp;</span>url, <span class="bool-val">true</span>, Default::default()).<span class="kw">await</span>;
         tokio::time::timeout(Duration::from_secs(<span class="number">40</span>), process.child.wait())
             .<span class="kw">await
             </span>.unwrap()
             .unwrap();
 
-        application.assert(<span class="kw-2">&amp;</span>process);
+        application.assert(<span class="kw-2">&amp;</span>process).<span class="kw">await</span>;
     }
 
     <span class="doccomment">/// Test the app continues running with mirrord and traffic is no longer stolen after the app
@@ -788,10 +818,14 @@
             .<span class="kw">await</span>;
 
         <span class="comment">// Verify that we hooked the socket operations and the agent started stealing.
-        </span>process.wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;daemon subscribed&quot;</span>);
+        </span>process
+            .wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;daemon subscribed&quot;</span>)
+            .<span class="kw">await</span>;
 
         <span class="comment">// Wait for the test app to close the socket and tell us about it.
-        </span>process.wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;Closed socket&quot;</span>);
+        </span>process
+            .wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;Closed socket&quot;</span>)
+            .<span class="kw">await</span>;
 
         <span class="comment">// Flake-proofing the test:
         // If we connect to the service between the time the test application had closed its socket
@@ -876,12 +910,16 @@
         <span class="kw">let </span>(addr, port) = get_service_host_and_port(kube_client.clone(), <span class="kw-2">&amp;</span>service).<span class="kw">await</span>;
 
         <span class="comment">// Wait for the app to start listening for stolen data before connecting.
-        </span>process.wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;daemon subscribed&quot;</span>);
+        </span>process
+            .wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;daemon subscribed&quot;</span>)
+            .<span class="kw">await</span>;
 
         <span class="kw">let </span><span class="kw-2">mut </span>tcp_stream = TcpStream::connect((addr, port <span class="kw">as </span>u16)).unwrap();
 
         <span class="comment">// Wait for the test app to close the socket and tell us about it.
-        </span>process.wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;Closed socket.&quot;</span>);
+        </span>process
+            .wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;Closed socket.&quot;</span>)
+            .<span class="kw">await</span>;
 
         <span class="kw">const </span>DATA: <span class="kw-2">&amp;</span>[u8; <span class="number">16</span>] = <span class="string">b&quot;upper me please\n&quot;</span>;
 
@@ -948,7 +986,9 @@
             )
             .<span class="kw">await</span>;
 
-        client.wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;daemon subscribed&quot;</span>);
+        client
+            .wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;daemon subscribed&quot;</span>)
+            .<span class="kw">await</span>;
 
         <span class="kw">let </span><span class="kw-2">mut </span>headers = HeaderMap::default();
         headers.insert(<span class="string">&quot;x-filter&quot;</span>, <span class="string">&quot;yes&quot;</span>.parse().unwrap());
@@ -959,7 +999,7 @@
             </span>.unwrap()
             .unwrap();
 
-        application.assert(<span class="kw-2">&amp;</span>client);
+        application.assert(<span class="kw-2">&amp;</span>client).<span class="kw">await</span>;
     }
 
     <span class="attr">#[rstest]
@@ -988,7 +1028,9 @@
             )
             .<span class="kw">await</span>;
 
-        client.wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;daemon subscribed&quot;</span>);
+        client
+            .wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;daemon subscribed&quot;</span>)
+            .<span class="kw">await</span>;
 
         <span class="kw">let </span><span class="kw-2">mut </span>headers = HeaderMap::default();
         headers.insert(<span class="string">&quot;x-filter&quot;</span>, <span class="string">&quot;yes&quot;</span>.parse().unwrap());
@@ -999,7 +1041,7 @@
             </span>.unwrap()
             .unwrap();
 
-        application.assert(<span class="kw-2">&amp;</span>client);
+        application.assert(<span class="kw-2">&amp;</span>client).<span class="kw">await</span>;
     }
 
     <span class="attr">#[rstest]
@@ -1028,7 +1070,9 @@
             )
             .<span class="kw">await</span>;
 
-        client.wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;daemon subscribed&quot;</span>);
+        client
+            .wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;daemon subscribed&quot;</span>)
+            .<span class="kw">await</span>;
 
         <span class="kw">let </span>headers = HeaderMap::default();
         <span class="comment">// Send a GET that should go through to remote
@@ -1054,7 +1098,7 @@
             </span>.unwrap()
             .unwrap();
 
-        application.assert(<span class="kw-2">&amp;</span>client);
+        application.assert(<span class="kw-2">&amp;</span>client).<span class="kw">await</span>;
     }
 
     <span class="attr">#[rstest]
@@ -1083,7 +1127,9 @@
             )
             .<span class="kw">await</span>;
 
-        mirrored_process.wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;daemon subscribed&quot;</span>);
+        mirrored_process
+            .wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;daemon subscribed&quot;</span>)
+            .<span class="kw">await</span>;
 
         <span class="comment">// Send a GET that should be matched and stolen.
         // And a DELETE that closes the app.
@@ -1119,7 +1165,7 @@
             </span>.expect(<span class="string">&quot;Timed out waiting for mirrored_process!&quot;</span>)
             .expect(<span class="string">&quot;mirrored_process failed!&quot;</span>);
 
-        application.assert(<span class="kw-2">&amp;</span>mirrored_process);
+        application.assert(<span class="kw-2">&amp;</span>mirrored_process).<span class="kw">await</span>;
     }
 
     <span class="doccomment">/// To run on mac, first build universal binary: (from repo root) `scripts/build_fat_mac.sh`
@@ -1155,7 +1201,9 @@
             )
             .<span class="kw">await</span>;
 
-        mirrorded_process.wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;daemon subscribed&quot;</span>);
+        mirrorded_process
+            .wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;daemon subscribed&quot;</span>)
+            .<span class="kw">await</span>;
 
         <span class="comment">// Send a GET that should be matched and stolen.
         </span><span class="kw">let </span>client = reqwest::Client::new();
@@ -1187,7 +1235,7 @@
             </span>.unwrap()
             .unwrap();
 
-        application.assert(<span class="kw-2">&amp;</span>mirrorded_process);
+        application.assert(<span class="kw-2">&amp;</span>mirrorded_process).<span class="kw">await</span>;
     }
 
     <span class="doccomment">/// Test the case where running with `steal` set and an http header filter, but getting a
@@ -1221,7 +1269,9 @@
             )
             .<span class="kw">await</span>;
 
-        mirrorded_process.wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;daemon subscribed&quot;</span>);
+        mirrorded_process
+            .wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;daemon subscribed&quot;</span>)
+            .<span class="kw">await</span>;
 
         <span class="kw">let </span>addr = SocketAddr::new(host.trim().parse().unwrap(), port <span class="kw">as </span>u16);
         <span class="kw">let </span><span class="kw-2">mut </span>stream = TcpStream::connect(addr).unwrap();
@@ -1234,7 +1284,7 @@
         </span><span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>buf[<span class="number">8</span>..], tcp_data); <span class="comment">// The correct data was sent there and back.
 
         // Verify the data was passed through and nothing was sent to the local app.
-        </span><span class="kw">let </span>stdout_after = mirrorded_process.get_stdout();
+        </span><span class="kw">let </span>stdout_after = mirrorded_process.get_stdout().<span class="kw">await</span>;
         <span class="macro">assert!</span>(!stdout_after.contains(<span class="string">&quot;LOCAL APP GOT DATA&quot;</span>));
 
         <span class="comment">// Send a DELETE that should be matched and thus stolen, closing the app.
@@ -1250,7 +1300,7 @@
             </span>.unwrap()
             .unwrap();
 
-        application.assert(<span class="kw-2">&amp;</span>mirrorded_process);
+        application.assert(<span class="kw-2">&amp;</span>mirrorded_process).<span class="kw">await</span>;
     }
 
     <span class="doccomment">/// Test the case where running with `steal` set and an http header filter, we get an HTTP
@@ -1291,7 +1341,9 @@
             )
             .<span class="kw">await</span>;
 
-        mirrorded_process.wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;daemon subscribed&quot;</span>);
+        mirrorded_process
+            .wait_for_line(Duration::from_secs(<span class="number">40</span>), <span class="string">&quot;daemon subscribed&quot;</span>)
+            .<span class="kw">await</span>;
 
         <span class="comment">// Create a websocket connection to test the HTTP upgrade bypass.
         </span><span class="kw">let </span>host = host.trim();
@@ -1319,7 +1371,7 @@
         </span><span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>read_message[<span class="number">8</span>..], write_data); <span class="comment">// The correct data was sent there and back.
 
         // Verify the data was passed through and nothing was sent to the local app.
-        </span><span class="kw">let </span>stdout_after = mirrorded_process.get_stdout();
+        </span><span class="kw">let </span>stdout_after = mirrorded_process.get_stdout().<span class="kw">await</span>;
         <span class="macro">assert!</span>(!stdout_after.contains(<span class="string">&quot;LOCAL APP GOT DATA&quot;</span>));
 
         <span class="comment">// Send a DELETE that should be matched and thus stolen, closing the app.
@@ -1335,7 +1387,7 @@
             </span>.unwrap()
             .unwrap();
 
-        application.assert(<span class="kw-2">&amp;</span>mirrorded_process);
+        application.assert(<span class="kw-2">&amp;</span>mirrorded_process).<span class="kw">await</span>;
     }
 }
 </code></pre></div></section></main></body></html>

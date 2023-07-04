@@ -230,8 +230,16 @@
 <a href="#230" id="230">230</a>
 <a href="#231" id="231">231</a>
 <a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::collections::HashMap;
 
+<span class="kw">use </span>mirrord_analytics::CollectAnalytics;
 <span class="kw">use </span>mirrord_config_derive::MirrordConfig;
 <span class="kw">use </span>schemars::JsonSchema;
 
@@ -406,6 +414,12 @@
     </span><span class="attr">#[cfg(all(debug_assertions, not(test)))] </span><span class="comment">// not(test) so that it&#39;s not included in the schema json.
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_AGENT_TEST_ERROR&quot;</span>, default = <span class="bool-val">false</span>, unstable)]
     </span><span class="kw">pub </span>test_error: bool,
+}
+
+<span class="kw">impl </span>CollectAnalytics <span class="kw">for </span><span class="kw-2">&amp;</span>AgentConfig {
+    <span class="kw">fn </span>collect_analytics(<span class="kw-2">&amp;</span><span class="self">self</span>, analytics: <span class="kw-2">&amp;mut </span>mirrord_analytics::Analytics) {
+        analytics.add(<span class="string">&quot;ephemeral&quot;</span>, <span class="self">self</span>.ephemeral);
+    }
 }
 
 <span class="attr">#[cfg(test)]

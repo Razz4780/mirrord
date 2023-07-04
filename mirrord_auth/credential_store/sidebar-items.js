@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"static":["CREDENTIALS_DIR","CREDENTIALS_PATH"],"struct":["CredentialStore","CredentialStoreSync"]};
+window.SIDEBAR_ITEMS = {"static":["CALLSITE","CREDENTIALS_DIR","CREDENTIALS_PATH"],"struct":["CredentialStore","CredentialStoreSync"]};

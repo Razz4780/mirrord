@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["CURRENT_VERSION"],"enum":["AnalyticValue"],"fn":["send_analytics"],"struct":["Analytics","AnalyticsReport"],"trait":["CollectAnalytics"]};

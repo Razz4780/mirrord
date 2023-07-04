@@ -701,6 +701,31 @@
 <a href="#701" id="701">701</a>
 <a href="#702" id="702">702</a>
 <a href="#703" id="703">703</a>
+<a href="#704" id="704">704</a>
+<a href="#705" id="705">705</a>
+<a href="#706" id="706">706</a>
+<a href="#707" id="707">707</a>
+<a href="#708" id="708">708</a>
+<a href="#709" id="709">709</a>
+<a href="#710" id="710">710</a>
+<a href="#711" id="711">711</a>
+<a href="#712" id="712">712</a>
+<a href="#713" id="713">713</a>
+<a href="#714" id="714">714</a>
+<a href="#715" id="715">715</a>
+<a href="#716" id="716">716</a>
+<a href="#717" id="717">717</a>
+<a href="#718" id="718">718</a>
+<a href="#719" id="719">719</a>
+<a href="#720" id="720">720</a>
+<a href="#721" id="721">721</a>
+<a href="#722" id="722">722</a>
+<a href="#723" id="723">723</a>
+<a href="#724" id="724">724</a>
+<a href="#725" id="725">725</a>
+<a href="#726" id="726">726</a>
+<a href="#727" id="727">727</a>
+<a href="#728" id="728">728</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(slice_concat_trait)]
 #![feature(lazy_cell)]
 #![feature(result_option_inspect)]
@@ -720,6 +745,7 @@
 <span class="kw">use </span>std::path::Path;
 
 <span class="kw">use </span>config::{ConfigError, MirrordConfig};
+<span class="kw">use </span>mirrord_analytics::CollectAnalytics;
 <span class="kw">use </span>mirrord_config_derive::MirrordConfig;
 <span class="kw">use </span>schemars::JsonSchema;
 <span class="kw">use </span>tracing::warn;
@@ -828,6 +854,7 @@
 ///   &quot;operator&quot;: true,
 ///   &quot;kubeconfig&quot;: &quot;~/.kube/config&quot;,
 ///   &quot;sip_binaries&quot;: &quot;bash&quot;
+///   &quot;telemetry&quot;: true,
 /// }
 /// ```
 ///
@@ -965,6 +992,14 @@
     <span class="doccomment">/// # feature {#root-feature}
     </span><span class="attr">#[config(nested)]
     </span><span class="kw">pub </span>feature: FeatureConfig,
+
+    <span class="doccomment">/// ## telemetry {#root-telemetry}
+    /// Controls whether or not mirrord sends telemetry data to MetalBear cloud.
+    /// Telemetry sent doesn&#39;t contain personal identifiers or any data that
+    /// should be considered sensitive. It is used to improve the product.
+    /// [For more information](https://github.com/metalbear-co/mirrord/blob/main/TELEMETRY.md)
+    </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_TELEMETRY&quot;</span>, default = <span class="bool-val">true</span>)]
+    </span><span class="kw">pub </span>telemetry: bool,
 }
 
 <span class="kw">impl </span>LayerConfig {
@@ -1050,6 +1085,20 @@
             }
         }
         <span class="prelude-val">Ok</span>(())
+    }
+}
+
+<span class="kw">impl </span>CollectAnalytics <span class="kw">for </span><span class="kw-2">&amp;</span>LayerConfig {
+    <span class="kw">fn </span>collect_analytics(<span class="kw-2">&amp;</span><span class="self">self</span>, analytics: <span class="kw-2">&amp;mut </span>mirrord_analytics::Analytics) {
+        analytics.add(<span class="string">&quot;pause&quot;</span>, <span class="self">self</span>.pause);
+        analytics.add(
+            <span class="string">&quot;accept_invalid_certificates&quot;</span>,
+            <span class="self">self</span>.accept_invalid_certificates,
+        );
+        analytics.add(<span class="string">&quot;use_kubeconfig&quot;</span>, <span class="self">self</span>.kubeconfig.is_some());
+        (<span class="kw-2">&amp;</span><span class="self">self</span>.target).collect_analytics(analytics);
+        (<span class="kw-2">&amp;</span><span class="self">self</span>.agent).collect_analytics(analytics);
+        (<span class="kw-2">&amp;</span><span class="self">self</span>.feature).collect_analytics(analytics);
     }
 }
 
@@ -1256,6 +1305,7 @@
             accept_invalid_certificates: <span class="prelude-val">Some</span>(<span class="bool-val">false</span>),
             pause: <span class="prelude-val">Some</span>(<span class="bool-val">false</span>),
             kubeconfig: <span class="prelude-val">None</span>,
+            telemetry: <span class="prelude-val">None</span>,
             connect_agent_name: <span class="prelude-val">None</span>,
             connect_agent_port: <span class="prelude-val">None</span>,
             target: <span class="prelude-val">Some</span>(TargetFileConfig::Advanced {

@@ -205,6 +205,28 @@
 <a href="#205" id="205">205</a>
 <a href="#206" id="206">206</a>
 <a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Internal proxy is accepting connection from local layers and forward it to agent
 //! while having 1:1 relationship - each layer connection is another agent connection.
 //!
@@ -224,6 +246,7 @@
 };
 
 <span class="kw">use </span>futures::{stream::StreamExt, SinkExt};
+<span class="kw">use </span>mirrord_analytics::{send_analytics, Analytics, CollectAnalytics};
 <span class="kw">use </span>mirrord_config::LayerConfig;
 <span class="kw">use </span>mirrord_kube::api::{kubernetes::KubernetesAPI, wrap_raw_connection, AgentManagment};
 <span class="kw">use </span>mirrord_operator::client::OperatorApi;
@@ -311,6 +334,7 @@
     // This makes the process not to receive signals from the &quot;mirrord&quot; process or it&#39;s parent
     // terminal fixes some side effects such as https://github.com/metalbear-co/mirrord/issues/1232
     </span>nix::unistd::setsid().map_err(InternalProxyError::SetSidError)<span class="question-mark">?</span>;
+    <span class="kw">let </span>started = std::time::Instant::now();
     <span class="comment">// Let it assign port for us then print it for the user.
     </span><span class="kw">let </span>listener = TcpListener::bind(SocketAddrV4::new(Ipv4Addr::LOCALHOST, <span class="number">0</span>))
         .<span class="kw">await
@@ -320,7 +344,7 @@
     <span class="comment">// Create a main connection, that will be held until proxy is closed.
     // This will guarantee agent staying alive and will enable us to
     // make the agent close on last connection close immediately (will help in tests)
-    </span><span class="kw">let </span>_main_connection = connect_and_ping(<span class="kw-2">&amp;</span>config).<span class="kw">await</span><span class="question-mark">?</span>;
+    </span><span class="kw">let </span>(_main_connection, operator) = connect_and_ping(<span class="kw-2">&amp;</span>config).<span class="kw">await</span><span class="question-mark">?</span>;
     print_port(<span class="kw-2">&amp;</span>listener)<span class="question-mark">?</span>;
 
     <span class="comment">// wait for first connection `FIRST_CONNECTION_TIMEOUT` seconds, or timeout.
@@ -331,7 +355,7 @@
 
     <span class="kw">let </span><span class="kw-2">mut </span>active_connections = JoinSet::new();
 
-    <span class="kw">let </span>agent_connection = connect_and_ping(<span class="kw-2">&amp;</span>config).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span>(agent_connection, <span class="kw">_</span>) = connect_and_ping(<span class="kw-2">&amp;</span>config).<span class="kw">await</span><span class="question-mark">?</span>;
     active_connections.spawn(connection_task(stream, agent_connection));
 
     <span class="kw">loop </span>{
@@ -339,7 +363,7 @@
             res = listener.accept() =&gt; {
                 <span class="kw">match </span>res {
                     <span class="prelude-val">Ok</span>((stream, <span class="kw">_</span>)) =&gt; {
-                        <span class="kw">let </span>agent_connection = connect_and_ping(<span class="kw-2">&amp;</span>config).<span class="kw">await</span><span class="question-mark">?</span>;
+                        <span class="kw">let </span>(agent_connection, <span class="kw">_</span>) = connect_and_ping(<span class="kw-2">&amp;</span>config).<span class="kw">await</span><span class="question-mark">?</span>;
                         active_connections.spawn(connection_task(stream, agent_connection));
                     },
                     <span class="prelude-val">Err</span>(err) =&gt; {
@@ -349,12 +373,22 @@
                 }
             },
             <span class="kw">_ </span>= active_connections.join_next(), <span class="kw">if </span>!active_connections.is_empty() =&gt; {},
-            <span class="kw">_ </span>= tokio::time::sleep(Duration::from_secs(<span class="number">1</span>)) =&gt; {
+            <span class="kw">_ </span>= tokio::time::sleep(Duration::from_secs(<span class="number">5</span>)) =&gt; {
                 <span class="kw">if </span>active_connections.is_empty() {
                     <span class="kw">break</span>;
                 }
             }
         }
+    }
+    <span class="kw">let </span><span class="kw-2">mut </span>analytics = Analytics::default();
+    (<span class="kw-2">&amp;</span>config).collect_analytics(<span class="kw-2">&amp;mut </span>analytics);
+    <span class="kw">if </span>config.telemetry {
+        send_analytics(
+            analytics,
+            started.elapsed().as_secs().try_into().unwrap_or(u32::MAX),
+            operator,
+        )
+        .<span class="kw">await</span>;
     }
     <span class="prelude-val">Ok</span>(())
 }
@@ -364,10 +398,13 @@
 /// sending the first message
 </span><span class="kw">async fn </span>connect_and_ping(
     config: <span class="kw-2">&amp;</span>LayerConfig,
-) -&gt; <span class="prelude-ty">Result</span>&lt;(mpsc::Sender&lt;ClientMessage&gt;, mpsc::Receiver&lt;DaemonMessage&gt;)&gt; {
-    <span class="kw">let </span>(<span class="kw-2">mut </span>sender, <span class="kw-2">mut </span>receiver) = connect(config).<span class="kw">await</span><span class="question-mark">?</span>;
+) -&gt; <span class="prelude-ty">Result</span>&lt;(
+    (mpsc::Sender&lt;ClientMessage&gt;, mpsc::Receiver&lt;DaemonMessage&gt;),
+    bool,
+)&gt; {
+    <span class="kw">let </span>((<span class="kw-2">mut </span>sender, <span class="kw-2">mut </span>receiver), operator) = connect(config).<span class="kw">await</span><span class="question-mark">?</span>;
     ping(<span class="kw-2">&amp;mut </span>sender, <span class="kw-2">&amp;mut </span>receiver).<span class="kw">await</span><span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>((sender, receiver))
+    <span class="prelude-val">Ok</span>(((sender, receiver), operator))
 }
 
 <span class="doccomment">/// Sends a ping the connection and expects a pong.
@@ -391,14 +428,18 @@
 ///   using [`KubernetesAPI];
 ///
 /// - None of the above: uses the [`OperatorApi`] to establish the connection.
+/// Returns the tx/rx and whether the operator is used.
 </span><span class="kw">async fn </span>connect(
     config: <span class="kw-2">&amp;</span>LayerConfig,
-) -&gt; <span class="prelude-ty">Result</span>&lt;(mpsc::Sender&lt;ClientMessage&gt;, mpsc::Receiver&lt;DaemonMessage&gt;)&gt; {
+) -&gt; <span class="prelude-ty">Result</span>&lt;(
+    (mpsc::Sender&lt;ClientMessage&gt;, mpsc::Receiver&lt;DaemonMessage&gt;),
+    bool,
+)&gt; {
     <span class="kw">if let </span><span class="prelude-val">Some</span>(address) = <span class="kw-2">&amp;</span>config.connect_tcp {
         <span class="kw">let </span>stream = TcpStream::connect(address)
             .<span class="kw">await
             </span>.map_err(InternalProxyError::TcpConnectError)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(wrap_raw_connection(stream))
+        <span class="prelude-val">Ok</span>((wrap_raw_connection(stream), <span class="bool-val">false</span>))
     } <span class="kw">else if let </span>(<span class="prelude-val">Some</span>(agent_name), <span class="prelude-val">Some</span>(port)) =
         (<span class="kw-2">&amp;</span>config.connect_agent_name, config.connect_agent_port)
     {
@@ -406,10 +447,13 @@
         <span class="kw">let </span>connection = k8s_api
             .create_connection((agent_name.clone(), port))
             .<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(connection)
+        <span class="prelude-val">Ok</span>((connection, <span class="bool-val">false</span>))
     } <span class="kw">else </span>{
         <span class="kw">let </span>connection = OperatorApi::discover(config, <span class="kw-2">&amp;</span>NoProgress).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(connection.ok_or(InternalProxyError::OperatorConnectionError)<span class="question-mark">?</span>)
+        <span class="prelude-val">Ok</span>((
+            connection.ok_or(InternalProxyError::OperatorConnectionError)<span class="question-mark">?</span>,
+            <span class="bool-val">true</span>,
+        ))
     }
 }
 </code></pre></div></section></main></body></html>
