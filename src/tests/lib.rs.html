@@ -1022,6 +1022,25 @@
 <a href="#1022" id="1022">1022</a>
 <a href="#1023" id="1023">1023</a>
 <a href="#1024" id="1024">1024</a>
+<a href="#1025" id="1025">1025</a>
+<a href="#1026" id="1026">1026</a>
+<a href="#1027" id="1027">1027</a>
+<a href="#1028" id="1028">1028</a>
+<a href="#1029" id="1029">1029</a>
+<a href="#1030" id="1030">1030</a>
+<a href="#1031" id="1031">1031</a>
+<a href="#1032" id="1032">1032</a>
+<a href="#1033" id="1033">1033</a>
+<a href="#1034" id="1034">1034</a>
+<a href="#1035" id="1035">1035</a>
+<a href="#1036" id="1036">1036</a>
+<a href="#1037" id="1037">1037</a>
+<a href="#1038" id="1038">1038</a>
+<a href="#1039" id="1039">1039</a>
+<a href="#1040" id="1040">1040</a>
+<a href="#1041" id="1041">1041</a>
+<a href="#1042" id="1042">1042</a>
+<a href="#1043" id="1043">1043</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(stmt_expr_attributes)]
 #![warn(clippy::indexing_slicing)]
 
@@ -1036,17 +1055,13 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>utils {
     <span class="kw">use </span>std::{
-        collections::HashMap,
-        fmt::Debug,
-        net::Ipv4Addr,
-        path::PathBuf,
-        process::Stdio,
-        sync::{Arc, Condvar},
+        collections::HashMap, fmt::Debug, net::Ipv4Addr, path::PathBuf, process::Stdio, sync::Arc,
         time::Duration,
     };
 
     <span class="kw">use </span>chrono::{Timelike, Utc};
-    <span class="kw">use </span>futures_util::stream::TryStreamExt;
+    <span class="kw">use </span>futures::FutureExt;
+    <span class="kw">use </span>futures_util::{future::BoxFuture, stream::TryStreamExt};
     <span class="kw">use </span>k8s_openapi::api::{
         apps::v1::Deployment,
         core::v1::{Namespace, Pod, Service},
@@ -1066,10 +1081,7 @@
     <span class="kw">use </span>tokio::{
         io::{AsyncReadExt, AsyncWriteExt, BufReader},
         process::{Child, Command},
-        sync::{
-            oneshot::{<span class="self">self</span>, Sender},
-            Mutex,
-        },
+        sync::Mutex,
     };
 
     <span class="kw">const </span>TEXT: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&quot;</span>;
@@ -1517,13 +1529,13 @@
     }
 
     <span class="doccomment">/// RAII-style guard for deleting kube resources after tests.
-    /// This guard spawns a background task to delete the kube resource.
+    /// This guard deletes the kube resource when dropped.
+    /// This guard can be configured not to delete the resource if dropped during a panic.
     </span><span class="kw">struct </span>ResourceGuard {
-        <span class="doccomment">/// Used in the implementation of [`Drop`] for this struct to block until the background
-        /// task exits.
-        </span>task_finished: Arc&lt;(std::sync::Mutex&lt;bool&gt;, Condvar)&gt;,
-        <span class="doccomment">/// Used to inform the background task whether this guard was dropped during panic.
-        </span>panic_tx: <span class="prelude-ty">Option</span>&lt;Sender&lt;bool&gt;&gt;,
+        <span class="doccomment">/// Whether the resource should be deleted if the test has panicked.
+        </span>delete_on_fail: bool,
+        <span class="doccomment">/// This future will delete the resource once awaited.
+        </span>deleter: <span class="prelude-ty">Option</span>&lt;BoxFuture&lt;<span class="lifetime">&#39;static</span>, ()&gt;&gt;,
     }
 
     <span class="kw">impl </span>ResourceGuard {
@@ -1537,51 +1549,49 @@
         ) -&gt; <span class="prelude-ty">Result</span>&lt;ResourceGuard, Error&gt; {
             api.create(<span class="kw-2">&amp;</span>PostParams::default(), data).<span class="kw">await</span><span class="question-mark">?</span>;
 
-            <span class="kw">let </span>(panic_tx, panic_rx) = oneshot::channel::&lt;bool&gt;();
-            <span class="kw">let </span>task_finished = Arc::new((std::sync::Mutex::new(<span class="bool-val">false</span>), Condvar::new()));
-            <span class="kw">let </span>finished = task_finished.clone();
-
-            tokio::spawn(<span class="kw">async move </span>{
-                <span class="kw">let </span>panic = panic_rx.<span class="kw">await</span>.unwrap_or(<span class="bool-val">true</span>);
-
-                <span class="kw">if </span>!panic || delete_on_fail {
-                    <span class="macro">println!</span>(<span class="string">&quot;Deleting resource `{name}`&quot;</span>,);
-                    <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = api.delete(<span class="kw-2">&amp;</span>name, <span class="kw-2">&amp;</span>DeleteParams::default()).<span class="kw">await </span>{
-                        <span class="macro">println!</span>(<span class="string">&quot;Failed to delete resource `{name}`: {e:?}&quot;</span>);
-                    }
+            <span class="kw">let </span>deleter = <span class="kw">async move </span>{
+                <span class="macro">println!</span>(<span class="string">&quot;Deleting resource `{name}`&quot;</span>);
+                <span class="kw">let </span>res = api.delete(<span class="kw-2">&amp;</span>name, <span class="kw-2">&amp;</span>DeleteParams::default()).<span class="kw">await</span>;
+                <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = res {
+                    <span class="macro">println!</span>(<span class="string">&quot;Failed to delete resource `{name}`: {e:?}&quot;</span>);
                 }
-
-                <span class="kw-2">*</span>finished.<span class="number">0</span>.lock().expect(<span class="string">&quot;ResourceGuard lock poisoned&quot;</span>) = <span class="bool-val">true</span>;
-                finished.<span class="number">1</span>.notify_one();
-            });
+            };
 
             <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
-                task_finished,
-                panic_tx: <span class="prelude-val">Some</span>(panic_tx),
+                delete_on_fail,
+                deleter: <span class="prelude-val">Some</span>(deleter.boxed()),
             })
+        }
+
+        <span class="doccomment">/// If the underlying resource should be deleted (e.g. current thread is not panicking or
+        /// `delete_on_fail` was set), return the future to delete it. The future will
+        /// delete the resource once awaited.
+        ///
+        /// Used to run deleters from multiple [`ResourceGuard`]s on one runtime.
+        </span><span class="kw">pub fn </span>take_deleter(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;BoxFuture&lt;<span class="lifetime">&#39;static</span>, ()&gt;&gt; {
+            <span class="kw">if </span>!std::thread::panicking() || <span class="self">self</span>.delete_on_fail {
+                <span class="self">self</span>.deleter.take()
+            } <span class="kw">else </span>{
+                <span class="prelude-val">None
+            </span>}
         }
     }
 
     <span class="kw">impl </span>Drop <span class="kw">for </span>ResourceGuard {
         <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-            <span class="kw">let </span>task_alive = <span class="self">self
-                </span>.panic_tx
-                .take()
-                .expect(<span class="string">&quot;ResourceGuard holds empty panic_tx&quot;</span>)
-                .send(std::thread::panicking())
-                .is_ok();
+            <span class="kw">let </span><span class="prelude-val">Some</span>(deleter) = <span class="self">self</span>.deleter.take() <span class="kw">else </span>{
+                <span class="kw">return</span>;
+            };
 
-            <span class="kw">if </span>task_alive {
-                <span class="kw">let </span>lock = <span class="self">self
-                    </span>.task_finished
-                    .<span class="number">0
-                    </span>.lock()
-                    .expect(<span class="string">&quot;ResourceGuard lock poisoned&quot;</span>);
-                <span class="kw">let </span>_lock = <span class="self">self
-                    </span>.task_finished
-                    .<span class="number">1
-                    </span>.wait_while(lock, |deleted| !<span class="kw-2">*</span>deleted)
-                    .expect(<span class="string">&quot;ResourceGuard lock poisoned&quot;</span>);
+            <span class="kw">if </span>!std::thread::panicking() || <span class="self">self</span>.delete_on_fail {
+                <span class="kw">let _ </span>= std::thread::spawn(<span class="kw">move </span>|| {
+                    tokio::runtime::Builder::new_current_thread()
+                        .enable_all()
+                        .build()
+                        .expect(<span class="string">&quot;failed to create tokio runtime&quot;</span>)
+                        .block_on(deleter);
+                })
+                .join();
             }
         }
     }
@@ -1593,9 +1603,37 @@
         <span class="kw">pub </span>name: String,
         <span class="kw">pub </span>namespace: String,
         <span class="kw">pub </span>target: String,
-        _pod: ResourceGuard,
-        _service: ResourceGuard,
-        _namespace: <span class="prelude-ty">Option</span>&lt;ResourceGuard&gt;,
+        pod_guard: ResourceGuard,
+        service_guard: ResourceGuard,
+        namespace_guard: <span class="prelude-ty">Option</span>&lt;ResourceGuard&gt;,
+    }
+
+    <span class="kw">impl </span>Drop <span class="kw">for </span>KubeService {
+        <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+            <span class="kw">let </span>deleters = [
+                <span class="self">self</span>.pod_guard.take_deleter(),
+                <span class="self">self</span>.service_guard.take_deleter(),
+                <span class="self">self</span>.namespace_guard
+                    .as_mut()
+                    .and_then(ResourceGuard::take_deleter),
+            ]
+            .into_iter()
+            .filter_map(std::convert::identity)
+            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
+
+            <span class="kw">if </span>deleters.is_empty() {
+                <span class="kw">return</span>;
+            }
+
+            <span class="kw">let _ </span>= std::thread::spawn(<span class="kw">move </span>|| {
+                tokio::runtime::Builder::new_current_thread()
+                    .enable_all()
+                    .build()
+                    .expect(<span class="string">&quot;failed to create tokio runtime&quot;</span>)
+                    .block_on(futures::future::join_all(deleters));
+            })
+            .join();
+        }
     }
 
     <span class="doccomment">/// Create a new [`KubeService`] and related Kubernetes resources. The resources will be deleted
@@ -1785,9 +1823,9 @@
             name,
             namespace: namespace.to_string(),
             target: <span class="macro">format!</span>(<span class="string">&quot;pod/{target}/container/{CONTAINER_NAME}&quot;</span>),
-            _pod: pod_guard,
-            _service: service_guard,
-            _namespace: namespace_guard,
+            pod_guard,
+            service_guard,
+            namespace_guard,
         }
     }
 
