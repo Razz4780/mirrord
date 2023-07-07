@@ -176,6 +176,20 @@
 <a href="#176" id="176">176</a>
 <a href="#177" id="177">177</a>
 <a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{fs::File, path::PathBuf, time::Duration};
 
 <span class="kw">use </span>kube::Api;
@@ -184,7 +198,7 @@
 <span class="kw">use </span>mirrord_operator::{
     client::OperatorApiError,
     crd::{LicenseInfoOwned, MirrordOperatorCrd, MirrordOperatorSpec, OPERATOR_STATUS_NAME},
-    setup::{Operator, OperatorNamespace, OperatorSetup, SetupOptions},
+    setup::{LicenseType, Operator, OperatorNamespace, OperatorSetup, SetupOptions},
 };
 <span class="kw">use </span>mirrord_progress::{Progress, TaskProgress};
 <span class="kw">use </span>prettytable::{row, Table};
@@ -202,7 +216,8 @@
     accept_tos: bool,
     file: <span class="prelude-ty">Option</span>&lt;PathBuf&gt;,
     namespace: OperatorNamespace,
-    license: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    license_key: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    license_path: <span class="prelude-ty">Option</span>&lt;PathBuf&gt;,
     offline: bool,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="kw">if </span>!accept_tos {
@@ -210,6 +225,21 @@
 
         <span class="kw">return </span><span class="prelude-val">Ok</span>(());
     }
+
+    <span class="kw">let </span>license = <span class="kw">match </span>(license_key, license_path) {
+        (<span class="kw">_</span>, <span class="prelude-val">Some</span>(license_path)) =&gt; fs::read_to_string(<span class="kw-2">&amp;</span>license_path)
+            .<span class="kw">await
+            </span>.inspect_err(|err| {
+                <span class="macro">warn!</span>(
+                    <span class="string">&quot;Unable to read license at path {}: {err}&quot;</span>,
+                    license_path.display()
+                )
+            })
+            .ok()
+            .map(LicenseType::Offline),
+        (<span class="prelude-val">Some</span>(license_key), <span class="kw">_</span>) =&gt; <span class="prelude-val">Some</span>(LicenseType::Online(license_key)),
+        (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>) =&gt; <span class="prelude-val">None</span>,
+    };
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(license) = license {
         <span class="macro">eprintln!</span>(
@@ -339,17 +369,15 @@ Operator License
             license_path,
             offline,
         } =&gt; {
-            <span class="kw">let </span>license = <span class="kw">match </span>license_path {
-                <span class="prelude-val">Some</span>(path) =&gt; fs::read_to_string(<span class="kw-2">&amp;</span>path)
-                    .<span class="kw">await
-                    </span>.inspect_err(|err| {
-                        <span class="macro">warn!</span>(<span class="string">&quot;Unable to read license at path {}: {err}&quot;</span>, path.display())
-                    })
-                    .ok(),
-                <span class="prelude-val">None </span>=&gt; license_key,
-            };
-
-            operator_setup(accept_tos, file, namespace, license, offline).<span class="kw">await
+            operator_setup(
+                accept_tos,
+                file,
+                namespace,
+                license_key,
+                license_path,
+                offline,
+            )
+            .<span class="kw">await
         </span>}
         OperatorCommand::Status { config_file } =&gt; operator_status(config_file).<span class="kw">await</span>,
     }

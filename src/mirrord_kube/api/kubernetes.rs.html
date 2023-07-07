@@ -178,6 +178,8 @@
 <a href="#178" id="178">178</a>
 <a href="#179" id="179">179</a>
 <a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::path::Path;
 <span class="attr">#[cfg(feature = <span class="string">&quot;incluster&quot;</span>)]
 </span><span class="kw">use </span>std::{net::SocketAddr, time::Duration};
@@ -205,6 +207,8 @@
     },
     error::{KubeApiError, <span class="prelude-ty">Result</span>},
 };
+
+<span class="kw">pub mod </span>rollout;
 
 <span class="kw">pub struct </span>KubernetesAPI {
     client: Client,

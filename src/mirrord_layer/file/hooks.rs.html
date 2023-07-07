@@ -1005,7 +1005,7 @@
 
 <span class="doccomment">/// Hook for `libc::open$NOCANCEL`.
 </span><span class="attr">#[hook_fn]
-</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>_open_nocancel_detour(
+</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>open_nocancel_detour(
     raw_path: <span class="kw-2">*const </span>c_char,
     open_flags: c_int,
     <span class="kw-2">mut </span>args: ...
@@ -1013,12 +1013,12 @@
     <span class="kw">let </span>mode: c_int = args.arg();
     <span class="kw">let </span>guard = DetourGuard::new();
     <span class="kw">if </span>guard.is_none() {
-        FN__OPEN_NOCANCEL(raw_path, open_flags, mode)
+        FN_OPEN_NOCANCEL(raw_path, open_flags, mode)
     } <span class="kw">else </span>{
         open_logic(raw_path, open_flags, mode).unwrap_or_bypass_with(|_bypass| {
             <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
             </span><span class="kw">let </span>raw_path = update_ptr_from_bypass(raw_path, _bypass);
-            FN__OPEN_NOCANCEL(raw_path, open_flags, mode)
+            FN_OPEN_NOCANCEL(raw_path, open_flags, mode)
         })
     }
 }
@@ -1661,10 +1661,10 @@
     <span class="macro">replace!</span>(hook_manager, <span class="string">&quot;open&quot;</span>, open_detour, FnOpen, FN_OPEN);
     <span class="macro">replace!</span>(
         hook_manager,
-        <span class="string">&quot;_openat$NOCANCEL&quot;</span>,
-        _open_nocancel_detour,
-        Fn_open_nocancel,
-        FN__OPEN_NOCANCEL
+        <span class="string">&quot;open$NOCANCEL&quot;</span>,
+        open_nocancel_detour,
+        FnOpen_nocancel,
+        FN_OPEN_NOCANCEL
     );
 
     <span class="macro">replace!</span>(hook_manager, <span class="string">&quot;openat&quot;</span>, openat_detour, FnOpenat, FN_OPENAT);

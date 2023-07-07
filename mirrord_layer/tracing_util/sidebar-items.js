@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["create_github_link","file_tracing_writer","print_support_message"],"static":["LOG_FILE_PATH","TRACING_GUARDS"]};

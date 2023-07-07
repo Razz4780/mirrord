@@ -104,6 +104,7 @@
 <a href="#104" id="104">104</a>
 <a href="#105" id="105">105</a>
 <a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>chrono::NaiveDate;
 <span class="kw">use </span>kube::CustomResource;
 <span class="kw">use </span>mirrord_config::target::{Target, TargetConfig};
@@ -131,6 +132,7 @@
         <span class="kw">match </span>target {
             Target::Deployment(target) =&gt; <span class="macro">format!</span>(<span class="string">&quot;deploy.{}&quot;</span>, target.deployment),
             Target::Pod(target) =&gt; <span class="macro">format!</span>(<span class="string">&quot;pod.{}&quot;</span>, target.pod),
+            Target::Rollout(target) =&gt; <span class="macro">format!</span>(<span class="string">&quot;rollout.{}&quot;</span>, target.rollout),
         }
     }
 
