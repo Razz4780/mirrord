@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["env","file_ops","http","pause","target","targetless","traffic"]};
+window.SIDEBAR_ITEMS = {"mod":["env","file_ops","http","operator","pause","target","targetless","traffic"]};

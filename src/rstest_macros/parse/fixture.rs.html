@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/rstest_macros-0.17.0/src/parse/fixture.rs`."><title>fixture.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="rstest_macros" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0-nightly (c609da59d 2023-04-18)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../static.files/source-script-905937fbbdc8e9ea.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-1a524efa7bd4ab32.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../rstest_macros/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/rstest_macros-0.18.1/src/parse/fixture.rs`."><title>fixture.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="rstest_macros" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0-nightly (c609da59d 2023-04-18)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../static.files/source-script-905937fbbdc8e9ea.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-1a524efa7bd4ab32.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../rstest_macros/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -728,24 +728,6 @@
 <a href="#728" id="728">728</a>
 <a href="#729" id="729">729</a>
 <a href="#730" id="730">730</a>
-<a href="#731" id="731">731</a>
-<a href="#732" id="732">732</a>
-<a href="#733" id="733">733</a>
-<a href="#734" id="734">734</a>
-<a href="#735" id="735">735</a>
-<a href="#736" id="736">736</a>
-<a href="#737" id="737">737</a>
-<a href="#738" id="738">738</a>
-<a href="#739" id="739">739</a>
-<a href="#740" id="740">740</a>
-<a href="#741" id="741">741</a>
-<a href="#742" id="742">742</a>
-<a href="#743" id="743">743</a>
-<a href="#744" id="744">744</a>
-<a href="#745" id="745">745</a>
-<a href="#746" id="746">746</a>
-<a href="#747" id="747">747</a>
-<a href="#748" id="748">748</a>
 </pre></div><pre class="rust"><code><span class="doccomment">/// `fixture`&#39;s related data and parsing
 </span><span class="kw">use </span>syn::{
     parse::{Parse, ParseStream},
@@ -755,16 +737,13 @@
 };
 
 <span class="kw">use super</span>::{
-    arguments::ArgumentsInfo, extract_argument_attrs, extract_default_return_type,
-    extract_defaults, extract_fixtures, extract_partials_return_type, future::extract_futures,
+    arguments::ArgumentsInfo,
+    extract_argument_attrs, extract_default_return_type, extract_defaults, extract_fixtures,
+    extract_partials_return_type,
+    future::{extract_futures, extract_global_awt},
     parse_vector_trailing_till_double_comma, Attributes, ExtendWithFunctionAttrs, Fixture,
 };
-<span class="kw">use crate</span>::{
-    error::ErrorsVec,
-    parse::extract_once,
-    refident::{MaybeIdent, RefIdent},
-    utils::attr_is,
-};
+<span class="kw">use crate</span>::{error::ErrorsVec, parse::extract_once, refident::RefIdent, utils::attr_is};
 <span class="kw">use crate</span>::{parse::Attribute, utils::attr_in};
 <span class="kw">use </span>proc_macro2::TokenStream;
 <span class="kw">use </span>quote::{format_ident, ToTokens};
@@ -810,14 +789,16 @@
             default_return_type,
             partials_return_type,
             once,
-            futures
+            futures,
+            global_awt
         ) = <span class="macro">merge_errors!</span>(
             extract_fixtures(item_fn),
             extract_defaults(item_fn),
             extract_default_return_type(item_fn),
             extract_partials_return_type(item_fn),
             extract_once(item_fn),
-            extract_futures(item_fn)
+            extract_futures(item_fn),
+            extract_global_awt(item_fn)
         )<span class="question-mark">?</span>;
         <span class="self">self</span>.data.items.extend(
             fixtures
@@ -831,10 +812,7 @@
         <span class="kw">for </span>(id, return_type) <span class="kw">in </span>partials_return_type {
             <span class="self">self</span>.attributes.set_partial_return_type(id, return_type);
         }
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(ident) = once {
-            <span class="self">self</span>.attributes.set_once(ident)
-        };
-        <span class="kw">let </span>(futures, global_awt) = futures;
+        <span class="self">self</span>.arguments.set_once(once);
         <span class="self">self</span>.arguments.set_global_await(global_awt);
         <span class="self">self</span>.arguments.set_futures(futures.into_iter());
         <span class="prelude-val">Ok</span>(())
@@ -1046,20 +1024,6 @@
             <span class="macro">format_ident!</span>(<span class="string">&quot;{}{}&quot;</span>, <span class="self">Self</span>::PARTIAL_RET_ATTR, id),
             Box::new(return_type),
         ))
-    }
-
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>set_once(<span class="kw-2">&amp;mut </span><span class="self">self</span>, once: syn::Ident) {
-        <span class="self">self</span>.inner.attributes.push(Attribute::Attr(once))
-    }
-
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>get_once(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Ident&gt; {
-        <span class="self">self</span>.iter()
-            .find(|<span class="kw-2">&amp;</span>a| a == <span class="kw-2">&amp;</span>Attribute::Attr(<span class="macro">format_ident!</span>(<span class="string">&quot;once&quot;</span>)))
-            .and_then(|a| a.maybe_ident())
-    }
-
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>is_once(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="self">self</span>.get_once().is_some()
     }
 
     <span class="kw">fn </span>extract_type(<span class="kw-2">&amp;</span><span class="self">self</span>, attr_name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;syn::ReturnType&gt; {
@@ -1327,7 +1291,7 @@
 
             info.extend_with_function_attrs(<span class="kw-2">&amp;mut </span>item_fn).unwrap();
 
-            <span class="macro">assert!</span>(info.attributes.is_once());
+            <span class="macro">assert!</span>(info.arguments.is_once());
         }
 
         <span class="attr">#[test]
@@ -1341,7 +1305,7 @@
 
             info.extend_with_function_attrs(<span class="kw-2">&amp;mut </span>item_fn).unwrap();
 
-            <span class="macro">assert!</span>(!info.attributes.is_once());
+            <span class="macro">assert!</span>(!info.arguments.is_once());
         }
 
         <span class="attr">#[rstest]

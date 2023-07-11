@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitflags-2.3.2/src/traits.rs`."><title>traits.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="bitflags" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0-nightly (c609da59d 2023-04-18)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../static.files/source-script-905937fbbdc8e9ea.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-1a524efa7bd4ab32.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../bitflags/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/bitflags-2.3.3/src/traits.rs`."><title>traits.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="bitflags" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0-nightly (c609da59d 2023-04-18)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../static.files/source-script-905937fbbdc8e9ea.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-1a524efa7bd4ab32.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../bitflags/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -334,22 +334,15 @@
 <a href="#334" id="334">334</a>
 <a href="#335" id="335">335</a>
 <a href="#336" id="336">336</a>
-<a href="#337" id="337">337</a>
-<a href="#338" id="338">338</a>
-<a href="#339" id="339">339</a>
-<a href="#340" id="340">340</a>
-<a href="#341" id="341">341</a>
-<a href="#342" id="342">342</a>
-<a href="#343" id="343">343</a>
-<a href="#344" id="344">344</a>
-<a href="#345" id="345">345</a>
-<a href="#346" id="346">346</a>
-<a href="#347" id="347">347</a>
-<a href="#348" id="348">348</a>
-<a href="#349" id="349">349</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>core::{fmt, ops::{BitAnd, BitOr, BitXor, Not}};
+</pre></div><pre class="rust"><code><span class="kw">use </span>core::{
+    fmt,
+    ops::{BitAnd, BitOr, BitXor, Not},
+};
 
-<span class="kw">use crate</span>::{parser::{ParseError, ParseHex, WriteHex}, iter};
+<span class="kw">use crate</span>::{
+    iter,
+    parser::{ParseError, ParseHex, WriteHex},
+};
 
 <span class="doccomment">/// Metadata for an individual flag.
 </span><span class="kw">pub struct </span>Flag&lt;B&gt; {
@@ -446,7 +439,7 @@
     </span><span class="kw">fn </span>from_name(name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
         <span class="kw">for </span>flag <span class="kw">in </span><span class="self">Self</span>::FLAGS {
             <span class="kw">if </span>flag.name() == name {
-                <span class="kw">return </span><span class="prelude-val">Some</span>(<span class="self">Self</span>::from_bits_retain(flag.value().bits()))
+                <span class="kw">return </span><span class="prelude-val">Some</span>(<span class="self">Self</span>::from_bits_retain(flag.value().bits()));
             }
         }
 
@@ -492,6 +485,8 @@
     }
 
     <span class="doccomment">/// Inserts the specified flags in-place.
+    ///
+    /// This method is equivalent to `union`.
     </span><span class="kw">fn </span>insert(<span class="kw-2">&amp;mut </span><span class="self">self</span>, other: <span class="self">Self</span>)
     <span class="kw">where
         </span><span class="self">Self</span>: Sized,
@@ -500,6 +495,8 @@
     }
 
     <span class="doccomment">/// Removes the specified flags in-place.
+    ///
+    /// This method is equivalent to `difference`.
     </span><span class="kw">fn </span>remove(<span class="kw-2">&amp;mut </span><span class="self">self</span>, other: <span class="self">Self</span>)
     <span class="kw">where
         </span><span class="self">Self</span>: Sized,
@@ -508,6 +505,8 @@
     }
 
     <span class="doccomment">/// Toggles the specified flags in-place.
+    ///
+    /// This method is equivalent to `symmetric_difference`.
     </span><span class="kw">fn </span>toggle(<span class="kw-2">&amp;mut </span><span class="self">self</span>, other: <span class="self">Self</span>)
     <span class="kw">where
         </span><span class="self">Self</span>: Sized,
@@ -527,57 +526,32 @@
         }
     }
 
-    <span class="doccomment">/// Returns the intersection between the flags in `self` and
-    /// `other`.
-    ///
-    /// Specifically, the returned set contains only the flags which are
-    /// present in *both* `self` *and* `other`.
+    <span class="doccomment">/// Returns the intersection between the flags in `self` and `other`.
     </span><span class="attr">#[must_use]
     </span><span class="kw">fn </span>intersection(<span class="self">self</span>, other: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::from_bits_retain(<span class="self">self</span>.bits() &amp; other.bits())
     }
 
     <span class="doccomment">/// Returns the union of between the flags in `self` and `other`.
-    ///
-    /// Specifically, the returned set contains all flags which are
-    /// present in *either* `self` *or* `other`, including any which are
-    /// present in both (see [`Self::symmetric_difference`] if that
-    /// is undesirable).
     </span><span class="attr">#[must_use]
     </span><span class="kw">fn </span>union(<span class="self">self</span>, other: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::from_bits_retain(<span class="self">self</span>.bits() | other.bits())
     }
 
     <span class="doccomment">/// Returns the difference between the flags in `self` and `other`.
-    ///
-    /// Specifically, the returned set contains all flags present in
-    /// `self`, except for the ones present in `other`.
-    ///
-    /// It is also conceptually equivalent to the &quot;bit-clear&quot; operation:
-    /// `flags &amp; !other` (and this syntax is also supported).
     </span><span class="attr">#[must_use]
     </span><span class="kw">fn </span>difference(<span class="self">self</span>, other: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::from_bits_retain(<span class="self">self</span>.bits() &amp; !other.bits())
     }
 
-    <span class="doccomment">/// Returns the [symmetric difference][sym-diff] between the flags
+    <span class="doccomment">/// Returns the symmetric difference between the flags
     /// in `self` and `other`.
-    ///
-    /// Specifically, the returned set contains the flags present which
-    /// are present in `self` or `other`, but that are not present in
-    /// both. Equivalently, it contains the flags present in *exactly
-    /// one* of the sets `self` and `other`.
-    ///
-    /// [sym-diff]: https://en.wikipedia.org/wiki/Symmetric_difference
     </span><span class="attr">#[must_use]
     </span><span class="kw">fn </span>symmetric_difference(<span class="self">self</span>, other: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::from_bits_retain(<span class="self">self</span>.bits() ^ other.bits())
     }
 
     <span class="doccomment">/// Returns the complement of this set of flags.
-    ///
-    /// Specifically, the returned set contains all the flags which are
-    /// not set in `self`, but which are allowed for this type.
     </span><span class="attr">#[must_use]
     </span><span class="kw">fn </span>complement(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::from_bits_truncate(!<span class="self">self</span>.bits())

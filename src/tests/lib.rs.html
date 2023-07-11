@@ -1031,22 +1031,13 @@
 <a href="#1031" id="1031">1031</a>
 <a href="#1032" id="1032">1032</a>
 <a href="#1033" id="1033">1033</a>
-<a href="#1034" id="1034">1034</a>
-<a href="#1035" id="1035">1035</a>
-<a href="#1036" id="1036">1036</a>
-<a href="#1037" id="1037">1037</a>
-<a href="#1038" id="1038">1038</a>
-<a href="#1039" id="1039">1039</a>
-<a href="#1040" id="1040">1040</a>
-<a href="#1041" id="1041">1041</a>
-<a href="#1042" id="1042">1042</a>
-<a href="#1043" id="1043">1043</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(stmt_expr_attributes)]
 #![warn(clippy::indexing_slicing)]
 
 </span><span class="kw">mod </span>env;
 <span class="kw">mod </span>file_ops;
 <span class="kw">mod </span>http;
+<span class="kw">mod </span>operator;
 <span class="kw">mod </span>pause;
 <span class="kw">mod </span>target;
 <span class="kw">mod </span>targetless;
@@ -1431,6 +1422,29 @@
         run_exec(process_cmd, <span class="prelude-val">Some</span>(target), namespace, args, env).<span class="kw">await
     </span>}
 
+    <span class="kw">pub async fn </span>run_mirrord(args: Vec&lt;<span class="kw-2">&amp;</span>str&gt;, env: HashMap&lt;<span class="kw-2">&amp;</span>str, <span class="kw-2">&amp;</span>str&gt;) -&gt; TestProcess {
+        <span class="kw">let </span>path = <span class="kw">match </span><span class="macro">option_env!</span>(<span class="string">&quot;MIRRORD_TESTS_USE_BINARY&quot;</span>) {
+            <span class="prelude-val">None </span>=&gt; <span class="macro">env!</span>(<span class="string">&quot;CARGO_BIN_FILE_MIRRORD&quot;</span>),
+            <span class="prelude-val">Some</span>(binary_path) =&gt; binary_path,
+        };
+        <span class="kw">let </span>temp_dir = tempdir().unwrap();
+
+        <span class="kw">let </span>server = Command::new(path)
+            .args(<span class="kw-2">&amp;</span>args)
+            .envs(env)
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .spawn()
+            .unwrap();
+        <span class="macro">println!</span>(
+            <span class="string">&quot;executed mirrord with args {args:?} pid {}&quot;</span>,
+            server.id().unwrap()
+        );
+        <span class="comment">// We need to hold temp dir until the process is finished
+        </span>TestProcess::from_child(server, temp_dir).<span class="kw">await
+    </span>}
+
     <span class="doccomment">/// Run `mirrord exec` with the given cmd, optional target (`None` for targetless), namespace,
     /// mirrord args, and env vars.
     </span><span class="kw">pub async fn </span>run_exec(
@@ -1440,11 +1454,6 @@
         args: <span class="prelude-ty">Option</span>&lt;Vec&lt;<span class="kw-2">&amp;</span>str&gt;&gt;,
         env: <span class="prelude-ty">Option</span>&lt;Vec&lt;(<span class="kw-2">&amp;</span>str, <span class="kw-2">&amp;</span>str)&gt;&gt;,
     ) -&gt; TestProcess {
-        <span class="kw">let </span>path = <span class="kw">match </span><span class="macro">option_env!</span>(<span class="string">&quot;MIRRORD_TESTS_USE_BINARY&quot;</span>) {
-            <span class="prelude-val">None </span>=&gt; <span class="macro">env!</span>(<span class="string">&quot;CARGO_BIN_FILE_MIRRORD&quot;</span>),
-            <span class="prelude-val">Some</span>(binary_path) =&gt; binary_path,
-        };
-        <span class="kw">let </span>temp_dir = tempdir().unwrap();
         <span class="kw">let </span><span class="kw-2">mut </span>mirrord_args = <span class="macro">vec!</span>[<span class="string">&quot;exec&quot;</span>, <span class="string">&quot;-c&quot;</span>];
         <span class="kw">if let </span><span class="prelude-val">Some</span>(target) = target {
             mirrord_args.extend([<span class="string">&quot;--target&quot;</span>, target].into_iter());
@@ -1476,29 +1485,11 @@
             }
         }
 
-        <span class="kw">let </span>server = Command::new(path)
-            .args(args.clone())
-            .envs(base_env)
-            .stdin(Stdio::piped())
-            .stdout(Stdio::piped())
-            .stderr(Stdio::piped())
-            .spawn()
-            .unwrap();
-        <span class="macro">println!</span>(
-            <span class="string">&quot;executed mirrord with args {args:?} pid {}&quot;</span>,
-            server.id().unwrap()
-        );
-        <span class="comment">// We need to hold temp dir until the process is finished
-        </span>TestProcess::from_child(server, temp_dir).<span class="kw">await
+        run_mirrord(args, base_env).<span class="kw">await
     </span>}
 
     <span class="doccomment">/// Runs `mirrord ls` command and asserts if the json matches the expected format
     </span><span class="kw">pub async fn </span>run_ls(args: <span class="prelude-ty">Option</span>&lt;Vec&lt;<span class="kw-2">&amp;</span>str&gt;&gt;, namespace: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;) -&gt; TestProcess {
-        <span class="kw">let </span>path = <span class="kw">match </span><span class="macro">option_env!</span>(<span class="string">&quot;MIRRORD_TESTS_USE_BINARY&quot;</span>) {
-            <span class="prelude-val">None </span>=&gt; <span class="macro">env!</span>(<span class="string">&quot;CARGO_BIN_FILE_MIRRORD&quot;</span>),
-            <span class="prelude-val">Some</span>(binary_path) =&gt; binary_path,
-        };
-        <span class="kw">let </span>temp_dir = tempdir().unwrap();
         <span class="kw">let </span><span class="kw-2">mut </span>mirrord_args = <span class="macro">vec!</span>[<span class="string">&quot;ls&quot;</span>];
         <span class="kw">if let </span><span class="prelude-val">Some</span>(args) = args {
             mirrord_args.extend(args);
@@ -1507,18 +1498,7 @@
             mirrord_args.extend(<span class="macro">vec!</span>[<span class="string">&quot;--namespace&quot;</span>, namespace]);
         }
 
-        <span class="kw">let </span>process = Command::new(path)
-            .args(mirrord_args.clone())
-            .stdout(Stdio::piped())
-            .stderr(Stdio::piped())
-            .spawn()
-            .unwrap();
-
-        <span class="macro">println!</span>(
-            <span class="string">&quot;executed mirrord with args {mirrord_args:?} pid {}&quot;</span>,
-            process.id().unwrap()
-        );
-        TestProcess::from_child(process, temp_dir).<span class="kw">await
+        run_mirrord(mirrord_args, Default::default()).<span class="kw">await
     </span>}
 
     <span class="attr">#[fixture]

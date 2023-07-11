@@ -16,7 +16,7 @@ node represents an untagged union.</p>
 </div></details><details class="toggle method-toggle" open><summary><section id="method.omitted_variants" class="method"><a class="srclink rightside" href="../src/synstructure/lib.rs.html#1040-1042">source</a><h4 class="code-header">pub fn <a href="#method.omitted_variants" class="fn">omitted_variants</a>(&amp;self) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></h4></section></summary><div class="docblock"><p>True if any variants were omitted due to a <code>filter_variants</code> call.</p>
 </div></details><details class="toggle method-toggle" open><summary><section id="method.each" class="method"><a class="srclink rightside" href="../src/synstructure/lib.rs.html#1075-1088">source</a><h4 class="code-header">pub fn <a href="#method.each" class="fn">each</a>&lt;F, R&gt;(&amp;self, f: F) -&gt; <a class="struct" href="https://docs.rs/proc-macro2/1.0.63/proc_macro2/struct.TokenStream.html" title="struct proc_macro2::TokenStream">TokenStream</a><span class="where fmt-newline">where
     F: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(&amp;<a class="struct" href="struct.BindingInfo.html" title="struct synstructure::BindingInfo">BindingInfo</a>&lt;'_&gt;) -&gt; R,
-    R: <a class="trait" href="https://docs.rs/quote/1.0.28/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>,</span></h4></section></summary><div class="docblock"><p>Runs the passed-in function once for each bound field, passing in a <code>BindingInfo</code>.
+    R: <a class="trait" href="https://docs.rs/quote/1.0.29/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>,</span></h4></section></summary><div class="docblock"><p>Runs the passed-in function once for each bound field, passing in a <code>BindingInfo</code>.
 and generating <code>match</code> arms which evaluate the returned tokens.</p>
 <p>This method will ignore variants or fields which are ignored through the
 <code>filter</code> and <code>filter_variant</code> methods.</p>
@@ -44,8 +44,8 @@ and generating <code>match</code> arms which evaluate the returned tokens.</p>
 );</code></pre></div>
 </div></details><details class="toggle method-toggle" open><summary><section id="method.fold" class="method"><a class="srclink rightside" href="../src/synstructure/lib.rs.html#1123-1137">source</a><h4 class="code-header">pub fn <a href="#method.fold" class="fn">fold</a>&lt;F, I, R&gt;(&amp;self, init: I, f: F) -&gt; <a class="struct" href="https://docs.rs/proc-macro2/1.0.63/proc_macro2/struct.TokenStream.html" title="struct proc_macro2::TokenStream">TokenStream</a><span class="where fmt-newline">where
     F: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(<a class="struct" href="https://docs.rs/proc-macro2/1.0.63/proc_macro2/struct.TokenStream.html" title="struct proc_macro2::TokenStream">TokenStream</a>, &amp;<a class="struct" href="struct.BindingInfo.html" title="struct synstructure::BindingInfo">BindingInfo</a>&lt;'_&gt;) -&gt; R,
-    I: <a class="trait" href="https://docs.rs/quote/1.0.28/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>,
-    R: <a class="trait" href="https://docs.rs/quote/1.0.28/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>,</span></h4></section></summary><div class="docblock"><p>Runs the passed-in function once for each bound field, passing in the
+    I: <a class="trait" href="https://docs.rs/quote/1.0.29/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>,
+    R: <a class="trait" href="https://docs.rs/quote/1.0.29/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>,</span></h4></section></summary><div class="docblock"><p>Runs the passed-in function once for each bound field, passing in the
 result of the previous call, and a <code>BindingInfo</code>. generating <code>match</code>
 arms which evaluate to the resulting tokens.</p>
 <p>This method will ignore variants or fields which are ignored through the
@@ -74,7 +74,7 @@ arms which evaluate to the resulting tokens.</p>
 );</code></pre></div>
 </div></details><details class="toggle method-toggle" open><summary><section id="method.each_variant" class="method"><a class="srclink rightside" href="../src/synstructure/lib.rs.html#1173-1188">source</a><h4 class="code-header">pub fn <a href="#method.each_variant" class="fn">each_variant</a>&lt;F, R&gt;(&amp;self, f: F) -&gt; <a class="struct" href="https://docs.rs/proc-macro2/1.0.63/proc_macro2/struct.TokenStream.html" title="struct proc_macro2::TokenStream">TokenStream</a><span class="where fmt-newline">where
     F: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(&amp;<a class="struct" href="struct.VariantInfo.html" title="struct synstructure::VariantInfo">VariantInfo</a>&lt;'_&gt;) -&gt; R,
-    R: <a class="trait" href="https://docs.rs/quote/1.0.28/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>,</span></h4></section></summary><div class="docblock"><p>Runs the passed-in function once for each variant, passing in a
+    R: <a class="trait" href="https://docs.rs/quote/1.0.29/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>,</span></h4></section></summary><div class="docblock"><p>Runs the passed-in function once for each variant, passing in a
 <code>VariantInfo</code>. and generating <code>match</code> arms which evaluate the returned
 tokens.</p>
 <p>This method will ignore variants and not bind fields which are ignored
@@ -406,7 +406,7 @@ code generated by <code>gen_impl</code> and <code>bound_impl</code>.</p>
     }
     .to_string()
 );</code></pre></div>
-</div></details><details class="toggle method-toggle" open><summary><section id="method.bound_impl" class="method"><a class="srclink rightside" href="../src/synstructure/lib.rs.html#1730-1737">source</a><h4 class="code-header">pub fn <a href="#method.bound_impl" class="fn">bound_impl</a>&lt;P: <a class="trait" href="https://docs.rs/quote/1.0.28/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>, B: <a class="trait" href="https://docs.rs/quote/1.0.28/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>&gt;(
+</div></details><details class="toggle method-toggle" open><summary><section id="method.bound_impl" class="method"><a class="srclink rightside" href="../src/synstructure/lib.rs.html#1730-1737">source</a><h4 class="code-header">pub fn <a href="#method.bound_impl" class="fn">bound_impl</a>&lt;P: <a class="trait" href="https://docs.rs/quote/1.0.29/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>, B: <a class="trait" href="https://docs.rs/quote/1.0.29/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>&gt;(
     &amp;self,
     path: P,
     body: B
@@ -460,7 +460,7 @@ s.filter_variants(|v| v.ast().ident != <span class="string">&quot;B&quot;</span>
         };
     }.to_string()
 );</code></pre></div>
-</div></details><details class="toggle method-toggle" open><summary><section id="method.unsafe_bound_impl" class="method"><a class="srclink rightside" href="../src/synstructure/lib.rs.html#1800-1807">source</a><h4 class="code-header">pub fn <a href="#method.unsafe_bound_impl" class="fn">unsafe_bound_impl</a>&lt;P: <a class="trait" href="https://docs.rs/quote/1.0.28/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>, B: <a class="trait" href="https://docs.rs/quote/1.0.28/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>&gt;(
+</div></details><details class="toggle method-toggle" open><summary><section id="method.unsafe_bound_impl" class="method"><a class="srclink rightside" href="../src/synstructure/lib.rs.html#1800-1807">source</a><h4 class="code-header">pub fn <a href="#method.unsafe_bound_impl" class="fn">unsafe_bound_impl</a>&lt;P: <a class="trait" href="https://docs.rs/quote/1.0.29/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>, B: <a class="trait" href="https://docs.rs/quote/1.0.29/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>&gt;(
     &amp;self,
     path: P,
     body: B
@@ -514,7 +514,7 @@ s.filter_variants(|v| v.ast().ident != <span class="string">&quot;B&quot;</span>
         };
     }.to_string()
 );</code></pre></div>
-</div></details><details class="toggle method-toggle" open><summary><section id="method.unbound_impl" class="method"><a class="srclink rightside" href="../src/synstructure/lib.rs.html#1860-1867">source</a><h4 class="code-header">pub fn <a href="#method.unbound_impl" class="fn">unbound_impl</a>&lt;P: <a class="trait" href="https://docs.rs/quote/1.0.28/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>, B: <a class="trait" href="https://docs.rs/quote/1.0.28/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>&gt;(
+</div></details><details class="toggle method-toggle" open><summary><section id="method.unbound_impl" class="method"><a class="srclink rightside" href="../src/synstructure/lib.rs.html#1860-1867">source</a><h4 class="code-header">pub fn <a href="#method.unbound_impl" class="fn">unbound_impl</a>&lt;P: <a class="trait" href="https://docs.rs/quote/1.0.29/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>, B: <a class="trait" href="https://docs.rs/quote/1.0.29/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>&gt;(
     &amp;self,
     path: P,
     body: B
@@ -560,7 +560,7 @@ s.filter_variants(|v| v.ast().ident != <span class="string">&quot;B&quot;</span>
         };
     }.to_string()
 );</code></pre></div>
-</div></details><details class="toggle method-toggle" open><summary><section id="method.unsafe_unbound_impl" class="method"><a class="srclink rightside" href="../src/synstructure/lib.rs.html#1921-1928">source</a><h4 class="code-header">pub fn <a href="#method.unsafe_unbound_impl" class="fn">unsafe_unbound_impl</a>&lt;P: <a class="trait" href="https://docs.rs/quote/1.0.28/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>, B: <a class="trait" href="https://docs.rs/quote/1.0.28/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>&gt;(
+</div></details><details class="toggle method-toggle" open><summary><section id="method.unsafe_unbound_impl" class="method"><a class="srclink rightside" href="../src/synstructure/lib.rs.html#1921-1928">source</a><h4 class="code-header">pub fn <a href="#method.unsafe_unbound_impl" class="fn">unsafe_unbound_impl</a>&lt;P: <a class="trait" href="https://docs.rs/quote/1.0.29/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>, B: <a class="trait" href="https://docs.rs/quote/1.0.29/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>&gt;(
     &amp;self,
     path: P,
     body: B

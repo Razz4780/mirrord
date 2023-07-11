@@ -44,7 +44,7 @@ function is run at startup time.</p>
  #[cfg_attr(target_os = <span class="string">&quot;netbsd&quot;</span>, link_section = <span class="string">&quot;.init_array&quot;</span>)]
  #[cfg_attr(target_os = <span class="string">&quot;openbsd&quot;</span>, link_section = <span class="string">&quot;.init_array&quot;</span>)]
  #[cfg_attr(target_os = <span class="string">&quot;illumos&quot;</span>, link_section = <span class="string">&quot;.init_array&quot;</span>)]
- #[cfg_attr(any(target_os = <span class="string">&quot;macos&quot;</span>, target_os = <span class="string">&quot;ios&quot;</span>), link_section = <span class="string">&quot;__DATA,__mod_init_func&quot;</span>)]
+ #[cfg_attr(any(target_os = <span class="string">&quot;macos&quot;</span>, target_os = <span class="string">&quot;ios&quot;</span>), link_section = <span class="string">&quot;__DATA_CONST,__mod_init_func&quot;</span>)]
  #[cfg_attr(target_os = <span class="string">&quot;windows&quot;</span>, link_section = <span class="string">&quot;.CRT$XCU&quot;</span>)]
  </span><span class="kw">static </span>FOO: <span class="kw">extern fn</span>() = {
    <span class="attr">#[cfg_attr(any(target_os = <span class="string">&quot;linux&quot;</span>, target_os = <span class="string">&quot;android&quot;</span>), link_section = <span class="string">&quot;.text.startup&quot;</span>)]

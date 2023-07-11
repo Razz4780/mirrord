@@ -26,7 +26,7 @@ underlying <code>syn</code> AST node which this <code>Variant</code> was created
 );</code></pre></div>
 </div></details><details class="toggle method-toggle" open><summary><section id="method.construct" class="method"><a class="srclink rightside" href="../src/synstructure/lib.rs.html#641-674">source</a><h4 class="code-header">pub fn <a href="#method.construct" class="fn">construct</a>&lt;F, T&gt;(&amp;self, func: F) -&gt; <a class="struct" href="https://docs.rs/proc-macro2/1.0.63/proc_macro2/struct.TokenStream.html" title="struct proc_macro2::TokenStream">TokenStream</a><span class="where fmt-newline">where
     F: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(&amp;<a class="struct" href="https://docs.rs/syn/1.0.109/syn/data/struct.Field.html" title="struct syn::data::Field">Field</a>, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; T,
-    T: <a class="trait" href="https://docs.rs/quote/1.0.28/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>,</span></h4></section></summary><div class="docblock"><p>Generates the token stream required to construct the current variant.</p>
+    T: <a class="trait" href="https://docs.rs/quote/1.0.29/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>,</span></h4></section></summary><div class="docblock"><p>Generates the token stream required to construct the current variant.</p>
 <p>The init array initializes each of the fields in the order they are
 written in <code>variant.ast().fields</code>.</p>
 <h5 id="example-1"><a href="#example-1">Example</a></h5>
@@ -55,7 +55,7 @@ written in <code>variant.ast().fields</code>.</p>
 );</code></pre></div>
 </div></details><details class="toggle method-toggle" open><summary><section id="method.each" class="method"><a class="srclink rightside" href="../src/synstructure/lib.rs.html#704-717">source</a><h4 class="code-header">pub fn <a href="#method.each" class="fn">each</a>&lt;F, R&gt;(&amp;self, f: F) -&gt; <a class="struct" href="https://docs.rs/proc-macro2/1.0.63/proc_macro2/struct.TokenStream.html" title="struct proc_macro2::TokenStream">TokenStream</a><span class="where fmt-newline">where
     F: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(&amp;<a class="struct" href="struct.BindingInfo.html" title="struct synstructure::BindingInfo">BindingInfo</a>&lt;'_&gt;) -&gt; R,
-    R: <a class="trait" href="https://docs.rs/quote/1.0.28/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>,</span></h4></section></summary><div class="docblock"><p>Runs the passed-in function once for each bound field, passing in a <code>BindingInfo</code>.
+    R: <a class="trait" href="https://docs.rs/quote/1.0.29/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>,</span></h4></section></summary><div class="docblock"><p>Runs the passed-in function once for each bound field, passing in a <code>BindingInfo</code>.
 and generating a <code>match</code> arm which evaluates the returned tokens.</p>
 <p>This method will ignore fields which are ignored through the <code>filter</code>
 method.</p>
@@ -80,8 +80,8 @@ method.</p>
 );</code></pre></div>
 </div></details><details class="toggle method-toggle" open><summary><section id="method.fold" class="method"><a class="srclink rightside" href="../src/synstructure/lib.rs.html#747-759">source</a><h4 class="code-header">pub fn <a href="#method.fold" class="fn">fold</a>&lt;F, I, R&gt;(&amp;self, init: I, f: F) -&gt; <a class="struct" href="https://docs.rs/proc-macro2/1.0.63/proc_macro2/struct.TokenStream.html" title="struct proc_macro2::TokenStream">TokenStream</a><span class="where fmt-newline">where
     F: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(<a class="struct" href="https://docs.rs/proc-macro2/1.0.63/proc_macro2/struct.TokenStream.html" title="struct proc_macro2::TokenStream">TokenStream</a>, &amp;<a class="struct" href="struct.BindingInfo.html" title="struct synstructure::BindingInfo">BindingInfo</a>&lt;'_&gt;) -&gt; R,
-    I: <a class="trait" href="https://docs.rs/quote/1.0.28/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>,
-    R: <a class="trait" href="https://docs.rs/quote/1.0.28/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>,</span></h4></section></summary><div class="docblock"><p>Runs the passed-in function once for each bound field, passing in the
+    I: <a class="trait" href="https://docs.rs/quote/1.0.29/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>,
+    R: <a class="trait" href="https://docs.rs/quote/1.0.29/quote/to_tokens/trait.ToTokens.html" title="trait quote::to_tokens::ToTokens">ToTokens</a>,</span></h4></section></summary><div class="docblock"><p>Runs the passed-in function once for each bound field, passing in the
 result of the previous call, and a <code>BindingInfo</code>. generating a <code>match</code>
 arm which evaluates to the resulting tokens.</p>
 <p>This method will ignore fields which are ignored through the <code>filter</code>

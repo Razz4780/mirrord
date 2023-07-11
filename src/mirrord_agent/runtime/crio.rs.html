@@ -176,7 +176,7 @@
                 Request::builder()
                     .method(<span class="string">&quot;GET&quot;</span>)
                     .header(<span class="string">&quot;Host&quot;</span>, <span class="string">&quot;localhost&quot;</span>)
-                    .uri(<span class="macro">format!</span>(<span class="string">&quot;http://localhost/{}&quot;</span>, path))
+                    .uri(<span class="macro">format!</span>(<span class="string">&quot;http://localhost{}&quot;</span>, path))
                     .body(Empty::&lt;Bytes&gt;::new())<span class="question-mark">?</span>,
             )
             .<span class="kw">await

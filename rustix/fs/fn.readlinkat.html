@@ -3,7 +3,7 @@
     path: P,
     reuse: B
 ) -&gt; <a class="type" href="../io/type.Result.html" title="type rustix::io::Result">Result</a>&lt;<a class="struct" href="../ffi/struct.CString.html" title="struct rustix::ffi::CString">CString</a>&gt;</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p><code>readlinkat(fd, path)</code>—Reads the contents of a symlink.</p>
-<p>If <code>reuse</code> is non-empty, reuse its buffer to store the result if possible.</p>
+<p>If <code>reuse</code> already has available capacity, reuse it if possible.</p>
 <h2 id="references"><a href="#references">References</a></h2>
 <ul>
 <li><a href="https://pubs.opengroup.org/onlinepubs/9699919799/functions/readlinkat.html">POSIX</a></li>
