@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["StandardRedirect"]};
+window.SIDEBAR_ITEMS = {"static":["CALLSITE"],"struct":["StandardRedirect"]};

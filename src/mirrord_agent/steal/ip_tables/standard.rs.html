@@ -109,11 +109,17 @@
 <a href="#109" id="109">109</a>
 <a href="#110" id="110">110</a>
 <a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>mirrord_protocol::Port;
 <span class="kw">use </span>nix::unistd::getgid;
+<span class="kw">use </span>tracing::warn;
 
 <span class="kw">use crate</span>::{
     error::Result,
@@ -140,7 +146,11 @@
         <span class="kw">let </span>own_packet_filter = <span class="string">&quot;-o lo&quot;</span>.to_owned();
 
         <span class="kw">let </span>gid = getgid();
-        managed.add_rule(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;-m owner --gid-owner {gid} -p tcp -j RETURN&quot;</span>))<span class="question-mark">?</span>;
+        managed
+            .add_rule(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;-m owner --gid-owner {gid} -p tcp -j RETURN&quot;</span>))
+            .inspect_err(|<span class="kw">_</span>| {
+                <span class="macro">warn!</span>(<span class="string">&quot;Unable to create iptable rule with \&quot;--gid-owner {gid}\&quot; filter&quot;</span>)
+            })<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(StandardRedirect {
             preroute,

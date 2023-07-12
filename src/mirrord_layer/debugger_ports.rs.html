@@ -296,6 +296,11 @@
 <a href="#296" id="296">296</a>
 <a href="#297" id="297">297</a>
 <a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     env,
     net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr},
@@ -309,6 +314,9 @@
 /// port used by the given debugger. Value passed through this variable should parse into
 /// [`DebuggerType`]. Used when injecting the layer through IDE, because the debugger port is chosen
 /// dynamically.
+///
+/// When a debugger port is detected this way, the layer removes this variable and sets
+/// [`MIRRORD_IGNORE_DEBUGGER_PORTS_ENV`] for child processes.
 </span><span class="kw">pub const </span>MIRRORD_DETECT_DEBUGGER_PORT_ENV: <span class="kw-2">&amp;</span>str = <span class="string">&quot;MIRRORD_DETECT_DEBUGGER_PORT&quot;</span>;
 
 <span class="doccomment">/// Environment variable used to tell the layer that it should ignore certain local ports that may
@@ -470,6 +478,8 @@
             })
             .and_then(|d| d.get_port(<span class="kw-2">&amp;</span>std::env::args().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()));
         <span class="kw">if let </span><span class="prelude-val">Some</span>(port) = detected {
+            env::set_var(MIRRORD_IGNORE_DEBUGGER_PORTS_ENV, port.to_string());
+            env::remove_var(MIRRORD_DETECT_DEBUGGER_PORT_ENV);
             <span class="kw">return </span><span class="self">Self</span>::Detected(port);
         }
 
