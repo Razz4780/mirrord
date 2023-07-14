@@ -676,6 +676,9 @@
 <a href="#676" id="676">676</a>
 <a href="#677" id="677">677</a>
 <a href="#678" id="678">678</a>
+<a href="#679" id="679">679</a>
+<a href="#680" id="680">680</a>
+<a href="#681" id="681">681</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{collections::BTreeMap, convert::Infallible, io::Write, str::FromStr, sync::LazyLock};
 
 <span class="kw">use </span>k8s_openapi::{
@@ -994,10 +997,13 @@
 
         <span class="kw">let </span>container = Container {
             name: OPERATOR_NAME.to_owned(),
-            image: <span class="prelude-val">Some</span>(<span class="macro">format!</span>(
-                <span class="string">&quot;ghcr.io/metalbear-co/operator:{}&quot;</span>,
-                <span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_VERSION&quot;</span>)
-            )),
+            image: <span class="kw">match </span><span class="macro">option_env!</span>(<span class="string">&quot;MIRRORD_OPERATOR_IMAGE&quot;</span>) {
+                <span class="prelude-val">Some</span>(image) =&gt; <span class="prelude-val">Some</span>(image.to_owned()),
+                <span class="prelude-val">None </span>=&gt; <span class="prelude-val">Some</span>(<span class="macro">format!</span>(
+                    <span class="string">&quot;ghcr.io/metalbear-co/operator:{}&quot;</span>,
+                    <span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_VERSION&quot;</span>)
+                )),
+            },
             image_pull_policy: <span class="prelude-val">Some</span>(<span class="string">&quot;IfNotPresent&quot;</span>.to_owned()),
             env: <span class="prelude-val">Some</span>(envs),
             ports: <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[ContainerPort {

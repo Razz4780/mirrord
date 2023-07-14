@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["AgentConfig","AgentFileConfig"]};
+window.SIDEBAR_ITEMS = {"enum":["LinuxCapability"],"struct":["AgentConfig","AgentFileConfig"]};

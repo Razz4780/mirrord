@@ -435,6 +435,7 @@
 <a href="#435" id="435">435</a>
 <a href="#436" id="436">436</a>
 <a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{collections::HashSet, sync::LazyLock};
 
 <span class="kw">use </span>futures::{StreamExt, TryStreamExt};
@@ -447,7 +448,7 @@
     runtime::{watcher, WatchStreamExt},
     Api, Client,
 };
-<span class="kw">use </span>mirrord_config::agent::AgentConfig;
+<span class="kw">use </span>mirrord_config::agent::{AgentConfig, LinuxCapability};
 <span class="kw">use </span>mirrord_progress::Progress;
 <span class="kw">use </span>rand::distributions::{Alphanumeric, DistString};
 <span class="kw">use </span>serde_json::json;
@@ -458,6 +459,17 @@
     api::{get_k8s_resource_api, runtime::RuntimeData},
     error::{KubeApiError, <span class="prelude-ty">Result</span>},
 };
+
+<span class="doccomment">/// Retrieve a list of Linux capabilities for the agent container.
+</span><span class="kw">fn </span>get_capabilities(config: <span class="kw-2">&amp;</span>AgentConfig) -&gt; Vec&lt;LinuxCapability&gt; {
+    <span class="kw">let </span>disabled = config.disabled_capabilities.clone().unwrap_or_default();
+
+    LinuxCapability::all()
+        .iter()
+        .copied()
+        .filter(|c| !disabled.contains(c))
+        .collect()
+}
 
 <span class="kw">pub trait </span>ContainerApi {
     <span class="kw">fn </span>agent_image(agent: <span class="kw-2">&amp;</span>AgentConfig) -&gt; String {
@@ -660,12 +672,7 @@
                                     <span class="macro">json!</span>({
                                         <span class="string">&quot;runAsGroup&quot;</span>: agent_gid,
                                         <span class="string">&quot;capabilities&quot;</span>: {
-                                            <span class="string">&quot;add&quot;</span>: [
-                                                <span class="string">&quot;NET_ADMIN&quot;</span>,
-                                                <span class="string">&quot;NET_RAW&quot;</span>,
-                                                <span class="string">&quot;SYS_PTRACE&quot;</span>,
-                                                <span class="string">&quot;SYS_ADMIN&quot;
-                                            </span>]
+                                            <span class="string">&quot;add&quot;</span>: get_capabilities(agent),
                                         }
                                     })
                                 ),
@@ -796,12 +803,7 @@
             <span class="string">&quot;securityContext&quot;</span>: {
                 <span class="string">&quot;runAsGroup&quot;</span>: agent_gid,
                 <span class="string">&quot;capabilities&quot;</span>: {
-                    <span class="string">&quot;add&quot;</span>: [
-                        <span class="string">&quot;NET_ADMIN&quot;</span>,
-                        <span class="string">&quot;NET_RAW&quot;</span>,
-                        <span class="string">&quot;SYS_PTRACE&quot;</span>,
-                        <span class="string">&quot;SYS_ADMIN&quot;
-                    </span>]
+                    <span class="string">&quot;add&quot;</span>: get_capabilities(agent),
                 },
             },
             <span class="string">&quot;imagePullPolicy&quot;</span>: agent.image_pull_policy,

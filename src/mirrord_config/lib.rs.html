@@ -724,6 +724,7 @@
 <a href="#724" id="724">724</a>
 <a href="#725" id="725">725</a>
 <a href="#726" id="726">726</a>
+<a href="#727" id="727">727</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(slice_concat_trait)]
 #![feature(lazy_cell)]
 #![feature(result_option_inspect)]
@@ -1328,6 +1329,7 @@
                 startup_timeout: <span class="prelude-val">None</span>,
                 network_interface: <span class="prelude-val">None</span>,
                 flush_connections: <span class="prelude-val">Some</span>(<span class="bool-val">false</span>),
+                disabled_capabilities: <span class="prelude-val">None</span>,
             }),
             feature: <span class="prelude-val">Some</span>(FeatureFileConfig {
                 env: ToggleableConfig::Enabled(<span class="bool-val">true</span>).into(),
