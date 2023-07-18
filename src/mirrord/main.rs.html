@@ -429,6 +429,18 @@
 <a href="#429" id="429">429</a>
 <a href="#430" id="430">430</a>
 <a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(let_chains)]
 #![feature(lazy_cell)]
 #![feature(result_option_inspect)]
@@ -445,9 +457,9 @@
 <span class="kw">use </span>extract::extract_library;
 <span class="kw">use </span>k8s_openapi::{
     api::{apps::v1::Deployment, core::v1::Pod},
-    Metadata,
+    Metadata, NamespaceResourceScope,
 };
-<span class="kw">use </span>kube::{api::ListParams, Api};
+<span class="kw">use </span>kube::api::ListParams;
 <span class="kw">use </span>miette::JSONReportHandler;
 <span class="kw">use </span>mirrord_config::{config::MirrordConfig, LayerConfig, LayerFileConfig};
 <span class="kw">use </span>mirrord_kube::{
@@ -461,6 +473,7 @@
 <span class="kw">use </span>mirrord_progress::{Progress, ProgressMode, TaskProgress};
 <span class="kw">use </span>operator::operator_command;
 <span class="kw">use </span>semver::Version;
+<span class="kw">use </span>serde::de::DeserializeOwned;
 <span class="kw">use </span>serde_json::json;
 <span class="kw">use </span>tracing::{error, info, warn};
 <span class="kw">use </span>tracing_subscriber::{fmt, prelude::<span class="kw-2">*</span>, registry, EnvFilter};
@@ -630,28 +643,29 @@
     <span class="prelude-val">Err</span>(CliError::BinaryExecuteFailed(binary, binary_args))
 }
 
-<span class="doccomment">/// Returns a list of (pod name, [container names]) pairs.
-/// Filtering mesh side cars
+<span class="doccomment">/// Returns a list of (pod name, [container names]) pairs, filtering out mesh side cars
+/// as well as any pods which are not ready or have crashed.
 </span><span class="kw">async fn </span>get_kube_pods(
     namespace: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
     client: <span class="kw-2">&amp;</span>kube::Client,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;HashMap&lt;String, Vec&lt;String&gt;&gt;&gt; {
-    <span class="kw">let </span>api: Api&lt;Pod&gt; = get_k8s_resource_api(client, namespace);
-    <span class="kw">let </span>pods = api
-        .list(
-            <span class="kw-2">&amp;</span>ListParams::default()
-                .labels(<span class="string">&quot;app!=mirrord&quot;</span>)
-                .fields(<span class="string">&quot;status.phase=Running&quot;</span>),
-        )
+    <span class="kw">let </span>pods = get_kube_resources::&lt;Pod&gt;(namespace, client, <span class="prelude-val">Some</span>(<span class="string">&quot;status.phase=Running&quot;</span>))
         .<span class="kw">await
-        </span>.map_err(KubeApiError::from)
-        .map_err(CliError::KubernetesApiFailed)<span class="question-mark">?</span>;
+        </span>.filter(|pod| {
+            pod.status
+                .as_ref()
+                .and_then(|status| status.conditions.as_ref())
+                .map(|conditions| {
+                    <span class="comment">// filter out pods without the Ready condition
+                    </span>conditions
+                        .iter()
+                        .any(|condition| condition.type_ == <span class="string">&quot;Ready&quot; </span>&amp;&amp; condition.status == <span class="string">&quot;True&quot;</span>)
+                })
+                .unwrap_or(<span class="bool-val">false</span>)
+        });
 
     <span class="comment">// convert pods to (name, container names) pairs
-
     </span><span class="kw">let </span>pod_containers_map: HashMap&lt;String, Vec&lt;String&gt;&gt; = pods
-        .items
-        .iter()
         .filter_map(|pod| {
             <span class="kw">let </span>name = pod.metadata.name.clone()<span class="question-mark">?</span>;
             <span class="kw">let </span>containers = pod
@@ -675,16 +689,9 @@
     namespace: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
     client: <span class="kw-2">&amp;</span>kube::Client,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw">impl </span>Iterator&lt;Item = String&gt;&gt; {
-    <span class="kw">let </span>api: Api&lt;Deployment&gt; = get_k8s_resource_api(client, namespace);
-    <span class="kw">let </span>deployments = api
-        .list(<span class="kw-2">&amp;</span>ListParams::default().labels(<span class="string">&quot;app!=mirrord&quot;</span>))
+    <span class="prelude-val">Ok</span>(get_kube_resources::&lt;Deployment&gt;(namespace, client, <span class="prelude-val">None</span>)
         .<span class="kw">await
-        </span>.map_err(KubeApiError::from)
-        .map_err(CliError::KubernetesApiFailed)<span class="question-mark">?</span>;
-
-    <span class="prelude-val">Ok</span>(deployments
-        .into_iter()
-        .filter(|deployment| {
+        </span>.filter(|deployment| {
             deployment
                 .status
                 .as_ref()
@@ -698,17 +705,34 @@
     namespace: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
     client: <span class="kw-2">&amp;</span>kube::Client,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw">impl </span>Iterator&lt;Item = String&gt;&gt; {
-    <span class="kw">let </span>api: Api&lt;Rollout&gt; = get_k8s_resource_api(client, namespace);
-
-    <span class="kw">let </span>rollouts = api
-        .list(<span class="kw-2">&amp;</span>ListParams::default().labels(<span class="string">&quot;app!=mirrord&quot;</span>))
+    <span class="prelude-val">Ok</span>(get_kube_resources::&lt;Rollout&gt;(namespace, client, <span class="prelude-val">None</span>)
         .<span class="kw">await
-        </span>.map(|rollouts| rollouts.into_iter())
+        </span>.filter_map(|rollout| rollout.metadata().name.clone()))
+}
+
+<span class="kw">async fn </span>get_kube_resources&lt;K&gt;(
+    namespace: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
+    client: <span class="kw-2">&amp;</span>kube::Client,
+    field_selector: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
+) -&gt; <span class="kw">impl </span>Iterator&lt;Item = K&gt;
+<span class="kw">where
+    </span>K: kube::Resource&lt;Scope = NamespaceResourceScope&gt;,
+    &lt;K <span class="kw">as </span>kube::Resource&gt;::DynamicType: Default,
+    K: Clone + DeserializeOwned + std::fmt::Debug,
+{
+    <span class="comment">// Set up filters on the K8s resources returned - in this case, excluding the agent resources
+    // and then applying any provided field-based filter conditions.
+    </span><span class="kw">let </span>params = <span class="kw-2">&amp;mut </span>ListParams::default().labels(<span class="string">&quot;app!=mirrord&quot;</span>);
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(fields) = field_selector {
+        params.field_selector = <span class="prelude-val">Some</span>(fields.to_string())
+    }
+    get_k8s_resource_api(client, namespace)
+        .list(params)
+        .<span class="kw">await
+        </span>.map(|resources| resources.into_iter())
         .map_err(KubeApiError::from)
         .map_err(CliError::KubernetesApiFailed)
-        .unwrap_or_else(|<span class="kw">_</span>| Vec::new().into_iter());
-
-    <span class="prelude-val">Ok</span>(rollouts.filter_map(|rollout| rollout.metadata().name.clone()))
+        .unwrap_or_else(|<span class="kw">_</span>| Vec::new().into_iter())
 }
 
 <span class="doccomment">/// Lists all possible target paths for pods.

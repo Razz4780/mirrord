@@ -995,6 +995,21 @@
 <a href="#995" id="995">995</a>
 <a href="#996" id="996">996</a>
 <a href="#997" id="997">997</a>
+<a href="#998" id="998">998</a>
+<a href="#999" id="999">999</a>
+<a href="#1000" id="1000">1000</a>
+<a href="#1001" id="1001">1001</a>
+<a href="#1002" id="1002">1002</a>
+<a href="#1003" id="1003">1003</a>
+<a href="#1004" id="1004">1004</a>
+<a href="#1005" id="1005">1005</a>
+<a href="#1006" id="1006">1006</a>
+<a href="#1007" id="1007">1007</a>
+<a href="#1008" id="1008">1008</a>
+<a href="#1009" id="1009">1009</a>
+<a href="#1010" id="1010">1010</a>
+<a href="#1011" id="1011">1011</a>
+<a href="#1012" id="1012">1012</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>alloc::ffi::CString;
 <span class="kw">use </span>core::{ffi::CStr, mem};
 <span class="kw">use </span>std::{
@@ -1018,7 +1033,7 @@
 <span class="kw">use super</span>::{hooks::<span class="kw-2">*</span>, <span class="kw-2">*</span>};
 <span class="kw">use crate</span>::{
     common::{blocking_send_hook_message, HookMessage},
-    detour::{Detour, OnceLockExt, OptionExt},
+    detour::{Detour, OnceLockExt, OptionDetourExt, OptionExt},
     dns::GetAddrInfo,
     error::HookError,
     file::{<span class="self">self</span>, OPEN_FILES},
@@ -1026,7 +1041,7 @@
     outgoing::{tcp::TcpOutgoing, udp::UdpOutgoing, Connect, RemoteConnection},
     tcp::{Listen, TcpIncoming},
     ENABLED_TCP_OUTGOING, ENABLED_UDP_OUTGOING, INCOMING_IGNORE_LOCALHOST, LISTEN_PORTS,
-    OUTGOING_IGNORE_LOCALHOST, REMOTE_UNIX_STREAMS, TARGETLESS,
+    OUTGOING_IGNORE_LOCALHOST, OUTGOING_SELECTOR, REMOTE_UNIX_STREAMS, TARGETLESS,
 };
 
 <span class="doccomment">/// Hostname initialized from the agent with [`gethostname`].
@@ -1292,77 +1307,128 @@
     }
 }
 
-<span class="comment">// TODO(alex): Should be an enum, but to do so requires the `adt_const_params` feature, which also
-// requires enabling `incomplete_features`.
-</span><span class="kw">type </span>ConnectType = bool;
-<span class="kw">const </span>TCP: ConnectType = <span class="bool-val">false</span>;
-<span class="kw">const </span>UDP: ConnectType = !TCP;
-
 <span class="doccomment">/// Common logic between Tcp/Udp `connect`, when used for the outgoing traffic feature.
 ///
 /// Sends a hook message that will be handled by `(Tcp|Udp)OutgoingHandler`, starting the request
 /// interception procedure.
 /// This returns errno so we can restore the correct errno in case result is -1 (until we get
 /// back to the hook we might call functions that will corrupt errno)
-</span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, ret)]
-</span><span class="kw">fn </span>connect_outgoing&lt;<span class="kw">const </span>TYPE: ConnectType, <span class="kw">const </span>CALL_CONNECT: bool&gt;(
+</span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;debug&quot;</span>, ret)]
+</span><span class="kw">fn </span>connect_outgoing&lt;<span class="kw">const </span>PROTOCOL: ConnectProtocol, <span class="kw">const </span>CALL_CONNECT: bool&gt;(
     sockfd: RawFd,
     remote_address: SockAddr,
     <span class="kw-2">mut </span>user_socket_info: Arc&lt;UserSocket&gt;,
 ) -&gt; Detour&lt;ConnectResult&gt; {
-    <span class="comment">// Prepare this socket to be intercepted.
-    </span><span class="kw">let </span>(mirror_tx, mirror_rx) = oneshot::channel();
+    <span class="kw">if </span>remote_address.is_unix()
+        || OUTGOING_SELECTOR
+            .get()<span class="question-mark">?
+            </span>.connect_remote::&lt;PROTOCOL&gt;(remote_address.as_socket()<span class="question-mark">?</span>)
+    {
+        <span class="comment">// Prepare this socket to be intercepted.
+        </span><span class="kw">let </span>(mirror_tx, mirror_rx) = oneshot::channel();
 
-    <span class="kw">let </span>connect = Connect {
-        remote_address: remote_address.clone(),
-        channel_tx: mirror_tx,
-    };
+        <span class="kw">let </span>connect = Connect {
+            remote_address: remote_address.clone(),
+            channel_tx: mirror_tx,
+        };
 
-    <span class="kw">let </span>hook_message = <span class="kw">match </span>TYPE {
-        TCP =&gt; {
-            <span class="kw">let </span>connect_hook = TcpOutgoing::Connect(connect);
-            HookMessage::TcpOutgoing(connect_hook)
+        <span class="kw">let </span>hook_message = <span class="kw">match </span>PROTOCOL {
+            TCP =&gt; {
+                <span class="kw">let </span>connect_hook = TcpOutgoing::Connect(connect);
+                HookMessage::TcpOutgoing(connect_hook)
+            }
+            UDP =&gt; {
+                <span class="kw">let </span>connect_hook = UdpOutgoing::Connect(connect);
+                HookMessage::UdpOutgoing(connect_hook)
+            }
+        };
+
+        blocking_send_hook_message(hook_message)<span class="question-mark">?</span>;
+        <span class="kw">let </span>RemoteConnection {
+            layer_address,
+            user_app_address,
+        } = mirror_rx.blocking_recv()<span class="question-mark">??</span>;
+
+        <span class="comment">// Connect to the interceptor socket that is listening.
+        </span><span class="kw">let </span>connect_result: ConnectResult = <span class="kw">if </span>CALL_CONNECT {
+            <span class="kw">unsafe </span>{ FN_CONNECT(sockfd, layer_address.as_ptr(), layer_address.len()) }.into()
+        } <span class="kw">else </span>{
+            ConnectResult {
+                result: <span class="number">0</span>,
+                error: <span class="prelude-val">None</span>,
+            }
+        };
+
+        <span class="kw">if </span>connect_result.is_failure() {
+            <span class="macro">error!</span>(
+                <span class="string">&quot;connect -&gt; Failed call to libc::connect with {:#?}&quot;</span>,
+                connect_result,
+            );
+            <span class="kw">return </span><span class="prelude-val">Err</span>(io::Error::last_os_error())<span class="question-mark">?</span>;
         }
-        UDP =&gt; {
-            <span class="kw">let </span>connect_hook = UdpOutgoing::Connect(connect);
-            HookMessage::UdpOutgoing(connect_hook)
-        }
-    };
 
-    blocking_send_hook_message(hook_message)<span class="question-mark">?</span>;
-    <span class="kw">let </span>RemoteConnection {
-        layer_address,
-        user_app_address,
-    } = mirror_rx.blocking_recv()<span class="question-mark">??</span>;
+        <span class="kw">let </span>connected = Connected {
+            remote_address: remote_address.try_into()<span class="question-mark">?</span>,
+            local_address: user_app_address.try_into()<span class="question-mark">?</span>,
+            layer_address: <span class="prelude-val">Some</span>(layer_address.try_into()<span class="question-mark">?</span>),
+        };
 
-    <span class="comment">// Connect to the interceptor socket that is listening.
-    </span><span class="kw">let </span>connect_result: ConnectResult = <span class="kw">if </span>CALL_CONNECT {
-        <span class="kw">unsafe </span>{ FN_CONNECT(sockfd, layer_address.as_ptr(), layer_address.len()) }.into()
+        Arc::get_mut(<span class="kw-2">&amp;mut </span>user_socket_info).unwrap().state = SocketState::Connected(connected);
+        SOCKETS.insert(sockfd, user_socket_info);
+
+        Detour::Success(connect_result)
     } <span class="kw">else </span>{
-        ConnectResult {
-            result: <span class="number">0</span>,
-            error: <span class="prelude-val">None</span>,
-        }
-    };
-
-    <span class="kw">if </span>connect_result.is_failure() {
-        <span class="macro">error!</span>(
-            <span class="string">&quot;connect -&gt; Failed call to libc::connect with {:#?}&quot;</span>,
-            connect_result,
-        );
-        <span class="kw">return </span><span class="prelude-val">Err</span>(io::Error::last_os_error())<span class="question-mark">?</span>;
+        Detour::Bypass(Bypass::FilteredConnection)
     }
+}
 
-    <span class="kw">let </span>connected = Connected {
-        remote_address: remote_address.try_into()<span class="question-mark">?</span>,
-        local_address: user_app_address.try_into()<span class="question-mark">?</span>,
-        layer_address: <span class="prelude-val">Some</span>(layer_address.try_into()<span class="question-mark">?</span>),
-    };
+<span class="doccomment">/// Iterate through sockets, if any of them has the requested port that the application is now
+/// trying to connect to - then don&#39;t forward this connection to the agent, and instead of
+/// connecting to the requested address, connect to the actual address where the application
+/// is locally listening.
+</span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, ret)]
+</span><span class="kw">fn </span>connect_to_local_address(
+    sockfd: RawFd,
+    user_socket_info: <span class="kw-2">&amp;</span>UserSocket,
+    ip_address: SocketAddr,
+) -&gt; Detour&lt;<span class="prelude-ty">Option</span>&lt;ConnectResult&gt;&gt; {
+    <span class="kw">let </span>ignore_localhost = OUTGOING_IGNORE_LOCALHOST
+        .get()
+        .copied()
+        .expect(<span class="string">&quot;Should be set during initialization!&quot;</span>);
 
-    Arc::get_mut(<span class="kw-2">&amp;mut </span>user_socket_info).unwrap().state = SocketState::Connected(connected);
-    SOCKETS.insert(sockfd, user_socket_info);
-
-    Detour::Success(connect_result)
+    <span class="kw">if </span>ignore_localhost {
+        Detour::Bypass(Bypass::IgnoreLocalhost(ip_address.port()))
+    } <span class="kw">else </span>{
+        Detour::Success(
+            SOCKETS
+                .iter()
+                .find_map(|socket| <span class="kw">match </span>socket.state {
+                    SocketState::Listening(Bound {
+                        requested_address,
+                        address,
+                    }) =&gt; (requested_address.port() == ip_address.port()
+                        &amp;&amp; socket.protocol == user_socket_info.protocol)
+                        .then(|| SockAddr::from(address)),
+                    <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+                })
+                .map(|rawish_remote_address| <span class="kw">unsafe </span>{
+                    FN_CONNECT(
+                        sockfd,
+                        rawish_remote_address.as_ptr(),
+                        rawish_remote_address.len(),
+                    )
+                })
+                .map(|connect_result| {
+                    <span class="kw">if </span>connect_result != <span class="number">0 </span>{
+                        Detour::Error::&lt;ConnectResult&gt;(io::Error::last_os_error().into())
+                    } <span class="kw">else </span>{
+                        Detour::Success(connect_result.into())
+                    }
+                })
+                .transpose()<span class="question-mark">?</span>,
+        )
+    }
 }
 
 <span class="doccomment">/// Handles 3 different cases, depending if the outgoing traffic feature is enabled or not:
@@ -1387,61 +1453,24 @@
         .get()
         .expect(<span class="string">&quot;Should be set during initialization!&quot;</span>);
 
+    <span class="macro">info!</span>(<span class="string">&quot;in connect {:#?}&quot;</span>, SOCKETS);
+
     <span class="kw">let </span>(<span class="kw">_</span>, user_socket_info) = {
         SOCKETS
             .remove(<span class="kw-2">&amp;</span>sockfd)
             .ok_or(Bypass::LocalFdNotFound(sockfd))<span class="question-mark">?
     </span>};
 
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(ip_address) = optional_ip_address.as_ref() {
-        <span class="kw">let </span>ignore_localhost = OUTGOING_IGNORE_LOCALHOST
-            .get()
-            .copied()
-            .expect(<span class="string">&quot;Should be set during initialization!&quot;</span>);
-
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(ip_address) = optional_ip_address {
         <span class="kw">if </span>ip_address.ip().is_loopback() {
-            <span class="kw">if </span>ignore_localhost {
-                <span class="kw">return </span>Detour::Bypass(Bypass::IgnoreLocalhost(ip_address.port()));
-            }
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(res) =
-                <span class="comment">// Iterate through sockets, if any of them has the requested port that the
-                // application is now trying to connect to - then don&#39;t forward this connection
-                // to the agent, and instead of connecting to the requested address, connect to
-                // the actual address where the application is locally listening.
-                </span>SOCKETS.iter().find_map(|entry| {
-                    <span class="kw">let </span>socket = entry.value();
-                    <span class="kw">if let </span>SocketState::Listening(Bound {
-                        requested_address,
-                        address,
-                    }) = socket.state
-                    {
-                        <span class="kw">if </span>requested_address.port() == ip_address.port()
-                            &amp;&amp; socket.protocol == user_socket_info.protocol
-                        {
-                            <span class="kw">let </span>rawish_remote_address = SockAddr::from(address);
-                            <span class="kw">let </span>result = <span class="kw">unsafe </span>{
-                                FN_CONNECT(
-                                    sockfd,
-                                    rawish_remote_address.as_ptr(),
-                                    rawish_remote_address.len(),
-                                )
-                            };
-
-                            <span class="kw">return </span><span class="prelude-val">Some</span>(<span class="kw">if </span>result != <span class="number">0 </span>{
-                                Detour::Error(io::Error::last_os_error().into())
-                            } <span class="kw">else </span>{
-                                Detour::Success(result.into())
-                            });
-                        }
-                    }
-                    <span class="prelude-val">None
-                </span>})
-            {
-                <span class="kw">return </span>res;
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(result) = connect_to_local_address(sockfd, <span class="kw-2">&amp;</span>user_socket_info, ip_address)<span class="question-mark">? </span>{
+                <span class="comment">// `result` here is always a success, as error and bypass are returned on the `?`
+                // above.
+                </span><span class="kw">return </span>Detour::Success(result);
             }
         }
 
-        <span class="kw">if </span>is_ignored_port(ip_address) || is_debugger_port(ip_address) {
+        <span class="kw">if </span>is_ignored_port(<span class="kw-2">&amp;</span>ip_address) || is_debugger_port(<span class="kw-2">&amp;</span>ip_address) {
             <span class="kw">return </span>Detour::Bypass(Bypass::Port(ip_address.port()));
         }
     } <span class="kw">else if </span>remote_address.is_unix() {
@@ -1452,6 +1481,7 @@
                 .as_abstract_namespace()
                 .map(String::from_utf8_lossy))
             .map(String::from);
+
         <span class="kw">if </span>!address.as_ref().is_some_and(|address_name| {
             unix_streams
                 .as_ref()
@@ -1644,7 +1674,7 @@
 ///
 /// We need this to properly handle some cases in [`fcntl`], [`dup2_detour`], and [`dup3_detour`].
 /// Extra relevant for node on macos.
-</span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>)]
+</span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, ret)]
 </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>dup&lt;<span class="kw">const </span>SWITCH_MAP: bool&gt;(fd: c_int, dup_fd: i32) -&gt; <span class="prelude-ty">Result</span>&lt;(), HookError&gt; {
     <span class="kw">if let </span><span class="prelude-val">Some</span>(socket) = SOCKETS.get(<span class="kw-2">&amp;</span>fd).map(|entry| entry.value().clone()) {
         SOCKETS.insert(dup_fd <span class="kw">as </span>RawFd, socket);

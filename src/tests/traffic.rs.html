@@ -385,6 +385,12 @@
 <a href="#385" id="385">385</a>
 <a href="#386" id="386">386</a>
 <a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>steal;
 
 <span class="attr">#[cfg(test)]
@@ -392,7 +398,7 @@
     <span class="kw">use </span>std::{net::UdpSocket, path::PathBuf, time::Duration};
 
     <span class="kw">use </span>futures::Future;
-    <span class="kw">use </span>futures_util::stream::TryStreamExt;
+    <span class="kw">use </span>futures_util::{stream::TryStreamExt, AsyncBufReadExt};
     <span class="kw">use </span>k8s_openapi::api::core::v1::Pod;
     <span class="kw">use </span>kube::{api::LogParams, Api, Client};
     <span class="kw">use </span>rstest::<span class="kw-2">*</span>;
@@ -584,17 +590,23 @@
 
         <span class="comment">// Verify that the UDP message sent by the application reached the internal service.
         </span>lp.follow = <span class="bool-val">true</span>; <span class="comment">// Follow log stream.
-        </span><span class="kw">let </span>logs = pod_api
+
+        </span><span class="kw">let </span><span class="kw-2">mut </span>log_lines = pod_api
             .log_stream(stripped_target, <span class="kw-2">&amp;</span>lp)
             .<span class="kw">await
             </span>.unwrap()
-            .try_next()
-            .<span class="kw">await
-            </span>.unwrap()
-            .unwrap();
-        <span class="kw">let </span>logs = String::from_utf8_lossy(<span class="kw-2">&amp;</span>logs);
-        <span class="macro">assert!</span>(logs.contains(<span class="string">&quot;Can I pass the test please?&quot;</span>)); <span class="comment">// Of course you can.
-    </span>}
+            .lines();
+
+        <span class="kw">let </span><span class="kw-2">mut </span>found = <span class="bool-val">false</span>;
+        <span class="kw">while let </span><span class="prelude-val">Some</span>(log) = log_lines.try_next().<span class="kw">await</span>.unwrap() {
+            <span class="macro">println!</span>(<span class="string">&quot;logged - {log}&quot;</span>);
+            <span class="kw">if </span>log.contains(<span class="string">&quot;Can I pass the test please?&quot;</span>) {
+                found = <span class="bool-val">true</span>;
+                <span class="kw">break</span>;
+            }
+        }
+        <span class="macro">assert!</span>(found, <span class="string">&quot;Did not find expected log line.&quot;</span>);
+    }
 
     <span class="doccomment">/// Test that the process does not crash and messages are sent out normally when the
     /// application calls `connect` on a UDP socket with outgoing traffic disabled on mirrord.

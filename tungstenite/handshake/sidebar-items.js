@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["HandshakeError"],"fn":["derive_accept_key"],"mod":["client","headers","server"],"struct":["MidHandshake"],"trait":["HandshakeRole"]};
+window.SIDEBAR_ITEMS = {"enum":["HandshakeError"],"fn":["derive_accept_key"],"mod":["client","headers","machine","server"],"struct":["MidHandshake"],"trait":["HandshakeRole"]};

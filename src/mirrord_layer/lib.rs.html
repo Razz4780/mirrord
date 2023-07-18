@@ -1167,7 +1167,7 @@
 };
 <span class="kw">use </span>outgoing::{tcp::TcpOutgoingHandler, udp::UdpOutgoingHandler};
 <span class="kw">use </span>regex::RegexSet;
-<span class="kw">use </span>socket::SOCKETS;
+<span class="kw">use </span>socket::{OutgoingSelector, SOCKETS};
 <span class="kw">use </span>tcp::TcpHandler;
 <span class="kw">use </span>tcp_mirror::TcpMirrorHandler;
 <span class="kw">use </span>tcp_steal::TcpStealHandler;
@@ -1175,7 +1175,6 @@
     runtime::Runtime,
     select,
     sync::mpsc::{channel, Receiver, Sender},
-    time::{sleep, Duration},
 };
 <span class="kw">use </span>tracing::{debug, error, info, trace, warn};
 <span class="kw">use </span>tracing_subscriber::{fmt::format::FmtSpan, prelude::<span class="kw-2">*</span>};
@@ -1316,6 +1315,18 @@
 <span class="doccomment">/// Ports to ignore on listening for mirroring/stealing.
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">static </span>INCOMING_IGNORE_PORTS: OnceLock&lt;HashSet&lt;u16&gt;&gt; = OnceLock::new();
 
+<span class="comment">// TODO(alex): To support DNS on the selector, change it to `LazyLock&lt;Arc&lt;Mutex&gt;&gt;`, so we can modify
+// the global on `OutgoingSelector::connect_remote`, converting `AddressFilter:Name` to however
+// many addresses we resolve into `AddressFilter::Socket`.
+//
+// Also, we need a global for `REMOTE_DNS`, so we can check it in
+// `OutgoingSelector::connect_remote`, and only resolve DNS through remote if it&#39;s `true`.
+
+</span><span class="doccomment">/// Selector for how outgoing connection will behave, either sending traffic via the remote or from
+/// local app, according to how the user set up the `remote`, and `local` filter, in
+/// `feature.network.outgoing`.
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">static </span>OUTGOING_SELECTOR: OnceLock&lt;OutgoingSelector&gt; = OnceLock::new();
+
 <span class="doccomment">/// Ports to ignore because they are used by the IDE debugger
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">static </span>DEBUGGER_IGNORED_PORTS: OnceLock&lt;DebuggerPorts&gt; = OnceLock::new();
 
@@ -1455,12 +1466,31 @@
     FILE_MODE
         .set(config.feature.fs.clone())
         .expect(<span class="string">&quot;Setting FILE_MODE failed.&quot;</span>);
-    ENABLED_TCP_OUTGOING
+
+    <span class="comment">// These must come before `OutgoingSelector::new`.
+    </span>ENABLED_TCP_OUTGOING
         .set(config.feature.network.outgoing.tcp)
         .expect(<span class="string">&quot;Setting ENABLED_TCP_OUTGOING singleton&quot;</span>);
     ENABLED_UDP_OUTGOING
         .set(config.feature.network.outgoing.udp)
         .expect(<span class="string">&quot;Setting ENABLED_UDP_OUTGOING singleton&quot;</span>);
+
+    {
+        <span class="kw">let </span>outgoing_selector = config
+            .feature
+            .network
+            .outgoing
+            .filter
+            .clone()
+            .try_into()
+            .expect(<span class="string">&quot;Failed setting up outgoing traffic filter!&quot;</span>);
+
+        <span class="comment">// This will crash the app if it comes before `ENABLED_(TCP|UDP)_OUTGOING`!
+        </span>OUTGOING_SELECTOR
+            .set(outgoing_selector)
+            .expect(<span class="string">&quot;Setting OUTGOING_SELECTOR singleton&quot;</span>);
+    }
+
     REMOTE_UNIX_STREAMS
         .set(
             config
@@ -1626,13 +1656,6 @@
     /// loop, where we receive the remote [`DaemonMessage`]s, and send them through it.
     </span>rx: Receiver&lt;DaemonMessage&gt;,
 
-    <span class="doccomment">/// Part of the heartbeat mechanism of mirrord.
-    ///
-    /// When it&#39;s been too long since we&#39;ve last received a message (60 seconds), and this is
-    /// `false`, we send a [`ClientMessage::Ping`], set this to `true`, and expect to receive a
-    /// [`DaemonMessage::Pong`], setting it to `false` and completing the hearbeat detection.
-    </span>ping: bool,
-
     <span class="doccomment">/// Handler to the TCP mirror operations, see [`TcpMirrorHandler`].
     </span>tcp_mirror_handler: TcpMirrorHandler,
 
@@ -1694,7 +1717,6 @@
         <span class="self">Self </span>{
             tx,
             rx,
-            ping: <span class="bool-val">false</span>,
             tcp_mirror_handler: TcpMirrorHandler::new(port_mapping.clone()),
             tcp_outgoing_handler: TcpOutgoingHandler::default(),
             udp_outgoing_handler: Default::default(),
@@ -1771,10 +1793,6 @@
     ///
     /// ## Special case
     ///
-    /// ### [`DaemonMessage::Pong`]
-    ///
-    /// This message has no dedicated handler, and is thus handled directly here, changing the
-    /// [`Self::ping`] state.
     ///
     /// ### [`DaemonMessage::GetEnvVarsResponse`] and [`DaemonMessage::PauseTarget`]
     ///
@@ -1810,13 +1828,7 @@
                     .<span class="kw">await
             </span>}
             DaemonMessage::Pong =&gt; {
-                <span class="kw">if </span><span class="self">self</span>.ping {
-                    <span class="self">self</span>.ping = <span class="bool-val">false</span>;
-                    <span class="macro">trace!</span>(<span class="string">&quot;Daemon sent pong!&quot;</span>);
-                } <span class="kw">else </span>{
-                    <span class="prelude-val">Err</span>(LayerError::UnmatchedPong)<span class="question-mark">?</span>;
-                }
-
+                <span class="macro">trace!</span>(<span class="string">&quot;pong!&quot;</span>);
                 <span class="prelude-val">Ok</span>(())
             }
             DaemonMessage::GetEnvVarsResponse(<span class="kw">_</span>) =&gt; {
@@ -1858,9 +1870,6 @@
 ///
 /// - Read from the [`Layer`] feature handlers [`Receiver`]s, to turn outgoing messages into
 ///   [`ClientMessage`]s, sending them with `Layer::send`;
-///
-/// - Handle the heartbeat mechanism (Ping/Pong feature), sending a [`ClientMessage::Ping`] if all
-///   the other channels received nothing for a while (60 seconds);
 </span><span class="kw">async fn </span>thread_loop(
     <span class="kw-2">mut </span>receiver: Receiver&lt;HookMessage&gt;,
     tx: Sender&lt;ClientMessage&gt;,
@@ -1924,15 +1933,6 @@
             }
             <span class="prelude-val">Some</span>(response) = layer.http_response_receiver.recv() =&gt; {
                 layer.send(ClientMessage::TcpSteal(LayerTcpSteal::HttpResponse(response))).<span class="kw">await</span>.unwrap();
-            }
-            <span class="kw">_ </span>= sleep(Duration::from_secs(<span class="number">30</span>)) =&gt; {
-                <span class="kw">if </span>!layer.ping {
-                    layer.send(ClientMessage::Ping).<span class="kw">await</span>.unwrap();
-                    <span class="macro">trace!</span>(<span class="string">&quot;sent ping to daemon&quot;</span>);
-                    layer.ping = <span class="bool-val">true</span>;
-                } <span class="kw">else </span>{
-                    <span class="macro">panic!</span>(<span class="string">&quot;Client: unmatched ping&quot;</span>);
-                }
             }
         }
     }

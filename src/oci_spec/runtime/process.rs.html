@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/oci-spec-0.6.1/src/runtime/process.rs`."><title>process.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="oci_spec" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0-nightly (c609da59d 2023-04-18)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../static.files/source-script-905937fbbdc8e9ea.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-1a524efa7bd4ab32.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../oci_spec/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/oci-spec-0.6.2/src/runtime/process.rs`."><title>process.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="oci_spec" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0-nightly (c609da59d 2023-04-18)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../static.files/source-script-905937fbbdc8e9ea.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-1a524efa7bd4ab32.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../oci_spec/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -345,6 +345,183 @@
 <a href="#345" id="345">345</a>
 <a href="#346" id="346">346</a>
 <a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
+<a href="#362" id="362">362</a>
+<a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a>
+<a href="#398" id="398">398</a>
+<a href="#399" id="399">399</a>
+<a href="#400" id="400">400</a>
+<a href="#401" id="401">401</a>
+<a href="#402" id="402">402</a>
+<a href="#403" id="403">403</a>
+<a href="#404" id="404">404</a>
+<a href="#405" id="405">405</a>
+<a href="#406" id="406">406</a>
+<a href="#407" id="407">407</a>
+<a href="#408" id="408">408</a>
+<a href="#409" id="409">409</a>
+<a href="#410" id="410">410</a>
+<a href="#411" id="411">411</a>
+<a href="#412" id="412">412</a>
+<a href="#413" id="413">413</a>
+<a href="#414" id="414">414</a>
+<a href="#415" id="415">415</a>
+<a href="#416" id="416">416</a>
+<a href="#417" id="417">417</a>
+<a href="#418" id="418">418</a>
+<a href="#419" id="419">419</a>
+<a href="#420" id="420">420</a>
+<a href="#421" id="421">421</a>
+<a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
+<a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
+<a href="#447" id="447">447</a>
+<a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
+<a href="#450" id="450">450</a>
+<a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
+<a href="#453" id="453">453</a>
+<a href="#454" id="454">454</a>
+<a href="#455" id="455">455</a>
+<a href="#456" id="456">456</a>
+<a href="#457" id="457">457</a>
+<a href="#458" id="458">458</a>
+<a href="#459" id="459">459</a>
+<a href="#460" id="460">460</a>
+<a href="#461" id="461">461</a>
+<a href="#462" id="462">462</a>
+<a href="#463" id="463">463</a>
+<a href="#464" id="464">464</a>
+<a href="#465" id="465">465</a>
+<a href="#466" id="466">466</a>
+<a href="#467" id="467">467</a>
+<a href="#468" id="468">468</a>
+<a href="#469" id="469">469</a>
+<a href="#470" id="470">470</a>
+<a href="#471" id="471">471</a>
+<a href="#472" id="472">472</a>
+<a href="#473" id="473">473</a>
+<a href="#474" id="474">474</a>
+<a href="#475" id="475">475</a>
+<a href="#476" id="476">476</a>
+<a href="#477" id="477">477</a>
+<a href="#478" id="478">478</a>
+<a href="#479" id="479">479</a>
+<a href="#480" id="480">480</a>
+<a href="#481" id="481">481</a>
+<a href="#482" id="482">482</a>
+<a href="#483" id="483">483</a>
+<a href="#484" id="484">484</a>
+<a href="#485" id="485">485</a>
+<a href="#486" id="486">486</a>
+<a href="#487" id="487">487</a>
+<a href="#488" id="488">488</a>
+<a href="#489" id="489">489</a>
+<a href="#490" id="490">490</a>
+<a href="#491" id="491">491</a>
+<a href="#492" id="492">492</a>
+<a href="#493" id="493">493</a>
+<a href="#494" id="494">494</a>
+<a href="#495" id="495">495</a>
+<a href="#496" id="496">496</a>
+<a href="#497" id="497">497</a>
+<a href="#498" id="498">498</a>
+<a href="#499" id="499">499</a>
+<a href="#500" id="500">500</a>
+<a href="#501" id="501">501</a>
+<a href="#502" id="502">502</a>
+<a href="#503" id="503">503</a>
+<a href="#504" id="504">504</a>
+<a href="#505" id="505">505</a>
+<a href="#506" id="506">506</a>
+<a href="#507" id="507">507</a>
+<a href="#508" id="508">508</a>
+<a href="#509" id="509">509</a>
+<a href="#510" id="510">510</a>
+<a href="#511" id="511">511</a>
+<a href="#512" id="512">512</a>
+<a href="#513" id="513">513</a>
+<a href="#514" id="514">514</a>
+<a href="#515" id="515">515</a>
+<a href="#516" id="516">516</a>
+<a href="#517" id="517">517</a>
+<a href="#518" id="518">518</a>
+<a href="#519" id="519">519</a>
+<a href="#520" id="520">520</a>
+<a href="#521" id="521">521</a>
+<a href="#522" id="522">522</a>
+<a href="#523" id="523">523</a>
+<a href="#524" id="524">524</a>
 </pre></div><pre class="rust"><code><span class="kw">use crate</span>::{
     error::OciSpecError,
     runtime::{Capabilities, Capability},
@@ -434,6 +611,16 @@
     </span><span class="doccomment">/// SelinuxLabel specifies the selinux context that the container
     /// process is run as.
     </span>selinux_label: <span class="prelude-ty">Option</span>&lt;String&gt;,
+
+    <span class="attr">#[serde(default, skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
+    #[getset(get = <span class="string">&quot;pub&quot;</span>, set = <span class="string">&quot;pub&quot;</span>)]
+    </span><span class="doccomment">/// IOPriority contains the I/O priority settings for the cgroup.
+    </span>io_priority: <span class="prelude-ty">Option</span>&lt;LinuxIOPriority&gt;,
+
+    <span class="attr">#[serde(default, skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
+    #[getset(get = <span class="string">&quot;pub&quot;</span>, set = <span class="string">&quot;pub&quot;</span>)]
+    </span><span class="doccomment">/// Scheduler specifies the scheduling attributes for a process
+    </span>scheduler: <span class="prelude-ty">Option</span>&lt;Scheduler&gt;,
 }
 
 <span class="comment">// Default impl for processes in the container
@@ -462,6 +649,8 @@
             </span>apparmor_profile: Default::default(),
             <span class="comment">// Empty String, no default selinux
             </span>selinux_label: Default::default(),
+            <span class="comment">// Empty String, no default scheduler
+            </span>scheduler: Default::default(),
             <span class="comment">// See impl Default for LinuxCapabilities
             </span>capabilities: <span class="prelude-val">Some</span>(Default::default()),
             <span class="comment">// Sets the default maximum of 1024 files the process can open
@@ -474,6 +663,8 @@
             .into(),
             oom_score_adj: <span class="prelude-val">None</span>,
             command_line: <span class="prelude-val">None</span>,
+            <span class="comment">// Empty IOPriority, no default iopriority
+            </span>io_priority: Default::default(),
         }
     }
 }
@@ -690,6 +881,169 @@
             permitted: default_vec.clone().into(),
             ambient: default_vec.into(),
         }
+    }
+}
+
+<span class="attr">#[derive(
+    Builder, Clone, Copy, CopyGetters, Debug, Default, Deserialize, Eq, PartialEq, Serialize,
+)]
+#[builder(
+    default,
+    pattern = <span class="string">&quot;owned&quot;</span>,
+    setter(into, strip_option),
+    build_fn(error = <span class="string">&quot;OciSpecError&quot;</span>)
+)]
+#[getset(get_copy = <span class="string">&quot;pub&quot;</span>, set = <span class="string">&quot;pub&quot;</span>)]
+</span><span class="doccomment">/// RLimit types and restrictions.
+</span><span class="kw">pub struct </span>LinuxIOPriority {
+    <span class="attr">#[serde(default)]
+    </span><span class="doccomment">/// Class represents an I/O scheduling class.
+    </span>class: IOPriorityClass,
+
+    <span class="attr">#[serde(default)]
+    </span><span class="doccomment">/// Priority for the io operation
+    </span>priority: i64,
+}
+
+<span class="attr">#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = <span class="string">&quot;SCREAMING_SNAKE_CASE&quot;</span>)]
+</span><span class="doccomment">/// IOPriorityClass represents an I/O scheduling class.
+</span><span class="kw">pub enum </span>IOPriorityClass {
+    <span class="doccomment">/// This is the realtime io class. This scheduling class is given
+    /// higher priority than any other in the system, processes from this class are
+    /// given first access to the disk every time. Thus it needs to be used with some
+    /// care, one io RT process can starve the entire system. Within the RT class,
+    /// there are 8 levels of class data that determine exactly how much time this
+    /// process needs the disk for on each service. In the future this might change
+    /// to be more directly mappable to performance, by passing in a wanted data
+    /// rate instead
+    </span>IoprioClassRt,
+    <span class="doccomment">/// This is the best-effort scheduling class, which is the default
+    /// for any process that hasn&#39;t set a specific io priority. The class data
+    /// determines how much io bandwidth the process will get, it&#39;s directly mappable
+    /// to the cpu nice levels just more coarsely implemented. 0 is the highest
+    /// BE prio level, 7 is the lowest. The mapping between cpu nice level and io
+    /// nice level is determined as: io_nice = (cpu_nice + 20) / 5.
+    </span>IoprioClassBe,
+    <span class="doccomment">/// This is the idle scheduling class, processes running at this
+    /// level only get io time when no one else needs the disk. The idle class has no
+    /// class data, since it doesn&#39;t really apply here.
+    </span>IoprioClassIdle,
+}
+
+<span class="kw">impl </span>Default <span class="kw">for </span>IOPriorityClass {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::IoprioClassBe
+    }
+}
+
+<span class="attr">#[derive(Builder, Clone, Debug, Deserialize, Getters, Setters, Eq, PartialEq, Serialize)]
+#[builder(
+    default,
+    pattern = <span class="string">&quot;owned&quot;</span>,
+    setter(into, strip_option),
+    build_fn(error = <span class="string">&quot;OciSpecError&quot;</span>)
+)]
+#[getset(get = <span class="string">&quot;pub&quot;</span>, set = <span class="string">&quot;pub&quot;</span>)]
+</span><span class="doccomment">/// Scheduler represents the scheduling attributes for a process. It is based on
+/// the Linux sched_setattr(2) syscall.
+</span><span class="kw">pub struct </span>Scheduler {
+    <span class="doccomment">/// Policy represents the scheduling policy (e.g., SCHED_FIFO, SCHED_RR, SCHED_OTHER).
+    </span>policy: LinuxSchedulerPolicy,
+
+    <span class="attr">#[serde(default, skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
+    </span><span class="doccomment">/// Nice is the nice value for the process, which affects its priority.
+    </span>nice: <span class="prelude-ty">Option</span>&lt;i32&gt;,
+
+    <span class="attr">#[serde(default, skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
+    </span><span class="doccomment">/// Priority represents the static priority of the process.
+    </span>priority: <span class="prelude-ty">Option</span>&lt;i32&gt;,
+
+    <span class="attr">#[serde(default, skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
+    </span><span class="doccomment">/// Flags is an array of scheduling flags.
+    </span>flags: <span class="prelude-ty">Option</span>&lt;Vec&lt;LinuxSchedulerFlag&gt;&gt;,
+
+    <span class="comment">// The following ones are used by the DEADLINE scheduler.
+    </span><span class="attr">#[serde(default, skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
+    </span><span class="doccomment">/// Runtime is the amount of time in nanoseconds during which the process
+    /// is allowed to run in a given period.
+    </span>runtime: <span class="prelude-ty">Option</span>&lt;u64&gt;,
+
+    <span class="attr">#[serde(default, skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
+    </span><span class="doccomment">/// Deadline is the absolute deadline for the process to complete its execution.
+    </span>deadline: <span class="prelude-ty">Option</span>&lt;u64&gt;,
+
+    <span class="attr">#[serde(default, skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
+    </span><span class="doccomment">/// Period is the length of the period in nanoseconds used for determining the process runtime.
+    </span>period: <span class="prelude-ty">Option</span>&lt;u64&gt;,
+}
+
+<span class="doccomment">/// Default scheduler is SCHED_OTHER with no priority.
+</span><span class="kw">impl </span>Default <span class="kw">for </span>Scheduler {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            policy: LinuxSchedulerPolicy::default(),
+            nice: <span class="prelude-val">None</span>,
+            priority: <span class="prelude-val">None</span>,
+            flags: <span class="prelude-val">None</span>,
+            runtime: <span class="prelude-val">None</span>,
+            deadline: <span class="prelude-val">None</span>,
+            period: <span class="prelude-val">None</span>,
+        }
+    }
+}
+
+<span class="attr">#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = <span class="string">&quot;SCREAMING_SNAKE_CASE&quot;</span>)]
+</span><span class="doccomment">///  LinuxSchedulerPolicy represents different scheduling policies used with the Linux Scheduler
+</span><span class="kw">pub enum </span>LinuxSchedulerPolicy {
+    <span class="doccomment">/// SchedOther is the default scheduling policy
+    </span>SchedOther,
+    <span class="doccomment">/// SchedFIFO is the First-In-First-Out scheduling policy
+    </span>SchedFifo,
+    <span class="doccomment">/// SchedRR is the Round-Robin scheduling policy
+    </span>SchedRr,
+    <span class="doccomment">/// SchedBatch is the Batch scheduling policy
+    </span>SchedBatch,
+    <span class="doccomment">/// SchedISO is the Isolation scheduling policy
+    </span>SchedIso,
+    <span class="doccomment">/// SchedIdle is the Idle scheduling policy
+    </span>SchedIdle,
+    <span class="doccomment">/// SchedDeadline is the Deadline scheduling policy
+    </span>SchedDeadline,
+}
+
+<span class="doccomment">/// Default LinuxSchedulerPolicy is SchedOther
+</span><span class="kw">impl </span>Default <span class="kw">for </span>LinuxSchedulerPolicy {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        LinuxSchedulerPolicy::SchedOther
+    }
+}
+
+<span class="attr">#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = <span class="string">&quot;SCREAMING_SNAKE_CASE&quot;</span>)]
+</span><span class="doccomment">///  LinuxSchedulerFlag represents the flags used by the Linux Scheduler.
+</span><span class="kw">pub enum </span>LinuxSchedulerFlag {
+    <span class="doccomment">/// SchedFlagResetOnFork represents the reset on fork scheduling flag
+    </span>SchedResetOnFork,
+    <span class="doccomment">/// SchedFlagReclaim represents the reclaim scheduling flag
+    </span>SchedFlagReclaim,
+    <span class="doccomment">/// SchedFlagDLOverrun represents the deadline overrun scheduling flag
+    </span>SchedFlagDLOverrun,
+    <span class="doccomment">/// SchedFlagKeepPolicy represents the keep policy scheduling flag
+    </span>SchedFlagKeepPolicy,
+    <span class="doccomment">/// SchedFlagKeepParams represents the keep parameters scheduling flag
+    </span>SchedFlagKeepParams,
+    <span class="doccomment">/// SchedFlagUtilClampMin represents the utilization clamp minimum scheduling flag
+    </span>SchedFlagUtilClampMin,
+    <span class="doccomment">/// SchedFlagUtilClampMin represents the utilization clamp maximum scheduling flag
+    </span>SchedFlagUtilClampMax,
+}
+
+<span class="doccomment">/// Default LinuxSchedulerFlag is SchedResetOnFork
+</span><span class="kw">impl </span>Default <span class="kw">for </span>LinuxSchedulerFlag {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        LinuxSchedulerFlag::SchedResetOnFork
     }
 }
 </code></pre></div></section></main></body></html>

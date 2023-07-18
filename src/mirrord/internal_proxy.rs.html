@@ -227,6 +227,50 @@
 <a href="#227" id="227">227</a>
 <a href="#228" id="228">228</a>
 <a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
+<a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Internal proxy is accepting connection from local layers and forward it to agent
 //! while having 1:1 relationship - each layer connection is another agent connection.
 //!
@@ -249,9 +293,8 @@
 <span class="kw">use </span>mirrord_analytics::{send_analytics, Analytics, CollectAnalytics};
 <span class="kw">use </span>mirrord_config::LayerConfig;
 <span class="kw">use </span>mirrord_kube::api::{kubernetes::KubernetesAPI, wrap_raw_connection, AgentManagment};
-<span class="kw">use </span>mirrord_operator::client::OperatorApi;
-<span class="kw">use </span>mirrord_progress::NoProgress;
-<span class="kw">use </span>mirrord_protocol::{ClientMessage, DaemonCodec, DaemonMessage};
+<span class="kw">use </span>mirrord_operator::client::{OperatorApi, OperatorSessionInformation};
+<span class="kw">use </span>mirrord_protocol::{pause::DaemonPauseTarget, ClientMessage, DaemonCodec, DaemonMessage};
 <span class="kw">use </span>tokio::{
     net::{TcpListener, TcpStream},
     select,
@@ -259,7 +302,7 @@
     task::JoinSet,
     time::timeout,
 };
-<span class="kw">use </span>tracing::{error, log::trace};
+<span class="kw">use </span>tracing::{error, info, log::trace};
 
 <span class="kw">use crate</span>::{
     config::InternalProxyArgs,
@@ -327,6 +370,37 @@
     }
 }
 
+<span class="doccomment">/// Request target container pause from the connected agent.
+</span><span class="kw">async fn </span>request_pause(
+    sender: <span class="kw-2">&amp;mut </span>mpsc::Sender&lt;ClientMessage&gt;,
+    receiver: <span class="kw-2">&amp;mut </span>mpsc::Receiver&lt;DaemonMessage&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;(), InternalProxyError&gt; {
+    <span class="macro">info!</span>(<span class="string">&quot;Requesting target container pause from the agent&quot;</span>);
+    sender
+        .send(ClientMessage::PauseTargetRequest(<span class="bool-val">true</span>))
+        .<span class="kw">await
+        </span>.map_err(|<span class="kw">_</span>| {
+            InternalProxyError::PauseError(<span class="string">&quot;Failed to request target container pause.&quot;</span>.to_string())
+        })<span class="question-mark">?</span>;
+
+    <span class="kw">match </span>receiver.recv().<span class="kw">await </span>{
+        <span class="prelude-val">Some</span>(DaemonMessage::PauseTarget(DaemonPauseTarget::PauseResponse {
+            changed,
+            container_paused: <span class="bool-val">true</span>,
+        })) =&gt; {
+            <span class="kw">if </span>changed {
+                <span class="macro">info!</span>(<span class="string">&quot;Target container is now paused.&quot;</span>);
+            } <span class="kw">else </span>{
+                <span class="macro">info!</span>(<span class="string">&quot;Target container was already paused.&quot;</span>);
+            }
+            <span class="prelude-val">Ok</span>(())
+        }
+        msg =&gt; <span class="prelude-val">Err</span>(InternalProxyError::PauseError(<span class="macro">format!</span>(
+            <span class="string">&quot;Failed pausing, got invalid answer: {msg:#?}&quot;
+        </span>))),
+    }
+}
+
 <span class="doccomment">/// Main entry point for the internal proxy.
 /// It listens for inbound layer connect and forwards to agent.
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>proxy(args: InternalProxyArgs) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
@@ -344,7 +418,20 @@
     <span class="comment">// Create a main connection, that will be held until proxy is closed.
     // This will guarantee agent staying alive and will enable us to
     // make the agent close on last connection close immediately (will help in tests)
-    </span><span class="kw">let </span>(_main_connection, operator) = connect_and_ping(<span class="kw-2">&amp;</span>config).<span class="kw">await</span><span class="question-mark">?</span>;
+    </span><span class="kw">let </span>(<span class="kw-2">mut </span>main_connection, operator) = connect_and_ping(<span class="kw-2">&amp;</span>config).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">if </span>config.pause {
+        tokio::time::timeout(
+            Duration::from_secs(config.agent.communication_timeout.unwrap_or(<span class="number">30</span>).into()),
+            request_pause(<span class="kw-2">&amp;mut </span>main_connection.<span class="number">0</span>, <span class="kw-2">&amp;mut </span>main_connection.<span class="number">1</span>),
+        )
+        .<span class="kw">await
+        </span>.map_err(|<span class="kw">_</span>| {
+            InternalProxyError::PauseError(
+                <span class="string">&quot;Timeout requesting for target container pause.&quot;</span>.to_string(),
+            )
+        })<span class="question-mark">??</span>;
+    }
+
     print_port(<span class="kw-2">&amp;</span>listener)<span class="question-mark">?</span>;
 
     <span class="comment">// wait for first connection `FIRST_CONNECTION_TIMEOUT` seconds, or timeout.
@@ -435,7 +522,12 @@
     (mpsc::Sender&lt;ClientMessage&gt;, mpsc::Receiver&lt;DaemonMessage&gt;),
     bool,
 )&gt; {
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(address) = <span class="kw-2">&amp;</span>config.connect_tcp {
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(operator_session_information) = OperatorSessionInformation::from_env()<span class="question-mark">? </span>{
+        <span class="prelude-val">Ok</span>((
+            OperatorApi::connect(config, <span class="kw-2">&amp;</span>operator_session_information).<span class="kw">await</span><span class="question-mark">?</span>,
+            <span class="bool-val">true</span>,
+        ))
+    } <span class="kw">else if let </span><span class="prelude-val">Some</span>(address) = <span class="kw-2">&amp;</span>config.connect_tcp {
         <span class="kw">let </span>stream = TcpStream::connect(address)
             .<span class="kw">await
             </span>.map_err(InternalProxyError::TcpConnectError)<span class="question-mark">?</span>;
@@ -449,11 +541,7 @@
             .<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>((connection, <span class="bool-val">false</span>))
     } <span class="kw">else </span>{
-        <span class="kw">let </span>connection = OperatorApi::discover(config, <span class="kw-2">&amp;</span>NoProgress).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>((
-            connection.ok_or(InternalProxyError::OperatorConnectionError)<span class="question-mark">?</span>,
-            <span class="bool-val">true</span>,
-        ))
+        <span class="prelude-val">Err</span>(InternalProxyError::NoConnectionMethod.into())
     }
 }
 </code></pre></div></section></main></body></html>

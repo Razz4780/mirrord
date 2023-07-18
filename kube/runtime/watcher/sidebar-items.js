@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Error","Event","ListSemantic"],"fn":["default_backoff","metadata_watcher","watch_object","watcher"],"struct":["Config"],"type":["Result"]};
+window.SIDEBAR_ITEMS = {"enum":["Error","Event","ListSemantic"],"fn":["default_backoff","metadata_watcher","watch_object","watcher"],"struct":["Config","DefaultBackoff"],"type":["Result"]};

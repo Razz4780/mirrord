@@ -102,11 +102,17 @@
 <a href="#102" id="102">102</a>
 <a href="#103" id="103">103</a>
 <a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::time::Duration;
 
 <span class="kw">use </span>mirrord_config::LayerConfig;
 <span class="kw">use </span>mirrord_kube::api::{kubernetes::KubernetesAPI, AgentManagment};
-<span class="kw">use </span>mirrord_operator::client::{OperatorApi, OperatorApiError};
+<span class="kw">use </span>mirrord_operator::client::{OperatorApi, OperatorApiError, OperatorSessionInformation};
 <span class="kw">use </span>mirrord_progress::Progress;
 <span class="kw">use </span>mirrord_protocol::{ClientMessage, DaemonMessage};
 <span class="kw">use </span>tokio::sync::mpsc;
@@ -115,8 +121,7 @@
 <span class="kw">use crate</span>::{CliError, <span class="prelude-ty">Result</span>};
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum </span>AgentConnectInfo {
-    <span class="doccomment">/// No info is needed, operator creates on demand
-    </span>Operator,
+    Operator(OperatorSessionInformation),
     <span class="doccomment">/// Connect directly to an agent by name and port using k8s port forward.
     </span>DirectKubernetes(String, u16),
 }
@@ -126,16 +131,23 @@
     <span class="kw">pub </span>receiver: mpsc::Receiver&lt;DaemonMessage&gt;,
 }
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>connect_operator&lt;P&gt;(
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>create_operator_session&lt;P&gt;(
     config: <span class="kw-2">&amp;</span>LayerConfig,
     progress: <span class="kw-2">&amp;</span>P,
-) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;(mpsc::Sender&lt;ClientMessage&gt;, mpsc::Receiver&lt;DaemonMessage&gt;)&gt;, CliError&gt;
+) -&gt; <span class="prelude-ty">Result</span>&lt;
+    <span class="prelude-ty">Option</span>&lt;(
+        mpsc::Sender&lt;ClientMessage&gt;,
+        mpsc::Receiver&lt;DaemonMessage&gt;,
+        OperatorSessionInformation,
+    )&gt;,
+    CliError,
+&gt;
 <span class="kw">where
     </span>P: Progress + Send + Sync,
 {
     <span class="kw">let </span>sub_progress = progress.subtask(<span class="string">&quot;checking operator&quot;</span>);
 
-    <span class="kw">match </span>OperatorApi::discover(config, progress).<span class="kw">await </span>{
+    <span class="kw">match </span>OperatorApi::create_session(config, progress).<span class="kw">await </span>{
         <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(connection)) =&gt; {
             sub_progress.done_with(<span class="string">&quot;connected to operator&quot;</span>);
 
@@ -172,9 +184,9 @@
 <span class="kw">where
     </span>P: Progress + Send + Sync,
 {
-    <span class="kw">if </span>config.operator &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>((sender, receiver)) = connect_operator(config, progress).<span class="kw">await</span><span class="question-mark">? </span>{
+    <span class="kw">if </span>config.operator &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>((sender, receiver, operator_information)) = create_operator_session(config, progress).<span class="kw">await</span><span class="question-mark">? </span>{
         <span class="prelude-val">Ok</span>((
-            AgentConnectInfo::Operator,
+            AgentConnectInfo::Operator(operator_information),
             AgentConnection { sender, receiver },
         ))
     } <span class="kw">else </span>{

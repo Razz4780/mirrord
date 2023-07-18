@@ -4,7 +4,7 @@
     C: <a class="trait" href="../stream/trait.Accumulate.html" title="trait winnow::stream::Accumulate">Accumulate</a>&lt;O&gt;,
     F: <a class="trait" href="../trait.Parser.html" title="trait winnow::Parser">Parser</a>&lt;I, N, E&gt;,
     G: <a class="trait" href="../trait.Parser.html" title="trait winnow::Parser">Parser</a>&lt;I, O, E&gt;,
-    E: <a class="trait" href="../error/trait.ParseError.html" title="trait winnow::error::ParseError">ParseError</a>&lt;I&gt;,</span></code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Gets a number from the first parser,
+    E: <a class="trait" href="../error/trait.ParserError.html" title="trait winnow::error::ParserError">ParserError</a>&lt;I&gt;,</span></code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Gets a number from the first parser,
 then applies the second parser that many times.</p>
 <h2 id="arguments"><a href="#arguments">Arguments</a></h2>
 <ul>
@@ -27,9 +27,9 @@ then applies the second parser that many times.</p>
   length_count(u8.map(|i| {
      <span class="macro">println!</span>(<span class="string">&quot;got number: {}&quot;</span>, i);
      i
-  }), <span class="string">&quot;abc&quot;</span>).parse_next(s)
+  }), <span class="string">&quot;abc&quot;</span>).parse_peek(s)
 }
 
 <span class="macro">assert_eq!</span>(parser(stream(<span class="string">b&quot;\x02abcabcabc&quot;</span>)), <span class="prelude-val">Ok</span>((stream(<span class="string">b&quot;abc&quot;</span>), <span class="macro">vec!</span>[<span class="kw-2">&amp;</span><span class="string">b&quot;abc&quot;</span>[..], <span class="kw-2">&amp;</span><span class="string">b&quot;abc&quot;</span>[..]])));
-<span class="macro">assert_eq!</span>(parser(stream(<span class="string">b&quot;\x03123123123&quot;</span>)), <span class="prelude-val">Err</span>(ErrMode::Backtrack(Error::new(stream(<span class="string">b&quot;123123123&quot;</span>), ErrorKind::Tag))));</code></pre></div>
+<span class="macro">assert_eq!</span>(parser(stream(<span class="string">b&quot;\x03123123123&quot;</span>)), <span class="prelude-val">Err</span>(ErrMode::Backtrack(InputError::new(stream(<span class="string">b&quot;123123123&quot;</span>), ErrorKind::Tag))));</code></pre></div>
 </div></details></section></div></main></body></html>

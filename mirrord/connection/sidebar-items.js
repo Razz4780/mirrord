@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["AgentConnectInfo"],"fn":["connect_operator","create_and_connect"],"struct":["AgentConnection"]};
+window.SIDEBAR_ITEMS = {"enum":["AgentConnectInfo"],"fn":["create_and_connect","create_operator_session"],"struct":["AgentConnection"]};

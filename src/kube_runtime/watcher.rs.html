@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/kube-runtime-0.82.2/src/watcher.rs`."><title>watcher.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="kube_runtime" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0-nightly (c609da59d 2023-04-18)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../static.files/source-script-905937fbbdc8e9ea.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-1a524efa7bd4ab32.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../kube_runtime/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/kube-runtime-0.84.0/src/watcher.rs`."><title>watcher.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="kube_runtime" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0-nightly (c609da59d 2023-04-18)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../static.files/source-script-905937fbbdc8e9ea.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-1a524efa7bd4ab32.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../kube_runtime/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -656,6 +656,84 @@
 <a href="#656" id="656">656</a>
 <a href="#657" id="657">657</a>
 <a href="#658" id="658">658</a>
+<a href="#659" id="659">659</a>
+<a href="#660" id="660">660</a>
+<a href="#661" id="661">661</a>
+<a href="#662" id="662">662</a>
+<a href="#663" id="663">663</a>
+<a href="#664" id="664">664</a>
+<a href="#665" id="665">665</a>
+<a href="#666" id="666">666</a>
+<a href="#667" id="667">667</a>
+<a href="#668" id="668">668</a>
+<a href="#669" id="669">669</a>
+<a href="#670" id="670">670</a>
+<a href="#671" id="671">671</a>
+<a href="#672" id="672">672</a>
+<a href="#673" id="673">673</a>
+<a href="#674" id="674">674</a>
+<a href="#675" id="675">675</a>
+<a href="#676" id="676">676</a>
+<a href="#677" id="677">677</a>
+<a href="#678" id="678">678</a>
+<a href="#679" id="679">679</a>
+<a href="#680" id="680">680</a>
+<a href="#681" id="681">681</a>
+<a href="#682" id="682">682</a>
+<a href="#683" id="683">683</a>
+<a href="#684" id="684">684</a>
+<a href="#685" id="685">685</a>
+<a href="#686" id="686">686</a>
+<a href="#687" id="687">687</a>
+<a href="#688" id="688">688</a>
+<a href="#689" id="689">689</a>
+<a href="#690" id="690">690</a>
+<a href="#691" id="691">691</a>
+<a href="#692" id="692">692</a>
+<a href="#693" id="693">693</a>
+<a href="#694" id="694">694</a>
+<a href="#695" id="695">695</a>
+<a href="#696" id="696">696</a>
+<a href="#697" id="697">697</a>
+<a href="#698" id="698">698</a>
+<a href="#699" id="699">699</a>
+<a href="#700" id="700">700</a>
+<a href="#701" id="701">701</a>
+<a href="#702" id="702">702</a>
+<a href="#703" id="703">703</a>
+<a href="#704" id="704">704</a>
+<a href="#705" id="705">705</a>
+<a href="#706" id="706">706</a>
+<a href="#707" id="707">707</a>
+<a href="#708" id="708">708</a>
+<a href="#709" id="709">709</a>
+<a href="#710" id="710">710</a>
+<a href="#711" id="711">711</a>
+<a href="#712" id="712">712</a>
+<a href="#713" id="713">713</a>
+<a href="#714" id="714">714</a>
+<a href="#715" id="715">715</a>
+<a href="#716" id="716">716</a>
+<a href="#717" id="717">717</a>
+<a href="#718" id="718">718</a>
+<a href="#719" id="719">719</a>
+<a href="#720" id="720">720</a>
+<a href="#721" id="721">721</a>
+<a href="#722" id="722">722</a>
+<a href="#723" id="723">723</a>
+<a href="#724" id="724">724</a>
+<a href="#725" id="725">725</a>
+<a href="#726" id="726">726</a>
+<a href="#727" id="727">727</a>
+<a href="#728" id="728">728</a>
+<a href="#729" id="729">729</a>
+<a href="#730" id="730">730</a>
+<a href="#731" id="731">731</a>
+<a href="#732" id="732">732</a>
+<a href="#733" id="733">733</a>
+<a href="#734" id="734">734</a>
+<a href="#735" id="735">735</a>
+<a href="#736" id="736">736</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Watches a Kubernetes Resource for changes, with error recovery
 //!
 //! See [`watcher`] for the primary entry point.
@@ -776,7 +854,10 @@
 </span><span class="doccomment">/// The internal finite state machine driving the [`watcher`]
 </span><span class="kw">enum </span>State&lt;K&gt; {
     <span class="doccomment">/// The Watcher is empty, and the next [`poll`](Stream::poll_next) will start the initial LIST to get all existing objects
-    </span>Empty,
+    </span>Empty {
+        continue_token: <span class="prelude-ty">Option</span>&lt;String&gt;,
+        objects: Vec&lt;K&gt;,
+    },
     <span class="doccomment">/// The initial LIST was successful, so we should move on to starting the actual watch.
     </span>InitListed { resource_version: String },
     <span class="doccomment">/// The watch is in progress, from this point we just return events from the server.
@@ -790,6 +871,15 @@
         <span class="attr">#[derivative(Debug = <span class="string">&quot;ignore&quot;</span>)]
         </span>stream: BoxStream&lt;<span class="lifetime">&#39;static</span>, kube_client::Result&lt;WatchEvent&lt;K&gt;&gt;&gt;,
     },
+}
+
+<span class="kw">impl</span>&lt;K: Resource + Clone&gt; Default <span class="kw">for </span>State&lt;K&gt; {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::Empty {
+            continue_token: <span class="prelude-val">None</span>,
+            objects: <span class="macro">vec!</span>[],
+        }
+    }
 }
 
 <span class="doccomment">/// Used to control whether the watcher receives the full object, or only the
@@ -863,6 +953,14 @@
     /// Configures re-list for performance vs. consistency.
     </span><span class="kw">pub </span>list_semantic: ListSemantic,
 
+    <span class="doccomment">/// Maximum number of objects retrieved per list operation resyncs.
+    ///
+    /// This can reduce the memory consumption during resyncs, at the cost of requiring more
+    /// API roundtrips to complete.
+    ///
+    /// Defaults to 500. Note that `None` represents unbounded.
+    </span><span class="kw">pub </span>page_size: <span class="prelude-ty">Option</span>&lt;u32&gt;,
+
     <span class="doccomment">/// Enables watch events with type &quot;BOOKMARK&quot;.
     ///
     /// Requests watch bookmarks from the apiserver when enabled for improved watch precision and reduced list calls.
@@ -878,6 +976,9 @@
             field_selector: <span class="prelude-val">None</span>,
             timeout: <span class="prelude-val">None</span>,
             list_semantic: ListSemantic::default(),
+            <span class="comment">// same default page size limit as client-go
+            // https://github.com/kubernetes/client-go/blob/aed71fa5cf054e1c196d67b2e21f66fd967b8ab1/tools/pager/pager.go#L31
+            </span>page_size: <span class="prelude-val">Some</span>(<span class="number">500</span>),
         }
     }
 }
@@ -946,6 +1047,16 @@
         <span class="self">self
     </span>}
 
+    <span class="doccomment">/// Limits the number of objects retrieved in each list operation during resync.
+    ///
+    /// This can reduce the memory consumption during resyncs, at the cost of requiring more
+    /// API roundtrips to complete.
+    </span><span class="attr">#[must_use]
+    </span><span class="kw">pub fn </span>page_size(<span class="kw-2">mut </span><span class="self">self</span>, page_size: u32) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.page_size = <span class="prelude-val">Some</span>(page_size);
+        <span class="self">self
+    </span>}
+
     <span class="doccomment">/// Converts generic `watcher::Config` structure to the instance of `ListParams` used for list requests.
     </span><span class="kw">fn </span>to_list_params(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ListParams {
         <span class="kw">let </span>(resource_version, version_match) = <span class="kw">match </span><span class="self">self</span>.list_semantic {
@@ -958,9 +1069,8 @@
             timeout: <span class="self">self</span>.timeout,
             version_match,
             resource_version,
-            <span class="comment">// It is not permissible for users to configure the continue token and limit for the watcher, as these parameters are associated with paging.
-            // The watcher must handle paging internally.
-            </span>limit: <span class="prelude-val">None</span>,
+            <span class="comment">// The watcher handles pagination internally.
+            </span>limit: <span class="self">self</span>.page_size,
             continue_token: <span class="prelude-val">None</span>,
         }
     }
@@ -1026,6 +1136,7 @@
 ///
 /// This function should be trampolined: if event == `None`
 /// then the function should be called again until it returns a Some.
+</span><span class="attr">#[allow(clippy::too_many_lines)] </span><span class="comment">// for now
 </span><span class="kw">async fn </span>step_trampolined&lt;A&gt;(
     api: <span class="kw-2">&amp;</span>A,
     wc: <span class="kw-2">&amp;</span>Config,
@@ -1036,25 +1147,38 @@
     A::Value: Resource + <span class="lifetime">&#39;static</span>,
 {
     <span class="kw">match </span>state {
-        State::Empty =&gt; <span class="kw">match </span>api.list(<span class="kw-2">&amp;</span>wc.to_list_params()).<span class="kw">await </span>{
-            <span class="prelude-val">Ok</span>(list) =&gt; {
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(resource_version) = list.metadata.resource_version {
-                    (<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(Event::Restarted(list.items))), State::InitListed {
-                        resource_version,
-                    })
-                } <span class="kw">else </span>{
-                    (<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(Error::NoResourceVersion)), State::Empty)
+        State::Empty {
+            continue_token,
+            <span class="kw-2">mut </span>objects,
+        } =&gt; {
+            <span class="kw">let </span><span class="kw-2">mut </span>lp = wc.to_list_params();
+            lp.continue_token = continue_token;
+            <span class="kw">match </span>api.list(<span class="kw-2">&amp;</span>lp).<span class="kw">await </span>{
+                <span class="prelude-val">Ok</span>(list) =&gt; {
+                    objects.extend(list.items);
+                    <span class="kw">if let </span><span class="prelude-val">Some</span>(continue_token) = list.metadata.continue_.filter(|s| !s.is_empty()) {
+                        (<span class="prelude-val">None</span>, State::Empty {
+                            continue_token: <span class="prelude-val">Some</span>(continue_token),
+                            objects,
+                        })
+                    } <span class="kw">else if let </span><span class="prelude-val">Some</span>(resource_version) = list.metadata.resource_version {
+                        (<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(Event::Restarted(objects))), State::InitListed {
+                            resource_version,
+                        })
+                    } <span class="kw">else </span>{
+                        (<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(Error::NoResourceVersion)), State::default())
+                    }
+                }
+                <span class="prelude-val">Err</span>(err) =&gt; {
+                    <span class="kw">if </span><span class="macro">std::matches!</span>(err, ClientErr::Api(ErrorResponse { code: <span class="number">403</span>, .. })) {
+                        <span class="macro">warn!</span>(<span class="string">&quot;watch list error with 403: {err:?}&quot;</span>);
+                    } <span class="kw">else </span>{
+                        <span class="macro">debug!</span>(<span class="string">&quot;watch list error: {err:?}&quot;</span>);
+                    }
+                    (<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(err).map_err(Error::InitialListFailed)), State::default())
                 }
             }
-            <span class="prelude-val">Err</span>(err) =&gt; {
-                <span class="kw">if </span><span class="macro">std::matches!</span>(err, ClientErr::Api(ErrorResponse { code: <span class="number">403</span>, .. })) {
-                    <span class="macro">warn!</span>(<span class="string">&quot;watch list error with 403: {err:?}&quot;</span>);
-                } <span class="kw">else </span>{
-                    <span class="macro">debug!</span>(<span class="string">&quot;watch list error: {err:?}&quot;</span>);
-                }
-                (<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(err).map_err(Error::InitialListFailed)), State::Empty)
-            }
-        },
+        }
         State::InitListed { resource_version } =&gt; {
             <span class="kw">match </span>api.watch(<span class="kw-2">&amp;</span>wc.to_watch_params(), <span class="kw-2">&amp;</span>resource_version).<span class="kw">await </span>{
                 <span class="prelude-val">Ok</span>(stream) =&gt; (<span class="prelude-val">None</span>, State::Watching {
@@ -1099,7 +1223,7 @@
             <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(WatchEvent::Error(err))) =&gt; {
                 <span class="comment">// HTTP GONE, means we have desynced and need to start over and re-list :(
                 </span><span class="kw">let </span>new_state = <span class="kw">if </span>err.code == <span class="number">410 </span>{
-                    State::Empty
+                    State::default()
                 } <span class="kw">else </span>{
                     State::Watching {
                         resource_version,
@@ -1201,7 +1325,7 @@
     watcher_config: Config,
 ) -&gt; <span class="kw">impl </span>Stream&lt;Item = <span class="prelude-ty">Result</span>&lt;Event&lt;K&gt;&gt;&gt; + Send {
     futures::stream::unfold(
-        (api, watcher_config, State::Empty),
+        (api, watcher_config, State::default()),
         |(api, watcher_config, state)| <span class="kw">async </span>{
             <span class="kw">let </span>(event, state) = step(<span class="kw-2">&amp;</span>FullObject { api: <span class="kw-2">&amp;</span>api }, <span class="kw-2">&amp;</span>watcher_config, state).<span class="kw">await</span>;
             <span class="prelude-val">Some</span>((event, (api, watcher_config, state)))
@@ -1265,7 +1389,7 @@
     watcher_config: Config,
 ) -&gt; <span class="kw">impl </span>Stream&lt;Item = <span class="prelude-ty">Result</span>&lt;Event&lt;PartialObjectMeta&lt;K&gt;&gt;&gt;&gt; + Send {
     futures::stream::unfold(
-        (api, watcher_config, State::Empty),
+        (api, watcher_config, State::default()),
         |(api, watcher_config, state)| <span class="kw">async </span>{
             <span class="kw">let </span>(event, state) = step(<span class="kw-2">&amp;</span>MetaOnly { api: <span class="kw-2">&amp;</span>api }, <span class="kw-2">&amp;</span>watcher_config, state).<span class="kw">await</span>;
             <span class="prelude-val">Some</span>((event, (api, watcher_config, state)))
@@ -1298,20 +1422,52 @@
 
 <span class="doccomment">/// Default watch [`Backoff`] inspired by Kubernetes&#39; client-go.
 ///
-/// Note that the exact parameters used herein should not be considered stable.
-/// The parameters currently optimize for being kind to struggling apiservers.
-/// See [client-go&#39;s reflector source](https://github.com/kubernetes/client-go/blob/980663e185ab6fc79163b1c2565034f6d58368db/tools/cache/reflector.go#L177-L181)
-/// for more details.
+/// This fn has been moved into [`DefaultBackoff`].
 </span><span class="attr">#[must_use]
-</span><span class="kw">pub fn </span>default_backoff() -&gt; <span class="kw">impl </span>Backoff + Send + Sync {
-    <span class="kw">let </span>expo = backoff::ExponentialBackoff {
-        initial_interval: Duration::from_millis(<span class="number">800</span>),
-        max_interval: Duration::from_secs(<span class="number">30</span>),
-        randomization_factor: <span class="number">1.0</span>,
-        multiplier: <span class="number">2.0</span>,
-        max_elapsed_time: <span class="prelude-val">None</span>,
-        ..ExponentialBackoff::default()
-    };
-    ResetTimerBackoff::new(expo, Duration::from_secs(<span class="number">120</span>))
+#[deprecated(
+    since = <span class="string">&quot;0.84.0&quot;</span>,
+    note = <span class="string">&quot;replaced by `watcher::DefaultBackoff`. This fn will be removed in 0.88.0.&quot;
+</span>)]
+</span><span class="kw">pub fn </span>default_backoff() -&gt; DefaultBackoff {
+    DefaultBackoff::default()
+}
+
+<span class="doccomment">/// Default watcher backoff inspired by Kubernetes&#39; client-go.
+///
+/// The parameters currently optimize for being kind to struggling apiservers.
+/// The exact parameters are taken from
+/// [client-go&#39;s reflector source](https://github.com/kubernetes/client-go/blob/980663e185ab6fc79163b1c2565034f6d58368db/tools/cache/reflector.go#L177-L181)
+/// and should not be considered stable.
+///
+/// This struct implements [`Backoff`] and is the default strategy used
+/// when calling `WatchStreamExt::default_backoff`. If you need to create
+/// this manually then [`DefaultBackoff::default`] can be used.
+</span><span class="kw">pub struct </span>DefaultBackoff(Strategy);
+<span class="kw">type </span>Strategy = ResetTimerBackoff&lt;ExponentialBackoff&gt;;
+
+<span class="kw">impl </span>Default <span class="kw">for </span>DefaultBackoff {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>(ResetTimerBackoff::new(
+            backoff::ExponentialBackoff {
+                initial_interval: Duration::from_millis(<span class="number">800</span>),
+                max_interval: Duration::from_secs(<span class="number">30</span>),
+                randomization_factor: <span class="number">1.0</span>,
+                multiplier: <span class="number">2.0</span>,
+                max_elapsed_time: <span class="prelude-val">None</span>,
+                ..ExponentialBackoff::default()
+            },
+            Duration::from_secs(<span class="number">120</span>),
+        ))
+    }
+}
+
+<span class="kw">impl </span>Backoff <span class="kw">for </span>DefaultBackoff {
+    <span class="kw">fn </span>next_backoff(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Duration&gt; {
+        <span class="self">self</span>.<span class="number">0</span>.next_backoff()
+    }
+
+    <span class="kw">fn </span>reset(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.<span class="number">0</span>.reset()
+    }
 }
 </code></pre></div></section></main></body></html>

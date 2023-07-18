@@ -44,7 +44,7 @@ depending on your use case.</p>
 <li>Reflect a <a href="../../core/struct.PartialObjectMeta.html" title="struct kube::core::PartialObjectMeta"><code>PartialObjectMeta&lt;K&gt;</code></a> stream rather than a stream of <code>K</code></li>
 </ol>
 <p>You can send in a <a href="../fn.metadata_watcher.html" title="fn kube::runtime::metadata_watcher"><code>metadata_watcher()</code></a> for a type rather than a <a href="../fn.watcher.html" title="fn kube::runtime::watcher"><code>watcher()</code></a>,
-and this will can drop your memory usage by more than a factor of two,
+and this can drop your memory usage by more than a factor of two,
 depending on the size of <code>K</code>. 60% reduction seen for <code>Pod</code>. Usage is otherwise identical.</p>
 <ol start="2">
 <li>Use <code>modify</code> the raw <a href="../watcher/enum.Event.html" title="enum kube::runtime::watcher::Event"><code>watcher::Event</code></a> object stream to clear unneeded properties</li>

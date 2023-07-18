@@ -298,10 +298,83 @@
 <a href="#298" id="298">298</a>
 <a href="#299" id="299">299</a>
 <a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
+<a href="#362" id="362">362</a>
+<a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>base64::{engine::general_purpose, Engine <span class="kw">as _</span>};
 <span class="kw">use </span>futures::{SinkExt, StreamExt};
 <span class="kw">use </span>http::request::Request;
-<span class="kw">use </span>kube::{error::ErrorResponse, Api, Client};
+<span class="kw">use </span>kube::{error::ErrorResponse, Api, Client, Resource};
 <span class="kw">use </span>mirrord_auth::{credential_store::CredentialStoreSync, error::AuthenticationError};
 <span class="kw">use </span>mirrord_config::{
     feature::network::incoming::ConcurrentSteal, target::TargetConfig, LayerConfig,
@@ -313,15 +386,16 @@
 <span class="kw">use </span>mirrord_progress::{MessageKind, Progress};
 <span class="kw">use </span>mirrord_protocol::{ClientMessage, DaemonMessage};
 <span class="kw">use </span>semver::Version;
+<span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>thiserror::Error;
 <span class="kw">use </span>tokio::sync::mpsc::{<span class="self">self</span>, Receiver, Sender};
 <span class="kw">use </span>tokio_tungstenite::tungstenite::{Error <span class="kw">as </span>TungsteniteError, Message};
-<span class="kw">use </span>tracing::{error, trace, warn};
+<span class="kw">use </span>tracing::error;
 
-<span class="kw">use </span><span class="kw">crate</span>::crd::{MirrordOperatorCrd, TargetCrd, OPERATOR_STATUS_NAME};
+<span class="kw">use </span><span class="kw">crate</span>::crd::{MirrordOperatorCrd, OperatorFeatures, TargetCrd, OPERATOR_STATUS_NAME};
 
 <span class="kw">static </span>CONNECTION_CHANNEL_SIZE: usize = <span class="number">1000</span>;
-<span class="kw">static </span>MIRRORD_OPERATOR_SESSION_ID: <span class="kw-2">&amp;</span>str = <span class="string">&quot;MIRRORD_OPERATOR_SESSION_ID&quot;</span>;
+<span class="kw">const </span>MIRRORD_OPERATOR_SESSION: <span class="kw-2">&amp;</span>str = <span class="string">&quot;MIRRORD_OPERATOR_SESSION&quot;</span>;
 
 <span class="attr">#[derive(Debug, Error)]
 </span><span class="kw">pub enum </span>OperatorApiError {
@@ -345,6 +419,8 @@
     </span>Authentication(<span class="attr">#[from] </span>AuthenticationError),
     <span class="attr">#[error(<span class="string">&quot;Can&#39;t start proccess because other locks exist on target&quot;</span>)]
     </span>ConcurrentStealAbort,
+    <span class="attr">#[error(<span class="string">&quot;Invalid operator session - this is a bug, please report it. value: `{0}` err: `{1}`&quot;</span>)]
+    </span>InvalidOperatorSession(String, serde_json::Error),
 }
 
 <span class="kw">type </span><span class="prelude-ty">Result</span>&lt;T, E = OperatorApiError&gt; = std::result::Result&lt;T, E&gt;;
@@ -352,16 +428,64 @@
 <span class="kw">pub struct </span>OperatorApi {
     client: Client,
     target_api: Api&lt;TargetCrd&gt;,
+    target_namespace: <span class="prelude-ty">Option</span>&lt;String&gt;,
     version_api: Api&lt;MirrordOperatorCrd&gt;,
     target_config: TargetConfig,
     on_concurrent_steal: ConcurrentSteal,
 }
 
+<span class="doccomment">/// Data we store into environment variables for the child processes to use.
+</span><span class="attr">#[derive(Serialize, Deserialize, Clone, Debug)]
+</span><span class="kw">pub struct </span>OperatorSessionInformation {
+    <span class="kw">pub </span>session_id: String,
+    <span class="kw">pub </span>target: TargetCrd,
+    <span class="kw">pub </span>fingerprint: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    <span class="kw">pub </span>operator_features: Vec&lt;OperatorFeatures&gt;,
+}
+
+<span class="kw">impl </span>OperatorSessionInformation {
+    <span class="kw">pub fn </span>new(
+        target: TargetCrd,
+        fingerprint: <span class="prelude-ty">Option</span>&lt;String&gt;,
+        operator_features: Vec&lt;OperatorFeatures&gt;,
+    ) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            session_id: rand::random::&lt;u64&gt;().to_string(),
+            target,
+            fingerprint,
+            operator_features,
+        }
+    }
+
+    <span class="doccomment">/// Returns environment variable holding the information
+    </span><span class="kw">pub const fn </span>env_key() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
+        MIRRORD_OPERATOR_SESSION
+    }
+
+    <span class="doccomment">/// Loads the information from environment variables
+    </span><span class="kw">pub fn </span>from_env() -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt;&gt; {
+        std::env::var(<span class="self">Self</span>::env_key())
+            .ok()
+            .map(|val| {
+                serde_json::from_str(<span class="kw-2">&amp;</span>val)
+                    .map_err(|e| OperatorApiError::InvalidOperatorSession(val, e))
+            })
+            .transpose()
+    }
+}
+
 <span class="kw">impl </span>OperatorApi {
-    <span class="kw">pub async fn </span>discover&lt;P&gt;(
+    <span class="doccomment">/// Creates a new operator session, setting the session information in environment variables.
+    </span><span class="kw">pub async fn </span>create_session&lt;P&gt;(
         config: <span class="kw-2">&amp;</span>LayerConfig,
         progress: <span class="kw-2">&amp;</span>P,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;(mpsc::Sender&lt;ClientMessage&gt;, mpsc::Receiver&lt;DaemonMessage&gt;)&gt;&gt;
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;
+        <span class="prelude-ty">Option</span>&lt;(
+            mpsc::Sender&lt;ClientMessage&gt;,
+            mpsc::Receiver&lt;DaemonMessage&gt;,
+            OperatorSessionInformation,
+        )&gt;,
+    &gt;
     <span class="kw">where
         </span>P: Progress + Send + Sync,
     {
@@ -388,36 +512,32 @@
                     progress.subtask(<span class="string">&quot;comparing versions&quot;</span>).print_message(MessageKind::Warning, <span class="prelude-val">Some</span>(<span class="string">&quot;Consider either updating your operator version to match your mirrord plugin/CLI version, or downgrading your mirrord plugin/CLI.&quot;</span>));
                 }
             }
+            <span class="kw">let </span>operator_session_information = OperatorSessionInformation::new(
+                target,
+                status.spec.license.fingerprint,
+                status.spec.features.unwrap_or_default(),
+            );
 
-            operator_api
-                .connect_target(target, status.spec.license.fingerprint)
-                .<span class="kw">await
-                </span>.map(<span class="prelude-val">Some</span>)
+            <span class="kw">let </span>(sender, receiver) = operator_api
+                .connect_target(<span class="kw-2">&amp;</span>operator_session_information)
+                .<span class="kw">await</span><span class="question-mark">?</span>;
+            <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>((sender, receiver, operator_session_information)))
         } <span class="kw">else </span>{
             <span class="comment">// No operator found
             </span><span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
         }
     }
 
-    <span class="doccomment">/// Uses `MIRRORD_OPERATOR_SESSION_ID` to have a persistant session_id across child processes,
-    /// if env var is empty or missing random id will be generated and saved in env
-    </span><span class="kw">fn </span>session_id() -&gt; u64 {
-        std::env::var(MIRRORD_OPERATOR_SESSION_ID)
-            .inspect_err(|<span class="kw">_</span>| <span class="macro">trace!</span>(<span class="string">&quot;{MIRRORD_OPERATOR_SESSION_ID} empty, creating new session&quot;</span>))
-            .ok()
-            .and_then(|val| {
-                val.parse()
-                    .inspect_err(|err| {
-                        <span class="macro">warn!</span>(<span class="string">&quot;Error parsing {MIRRORD_OPERATOR_SESSION_ID}, creating new session. Err: {err}&quot;</span>)
-                    })
-                    .ok()
-            })
-            .unwrap_or_else(|| {
-                <span class="kw">let </span>id = rand::random();
-                std::env::set_var(MIRRORD_OPERATOR_SESSION_ID, <span class="macro">format!</span>(<span class="string">&quot;{id}&quot;</span>));
-                id
-            })
-    }
+    <span class="doccomment">/// Connect to session using operator and session information
+    </span><span class="kw">pub async fn </span>connect(
+        config: <span class="kw-2">&amp;</span>LayerConfig,
+        session_information: <span class="kw-2">&amp;</span>OperatorSessionInformation,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;(mpsc::Sender&lt;ClientMessage&gt;, mpsc::Receiver&lt;DaemonMessage&gt;)&gt; {
+        OperatorApi::new(config)
+            .<span class="kw">await</span><span class="question-mark">?
+            </span>.connect_target(session_information)
+            .<span class="kw">await
+    </span>}
 
     <span class="kw">async fn </span>new(config: <span class="kw-2">&amp;</span>LayerConfig) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
         <span class="kw">let </span>target_config = config.target.clone();
@@ -430,20 +550,21 @@
         .<span class="kw">await</span><span class="question-mark">?</span>;
 
         <span class="kw">let </span>target_namespace = <span class="kw">if </span>target_config.path.is_some() {
-            target_config.namespace.as_deref()
+            target_config.namespace.clone()
         } <span class="kw">else </span>{
             <span class="comment">// When targetless, pass agent namespace to operator so that it knows where to create
             // the agent (the operator does not get the agent config).
-            </span>config.agent.namespace.as_deref()
+            </span>config.agent.namespace.clone()
         };
 
-        <span class="kw">let </span>target_api: Api&lt;TargetCrd&gt; = get_k8s_resource_api(<span class="kw-2">&amp;</span>client, target_namespace);
+        <span class="kw">let </span>target_api: Api&lt;TargetCrd&gt; = get_k8s_resource_api(<span class="kw-2">&amp;</span>client, target_namespace.as_deref());
 
         <span class="kw">let </span>version_api: Api&lt;MirrordOperatorCrd&gt; = Api::all(client.clone());
 
         <span class="prelude-val">Ok</span>(OperatorApi {
             client,
             target_api,
+            target_namespace,
             version_api,
             target_config,
             on_concurrent_steal,
@@ -468,15 +589,45 @@
         }
     }
 
+    <span class="attr">#[tracing::instrument(level = <span class="string">&quot;debug&quot;</span>, skip(<span class="self">self</span>), ret)]
+    </span><span class="kw">fn </span>connect_url(<span class="kw-2">&amp;</span><span class="self">self</span>, session_information: <span class="kw-2">&amp;</span>OperatorSessionInformation) -&gt; String {
+        <span class="kw">let </span>OperatorApi {
+            on_concurrent_steal,
+            ..
+        } = <span class="self">self</span>;
+        <span class="kw">let </span>target = <span class="kw-2">&amp;</span>session_information.target;
+
+        <span class="kw">if </span>session_information
+            .operator_features
+            .contains(<span class="kw-2">&amp;</span>OperatorFeatures::ProxyApi)
+        {
+            <span class="kw">let </span>dt = <span class="kw-2">&amp;</span>();
+            <span class="kw">let </span>ns = <span class="self">self
+                </span>.target_namespace
+                .as_deref()
+                .unwrap_or_else(|| <span class="self">self</span>.client.default_namespace());
+            <span class="kw">let </span>api_version = TargetCrd::api_version(dt);
+            <span class="kw">let </span>plural = TargetCrd::plural(dt);
+
+            <span class="macro">format!</span>(<span class="string">&quot;/apis/{api_version}/proxy/namespaces/{ns}/{plural}/{}?on_concurrent_steal={on_concurrent_steal}&amp;connect=true&quot;</span>, target.name())
+        } <span class="kw">else </span>{
+            <span class="macro">format!</span>(
+                <span class="string">&quot;{}/{}?on_concurrent_steal={on_concurrent_steal}&amp;connect=true&quot;</span>,
+                <span class="self">self</span>.target_api.resource_url(),
+                target.name(),
+            )
+        }
+    }
+
     <span class="doccomment">/// Create websocket connection to operator
     </span><span class="kw">async fn </span>connect_target(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        target: TargetCrd,
-        credential_name: <span class="prelude-ty">Option</span>&lt;String&gt;,
+        session_information: <span class="kw-2">&amp;</span>OperatorSessionInformation,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(mpsc::Sender&lt;ClientMessage&gt;, mpsc::Receiver&lt;DaemonMessage&gt;)&gt; {
-        <span class="kw">if </span><span class="self">self</span>.on_concurrent_steal == ConcurrentSteal::Abort &amp;&amp; <span class="kw">let </span><span class="prelude-val">Ok</span>(lock_target) = <span class="self">self
+        <span class="comment">// why are we checking on client side..?
+        </span><span class="kw">if </span><span class="self">self</span>.on_concurrent_steal == ConcurrentSteal::Abort &amp;&amp; <span class="kw">let </span><span class="prelude-val">Ok</span>(lock_target) = <span class="self">self
                 </span>.target_api
-                .get_subresource(<span class="string">&quot;port-locks&quot;</span>, <span class="kw-2">&amp;</span>target.name())
+                .get_subresource(<span class="string">&quot;port-locks&quot;</span>, <span class="kw-2">&amp;</span>session_information.target.name())
                 .<span class="kw">await </span>&amp;&amp; lock_target
                 .spec
                 .port_locks
@@ -486,18 +637,13 @@
         }
 
         <span class="kw">let </span><span class="kw-2">mut </span>builder = Request::builder()
-            .uri(<span class="macro">format!</span>(
-                <span class="string">&quot;{}/{}?on_concurrent_steal={}&amp;connect=true&quot;</span>,
-                <span class="self">self</span>.target_api.resource_url(),
-                target.name(),
-                <span class="self">self</span>.on_concurrent_steal
-            ))
-            .header(<span class="string">&quot;x-session-id&quot;</span>, <span class="self">Self</span>::session_id());
+            .uri(<span class="self">self</span>.connect_url(session_information))
+            .header(<span class="string">&quot;x-session-id&quot;</span>, session_information.session_id.clone());
 
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(credential_name) = credential_name {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(credential_name) = <span class="kw-2">&amp;</span>session_information.fingerprint {
             <span class="kw">let </span>client_credentials = CredentialStoreSync::get_client_certificate::&lt;
                 MirrordOperatorCrd,
-            &gt;(<span class="kw-2">&amp;</span><span class="self">self</span>.client, credential_name)
+            &gt;(<span class="kw-2">&amp;</span><span class="self">self</span>.client, credential_name.to_string())
             .<span class="kw">await
             </span>.map(|certificate_der| general_purpose::STANDARD.encode(certificate_der))<span class="question-mark">?</span>;
 

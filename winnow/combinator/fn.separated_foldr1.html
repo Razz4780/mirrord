@@ -6,7 +6,7 @@
     I: <a class="trait" href="../stream/trait.Stream.html" title="trait winnow::stream::Stream">Stream</a>,
     P: <a class="trait" href="../trait.Parser.html" title="trait winnow::Parser">Parser</a>&lt;I, O, E&gt;,
     S: <a class="trait" href="../trait.Parser.html" title="trait winnow::Parser">Parser</a>&lt;I, O2, E&gt;,
-    E: <a class="trait" href="../error/trait.ParseError.html" title="trait winnow::error::ParseError">ParseError</a>&lt;I&gt;,
+    E: <a class="trait" href="../error/trait.ParserError.html" title="trait winnow::error::ParserError">ParserError</a>&lt;I&gt;,
     Op: <a class="trait" href="https://doc.rust-lang.org/nightly/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(O, O2, O) -&gt; O,</span></code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Alternates between two parsers, merging the results (right associative)</p>
 <p>This stops when either parser returns <a href="../error/enum.ErrMode.html#variant.Backtrack" title="variant winnow::error::ErrMode::Backtrack"><code>ErrMode::Backtrack</code></a>.  To instead chain an error up, see
 <a href="fn.cut_err.html" title="fn winnow::combinator::cut_err"><code>cut_err</code></a>.</p>
@@ -15,11 +15,11 @@
 <span class="kw">use </span>winnow::ascii::dec_uint;
 
 <span class="kw">fn </span>parser(s: <span class="kw-2">&amp;</span>str) -&gt; IResult&lt;<span class="kw-2">&amp;</span>str, u32&gt; {
-  separated_foldr1(dec_uint, <span class="string">&quot;^&quot;</span>, |l: u32, <span class="kw">_</span>, r: u32| l.pow(r)).parse_next(s)
+  separated_foldr1(dec_uint, <span class="string">&quot;^&quot;</span>, |l: u32, <span class="kw">_</span>, r: u32| l.pow(r)).parse_peek(s)
 }
 
 <span class="macro">assert_eq!</span>(parser(<span class="string">&quot;2^3^2&quot;</span>), <span class="prelude-val">Ok</span>((<span class="string">&quot;&quot;</span>, <span class="number">512</span>)));
 <span class="macro">assert_eq!</span>(parser(<span class="string">&quot;2&quot;</span>), <span class="prelude-val">Ok</span>((<span class="string">&quot;&quot;</span>, <span class="number">2</span>)));
-<span class="macro">assert_eq!</span>(parser(<span class="string">&quot;&quot;</span>), <span class="prelude-val">Err</span>(ErrMode::Backtrack(Error::new(<span class="string">&quot;&quot;</span>, ErrorKind::Slice))));
-<span class="macro">assert_eq!</span>(parser(<span class="string">&quot;def|abc&quot;</span>), <span class="prelude-val">Err</span>(ErrMode::Backtrack(Error::new(<span class="string">&quot;def|abc&quot;</span>, ErrorKind::Slice))));</code></pre></div>
+<span class="macro">assert_eq!</span>(parser(<span class="string">&quot;&quot;</span>), <span class="prelude-val">Err</span>(ErrMode::Backtrack(InputError::new(<span class="string">&quot;&quot;</span>, ErrorKind::Slice))));
+<span class="macro">assert_eq!</span>(parser(<span class="string">&quot;def|abc&quot;</span>), <span class="prelude-val">Err</span>(ErrMode::Backtrack(InputError::new(<span class="string">&quot;def|abc&quot;</span>, ErrorKind::Slice))));</code></pre></div>
 </div></details></section></div></main></body></html>

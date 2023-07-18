@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/kube-client-0.82.2/src/client/auth/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="kube_client" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0-nightly (c609da59d 2023-04-18)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../../static.files/source-script-905937fbbdc8e9ea.js"></script><script defer src="../../../../source-files.js"></script><script defer src="../../../../static.files/main-1a524efa7bd4ab32.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../kube_client/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/kube-client-0.84.0/src/client/auth/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="kube_client" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0-nightly (c609da59d 2023-04-18)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../../static.files/source-script-905937fbbdc8e9ea.js"></script><script defer src="../../../../source-files.js"></script><script defer src="../../../../static.files/main-1a524efa7bd4ab32.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../kube_client/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -623,6 +623,43 @@
 <a href="#623" id="623">623</a>
 <a href="#624" id="624">624</a>
 <a href="#625" id="625">625</a>
+<a href="#626" id="626">626</a>
+<a href="#627" id="627">627</a>
+<a href="#628" id="628">628</a>
+<a href="#629" id="629">629</a>
+<a href="#630" id="630">630</a>
+<a href="#631" id="631">631</a>
+<a href="#632" id="632">632</a>
+<a href="#633" id="633">633</a>
+<a href="#634" id="634">634</a>
+<a href="#635" id="635">635</a>
+<a href="#636" id="636">636</a>
+<a href="#637" id="637">637</a>
+<a href="#638" id="638">638</a>
+<a href="#639" id="639">639</a>
+<a href="#640" id="640">640</a>
+<a href="#641" id="641">641</a>
+<a href="#642" id="642">642</a>
+<a href="#643" id="643">643</a>
+<a href="#644" id="644">644</a>
+<a href="#645" id="645">645</a>
+<a href="#646" id="646">646</a>
+<a href="#647" id="647">647</a>
+<a href="#648" id="648">648</a>
+<a href="#649" id="649">649</a>
+<a href="#650" id="650">650</a>
+<a href="#651" id="651">651</a>
+<a href="#652" id="652">652</a>
+<a href="#653" id="653">653</a>
+<a href="#654" id="654">654</a>
+<a href="#655" id="655">655</a>
+<a href="#656" id="656">656</a>
+<a href="#657" id="657">657</a>
+<a href="#658" id="658">658</a>
+<a href="#659" id="659">659</a>
+<a href="#660" id="660">660</a>
+<a href="#661" id="661">661</a>
+<a href="#662" id="662">662</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     path::{Path, PathBuf},
     process::Command,
@@ -647,6 +684,8 @@
 
 <span class="attr">#[cfg(feature = <span class="string">&quot;oauth&quot;</span>)] </span><span class="kw">mod </span>oauth;
 <span class="attr">#[cfg(feature = <span class="string">&quot;oauth&quot;</span>)] </span><span class="kw">pub use </span>oauth::Error <span class="kw">as </span>OAuthError;
+<span class="attr">#[cfg(feature = <span class="string">&quot;oidc&quot;</span>)] </span><span class="kw">mod </span>oidc;
+<span class="attr">#[cfg(feature = <span class="string">&quot;oidc&quot;</span>)] </span><span class="kw">pub use </span>oidc::errors <span class="kw">as </span>oidc_errors;
 <span class="attr">#[cfg(target_os = <span class="string">&quot;windows&quot;</span>)] </span><span class="kw">use </span>std::os::windows::process::CommandExt;
 
 <span class="attr">#[derive(Error, Debug)]
@@ -716,6 +755,12 @@
     #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">&quot;oauth&quot;</span>)))]
     #[error(<span class="string">&quot;failed OAuth: {0}&quot;</span>)]
     </span>OAuth(<span class="attr">#[source] </span>OAuthError),
+
+    <span class="doccomment">/// OIDC error
+    </span><span class="attr">#[cfg(feature = <span class="string">&quot;oidc&quot;</span>)]
+    #[cfg_attr(docsrs, doc(cfg(feature = <span class="string">&quot;oidc&quot;</span>)))]
+    #[error(<span class="string">&quot;failed OIDC: {0}&quot;</span>)]
+    </span>Oidc(<span class="attr">#[source] </span>oidc_errors::Error),
 }
 
 <span class="attr">#[derive(Debug, Clone)]
@@ -789,6 +834,8 @@
     File(Arc&lt;RwLock&lt;TokenFile&gt;&gt;),
     <span class="attr">#[cfg(feature = <span class="string">&quot;oauth&quot;</span>)]
     </span>GcpOauth(Arc&lt;Mutex&lt;oauth::Gcp&gt;&gt;),
+    <span class="attr">#[cfg(feature = <span class="string">&quot;oidc&quot;</span>)]
+    </span>Oidc(Arc&lt;Mutex&lt;oidc::Oidc&gt;&gt;),
 }
 
 <span class="comment">// For use with `AsyncFilterLayer` to add `Authorization` header with a refreshed token.
@@ -837,6 +884,8 @@
                         </span>Auth::RefreshableToken(RefreshableToken::File(<span class="kw">_</span>)) =&gt; <span class="macro">unreachable!</span>(),
                         <span class="attr">#[cfg(feature = <span class="string">&quot;oauth&quot;</span>)]
                         </span>Auth::RefreshableToken(RefreshableToken::GcpOauth(<span class="kw">_</span>)) =&gt; <span class="macro">unreachable!</span>(),
+                        <span class="attr">#[cfg(feature = <span class="string">&quot;oidc&quot;</span>)]
+                        </span>Auth::RefreshableToken(RefreshableToken::Oidc(<span class="kw">_</span>)) =&gt; <span class="macro">unreachable!</span>(),
                     }
                 }
 
@@ -861,6 +910,12 @@
                 <span class="kw">let </span>token = (<span class="kw-2">*</span>gcp_oauth).token().<span class="kw">await</span>.map_err(Error::OAuth)<span class="question-mark">?</span>;
                 bearer_header(<span class="kw-2">&amp;</span>token.access_token)
             }
+
+            <span class="attr">#[cfg(feature = <span class="string">&quot;oidc&quot;</span>)]
+            </span>RefreshableToken::Oidc(oidc) =&gt; {
+                <span class="kw">let </span>token = oidc.lock().<span class="kw">await</span>.id_token().<span class="kw">await</span>.map_err(Error::Oidc)<span class="question-mark">?</span>;
+                bearer_header(<span class="kw-2">&amp;</span>token)
+            }
         }
     }
 }
@@ -880,7 +935,15 @@
     </span><span class="kw">fn </span>try_from(auth_info: <span class="kw-2">&amp;</span>AuthInfo) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(provider) = <span class="kw-2">&amp;</span>auth_info.auth_provider {
             <span class="kw">match </span>token_from_provider(provider)<span class="question-mark">? </span>{
-                ProviderToken::Oidc(token) =&gt; {
+                <span class="attr">#[cfg(feature = <span class="string">&quot;oidc&quot;</span>)]
+                </span>ProviderToken::Oidc(oidc) =&gt; {
+                    <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="self">Self</span>::RefreshableToken(RefreshableToken::Oidc(Arc::new(
+                        Mutex::new(oidc),
+                    ))));
+                }
+
+                <span class="attr">#[cfg(not(feature = <span class="string">&quot;oidc&quot;</span>))]
+                </span>ProviderToken::Oidc(token) =&gt; {
                     <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="self">Self</span>::Bearer(SecretString::from(token)));
                 }
 
@@ -952,7 +1015,10 @@
 
 <span class="comment">// We need to differentiate providers because the keys/formats to store token expiration differs.
 </span><span class="kw">enum </span>ProviderToken {
-    Oidc(String),
+    <span class="attr">#[cfg(feature = <span class="string">&quot;oidc&quot;</span>)]
+    </span>Oidc(oidc::Oidc),
+    <span class="attr">#[cfg(not(feature = <span class="string">&quot;oidc&quot;</span>))]
+    </span>Oidc(String),
     <span class="comment">// &quot;access-token&quot;, &quot;expiry&quot; (RFC3339)
     </span>GcpCommand(String, <span class="prelude-ty">Option</span>&lt;DateTime&lt;Utc&gt;&gt;),
     <span class="attr">#[cfg(feature = <span class="string">&quot;oauth&quot;</span>)]
@@ -975,7 +1041,15 @@
     }
 }
 
-<span class="kw">fn </span>token_from_oidc_provider(provider: <span class="kw-2">&amp;</span>AuthProviderConfig) -&gt; <span class="prelude-ty">Result</span>&lt;ProviderToken, Error&gt; {
+<span class="attr">#[cfg(feature = <span class="string">&quot;oidc&quot;</span>)]
+</span><span class="kw">fn </span>token_from_oidc_provider(provider: <span class="kw-2">&amp;</span>AuthProviderConfig) -&gt; <span class="prelude-ty">Result</span>&lt;ProviderToken, Error&gt; {
+    oidc::Oidc::from_config(<span class="kw-2">&amp;</span>provider.config)
+        .map_err(Error::Oidc)
+        .map(ProviderToken::Oidc)
+}
+
+<span class="attr">#[cfg(not(feature = <span class="string">&quot;oidc&quot;</span>))]
+</span><span class="kw">fn </span>token_from_oidc_provider(provider: <span class="kw-2">&amp;</span>AuthProviderConfig) -&gt; <span class="prelude-ty">Result</span>&lt;ProviderToken, Error&gt; {
     <span class="kw">match </span>provider.config.get(<span class="string">&quot;id-token&quot;</span>) {
         <span class="prelude-val">Some</span>(id_token) =&gt; <span class="prelude-val">Ok</span>(ProviderToken::Oidc(id_token.clone())),
         <span class="prelude-val">None </span>=&gt; <span class="prelude-val">Err</span>(Error::AuthExec(

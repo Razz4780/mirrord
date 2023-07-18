@@ -82,6 +82,9 @@
 <a href="#82" id="82">82</a>
 <a href="#83" id="83">83</a>
 <a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>mirrord_analytics::CollectAnalytics;
 <span class="kw">use </span>mirrord_config_derive::MirrordConfig;
 <span class="kw">use </span>schemars::JsonSchema;
@@ -132,6 +135,9 @@
 ///       &quot;outgoing&quot;: {
 ///         &quot;tcp&quot;: true,
 ///         &quot;udp&quot;: true,
+///         &quot;filter&quot;: {
+///           &quot;local&quot;: [&quot;tcp://1.1.1.0/24:1337&quot;, &quot;1.1.5.0/24&quot;, &quot;google.com&quot;, &quot;:53&quot;]
+///         },
 ///         &quot;ignore_localhost&quot;: false,
 ///         &quot;unix_streams&quot;: &quot;bear.+&quot;
 ///       },

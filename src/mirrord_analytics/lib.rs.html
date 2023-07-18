@@ -328,7 +328,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>analytics = Analytics::default();
         analytics.add(<span class="string">&quot;a&quot;</span>, <span class="bool-val">true</span>);
         analytics.add(<span class="string">&quot;b&quot;</span>, <span class="bool-val">false</span>);
-        analytics.add(<span class="string">&quot;c&quot;</span>, <span class="number">3</span>);
+        analytics.add(<span class="string">&quot;c&quot;</span>, <span class="number">3usize</span>);
 
         <span class="kw">struct </span>A {}
         <span class="kw">impl </span>CollectAnalytics <span class="kw">for </span>A {

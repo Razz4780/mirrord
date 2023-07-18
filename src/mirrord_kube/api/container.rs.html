@@ -438,7 +438,7 @@
 <a href="#438" id="438">438</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{collections::HashSet, sync::LazyLock};
 
-<span class="kw">use </span>futures::{StreamExt, TryStreamExt};
+<span class="kw">use </span>futures::{AsyncBufReadExt, StreamExt, TryStreamExt};
 <span class="kw">use </span>k8s_openapi::api::{
     batch::v1::Job,
     core::v1::{ContainerStatus, EphemeralContainer <span class="kw">as </span>KubeEphemeralContainer, Pod},
@@ -548,7 +548,7 @@
     pod_name: <span class="kw-2">&amp;</span>str,
     container_name: String,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-    <span class="kw">let </span><span class="kw-2">mut </span>logs = pod_api
+    <span class="kw">let </span>logs = pod_api
         .log_stream(
             pod_name,
             <span class="kw-2">&amp;</span>LogParams {
@@ -559,8 +559,8 @@
         )
         .<span class="kw">await</span><span class="question-mark">?</span>;
 
-    <span class="kw">while let </span><span class="prelude-val">Some</span>(line) = logs.try_next().<span class="kw">await</span><span class="question-mark">? </span>{
-        <span class="kw">let </span>line = String::from_utf8_lossy(<span class="kw-2">&amp;</span>line);
+    <span class="kw">let </span><span class="kw-2">mut </span>lines = logs.lines();
+    <span class="kw">while let </span><span class="prelude-val">Some</span>(line) = lines.try_next().<span class="kw">await</span><span class="question-mark">? </span>{
         <span class="kw">if </span>line.contains(<span class="string">&quot;agent ready&quot;</span>) {
             <span class="kw">break</span>;
         }

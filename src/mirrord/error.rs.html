@@ -213,6 +213,8 @@
 <a href="#213" id="213">213</a>
 <a href="#214" id="214">214</a>
 <a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::path::PathBuf;
 
 <span class="kw">use </span>miette::Diagnostic;
@@ -245,8 +247,6 @@
     </span>FirstConnectionTimeout,
     <span class="attr">#[error(<span class="string">&quot;Couldn&#39;t accept connection {0:#?}&quot;</span>)]
     </span>AcceptError(std::io::Error),
-    <span class="attr">#[error(<span class="string">&quot;Couldn&#39;t connect to operator &quot;</span>)]
-    </span>OperatorConnectionError,
     <span class="attr">#[error(<span class="string">&quot;Couldn&#39;t connect to agent via TCP {0:#?}&quot;</span>)]
     </span>TcpConnectError(std::io::Error),
     <span class="attr">#[error(<span class="string">&quot;Agent closed connection on ping/pong, image version/arch mismatch?&quot;</span>)]
@@ -255,6 +255,10 @@
     </span>PingError(<span class="attr">#[from] </span>tokio::sync::mpsc::error::SendError&lt;mirrord_protocol::ClientMessage&gt;),
     <span class="attr">#[error(<span class="string">&quot;Set sid failed {0:#?}, please report a bug&quot;</span>)]
     </span>SetSidError(nix::Error),
+    <span class="attr">#[error(<span class="string">&quot;No connection method, please report a bug&quot;</span>)]
+    </span>NoConnectionMethod,
+    <span class="attr">#[error(<span class="string">&quot;Failed pausing target container {0:#?}&quot;</span>)]
+    </span>PauseError(String),
 }
 
 <span class="attr">#[derive(Debug, Error, Diagnostic)]

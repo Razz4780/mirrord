@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["generate_key"],"struct":["ClientHandshake"],"type":["Request","Response"]};
+window.SIDEBAR_ITEMS = {"fn":["generate_key","generate_request"],"struct":["ClientHandshake"],"type":["Request","Response"]};

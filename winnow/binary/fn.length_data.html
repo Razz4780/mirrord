@@ -2,7 +2,7 @@
     I: <a class="trait" href="../stream/trait.StreamIsPartial.html" title="trait winnow::stream::StreamIsPartial">StreamIsPartial</a> + <a class="trait" href="../stream/trait.Stream.html" title="trait winnow::stream::Stream">Stream</a>,
     N: <a class="trait" href="../stream/trait.ToUsize.html" title="trait winnow::stream::ToUsize">ToUsize</a>,
     F: <a class="trait" href="../trait.Parser.html" title="trait winnow::Parser">Parser</a>&lt;I, N, E&gt;,
-    E: <a class="trait" href="../error/trait.ParseError.html" title="trait winnow::error::ParseError">ParseError</a>&lt;I&gt;,</span></code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Gets a number from the parser and returns a
+    E: <a class="trait" href="../error/trait.ParserError.html" title="trait winnow::error::ParserError">ParserError</a>&lt;I&gt;,</span></code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Gets a number from the parser and returns a
 subslice of the input of that size.</p>
 <p><em>Complete version</em>: Returns an error if there is not enough input data.</p>
 <p><em>Partial version</em>: Will return <code>Err(winnow::error::ErrMode::Incomplete(_))</code> if there is not enough data.</p>
@@ -23,7 +23,7 @@ subslice of the input of that size.</p>
 }
 
 <span class="kw">fn </span>parser(s: Stream&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; IResult&lt;Stream&lt;<span class="lifetime">&#39;_</span>&gt;, <span class="kw-2">&amp;</span>[u8]&gt; {
-  length_data(be_u16).parse_next(s)
+  length_data(be_u16).parse_peek(s)
 }
 
 <span class="macro">assert_eq!</span>(parser(stream(<span class="string">b&quot;\x00\x03abcefg&quot;</span>)), <span class="prelude-val">Ok</span>((stream(<span class="kw-2">&amp;</span><span class="string">b&quot;efg&quot;</span>[..]), <span class="kw-2">&amp;</span><span class="string">b&quot;abc&quot;</span>[..])));

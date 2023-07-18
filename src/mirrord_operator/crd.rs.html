@@ -105,6 +105,12 @@
 <a href="#105" id="105">105</a>
 <a href="#106" id="106">106</a>
 <a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>chrono::NaiveDate;
 <span class="kw">use </span>kube::CustomResource;
 <span class="kw">use </span>mirrord_config::target::{Target, TargetConfig};
@@ -182,6 +188,7 @@
 </span><span class="kw">pub struct </span>MirrordOperatorSpec {
     <span class="kw">pub </span>operator_version: String,
     <span class="kw">pub </span>default_namespace: String,
+    <span class="kw">pub </span>features: <span class="prelude-ty">Option</span>&lt;Vec&lt;OperatorFeatures&gt;&gt;,
     <span class="kw">pub </span>license: LicenseInfoOwned,
 }
 
@@ -211,5 +218,10 @@
     <span class="kw">pub </span>organization: String,
     <span class="kw">pub </span>expire_at: NaiveDate,
     <span class="kw">pub </span>fingerprint: <span class="prelude-ty">Option</span>&lt;String&gt;,
+}
+
+<span class="attr">#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize, JsonSchema)]
+</span><span class="kw">pub enum </span>OperatorFeatures {
+    ProxyApi,
 }
 </code></pre></div></section></main></body></html>

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Error","ReconcileReason"],"fn":["applier","trigger_owners","trigger_self","trigger_with"],"struct":["Action","Controller","ReconcileRequest"]};
+window.SIDEBAR_ITEMS = {"enum":["Error","ReconcileReason"],"fn":["applier","trigger_owners","trigger_self","trigger_with"],"struct":["Action","Controller","ReconcileRequest"],"type":["RunnerError"]};

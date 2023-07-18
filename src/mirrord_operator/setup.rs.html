@@ -628,66 +628,14 @@
 <a href="#628" id="628">628</a>
 <a href="#629" id="629">629</a>
 <a href="#630" id="630">630</a>
-<a href="#631" id="631">631</a>
-<a href="#632" id="632">632</a>
-<a href="#633" id="633">633</a>
-<a href="#634" id="634">634</a>
-<a href="#635" id="635">635</a>
-<a href="#636" id="636">636</a>
-<a href="#637" id="637">637</a>
-<a href="#638" id="638">638</a>
-<a href="#639" id="639">639</a>
-<a href="#640" id="640">640</a>
-<a href="#641" id="641">641</a>
-<a href="#642" id="642">642</a>
-<a href="#643" id="643">643</a>
-<a href="#644" id="644">644</a>
-<a href="#645" id="645">645</a>
-<a href="#646" id="646">646</a>
-<a href="#647" id="647">647</a>
-<a href="#648" id="648">648</a>
-<a href="#649" id="649">649</a>
-<a href="#650" id="650">650</a>
-<a href="#651" id="651">651</a>
-<a href="#652" id="652">652</a>
-<a href="#653" id="653">653</a>
-<a href="#654" id="654">654</a>
-<a href="#655" id="655">655</a>
-<a href="#656" id="656">656</a>
-<a href="#657" id="657">657</a>
-<a href="#658" id="658">658</a>
-<a href="#659" id="659">659</a>
-<a href="#660" id="660">660</a>
-<a href="#661" id="661">661</a>
-<a href="#662" id="662">662</a>
-<a href="#663" id="663">663</a>
-<a href="#664" id="664">664</a>
-<a href="#665" id="665">665</a>
-<a href="#666" id="666">666</a>
-<a href="#667" id="667">667</a>
-<a href="#668" id="668">668</a>
-<a href="#669" id="669">669</a>
-<a href="#670" id="670">670</a>
-<a href="#671" id="671">671</a>
-<a href="#672" id="672">672</a>
-<a href="#673" id="673">673</a>
-<a href="#674" id="674">674</a>
-<a href="#675" id="675">675</a>
-<a href="#676" id="676">676</a>
-<a href="#677" id="677">677</a>
-<a href="#678" id="678">678</a>
-<a href="#679" id="679">679</a>
-<a href="#680" id="680">680</a>
-<a href="#681" id="681">681</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{collections::BTreeMap, convert::Infallible, io::Write, str::FromStr, sync::LazyLock};
 
 <span class="kw">use </span>k8s_openapi::{
     api::{
         apps::v1::{Deployment, DeploymentSpec},
         core::v1::{
-            Container, ContainerPort, EnvVar, Namespace, PersistentVolumeClaim,
-            PersistentVolumeClaimSpec, PersistentVolumeClaimVolumeSource, PodSpec, PodTemplateSpec,
-            ResourceRequirements, Secret, SecretVolumeSource, SecurityContext, Service,
+            Container, ContainerPort, EnvVar, HTTPGetAction, Namespace, PodSpec, PodTemplateSpec,
+            Probe, ResourceRequirements, Secret, SecretVolumeSource, SecurityContext, Service,
             ServiceAccount, ServicePort, ServiceSpec, Volume, VolumeMount,
         },
         rbac::v1::{ClusterRole, ClusterRoleBinding, PolicyRule, RoleRef, Subject},
@@ -719,9 +667,6 @@
 <span class="kw">static </span>OPERATOR_TLS_CERT_FILE_NAME: <span class="kw-2">&amp;</span>str = <span class="string">&quot;tls.pem&quot;</span>;
 <span class="kw">static </span>OPERATOR_SERVICE_ACCOUNT_NAME: <span class="kw-2">&amp;</span>str = <span class="string">&quot;mirrord-operator&quot;</span>;
 <span class="kw">static </span>OPERATOR_SERVICE_NAME: <span class="kw-2">&amp;</span>str = <span class="string">&quot;mirrord-operator&quot;</span>;
-<span class="kw">static </span>OPERATOR_PVC_NAME: <span class="kw-2">&amp;</span>str = <span class="string">&quot;mirrord-operator&quot;</span>;
-<span class="kw">static </span>OPERATOR_PVC_VOLUME_NAME: <span class="kw-2">&amp;</span>str = <span class="string">&quot;state-volume&quot;</span>;
-<span class="kw">static </span>OPERATOR_PVC_STATISITCS_FILE_NAME: <span class="kw-2">&amp;</span>str = <span class="string">&quot;statisitcs.yaml&quot;</span>;
 
 <span class="kw">static </span>APP_LABELS: LazyLock&lt;BTreeMap&lt;String, String&gt;&gt; =
     LazyLock::new(|| BTreeMap::from([(<span class="string">&quot;app&quot;</span>.to_owned(), OPERATOR_NAME.to_owned())]));
@@ -735,8 +680,8 @@
 <span class="macro">macro_rules! </span>writer_impl {
     (<span class="macro-nonterminal">$ident</span>:ident) =&gt; {
         <span class="kw">impl </span>OperatorSetup <span class="kw">for </span><span class="macro-nonterminal">$ident </span>{
-            <span class="kw">fn </span>to_writer&lt;W: Write&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>writer: W) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-                serde_yaml::to_writer(<span class="kw-2">&amp;mut </span>writer, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>).map_err(SetupError::from)
+            <span class="kw">fn </span>to_writer&lt;W: Write&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, writer: W) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+                serde_yaml::to_writer(writer, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>).map_err(SetupError::from)
             }
         }
     };
@@ -776,7 +721,6 @@
     deployment: OperatorDeployment,
     license_secret: <span class="prelude-ty">Option</span>&lt;OperatorLicenseSecret&gt;,
     namespace: OperatorNamespace,
-    pvc: OperatorPersistentVolumeClaim,
     role: OperatorRole,
     role_binding: OperatorRoleBinding,
     service: OperatorService,
@@ -810,8 +754,6 @@
             <span class="kw-2">&amp;</span>tls_secret,
         );
 
-        <span class="kw">let </span>pvc = OperatorPersistentVolumeClaim::new(<span class="kw-2">&amp;</span>namespace);
-
         <span class="kw">let </span>service = OperatorService::new(<span class="kw-2">&amp;</span>namespace);
 
         <span class="kw">let </span>api_service = OperatorApiService::new(<span class="kw-2">&amp;</span>service);
@@ -821,7 +763,6 @@
             deployment,
             license_secret,
             namespace,
-            pvc,
             role,
             role_binding,
             service,
@@ -848,9 +789,6 @@
 
         writer.write_all(<span class="string">b&quot;---\n&quot;</span>)<span class="question-mark">?</span>;
         <span class="self">self</span>.role_binding.to_writer(<span class="kw-2">&amp;mut </span>writer)<span class="question-mark">?</span>;
-
-        writer.write_all(<span class="string">b&quot;---\n&quot;</span>)<span class="question-mark">?</span>;
-        <span class="self">self</span>.pvc.to_writer(<span class="kw-2">&amp;mut </span>writer)<span class="question-mark">?</span>;
 
         writer.write_all(<span class="string">b&quot;---\n&quot;</span>)<span class="question-mark">?</span>;
         <span class="self">self</span>.deployment.to_writer(<span class="kw-2">&amp;mut </span>writer)<span class="question-mark">?</span>;
@@ -925,44 +863,22 @@
                 value: <span class="prelude-val">Some</span>(<span class="macro">format!</span>(<span class="string">&quot;/tls/{OPERATOR_TLS_KEY_FILE_NAME}&quot;</span>)),
                 value_from: <span class="prelude-val">None</span>,
             },
-            EnvVar {
-                name: <span class="string">&quot;OPERATOR_TELEMETRY_STATISITIC_STATE_PATH&quot;</span>.to_owned(),
-                value: <span class="prelude-val">Some</span>(<span class="macro">format!</span>(<span class="string">&quot;/state/{OPERATOR_PVC_STATISITCS_FILE_NAME}&quot;</span>)),
-                value_from: <span class="prelude-val">None</span>,
-            },
         ];
 
-        <span class="kw">let </span><span class="kw-2">mut </span>volumes = <span class="macro">vec!</span>[
-            Volume {
-                name: OPERATOR_TLS_VOLUME_NAME.to_owned(),
-                secret: <span class="prelude-val">Some</span>(SecretVolumeSource {
-                    secret_name: <span class="prelude-val">Some</span>(tls_secret.name().to_owned()),
-                    ..Default::default()
-                }),
+        <span class="kw">let </span><span class="kw-2">mut </span>volumes = <span class="macro">vec!</span>[Volume {
+            name: OPERATOR_TLS_VOLUME_NAME.to_owned(),
+            secret: <span class="prelude-val">Some</span>(SecretVolumeSource {
+                secret_name: <span class="prelude-val">Some</span>(tls_secret.name().to_owned()),
                 ..Default::default()
-            },
-            Volume {
-                name: OPERATOR_PVC_VOLUME_NAME.to_owned(),
-                persistent_volume_claim: <span class="prelude-val">Some</span>(PersistentVolumeClaimVolumeSource {
-                    claim_name: OPERATOR_PVC_NAME.to_owned(),
-                    ..Default::default()
-                }),
-                ..Default::default()
-            },
-        ];
+            }),
+            ..Default::default()
+        }];
 
-        <span class="kw">let </span><span class="kw-2">mut </span>volume_mounts = <span class="macro">vec!</span>[
-            VolumeMount {
-                name: OPERATOR_TLS_VOLUME_NAME.to_owned(),
-                mount_path: <span class="string">&quot;/tls&quot;</span>.to_owned(),
-                ..Default::default()
-            },
-            VolumeMount {
-                name: OPERATOR_PVC_VOLUME_NAME.to_owned(),
-                mount_path: <span class="string">&quot;/state&quot;</span>.to_owned(),
-                ..Default::default()
-            },
-        ];
+        <span class="kw">let </span><span class="kw-2">mut </span>volume_mounts = <span class="macro">vec!</span>[VolumeMount {
+            name: OPERATOR_TLS_VOLUME_NAME.to_owned(),
+            mount_path: <span class="string">&quot;/tls&quot;</span>.to_owned(),
+            ..Default::default()
+        }];
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(license_secret) = license_secret {
             envs.push(EnvVar {
@@ -995,6 +911,17 @@
             });
         }
 
+        <span class="kw">let </span>health_probe = Probe {
+            http_get: <span class="prelude-val">Some</span>(HTTPGetAction {
+                path: <span class="prelude-val">Some</span>(<span class="string">&quot;/health&quot;</span>.to_owned()),
+                port: IntOrString::Int(OPERATOR_PORT),
+                scheme: <span class="prelude-val">Some</span>(<span class="string">&quot;HTTPS&quot;</span>.to_owned()),
+                ..Default::default()
+            }),
+            period_seconds: <span class="prelude-val">Some</span>(<span class="number">5</span>),
+            ..Default::default()
+        };
+
         <span class="kw">let </span>container = Container {
             name: OPERATOR_NAME.to_owned(),
             image: <span class="kw">match </span><span class="macro">option_env!</span>(<span class="string">&quot;MIRRORD_OPERATOR_IMAGE&quot;</span>) {
@@ -1022,6 +949,8 @@
                 requests: <span class="prelude-val">Some</span>(RESOURCE_REQUESTS.clone()),
                 ..Default::default()
             }),
+            readiness_probe: <span class="prelude-val">Some</span>(health_probe.clone()),
+            liveness_probe: <span class="prelude-val">Some</span>(health_probe),
             ..Default::default()
         };
 
@@ -1318,36 +1247,6 @@
     }
 }
 
-<span class="attr">#[derive(Debug)]
-</span><span class="kw">pub struct </span>OperatorPersistentVolumeClaim(PersistentVolumeClaim);
-
-<span class="kw">impl </span>OperatorPersistentVolumeClaim {
-    <span class="kw">pub fn </span>new(namespace: <span class="kw-2">&amp;</span>OperatorNamespace) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>pvc = PersistentVolumeClaim {
-            metadata: ObjectMeta {
-                name: <span class="prelude-val">Some</span>(OPERATOR_PVC_NAME.to_owned()),
-                namespace: <span class="prelude-val">Some</span>(namespace.name().to_owned()),
-                labels: <span class="prelude-val">Some</span>(APP_LABELS.clone()),
-                ..Default::default()
-            },
-            spec: <span class="prelude-val">Some</span>(PersistentVolumeClaimSpec {
-                access_modes: <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[<span class="string">&quot;ReadWriteOnce&quot;</span>.to_owned()]),
-                resources: <span class="prelude-val">Some</span>(ResourceRequirements {
-                    requests: <span class="prelude-val">Some</span>(BTreeMap::from([(
-                        <span class="string">&quot;storage&quot;</span>.to_owned(),
-                        Quantity(<span class="string">&quot;1Gi&quot;</span>.to_owned()),
-                    )])),
-                    ..Default::default()
-                }),
-                ..Default::default()
-            }),
-            ..Default::default()
-        };
-
-        OperatorPersistentVolumeClaim(pvc)
-    }
-}
-
 <span class="macro">writer_impl!</span>[
     OperatorNamespace,
     OperatorDeployment,
@@ -1357,7 +1256,6 @@
     OperatorLicenseSecret,
     OperatorService,
     OperatorTlsSecret,
-    OperatorApiService,
-    OperatorPersistentVolumeClaim
+    OperatorApiService
 ];
 </code></pre></div></section></main></body></html>
