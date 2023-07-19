@@ -361,6 +361,9 @@
 <a href="#361" id="361">361</a>
 <a href="#362" id="362">362</a>
 <a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{env::VarError, net::SocketAddr, ptr, str::ParseBoolError};
 
 <span class="kw">use </span>errno::set_errno;
@@ -521,6 +524,9 @@
         <span class="string">&quot;mirrord-layer: Got new connection from daemon after layer already closed that socket.&quot;
     </span>)]
     </span>NewConnectionAfterSocketClose(ConnectionId),
+
+    <span class="attr">#[error(<span class="string">&quot;mirrord-layer: Unmatched pong!&quot;</span>)]
+    </span>UnmatchedPong,
 
     <span class="attr">#[error(<span class="string">&quot;mirrord-layer: JSON convert error&quot;</span>)]
     </span>JSONConvertError(<span class="attr">#[from] </span>serde_json::Error),

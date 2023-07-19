@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["connect","connect_and_ping","connection_task","ping","print_port","proxy","request_pause"]};
+window.SIDEBAR_ITEMS = {"fn":["connect","connect_and_ping","connection_task","create_ping_loop","ping","print_port","proxy","request_pause"]};

@@ -1060,6 +1060,43 @@
 <a href="#1060" id="1060">1060</a>
 <a href="#1061" id="1061">1061</a>
 <a href="#1062" id="1062">1062</a>
+<a href="#1063" id="1063">1063</a>
+<a href="#1064" id="1064">1064</a>
+<a href="#1065" id="1065">1065</a>
+<a href="#1066" id="1066">1066</a>
+<a href="#1067" id="1067">1067</a>
+<a href="#1068" id="1068">1068</a>
+<a href="#1069" id="1069">1069</a>
+<a href="#1070" id="1070">1070</a>
+<a href="#1071" id="1071">1071</a>
+<a href="#1072" id="1072">1072</a>
+<a href="#1073" id="1073">1073</a>
+<a href="#1074" id="1074">1074</a>
+<a href="#1075" id="1075">1075</a>
+<a href="#1076" id="1076">1076</a>
+<a href="#1077" id="1077">1077</a>
+<a href="#1078" id="1078">1078</a>
+<a href="#1079" id="1079">1079</a>
+<a href="#1080" id="1080">1080</a>
+<a href="#1081" id="1081">1081</a>
+<a href="#1082" id="1082">1082</a>
+<a href="#1083" id="1083">1083</a>
+<a href="#1084" id="1084">1084</a>
+<a href="#1085" id="1085">1085</a>
+<a href="#1086" id="1086">1086</a>
+<a href="#1087" id="1087">1087</a>
+<a href="#1088" id="1088">1088</a>
+<a href="#1089" id="1089">1089</a>
+<a href="#1090" id="1090">1090</a>
+<a href="#1091" id="1091">1091</a>
+<a href="#1092" id="1092">1092</a>
+<a href="#1093" id="1093">1093</a>
+<a href="#1094" id="1094">1094</a>
+<a href="#1095" id="1095">1095</a>
+<a href="#1096" id="1096">1096</a>
+<a href="#1097" id="1097">1097</a>
+<a href="#1098" id="1098">1098</a>
+<a href="#1099" id="1099">1099</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(c_variadic)]
 #![feature(result_option_inspect)]
 #![feature(const_trait_impl)]
@@ -1175,6 +1212,7 @@
     runtime::Runtime,
     select,
     sync::mpsc::{channel, Receiver, Sender},
+    time::{Duration, Interval},
 };
 <span class="kw">use </span>tracing::{debug, error, info, trace, warn};
 <span class="kw">use </span>tracing_subscriber::{fmt::format::FmtSpan, prelude::<span class="kw-2">*</span>};
@@ -1656,6 +1694,15 @@
     /// loop, where we receive the remote [`DaemonMessage`]s, and send them through it.
     </span>rx: Receiver&lt;DaemonMessage&gt;,
 
+    <span class="doccomment">/// Part of the heartbeat mechanism of mirrord.
+    ///
+    /// When it&#39;s been too long since we&#39;ve last received a message (60 seconds), and this is
+    /// `false`, we send a [`ClientMessage::Ping`], set this to `true`, and expect to receive a
+    /// [`DaemonMessage::Pong`], setting it to `false` and completing the hearbeat detection.
+    </span>ping: bool,
+
+    ping_interval: Interval,
+
     <span class="doccomment">/// Handler to the TCP mirror operations, see [`TcpMirrorHandler`].
     </span>tcp_mirror_handler: TcpMirrorHandler,
 
@@ -1717,6 +1764,8 @@
         <span class="self">Self </span>{
             tx,
             rx,
+            ping: <span class="bool-val">false</span>,
+            ping_interval: tokio::time::interval(Duration::from_secs(<span class="number">30</span>)),
             tcp_mirror_handler: TcpMirrorHandler::new(port_mapping.clone()),
             tcp_outgoing_handler: TcpOutgoingHandler::default(),
             udp_outgoing_handler: Default::default(),
@@ -1734,7 +1783,8 @@
 
     <span class="doccomment">/// Sends a [`ClientMessage`] through `Layer::tx` to the [`Receiver`] in
     /// [`wrap_raw_connection`](mirrord_kube::api::wrap_raw_connection).
-    </span><span class="kw">async fn </span>send(<span class="kw-2">&amp;</span><span class="self">self</span>, msg: ClientMessage) -&gt; <span class="prelude-ty">Result</span>&lt;(), ClientMessage&gt; {
+    </span><span class="kw">async fn </span>send(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg: ClientMessage) -&gt; <span class="prelude-ty">Result</span>&lt;(), ClientMessage&gt; {
+        <span class="self">self</span>.ping_interval.reset();
         <span class="self">self</span>.tx.send(msg).<span class="kw">await</span>.map_err(|err| err.<span class="number">0</span>)
     }
 
@@ -1793,6 +1843,10 @@
     ///
     /// ## Special case
     ///
+    /// ### [`DaemonMessage::Pong`]
+    ///
+    /// This message has no dedicated handler, and is thus handled directly here, changing the
+    /// [`Self::ping`] state.
     ///
     /// ### [`DaemonMessage::GetEnvVarsResponse`] and [`DaemonMessage::PauseTarget`]
     ///
@@ -1828,7 +1882,13 @@
                     .<span class="kw">await
             </span>}
             DaemonMessage::Pong =&gt; {
-                <span class="macro">trace!</span>(<span class="string">&quot;pong!&quot;</span>);
+                <span class="kw">if </span><span class="self">self</span>.ping {
+                    <span class="self">self</span>.ping = <span class="bool-val">false</span>;
+                    <span class="macro">trace!</span>(<span class="string">&quot;Daemon sent pong!&quot;</span>);
+                } <span class="kw">else </span>{
+                    <span class="prelude-val">Err</span>(LayerError::UnmatchedPong)<span class="question-mark">?</span>;
+                }
+
                 <span class="prelude-val">Ok</span>(())
             }
             DaemonMessage::GetEnvVarsResponse(<span class="kw">_</span>) =&gt; {
@@ -1870,6 +1930,9 @@
 ///
 /// - Read from the [`Layer`] feature handlers [`Receiver`]s, to turn outgoing messages into
 ///   [`ClientMessage`]s, sending them with `Layer::send`;
+///
+/// - Handle the heartbeat mechanism (Ping/Pong feature), sending a [`ClientMessage::Ping`] if all
+///   the other channels received nothing for a while (30 seconds);
 </span><span class="kw">async fn </span>thread_loop(
     <span class="kw-2">mut </span>receiver: Receiver&lt;HookMessage&gt;,
     tx: Sender&lt;ClientMessage&gt;,
@@ -1885,6 +1948,8 @@
         ..
     } = config;
     <span class="kw">let </span><span class="kw-2">mut </span>layer = Layer::new(tx, rx, incoming);
+    layer.ping_interval.tick().<span class="kw">await</span>;
+
     <span class="kw">loop </span>{
         <span class="macro">select! </span>{
             hook_message = receiver.recv() =&gt; {
@@ -1933,6 +1998,15 @@
             }
             <span class="prelude-val">Some</span>(response) = layer.http_response_receiver.recv() =&gt; {
                 layer.send(ClientMessage::TcpSteal(LayerTcpSteal::HttpResponse(response))).<span class="kw">await</span>.unwrap();
+            }
+            <span class="kw">_ </span>= layer.ping_interval.tick() =&gt; {
+                <span class="kw">if </span>!layer.ping {
+                    layer.send(ClientMessage::Ping).<span class="kw">await</span>.unwrap();
+                    <span class="macro">trace!</span>(<span class="string">&quot;sent ping to daemon&quot;</span>);
+                    layer.ping = <span class="bool-val">true</span>;
+                } <span class="kw">else </span>{
+                    <span class="macro">panic!</span>(<span class="string">&quot;Client: unmatched ping&quot;</span>);
+                }
             }
         }
     }

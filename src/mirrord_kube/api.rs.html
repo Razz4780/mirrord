@@ -169,23 +169,6 @@
 <a href="#169" id="169">169</a>
 <a href="#170" id="170">170</a>
 <a href="#171" id="171">171</a>
-<a href="#172" id="172">172</a>
-<a href="#173" id="173">173</a>
-<a href="#174" id="174">174</a>
-<a href="#175" id="175">175</a>
-<a href="#176" id="176">176</a>
-<a href="#177" id="177">177</a>
-<a href="#178" id="178">178</a>
-<a href="#179" id="179">179</a>
-<a href="#180" id="180">180</a>
-<a href="#181" id="181">181</a>
-<a href="#182" id="182">182</a>
-<a href="#183" id="183">183</a>
-<a href="#184" id="184">184</a>
-<a href="#185" id="185">185</a>
-<a href="#186" id="186">186</a>
-<a href="#187" id="187">187</a>
-<a href="#188" id="188">188</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>actix_codec::{AsyncRead, AsyncWrite};
 <span class="kw">use </span>futures::{SinkExt, StreamExt};
 <span class="kw">use </span>k8s_openapi::{api::core::v1::Namespace, NamespaceResourceScope};
@@ -251,9 +234,6 @@
     <span class="kw">let </span>(out_tx, out_rx) = mpsc::channel(CONNECTION_CHANNEL_SIZE);
 
     tokio::spawn(<span class="kw">async move </span>{
-        <span class="kw">let </span><span class="kw-2">mut </span>timeout_check = tokio::time::interval(std::time::Duration::from_secs(<span class="number">30</span>));
-        timeout_check.tick().<span class="kw">await</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>ticked = <span class="bool-val">false</span>;
         <span class="kw">loop </span>{
             <span class="macro">tokio::select! </span>{
                 msg = in_rx.recv() =&gt; {
@@ -272,8 +252,6 @@
                     }
                 }
                 daemon_message = codec.next() =&gt; {
-                    timeout_check.reset();
-                    ticked = <span class="bool-val">false</span>;
                     <span class="kw">match </span>daemon_message {
                         <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(DaemonMessage::LogMessage(log_message))) =&gt; {
                             <span class="kw">match </span>log_message.level {
@@ -301,18 +279,6 @@
 
                             <span class="kw">break</span>;
                         }
-                    }
-                },
-                <span class="kw">_ </span>= timeout_check.tick() =&gt; {
-                    <span class="kw">if </span>ticked {
-                        <span class="macro">info!</span>(<span class="string">&quot;Timeout waiting for agent message&quot;</span>);
-                        <span class="kw">break
-                    </span>} <span class="kw">else </span>{
-                        <span class="kw">if let </span><span class="prelude-val">Err</span>(fail) = codec.send(ClientMessage::Ping).<span class="kw">await </span>{
-                            <span class="macro">error!</span>(<span class="string">&quot;Error sending client message: {:#?}&quot;</span>, fail);
-                            <span class="kw">break</span>;
-                        }
-                        ticked = <span class="bool-val">true</span>;
                     }
                 }
             }
