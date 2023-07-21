@@ -266,8 +266,22 @@
 <a href="#266" id="266">266</a>
 <a href="#267" id="267">267</a>
 <a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::collections::HashMap;
 
+<span class="kw">use </span>k8s_openapi::api::core::v1::Toleration;
 <span class="kw">use </span>mirrord_analytics::CollectAnalytics;
 <span class="kw">use </span>mirrord_config_derive::MirrordConfig;
 <span class="kw">use </span>schemars::JsonSchema;
@@ -320,7 +334,7 @@
 /// ```
 </span><span class="attr">#[derive(MirrordConfig, Clone, Debug)]
 #[config(map_to = <span class="string">&quot;AgentFileConfig&quot;</span>, derive = <span class="string">&quot;JsonSchema&quot;</span>)]
-#[cfg_attr(test, config(derive = <span class="string">&quot;PartialEq, Eq&quot;</span>))]
+#[cfg_attr(test, config(derive = <span class="string">&quot;PartialEq&quot;</span>))]
 </span><span class="kw">pub struct </span>AgentConfig {
     <span class="doccomment">/// ### agent.log_level {#agent-log_level}
     ///
@@ -465,6 +479,18 @@
     /// If nothing is disabled here, agent uses `NET_ADMIN`, `NET_RAW`, `SYS_PTRACE` and
     /// `SYS_ADMIN`.
     </span><span class="kw">pub </span>disabled_capabilities: <span class="prelude-ty">Option</span>&lt;Vec&lt;LinuxCapability&gt;&gt;,
+
+    <span class="doccomment">/// ### agent.tolerations {#agent-tolerations}
+    ///
+    /// Set pod tolerations. (not with ephemeral agents)
+    /// Default is
+    /// ```yaml
+    /// tolerations:
+    /// - operator: Exists
+    /// ```
+    ///
+    /// Set to an empty array to have no tolerations at all
+    </span><span class="kw">pub </span>tolerations: <span class="prelude-ty">Option</span>&lt;Vec&lt;Toleration&gt;&gt;,
 
     <span class="doccomment">/// &lt;!--${internal}--&gt;
     /// Create an agent that returns an error after accepting the first client. For testing

@@ -728,6 +728,7 @@
 <a href="#728" id="728">728</a>
 <a href="#729" id="729">729</a>
 <a href="#730" id="730">730</a>
+<a href="#731" id="731">731</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(slice_concat_trait)]
 #![feature(lazy_cell)]
 #![feature(result_option_inspect)]
@@ -865,7 +866,7 @@
 /// # Options {#root-options}
 </span><span class="attr">#[derive(MirrordConfig, Clone, Debug)]
 #[config(map_to = <span class="string">&quot;LayerFileConfig&quot;</span>, derive = <span class="string">&quot;JsonSchema&quot;</span>)]
-#[cfg_attr(test, config(derive = <span class="string">&quot;PartialEq, Eq&quot;</span>))]
+#[cfg_attr(test, config(derive = <span class="string">&quot;PartialEq&quot;</span>))]
 </span><span class="kw">pub struct </span>LayerConfig {
     <span class="doccomment">/// ## accept_invalid_certificates {#root-accept_invalid_certificates}
     ///
@@ -1336,6 +1337,7 @@
                 network_interface: <span class="prelude-val">None</span>,
                 flush_connections: <span class="prelude-val">Some</span>(<span class="bool-val">false</span>),
                 disabled_capabilities: <span class="prelude-val">None</span>,
+                tolerations: <span class="prelude-val">None</span>,
             }),
             feature: <span class="prelude-val">Some</span>(FeatureFileConfig {
                 env: ToggleableConfig::Enabled(<span class="bool-val">true</span>).into(),

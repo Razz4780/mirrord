@@ -436,12 +436,17 @@
 <a href="#436" id="436">436</a>
 <a href="#437" id="437">437</a>
 <a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{collections::HashSet, sync::LazyLock};
 
 <span class="kw">use </span>futures::{AsyncBufReadExt, StreamExt, TryStreamExt};
 <span class="kw">use </span>k8s_openapi::api::{
     batch::v1::Job,
-    core::v1::{ContainerStatus, EphemeralContainer <span class="kw">as </span>KubeEphemeralContainer, Pod},
+    core::v1::{ContainerStatus, EphemeralContainer <span class="kw">as </span>KubeEphemeralContainer, Pod, Toleration},
 };
 <span class="kw">use </span>kube::{
     api::{ListParams, LogParams, PostParams},
@@ -493,6 +498,13 @@
 
 <span class="kw">pub static </span>SKIP_NAMES: LazyLock&lt;HashSet&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str&gt;&gt; =
     LazyLock::new(|| HashSet::from([<span class="string">&quot;istio-proxy&quot;</span>, <span class="string">&quot;linkerd-proxy&quot;</span>, <span class="string">&quot;proxy-init&quot;</span>, <span class="string">&quot;istio-init&quot;</span>]));
+
+<span class="kw">static </span>DEFAULT_TOLERATIONS: LazyLock&lt;Vec&lt;Toleration&gt;&gt; = LazyLock::new(|| {
+    <span class="macro">vec!</span>[Toleration {
+        operator: <span class="prelude-val">Some</span>(<span class="string">&quot;Exists&quot;</span>.to_owned()),
+        ..Default::default()
+    }]
+});
 
 <span class="doccomment">/// Choose container logic:
 /// 1. Try to find based on given name
@@ -610,6 +622,8 @@
             agent_command_line.push(<span class="string">&quot;--test-error&quot;</span>.to_owned());
         }
 
+        <span class="kw">let </span>tolerations = agent.tolerations.as_ref().unwrap_or(<span class="kw-2">&amp;</span>DEFAULT_TOLERATIONS);
+
         <span class="kw">let </span>targeted = runtime_data.is_some();
 
         <span class="kw">let </span>json_value = <span class="macro">json!</span>({ <span class="comment">// Only Jobs support self deletion after completion
@@ -658,11 +672,7 @@
                             ]
                         )),
                         <span class="string">&quot;imagePullSecrets&quot;</span>: agent.image_pull_secrets,
-                        <span class="string">&quot;tolerations&quot;</span>: [
-                            {
-                                <span class="string">&quot;operator&quot;</span>: <span class="string">&quot;Exists&quot;
-                            </span>}
-                        ],
+                        <span class="string">&quot;tolerations&quot;</span>: tolerations,
                         <span class="string">&quot;containers&quot;</span>: [
                             {
                                 <span class="string">&quot;name&quot;</span>: <span class="string">&quot;mirrord-agent&quot;</span>,
