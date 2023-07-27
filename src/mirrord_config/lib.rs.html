@@ -729,6 +729,20 @@
 <a href="#729" id="729">729</a>
 <a href="#730" id="730">730</a>
 <a href="#731" id="731">731</a>
+<a href="#732" id="732">732</a>
+<a href="#733" id="733">733</a>
+<a href="#734" id="734">734</a>
+<a href="#735" id="735">735</a>
+<a href="#736" id="736">736</a>
+<a href="#737" id="737">737</a>
+<a href="#738" id="738">738</a>
+<a href="#739" id="739">739</a>
+<a href="#740" id="740">740</a>
+<a href="#741" id="741">741</a>
+<a href="#742" id="742">742</a>
+<a href="#743" id="743">743</a>
+<a href="#744" id="744">744</a>
+<a href="#745" id="745">745</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(slice_concat_trait)]
 #![feature(lazy_cell)]
 #![feature(result_option_inspect)]
@@ -822,7 +836,7 @@
 ///     &quot;env&quot;: {
 ///       &quot;include&quot;: &quot;DATABASE_USER;PUBLIC_ENV&quot;,
 ///       &quot;exclude&quot;: &quot;DATABASE_PASSWORD;SECRET_ENV&quot;,
-///       &quot;overrides&quot;: {
+///       &quot;override&quot;: {
 ///         &quot;DATABASE_CONNECTION&quot;: &quot;db://localhost:7777/my-db&quot;,
 ///         &quot;LOCAL_BEAR&quot;: &quot;panda&quot;
 ///       }
@@ -892,6 +906,19 @@
     /// ```
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_SKIP_PROCESSES&quot;</span>)]
     </span><span class="kw">pub </span>skip_processes: <span class="prelude-ty">Option</span>&lt;VecOrSingle&lt;String&gt;&gt;,
+
+    <span class="doccomment">/// ## skip_build_tools {#root-skip_build_tools}
+    ///
+    /// Allows mirrord to skip build tools. Useful when running command lines that build and run
+    /// the application in a single command.
+    ///
+    /// Defaults to `true`.
+    ///
+    /// Build-Tools: `[&quot;as&quot;, &quot;cc&quot;, &quot;ld&quot;, &quot;go&quot;, &quot;air&quot;, &quot;asm&quot;, &quot;cc1&quot;, &quot;cgo&quot;, &quot;dlv&quot;, &quot;gcc&quot;, &quot;git&quot;,
+    /// &quot;link&quot;, &quot;math&quot;, &quot;cargo&quot;, &quot;hpack&quot;, &quot;rustc&quot;, &quot;compile&quot;, &quot;collect2&quot;, &quot;cargo-watch&quot;,
+    /// &quot;debugserver&quot;]`
+    </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_SKIP_BUILD_TOOLS&quot;</span>, default = <span class="bool-val">true</span>)]
+    </span><span class="kw">pub </span>skip_build_tools: bool,
 
     <span class="doccomment">/// ## pause {#root-pause}
     /// Controls target pause feature. Unstable.
@@ -1321,6 +1348,7 @@
                 namespace: <span class="prelude-val">Some</span>(<span class="string">&quot;default&quot;</span>.to_owned()),
             }),
             skip_processes: <span class="prelude-val">None</span>,
+            skip_build_tools: <span class="prelude-val">None</span>,
             agent: <span class="prelude-val">Some</span>(AgentFileConfig {
                 log_level: <span class="prelude-val">Some</span>(<span class="string">&quot;info&quot;</span>.to_owned()),
                 namespace: <span class="prelude-val">Some</span>(<span class="string">&quot;default&quot;</span>.to_owned()),

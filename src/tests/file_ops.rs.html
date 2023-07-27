@@ -263,7 +263,7 @@
             <span class="prelude-val">Some</span>(env),
         )
         .<span class="kw">await</span>;
-        <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>res = process.wait().<span class="kw">await</span>;
         <span class="macro">assert!</span>(res.success());
         ops.assert(process).<span class="kw">await</span>;
     }
@@ -292,7 +292,7 @@
             <span class="prelude-val">Some</span>(env),
         )
         .<span class="kw">await</span>;
-        <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>res = process.wait().<span class="kw">await</span>;
         <span class="macro">assert!</span>(res.success());
         process.assert_python_fileops_stderr().<span class="kw">await</span>;
     }
@@ -325,7 +325,7 @@
             <span class="prelude-val">None</span>,
         )
         .<span class="kw">await</span>;
-        <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>res = process.wait().<span class="kw">await</span>;
         <span class="macro">assert!</span>(res.success());
         process.assert_python_fileops_stderr().<span class="kw">await</span>;
     }
@@ -357,7 +357,7 @@
             <span class="prelude-val">None</span>,
         )
         .<span class="kw">await</span>;
-        <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>res = process.wait().<span class="kw">await</span>;
         <span class="macro">assert!</span>(res.success());
         process.assert_python_fileops_stderr().<span class="kw">await</span>;
     }
@@ -375,7 +375,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>process =
             run_exec_with_target(bash_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
 
-        <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>res = process.wait().<span class="kw">await</span>;
         <span class="macro">assert!</span>(res.success());
     }
 
@@ -393,7 +393,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>process =
             run_exec_with_target(bash_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
 
-        <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>res = process.wait().<span class="kw">await</span>;
         <span class="macro">assert!</span>(res.success());
     }
 
@@ -409,7 +409,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>process =
             run_exec_with_target(bash_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(args), <span class="prelude-val">None</span>).<span class="kw">await</span>;
 
-        <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>res = process.wait().<span class="kw">await</span>;
         <span class="macro">assert!</span>(res.success());
     }
 
@@ -444,7 +444,7 @@
             <span class="prelude-val">None</span>,
         )
         .<span class="kw">await</span>;
-        <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>res = process.wait().<span class="kw">await</span>;
         <span class="macro">assert!</span>(res.success());
     }
 }

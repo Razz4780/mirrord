@@ -1097,6 +1097,8 @@
 <a href="#1097" id="1097">1097</a>
 <a href="#1098" id="1098">1098</a>
 <a href="#1099" id="1099">1099</a>
+<a href="#1100" id="1100">1100</a>
+<a href="#1101" id="1101">1101</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(c_variadic)]
 #![feature(result_option_inspect)]
 #![feature(const_trait_impl)]
@@ -1411,11 +1413,13 @@
 
 <span class="doccomment">/// Loads mirrord configuration and applies [`nix_devbox_patch`] patches.
 </span><span class="kw">fn </span>layer_pre_initialization() -&gt; <span class="prelude-ty">Result</span>&lt;(), LayerError&gt; {
-    <span class="kw">let </span>args = std::env::args().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
-
-    <span class="kw">let </span>given_process = args
-        .first()
-        .and_then(|arg| arg.split(<span class="string">&#39;/&#39;</span>).last())
+    <span class="kw">let </span>given_process = std::env::current_exe()
+        .ok()
+        .and_then(|arg| {
+            arg.file_name()
+                .and_then(|os_str| os_str.to_str())
+                .map(String::from)
+        })
         .ok_or(LayerError::NoProcessFound)<span class="question-mark">?</span>;
 
     <span class="kw">let </span><span class="kw-2">mut </span>config = LayerConfig::from_env()<span class="question-mark">?</span>;
@@ -1444,7 +1448,7 @@
         }
     }
 
-    <span class="kw">match </span>load::load_type(given_process, config) {
+    <span class="kw">match </span>load::load_type(<span class="kw-2">&amp;</span>given_process, config) {
         LoadType::Full(config) =&gt; layer_start(<span class="kw-2">*</span>config),
         <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
         </span>LoadType::SIPOnly =&gt; sip_only_layer_start(patch_binaries),

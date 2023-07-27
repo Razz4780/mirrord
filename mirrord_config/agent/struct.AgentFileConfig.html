@@ -101,8 +101,11 @@ If nothing is disabled here, agent uses <code>NET_ADMIN</code>, <code>NET_RAW</c
 </div><span id="structfield.tolerations" class="structfield small-section-header"><a href="#structfield.tolerations" class="anchor field">§</a><code>tolerations: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;<a class="struct" href="../../k8s_openapi/v1_24/api/core/v1/toleration/struct.Toleration.html" title="struct k8s_openapi::v1_24::api::core::v1::toleration::Toleration">Toleration</a>&gt;&gt;</code></span><div class="docblock"><h5 id="agenttolerations-agent-tolerations"><a href="#agenttolerations-agent-tolerations">agent.tolerations {#agent-tolerations}</a></h5>
 <p>Set pod tolerations. (not with ephemeral agents)
 Default is</p>
-<div class="example-wrap"><pre class="language-yaml"><code>tolerations:
-- operator: Exists
+<div class="example-wrap"><pre class="language-json"><code>[
+  {
+    &quot;operator&quot;: &quot;Exists&quot;
+  }
+]
 </code></pre></div>
 <p>Set to an empty array to have no tolerations at all</p>
 </div><span id="structfield.test_error" class="structfield small-section-header"><a href="#structfield.test_error" class="anchor field">§</a><code>test_error: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>&gt;</code></span><div class="docblock"><!--${internal}-->

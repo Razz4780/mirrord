@@ -324,6 +324,11 @@
 <a href="#324" id="324">324</a>
 <a href="#325" id="325">325</a>
 <a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Internal proxy is accepting connection from local layers and forward it to agent
 //! while having 1:1 relationship - each layer connection is another agent connection.
 //!
@@ -337,8 +342,10 @@
 //! or let the [`OperatorApi`] handle the connection.
 
 </span><span class="kw">use </span>std::{
-    io::ErrorKind,
+    fs::File,
+    io::{stderr, stdout, ErrorKind},
     net::{Ipv4Addr, SocketAddrV4},
+    os::fd::{AsRawFd, FromRawFd},
     time::Duration,
 };
 
@@ -502,6 +509,9 @@
     <span class="kw">let </span>(agent_connection, <span class="kw">_</span>) = connect_and_ping(<span class="kw-2">&amp;</span>config).<span class="kw">await</span><span class="question-mark">?</span>;
     active_connections.spawn(connection_task(stream, agent_connection));
 
+    <span class="comment">// close stdout/err so we won&#39;t hold the terminal/pipe/caller (especially in tests)
+    </span>drop(<span class="kw">unsafe </span>{ File::from_raw_fd(stdout().as_raw_fd()) });
+    drop(<span class="kw">unsafe </span>{ File::from_raw_fd(stderr().as_raw_fd()) });
     <span class="kw">loop </span>{
         <span class="macro">tokio::select! </span>{
             res = listener.accept() =&gt; {

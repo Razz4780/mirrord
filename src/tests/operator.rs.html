@@ -168,7 +168,7 @@
             .stderr(Stdio::piped())
             .spawn()
             .unwrap();
-        <span class="kw">let </span><span class="kw-2">mut </span>validate = TestProcess::from_child(validate, temp_dir).<span class="kw">await</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>validate = TestProcess::from_child(validate, <span class="prelude-val">Some</span>(temp_dir)).<span class="kw">await</span>;
 
         <span class="kw">let </span><span class="kw-2">mut </span>stdin = validate.child.stdin.take().unwrap();
         stdin.write_all(stdout.as_bytes()).<span class="kw">await</span>.unwrap();
@@ -189,7 +189,7 @@
             .stderr(Stdio::piped())
             .spawn()
             .unwrap();
-        <span class="kw">let </span><span class="kw-2">mut </span>validate = TestProcess::from_child(validate, temp_dir).<span class="kw">await</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>validate = TestProcess::from_child(validate, <span class="prelude-val">Some</span>(temp_dir)).<span class="kw">await</span>;
 
         <span class="kw">let </span>res = validate.child.wait().<span class="kw">await</span>.unwrap();
         <span class="kw">let </span>stdout = validate.get_stdout().<span class="kw">await</span>;
@@ -206,7 +206,7 @@
     ) {
         <span class="kw">let </span><span class="kw-2">mut </span>process = run_mirrord(setup.command_args(), Default::default()).<span class="kw">await</span>;
 
-        <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>res = process.wait().<span class="kw">await</span>;
         <span class="kw">let </span>stdout = process.get_stdout().<span class="kw">await</span>;
 
         <span class="macro">assert!</span>(res.success());
@@ -236,7 +236,7 @@
 
         <span class="kw">let </span><span class="kw-2">mut </span>process = run_mirrord(args, Default::default()).<span class="kw">await</span>;
 
-        <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>res = process.wait().<span class="kw">await</span>;
         <span class="macro">assert!</span>(res.success());
 
         check_install_file_result(setup_file, temp_dir).<span class="kw">await</span>;

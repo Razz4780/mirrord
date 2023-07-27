@@ -111,8 +111,6 @@
 <a href="#111" id="111">111</a>
 <a href="#112" id="112">112</a>
 <a href="#113" id="113">113</a>
-<a href="#114" id="114">114</a>
-<a href="#115" id="115">115</a>
 </pre></div><pre class="rust"><code><span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>http {
 
@@ -174,10 +172,9 @@
         process
             .wait_for_line(Duration::from_secs(<span class="number">10</span>), <span class="string">&quot;DELETE&quot;</span>)
             .<span class="kw">await</span>;
-        timeout(Duration::from_secs(<span class="number">40</span>), process.child.wait())
+        timeout(Duration::from_secs(<span class="number">40</span>), process.wait())
             .<span class="kw">await
-            </span>.unwrap()
-            .unwrap();
+            </span>.unwrap();
 
         application.assert(<span class="kw-2">&amp;</span>process).<span class="kw">await</span>;
     }
@@ -220,10 +217,9 @@
         process
             .wait_for_line(Duration::from_secs(<span class="number">10</span>), <span class="string">&quot;DELETE&quot;</span>)
             .<span class="kw">await</span>;
-        timeout(Duration::from_secs(<span class="number">40</span>), process.child.wait())
+        timeout(Duration::from_secs(<span class="number">40</span>), process.wait())
             .<span class="kw">await
-            </span>.unwrap()
-            .unwrap();
+            </span>.unwrap();
 
         application.assert(<span class="kw-2">&amp;</span>process).<span class="kw">await</span>;
     }

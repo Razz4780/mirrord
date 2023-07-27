@@ -369,10 +369,13 @@ var sourcesIndex = JSON.parse('{\
 "serde_with":["",[["content",[],["de.rs","mod.rs","ser.rs"]],["de",[],["duplicates.rs","impls.rs","mod.rs"]],["duplicate_key_impls",[],["error_on_duplicate.rs","first_value_wins.rs","last_value_wins.rs","mod.rs"]],["ser",[],["duplicates.rs","impls.rs","mod.rs"]],["utils",[],["duration.rs"]]],["enum_map.rs","flatten_maybe.rs","formats.rs","key_value_map.rs","lib.rs","rust.rs","serde_conv.rs","utils.rs","with_prefix.rs"]],\
 "serde_xml_rs":["",[["de",[],["buffer.rs","map.rs","mod.rs","seq.rs","var.rs"]],["ser",[],["map.rs","mod.rs","plain.rs","seq.rs","tuple.rs"]]],["error.rs","lib.rs"]],\
 "serde_yaml":["",[["libyaml",[],["cstr.rs","emitter.rs","error.rs","mod.rs","parser.rs","tag.rs","util.rs"]],["value",[],["de.rs","debug.rs","from.rs","index.rs","mod.rs","partial_eq.rs","ser.rs","tagged.rs"]]],["de.rs","error.rs","lib.rs","loader.rs","mapping.rs","number.rs","path.rs","ser.rs","with.rs"]],\
+"serial_test":["",[],["code_lock.rs","lib.rs","parallel_code_lock.rs","rwlock.rs","serial_code_lock.rs"]],\
+"serial_test_derive":["",[],["lib.rs"]],\
 "sha1":["",[["compress",[],["soft.rs","x86.rs"]]],["compress.rs","lib.rs"]],\
 "sha2":["",[["sha256",[],["soft.rs","x86.rs"]],["sha512",[],["soft.rs","x86.rs"]]],["consts.rs","core_api.rs","lib.rs","sha256.rs","sha512.rs"]],\
 "sharded_slab":["",[["page",[],["mod.rs","slot.rs","stack.rs"]]],["cfg.rs","clear.rs","implementation.rs","iter.rs","lib.rs","macros.rs","pool.rs","shard.rs","sync.rs","tid.rs"]],\
 "shell_words":["",[],["lib.rs"]],\
+"shellexpand":["",[],["funcs.rs","lib.rs","strings.rs","wtraits.rs"]],\
 "signal_hook_registry":["",[],["half_lock.rs","lib.rs"]],\
 "signature":["",[],["encoding.rs","error.rs","hazmat.rs","keypair.rs","lib.rs","signer.rs","verifier.rs"]],\
 "simd_abstraction":["",[["arch",[],["x86.rs"]]],["ascii.rs","hex.rs","lib.rs","tools.rs","traits.rs"]],\
@@ -403,7 +406,7 @@ var sourcesIndex = JSON.parse('{\
 "termcolor":["",[],["lib.rs"]],\
 "terminal_size":["",[],["lib.rs","unix.rs"]],\
 "termspin":["",[],["ansi.rs","lib.rs","loops.rs","spinner.rs","util.rs"]],\
-"tests":["",[["traffic",[],["steal.rs"]]],["env.rs","file_ops.rs","http.rs","lib.rs","operator.rs","pause.rs","target.rs","targetless.rs","traffic.rs"]],\
+"tests":["",[["traffic",[],["steal.rs"]]],["env.rs","file_ops.rs","http.rs","lib.rs","operator.rs","pause.rs","target.rs","targetless.rs","traffic.rs","utils.rs"]],\
 "textwrap":["",[["wrap_algorithms",[],["optimal_fit.rs"]]],["core.rs","indentation.rs","lib.rs","word_separators.rs","word_splitters.rs","wrap_algorithms.rs"]],\
 "thiserror":["",[],["aserror.rs","display.rs","lib.rs","provide.rs"]],\
 "thiserror_impl":["",[],["ast.rs","attr.rs","expand.rs","fmt.rs","generics.rs","lib.rs","prop.rs","valid.rs"]],\
@@ -430,7 +433,6 @@ var sourcesIndex = JSON.parse('{\
 "tower_layer":["",[],["identity.rs","layer_fn.rs","lib.rs","stack.rs","tuple.rs"]],\
 "tower_service":["",[],["lib.rs"]],\
 "tracing":["",[],["dispatcher.rs","field.rs","instrument.rs","level_filters.rs","lib.rs","macros.rs","span.rs","stdlib.rs","subscriber.rs"]],\
-"tracing_appender":["",[["rolling",[],["builder.rs"]]],["lib.rs","non_blocking.rs","rolling.rs","sync.rs","worker.rs"]],\
 "tracing_attributes":["",[],["attr.rs","expand.rs","lib.rs"]],\
 "tracing_core":["",[],["callsite.rs","dispatcher.rs","event.rs","field.rs","lazy.rs","lib.rs","metadata.rs","parent.rs","span.rs","stdlib.rs","subscriber.rs"]],\
 "tracing_log":["",[],["lib.rs","log_tracer.rs"]],\

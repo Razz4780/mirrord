@@ -279,6 +279,9 @@
 <a href="#279" id="279">279</a>
 <a href="#280" id="280">280</a>
 <a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::collections::HashMap;
 
 <span class="kw">use </span>k8s_openapi::api::core::v1::Toleration;
@@ -484,9 +487,12 @@
     ///
     /// Set pod tolerations. (not with ephemeral agents)
     /// Default is
-    /// ```yaml
-    /// tolerations:
-    /// - operator: Exists
+    /// ```json
+    /// [
+    ///   {
+    ///     &quot;operator&quot;: &quot;Exists&quot;
+    ///   }
+    /// ]
     /// ```
     ///
     /// Set to an empty array to have no tolerations at all

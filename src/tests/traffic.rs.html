@@ -420,7 +420,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>process =
             run_exec_with_target(node_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
 
-        <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>res = process.wait().<span class="kw">await</span>;
         <span class="macro">assert!</span>(res.success());
     }
 
@@ -436,7 +436,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>process =
             run_exec_with_target(node_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
 
-        <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>res = process.wait().<span class="kw">await</span>;
         <span class="macro">assert!</span>(res.success());
     }
 
@@ -454,7 +454,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>process =
             run_exec_with_target(node_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
 
-        <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>res = process.wait().<span class="kw">await</span>;
         <span class="macro">assert!</span>(res.success());
     }
 
@@ -470,7 +470,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>process =
             run_exec_with_target(node_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
 
-        <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>res = process.wait().<span class="kw">await</span>;
         <span class="macro">assert!</span>(res.success());
     }
 
@@ -492,7 +492,7 @@
         )
         .<span class="kw">await</span>;
 
-        <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>res = process.wait().<span class="kw">await</span>;
         <span class="macro">assert!</span>(res.success());
     }
 
@@ -506,7 +506,7 @@
         ];
         <span class="kw">let </span><span class="kw-2">mut </span>process =
             run_exec_with_target(node_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
-        <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>res = process.wait().<span class="kw">await</span>;
         <span class="macro">assert!</span>(res.success());
     }
 
@@ -520,7 +520,7 @@
         ];
         <span class="kw">let </span><span class="kw-2">mut </span>process =
             run_exec_with_target(node_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
-        <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>res = process.wait().<span class="kw">await</span>;
         <span class="macro">assert!</span>(res.success());
     }
 
@@ -570,7 +570,7 @@
             <span class="prelude-val">None</span>,
         )
         .<span class="kw">await</span>;
-        <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>res = process.wait().<span class="kw">await</span>;
         <span class="macro">assert!</span>(!res.success()); <span class="comment">// Should fail because local process cannot reach service.
         </span><span class="kw">let </span>stripped_target = internal_service.target.split(<span class="string">&#39;/&#39;</span>).collect::&lt;Vec&lt;<span class="kw-2">&amp;</span>str&gt;&gt;()[<span class="number">1</span>];
         <span class="kw">let </span>logs = pod_api.logs(stripped_target, <span class="kw-2">&amp;</span>lp).<span class="kw">await</span>;
@@ -585,7 +585,7 @@
             <span class="prelude-val">None</span>,
         )
         .<span class="kw">await</span>;
-        <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>res = process.wait().<span class="kw">await</span>;
         <span class="macro">assert!</span>(res.success());
 
         <span class="comment">// Verify that the UDP message sent by the application reached the internal service.
@@ -641,14 +641,14 @@
         <span class="macro">assert_eq!</span>(amt, <span class="number">27</span>);
         <span class="macro">assert_eq!</span>(buf, <span class="string">&quot;Can I pass the test please?&quot;</span>.as_ref()); <span class="comment">// Sure you can.
 
-        </span><span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
+        </span><span class="kw">let </span>res = process.wait().<span class="kw">await</span>;
         <span class="macro">assert!</span>(res.success());
     }
 
     <span class="kw">pub async fn </span>test_go(service: <span class="kw">impl </span>Future&lt;Output = KubeService&gt;, command: Vec&lt;<span class="kw-2">&amp;</span>str&gt;) {
         <span class="kw">let </span>service = service.<span class="kw">await</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec_with_target(command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
-        <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>res = process.wait().<span class="kw">await</span>;
         <span class="macro">assert!</span>(res.success());
     }
 
@@ -705,7 +705,7 @@
         <span class="kw">let </span>node_command = <span class="macro">vec!</span>[<span class="string">&quot;node&quot;</span>, <span class="string">&quot;node-e2e/listen/test_listen_localhost.mjs&quot;</span>];
         <span class="kw">let </span><span class="kw-2">mut </span>process =
             run_exec_with_target(node_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
-        <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>res = process.wait().<span class="kw">await</span>;
         <span class="macro">assert!</span>(res.success());
     }
 
@@ -718,7 +718,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>process =
             run_exec_with_target(node_command, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
 
-        <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>res = process.wait().<span class="kw">await</span>;
         <span class="macro">assert!</span>(res.success());
     }
 
@@ -755,7 +755,7 @@
             <span class="string">&quot;/app/unix-socket-server.sock&quot;</span>,
         )]);
         <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec_with_target(executable, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, env).<span class="kw">await</span>;
-        <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>res = process.wait().<span class="kw">await</span>;
 
         <span class="comment">// The test application panics if it does not successfully connect to the socket, send data,
         // and get the same data back. So if it exits with success everything worked.
@@ -777,7 +777,7 @@
         <span class="kw">let </span>executable = <span class="macro">vec!</span>[app_path.as_str()];
 
         <span class="kw">let </span><span class="kw-2">mut </span>process = run_exec_with_target(executable, <span class="kw-2">&amp;</span>service.target, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>).<span class="kw">await</span>;
-        <span class="kw">let </span>res = process.child.wait().<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>res = process.wait().<span class="kw">await</span>;
 
         <span class="comment">// The test application panics if it does not successfully connect to the socket, send data,
         // and get the same data back. So if it exits with success everything worked.

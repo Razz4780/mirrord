@@ -180,8 +180,15 @@
 <a href="#180" id="180">180</a>
 <a href="#181" id="181">181</a>
 <a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
 </pre></div><pre class="rust"><code><span class="attr">#[cfg(test)]
 
+</span><span class="doccomment">/// The pause tests use predefined resource names (service/deployment), so they can&#39;t be run at the
+/// same time. We use `serial_test` to run them one after the other.
 </span><span class="kw">mod </span>pause {
     <span class="kw">use </span>std::time::Duration;
 
@@ -193,6 +200,7 @@
         Api, Client, ResourceExt,
     };
     <span class="kw">use </span>rstest::<span class="kw-2">*</span>;
+    <span class="kw">use </span>serial_test::serial;
 
     <span class="kw">use </span><span class="kw">crate</span>::utils::{
         get_service_url, http_log_requester_service, http_logger_service, kube_client,
@@ -226,6 +234,7 @@
     </span><span class="attr">#[rstest]
     #[tokio::test(flavor = <span class="string">&quot;multi_thread&quot;</span>, worker_threads = <span class="number">2</span>)]
     #[timeout(Duration::from_secs(<span class="number">240</span>))]
+    #[serial]
     </span><span class="kw">pub async fn </span>pause_log_requests(
         <span class="attr">#[future] </span>http_logger_service: KubeService,
         <span class="attr">#[future] </span>http_log_requester_service: KubeService,
@@ -316,6 +325,7 @@
     </span><span class="attr">#[rstest]
     #[tokio::test(flavor = <span class="string">&quot;multi_thread&quot;</span>, worker_threads = <span class="number">2</span>)]
     #[timeout(Duration::from_secs(<span class="number">60</span>))]
+    #[serial]
     </span><span class="kw">pub async fn </span>unpause_after_error(
         <span class="attr">#[future] </span>random_namespace_self_deleting_service: KubeService,
         <span class="attr">#[future] </span>kube_client: Client,
