@@ -286,6 +286,10 @@
 <a href="#286" id="286">286</a>
 <a href="#287" id="287">287</a>
 <a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
 </pre></div><pre class="rust"><code><span class="attr">#![deny(missing_docs)]
 
 </span><span class="kw">use </span>std::path::PathBuf;
@@ -467,6 +471,10 @@ Join our Discord server at https://discord.gg/metalbear, create a GitHub issue a
     <span class="doccomment">/// Load config from config file
     </span><span class="attr">#[arg(short = <span class="string">&#39;f&#39;</span>, long)]
     </span><span class="kw">pub </span>config_file: <span class="prelude-ty">Option</span>&lt;PathBuf&gt;,
+
+    <span class="doccomment">/// Kube context to use from Kubeconfig
+    </span><span class="attr">#[arg(long)]
+    </span><span class="kw">pub </span>context: <span class="prelude-ty">Option</span>&lt;String&gt;,
 }
 
 <span class="attr">#[derive(Args, Debug)]

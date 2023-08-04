@@ -371,6 +371,7 @@
 <a href="#371" id="371">371</a>
 <a href="#372" id="372">372</a>
 <a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>base64::{engine::general_purpose, Engine <span class="kw">as _</span>};
 <span class="kw">use </span>futures::{SinkExt, StreamExt};
 <span class="kw">use </span>http::request::Request;
@@ -546,6 +547,7 @@
         <span class="kw">let </span>client = create_kube_api(
             config.accept_invalid_certificates,
             config.kubeconfig.clone(),
+            config.kube_context.clone(),
         )
         .<span class="kw">await</span><span class="question-mark">?</span>;
 

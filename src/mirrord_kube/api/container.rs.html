@@ -441,6 +441,14 @@
 <a href="#441" id="441">441</a>
 <a href="#442" id="442">442</a>
 <a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
+<a href="#447" id="447">447</a>
+<a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
+<a href="#450" id="450">450</a>
+<a href="#451" id="451">451</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{collections::HashSet, sync::LazyLock};
 
 <span class="kw">use </span>futures::{AsyncBufReadExt, StreamExt, TryStreamExt};
@@ -496,8 +504,16 @@
         </span>P: Progress + Send + Sync;
 }
 
-<span class="kw">pub static </span>SKIP_NAMES: LazyLock&lt;HashSet&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str&gt;&gt; =
-    LazyLock::new(|| HashSet::from([<span class="string">&quot;istio-proxy&quot;</span>, <span class="string">&quot;linkerd-proxy&quot;</span>, <span class="string">&quot;proxy-init&quot;</span>, <span class="string">&quot;istio-init&quot;</span>]));
+<span class="kw">pub static </span>SKIP_NAMES: LazyLock&lt;HashSet&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str&gt;&gt; = LazyLock::new(|| {
+    HashSet::from([
+        <span class="string">&quot;istio-proxy&quot;</span>,
+        <span class="string">&quot;istio-init&quot;</span>,
+        <span class="string">&quot;linkerd-proxy&quot;</span>,
+        <span class="string">&quot;linkerd-init&quot;</span>,
+        <span class="string">&quot;vault-agent&quot;</span>,
+        <span class="string">&quot;vault-agent-init&quot;</span>,
+    ])
+});
 
 <span class="kw">static </span>DEFAULT_TOLERATIONS: LazyLock&lt;Vec&lt;Toleration&gt;&gt; = LazyLock::new(|| {
     <span class="macro">vec!</span>[Toleration {

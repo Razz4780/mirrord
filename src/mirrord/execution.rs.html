@@ -224,6 +224,15 @@
 <a href="#224" id="224">224</a>
 <a href="#225" id="225">225</a>
 <a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     collections::{HashMap, HashSet},
     time::Duration,
@@ -342,6 +351,7 @@
         </span>proxy_command
             .arg(<span class="string">&quot;intproxy&quot;</span>)
             .stdout(std::process::Stdio::piped())
+            .stderr(std::process::Stdio::null())
             .stdin(std::process::Stdio::null());
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(timeout) = timeout {
@@ -383,6 +393,14 @@
         </span>env_vars.insert(
             <span class="string">&quot;MIRRORD_CONNECT_TCP&quot;</span>.to_string(),
             <span class="macro">format!</span>(<span class="string">&quot;127.0.0.1:{port}&quot;</span>),
+        );
+
+        <span class="comment">// Fix https://github.com/metalbear-co/mirrord/issues/1745
+        // by disabling the fork safety check in the Objective-C runtime.
+        </span><span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
+        </span>env_vars.insert(
+            <span class="string">&quot;OBJC_DISABLE_INITIALIZE_FORK_SAFETY&quot;</span>.to_string(),
+            <span class="string">&quot;YES&quot;</span>.to_string(),
         );
 
         <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]

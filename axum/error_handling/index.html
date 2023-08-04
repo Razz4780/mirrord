@@ -28,6 +28,13 @@ through <code>StatusCode</code>’s <a href="../response/trait.IntoResponse.html
 <p>It doesn’t matter whether you return <code>Err(StatusCode::NOT_FOUND)</code> or
 <code>Err(StatusCode::INTERNAL_SERVER_ERROR)</code>. These are not considered errors in
 axum.</p>
+<p>Instead of a direct <code>StatusCode</code>, it makes sense to use intermediate error type
+that can ultimately be converted to <code>Response</code>. This allows using <code>?</code> operator
+in handlers. See those examples:</p>
+<ul>
+<li><a href="https://github.com/tokio-rs/axum/blob/main/examples/anyhow-error-response/src/main.rs"><code>anyhow-error-response</code></a> for generic boxed errors</li>
+<li><a href="https://github.com/tokio-rs/axum/blob/main/examples/error-handling-and-dependency-injection/src/main.rs"><code>error-handling-and-dependency-injection</code></a> for application-specific detailed errors</li>
+</ul>
 <p>This also applies to extractors. If an extractor doesn’t match the request the
 request will be rejected and a response will be returned without calling your
 handler. See <a href="../extract/index.html" title="mod axum::extract"><code>extract</code></a> to learn more about handling extractor

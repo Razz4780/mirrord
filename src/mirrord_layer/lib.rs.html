@@ -1096,9 +1096,6 @@
 <a href="#1096" id="1096">1096</a>
 <a href="#1097" id="1097">1097</a>
 <a href="#1098" id="1098">1098</a>
-<a href="#1099" id="1099">1099</a>
-<a href="#1100" id="1100">1100</a>
-<a href="#1101" id="1101">1101</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(c_variadic)]
 #![feature(result_option_inspect)]
 #![feature(const_trait_impl)]
@@ -1114,6 +1111,7 @@
 #![feature(pointer_byte_offsets)]
 #![feature(lazy_cell)]
 #![feature(async_fn_in_trait)]
+#![feature(once_cell_try)]
 #![allow(rustdoc::private_intra_doc_links)]
 #![allow(incomplete_features)]
 #![warn(clippy::indexing_slicing)]
@@ -1175,6 +1173,7 @@
 
 <span class="kw">use </span>std::{
     collections::{HashSet, VecDeque},
+    ffi::OsString,
     mem,
     net::SocketAddr,
     panic,
@@ -1195,7 +1194,6 @@
         network::{incoming::IncomingConfig, NetworkConfig},
         FeatureConfig,
     },
-    util::VecOrSingle,
     LayerConfig,
 };
 <span class="kw">use </span>mirrord_layer_macro::{hook_fn, hook_guard_fn};
@@ -1246,8 +1244,11 @@
 <span class="kw">mod </span>tcp_mirror;
 <span class="kw">mod </span>tcp_steal;
 
-<span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
-#[cfg(target_arch = <span class="string">&quot;x86_64&quot;</span>)]
+<span class="attr">#[cfg(all(target_arch = <span class="string">&quot;x86_64&quot;</span>, target_os = <span class="string">&quot;linux&quot;</span>))]
+#[cfg_attr(
+    all(target_os = <span class="string">&quot;linux&quot;</span>, target_arch = <span class="string">&quot;x86_64&quot;</span>),
+    path = <span class="string">&quot;go/linux_x64.rs&quot;
+</span>)]
 </span><span class="kw">mod </span>go_hooks;
 
 <span class="kw">fn </span>build_runtime() -&gt; Runtime {
@@ -1373,35 +1374,17 @@
 <span class="doccomment">/// Mapping of ports to use for binding local sockets created by us for intercepting.
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">static </span>LISTEN_PORTS: OnceLock&lt;BiMap&lt;u16, u16&gt;&gt; = OnceLock::new();
 
-<span class="doccomment">/// Check if we&#39;re running in NixOS or Devbox.
-///
-/// - If so, add `sh` to the skip list because of
-/// [#531](https://github.com/metalbear-co/mirrord/issues/531)
-</span><span class="kw">fn </span>nix_devbox_patch(config: <span class="kw-2">&amp;mut </span>LayerConfig) {
-    <span class="kw">let </span><span class="kw-2">mut </span>current_skip = config
-        .skip_processes
-        .clone()
-        .map(VecOrSingle::to_vec)
-        .unwrap_or_default();
+<span class="comment">// The following statics are to avoid using CoreFoundation or high level macOS APIs
+// that aren&#39;t safe to use after fork.
 
-    <span class="kw">if </span>is_nix_or_devbox() &amp;&amp; !current_skip.contains(<span class="kw-2">&amp;</span><span class="string">&quot;sh&quot;</span>.to_string()) {
-        current_skip.push(<span class="string">&quot;sh&quot;</span>.into());
-        std::env::set_var(<span class="string">&quot;MIRRORD_SKIP_PROCESSES&quot;</span>, current_skip.join(<span class="string">&quot;;&quot;</span>));
-        config.skip_processes = <span class="prelude-val">Some</span>(VecOrSingle::Multiple(current_skip));
-    }
-}
+</span><span class="doccomment">/// Executable we&#39;re loaded to
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">static </span>EXECUTABLE_NAME: OnceLock&lt;String&gt; = OnceLock::new();
 
-<span class="doccomment">/// Check if NixOS or Devbox by discrimnating env vars.
-</span><span class="kw">fn </span>is_nix_or_devbox() -&gt; bool {
-    <span class="kw">if let </span><span class="prelude-val">Ok</span>(res) = std::env::var(<span class="string">&quot;IN_NIX_SHELL&quot;</span>) &amp;&amp; res.as_str() == <span class="string">&quot;1&quot; </span>{
-        <span class="bool-val">true
-    </span>}
-    <span class="kw">else if let </span><span class="prelude-val">Ok</span>(res) = std::env::var(<span class="string">&quot;DEVBOX_SHELL_ENABLED&quot;</span>) &amp;&amp; res.as_str() == <span class="string">&quot;1&quot; </span>{
-        <span class="bool-val">true
-    </span>} <span class="kw">else </span>{
-        <span class="bool-val">false
-    </span>}
-}
+<span class="doccomment">/// Executable path we&#39;re loaded to
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">static </span>EXECUTABLE_PATH: OnceLock&lt;String&gt; = OnceLock::new();
+
+<span class="doccomment">/// Program arguments
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">static </span>EXECUTABLE_ARGS: OnceLock&lt;Vec&lt;OsString&gt;&gt; = OnceLock::new();
 
 <span class="doccomment">/// Prevent mirrord from connecting to ports used by the IDE debugger
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>is_debugger_port(addr: <span class="kw-2">&amp;</span>SocketAddr) -&gt; bool {
@@ -1411,20 +1394,24 @@
         .contains(addr)
 }
 
-<span class="doccomment">/// Loads mirrord configuration and applies [`nix_devbox_patch`] patches.
+<span class="doccomment">/// Loads mirrord configuration and does some patching (SIP, dotnet, etc)
 </span><span class="kw">fn </span>layer_pre_initialization() -&gt; <span class="prelude-ty">Result</span>&lt;(), LayerError&gt; {
-    <span class="kw">let </span>given_process = std::env::current_exe()
-        .ok()
-        .and_then(|arg| {
-            arg.file_name()
-                .and_then(|os_str| os_str.to_str())
-                .map(String::from)
-        })
-        .ok_or(LayerError::NoProcessFound)<span class="question-mark">?</span>;
+    <span class="kw">let </span>given_process = EXECUTABLE_NAME.get_or_try_init(|| {
+        std::env::current_exe()
+            .ok()
+            .and_then(|arg| {
+                arg.file_name()
+                    .and_then(|os_str| os_str.to_str())
+                    .map(String::from)
+            })
+            .ok_or(LayerError::NoProcessFound)
+    })<span class="question-mark">?</span>;
 
-    <span class="kw">let </span><span class="kw-2">mut </span>config = LayerConfig::from_env()<span class="question-mark">?</span>;
-
-    nix_devbox_patch(<span class="kw-2">&amp;mut </span>config);
+    EXECUTABLE_PATH.get_or_try_init(|| {
+        std::env::current_exe().map(|arg| arg.to_string_lossy().into_owned())
+    })<span class="question-mark">?</span>;
+    EXECUTABLE_ARGS.get_or_init(|| std::env::args_os().collect());
+    <span class="kw">let </span>config = LayerConfig::from_env()<span class="question-mark">?</span>;
 
     <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
     </span><span class="kw">let </span>patch_binaries = config
@@ -1437,18 +1424,22 @@
     // for https://github.com/metalbear-co/mirrord/issues/1529
     </span><span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
     </span><span class="kw">if </span>given_process.ends_with(<span class="string">&quot;dotnet&quot;</span>) {
-        <span class="kw">if let </span><span class="prelude-val">Ok</span>(path) = std::env::current_exe() {
-            <span class="kw">if let </span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(binary)) =
-                mirrord_sip::sip_patch(path.to_str().unwrap(), <span class="kw-2">&amp;</span>patch_binaries)
-            {
-                <span class="kw">let </span>err = exec::execvp(binary, std::env::args());
-                <span class="macro">error!</span>(<span class="string">&quot;Couldn&#39;t execute {:?}&quot;</span>, err);
-                <span class="kw">return </span><span class="prelude-val">Err</span>(LayerError::ExecFailed(err));
-            }
+        <span class="kw">let </span>path = EXECUTABLE_PATH
+            .get()
+            .expect(<span class="string">&quot;EXECUTABLE_PATH needs to be set!&quot;</span>);
+        <span class="kw">if let </span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(binary)) = mirrord_sip::sip_patch(path, <span class="kw-2">&amp;</span>patch_binaries) {
+            <span class="kw">let </span>err = exec::execvp(
+                binary,
+                EXECUTABLE_ARGS
+                    .get()
+                    .expect(<span class="string">&quot;EXECUTABLE_ARGS needs to be set!&quot;</span>),
+            );
+            <span class="macro">error!</span>(<span class="string">&quot;Couldn&#39;t execute {:?}&quot;</span>, err);
+            <span class="kw">return </span><span class="prelude-val">Err</span>(LayerError::ExecFailed(err));
         }
     }
 
-    <span class="kw">match </span>load::load_type(<span class="kw-2">&amp;</span>given_process, config) {
+    <span class="kw">match </span>load::load_type(given_process, config) {
         LoadType::Full(config) =&gt; layer_start(<span class="kw-2">*</span>config),
         <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
         </span>LoadType::SIPOnly =&gt; sip_only_layer_start(patch_binaries),
@@ -1620,11 +1611,13 @@
     <span class="macro">info!</span>(<span class="string">&quot;Initializing mirrord-layer!&quot;</span>);
     <span class="macro">trace!</span>(
         <span class="string">&quot;Loaded into executable: {}, on pid {}, with args: {:?}&quot;</span>,
-        std::env::current_exe()
-            .map(|path| path.to_string_lossy().to_string())
-            .unwrap_or_default(),
+        EXECUTABLE_PATH
+            .get()
+            .expect(<span class="string">&quot;EXECUTABLE_PATH should be set!&quot;</span>),
         std::process::id(),
-        std::env::args()
+        EXECUTABLE_ARGS
+            .get()
+            .expect(<span class="string">&quot;EXECUTABLE_ARGS needs to be set!&quot;</span>)
     );
 
     <span class="kw">let </span>address = config
@@ -2095,8 +2088,7 @@
         <span class="kw">unsafe </span>{ file::hooks::enable_file_hooks(<span class="kw-2">&amp;mut </span>hook_manager) };
     }
 
-    <span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
-    #[cfg(target_arch = <span class="string">&quot;x86_64&quot;</span>)]
+    <span class="attr">#[cfg(all(target_arch = <span class="string">&quot;x86_64&quot;</span>, target_os = <span class="string">&quot;linux&quot;</span>))]
     </span>{
         go_hooks::enable_hooks(<span class="kw-2">&amp;mut </span>hook_manager);
     }
@@ -2146,6 +2138,8 @@
 }
 
 <span class="doccomment">/// Hook for `libc::fork`.
+///
+/// on macOS, be wary what we do in this path as we might trigger https://github.com/metalbear-co/mirrord/issues/1745
 </span><span class="attr">#[hook_guard_fn]
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>fork_detour() -&gt; pid_t {
     <span class="macro">debug!</span>(<span class="string">&quot;Process {} forking!.&quot;</span>, std::process::id());

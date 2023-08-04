@@ -447,7 +447,6 @@
 <a href="#447" id="447">447</a>
 <a href="#448" id="448">448</a>
 <a href="#449" id="449">449</a>
-<a href="#450" id="450">450</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(let_chains)]
 #![feature(lazy_cell)]
 #![feature(result_option_inspect)]
@@ -593,6 +592,10 @@
 
     <span class="kw">if </span>args.no_outgoing || args.no_udp_outgoing {
         std::env::set_var(<span class="string">&quot;MIRRORD_UDP_OUTGOING&quot;</span>, <span class="string">&quot;false&quot;</span>);
+    }
+
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(context) = <span class="kw-2">&amp;</span>args.context {
+        std::env::set_var(<span class="string">&quot;MIRRORD_KUBE_CONTEXT&quot;</span>, context);
     }
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(config_file) = <span class="kw-2">&amp;</span>args.config_file {
@@ -749,19 +752,20 @@
 ///  &quot;pod/py-serv-deployment-5c57fbdc98-pdbn4/container/py-serv&quot;,
 /// ]```
 </span><span class="kw">async fn </span>print_pod_targets(args: <span class="kw-2">&amp;</span>ListTargetArgs) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-    <span class="kw">let </span>(accept_invalid_certificates, kubeconfig, namespace) =
+    <span class="kw">let </span>(accept_invalid_certificates, kubeconfig, namespace, kube_context) =
         <span class="kw">if let </span><span class="prelude-val">Some</span>(config) = <span class="kw-2">&amp;</span>args.config_file {
             <span class="kw">let </span>layer_config = LayerFileConfig::from_path(config)<span class="question-mark">?</span>.generate_config()<span class="question-mark">?</span>;
             (
                 layer_config.accept_invalid_certificates,
                 layer_config.kubeconfig,
                 layer_config.target.namespace,
+                layer_config.kube_context,
             )
         } <span class="kw">else </span>{
-            (<span class="bool-val">false</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)
+            (<span class="bool-val">false</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)
         };
 
-    <span class="kw">let </span>client = create_kube_api(accept_invalid_certificates, kubeconfig)
+    <span class="kw">let </span>client = create_kube_api(accept_invalid_certificates, kubeconfig, kube_context)
         .<span class="kw">await
         </span>.map_err(CliError::KubernetesApiFailed)<span class="question-mark">?</span>;
 
@@ -859,12 +863,6 @@
             mirrord_progress::init_from_env(ProgressMode::Json);
             <span class="kw">let _ </span>= miette::set_hook(Box::new(|<span class="kw">_</span>| Box::new(JSONReportHandler::new())));
             <span class="bool-val">true
-        </span>}
-        Commands::InternalProxy(<span class="kw">_</span>) =&gt; {
-            <span class="comment">// Don&#39;t setup logs in case of internal proxy, because it&#39;s an orphan proces
-            // and we need to close stderr/stdout (in case caller waits for stdout/err to close),
-            // if we enable tracing it&#39;d crash on writing to stderr/out.
-            </span><span class="bool-val">true
         </span>}
         <span class="kw">_ </span>=&gt; <span class="bool-val">false</span>,
     }

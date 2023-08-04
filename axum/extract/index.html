@@ -303,13 +303,16 @@ methods from <a href="https://doc.rust-lang.org/nightly/core/error/trait.Error.h
     }
 }
 
-<span class="comment">// attempt to extract the inner `serde_json::Error`, if that succeeds we can
-// provide a more specific error
+<span class="comment">// attempt to extract the inner `serde_path_to_error::Error&lt;serde_json::Error&gt;`,
+// if that succeeds we can provide a more specific error.
+//
+// `Json` uses `serde_path_to_error` so the error will be wrapped in `serde_path_to_error::Error`.
 </span><span class="kw">fn </span>serde_json_error_response&lt;E&gt;(err: E) -&gt; (StatusCode, String)
 <span class="kw">where
     </span>E: Error + <span class="lifetime">&#39;static</span>,
 {
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(serde_json_err) = find_error_source::&lt;serde_json::Error&gt;(<span class="kw-2">&amp;</span>err) {
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(err) = find_error_source::&lt;serde_path_to_error::Error&lt;serde_json::Error&gt;&gt;(<span class="kw-2">&amp;</span>err) {
+        <span class="kw">let </span>serde_json_err = err.inner();
         (
             StatusCode::BAD_REQUEST,
             <span class="macro">format!</span>(

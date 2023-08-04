@@ -743,6 +743,23 @@
 <a href="#743" id="743">743</a>
 <a href="#744" id="744">744</a>
 <a href="#745" id="745">745</a>
+<a href="#746" id="746">746</a>
+<a href="#747" id="747">747</a>
+<a href="#748" id="748">748</a>
+<a href="#749" id="749">749</a>
+<a href="#750" id="750">750</a>
+<a href="#751" id="751">751</a>
+<a href="#752" id="752">752</a>
+<a href="#753" id="753">753</a>
+<a href="#754" id="754">754</a>
+<a href="#755" id="755">755</a>
+<a href="#756" id="756">756</a>
+<a href="#757" id="757">757</a>
+<a href="#758" id="758">758</a>
+<a href="#759" id="759">759</a>
+<a href="#760" id="760">760</a>
+<a href="#761" id="761">761</a>
+<a href="#762" id="762">762</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(slice_concat_trait)]
 #![feature(lazy_cell)]
 #![feature(result_option_inspect)]
@@ -809,6 +826,8 @@
 ///
 /// ### Complete `config.json` {#root-complete}
 ///
+///  Don&#39;t use this example as a starting point, it&#39;s just here to show you all the available
+/// options.
 /// ```json
 /// {
 ///   &quot;accept_invalid_certificates&quot;: false,
@@ -873,7 +892,8 @@
 ///   &quot;operator&quot;: true,
 ///   &quot;kubeconfig&quot;: &quot;~/.kube/config&quot;,
 ///   &quot;sip_binaries&quot;: &quot;bash&quot;,
-///   &quot;telemetry&quot;: true
+///   &quot;telemetry&quot;: true,
+///   &quot;kube_context&quot;: &quot;my-cluster&quot;
 /// }
 /// ```
 ///
@@ -1032,6 +1052,19 @@
     /// [For more information](https://github.com/metalbear-co/mirrord/blob/main/TELEMETRY.md)
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_TELEMETRY&quot;</span>, default = <span class="bool-val">true</span>)]
     </span><span class="kw">pub </span>telemetry: bool,
+
+    <span class="doccomment">/// ## kube_context {#root-kube_context}
+    ///
+    /// Kube context to use from the kubeconfig file.
+    /// Will use current context if not specified.
+    ///
+    /// ```json
+    /// {
+    ///  &quot;kube_context&quot;: &quot;mycluster&quot;
+    /// }
+    /// ```
+    </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_KUBE_CONTEXT&quot;</span>)]
+    </span><span class="kw">pub </span>kube_context: <span class="prelude-ty">Option</span>&lt;String&gt;,
 }
 
 <span class="kw">impl </span>LayerConfig {
@@ -1394,6 +1427,7 @@
             connect_tcp: <span class="prelude-val">None</span>,
             operator: <span class="prelude-val">None</span>,
             sip_binaries: <span class="prelude-val">None</span>,
+            kube_context: <span class="prelude-val">None</span>,
         };
 
         <span class="macro">assert_eq!</span>(config, expect);

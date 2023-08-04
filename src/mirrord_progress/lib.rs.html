@@ -346,6 +346,14 @@
 <a href="#346" id="346">346</a>
 <a href="#347" id="347">347</a>
 <a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
 </pre></div><pre class="rust"><code><span class="attr">#![warn(clippy::indexing_slicing)]
 
 </span><span class="kw">use </span>std::{
@@ -384,6 +392,7 @@
     Success,
     Failure,
     Warning,
+    CliOnly,
 }
 
 <span class="doccomment">/// Initialize progress reporting based on the [`MIRRORD_PROGRESS_ENV`]
@@ -645,6 +654,7 @@
                     MessageKind::Success =&gt; <span class="string">&#39;✓&#39;</span>,
                     MessageKind::Failure =&gt; <span class="string">&#39;x&#39;</span>,
                     MessageKind::Warning =&gt; <span class="string">&#39;!&#39;</span>,
+                    MessageKind::CliOnly =&gt; <span class="string">&#39;#&#39;</span>,
                 };
 
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(msg) = msg {
@@ -660,18 +670,24 @@
                 }
             }
             ProgressMode::Json =&gt; {
-                <span class="kw">let </span>message = <span class="kw">if </span>kind == MessageKind::Warning {
-                    ProgressMessage::Warning(WarningMessage {
-                        message: msg.unwrap().to_string(),
-                    })
-                } <span class="kw">else </span>{
-                    ProgressMessage::FinishedTask(FinishedTaskMessage {
-                        name: <span class="self">self</span>.name.clone(),
-                        success: kind == MessageKind::Success,
-                        message: msg.map(|s| s.to_string()),
-                    })
-                };
-                message.print();
+                <span class="kw">match </span>kind {
+                    MessageKind::Warning =&gt; {
+                        <span class="kw">let </span>message = ProgressMessage::Warning(WarningMessage {
+                            message: msg.unwrap().to_string(),
+                        });
+                        message.print();
+                    }
+                    MessageKind::Success | MessageKind::Failure =&gt; {
+                        <span class="kw">let </span>message = ProgressMessage::FinishedTask(FinishedTaskMessage {
+                            name: <span class="self">self</span>.name.clone(),
+                            success: kind == MessageKind::Success,
+                            message: msg.map(|s| s.to_string()),
+                        });
+                        message.print();
+                    }
+                    <span class="comment">// ignore cli only messages
+                    </span>MessageKind::CliOnly =&gt; {}
+                }
             }
             ProgressMode::Off =&gt; {}
         }

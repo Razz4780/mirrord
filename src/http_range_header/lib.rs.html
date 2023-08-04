@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/http-range-header-0.3.0/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="http_range_header" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0-nightly (c609da59d 2023-04-18)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../static.files/source-script-905937fbbdc8e9ea.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-1a524efa7bd4ab32.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../http_range_header/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/http-range-header-0.3.1/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="http_range_header" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0-nightly (c609da59d 2023-04-18)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../static.files/source-script-905937fbbdc8e9ea.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-1a524efa7bd4ab32.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../http_range_header/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -687,20 +687,25 @@
 <a href="#687" id="687">687</a>
 <a href="#688" id="688">688</a>
 <a href="#689" id="689">689</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>std::error::Error;
-<span class="kw">use </span>std::fmt::{Debug, Display, Formatter};
-<span class="kw">use </span>std::ops::RangeInclusive;
+<a href="#690" id="690">690</a>
+<a href="#691" id="691">691</a>
+</pre></div><pre class="rust"><code><span class="attr">#![warn(clippy::pedantic)]
+</span><span class="kw">use </span>core::fmt::{Debug, Display, Formatter};
+<span class="kw">use </span>core::ops::RangeInclusive;
+<span class="kw">use </span>std::error::Error;
 
 <span class="attr">#[macro_use]
 </span><span class="kw">mod </span>macros;
 
+<span class="kw">const </span>UNIT_SEP: <span class="kw-2">&amp;</span>str = <span class="string">&quot;bytes=&quot;</span>;
+<span class="kw">const </span>COMMA: char = <span class="string">&#39;,&#39;</span>;
 <span class="doccomment">/// Function that parses the content of a range header.
 ///
-/// Follows the spec here https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Range
+/// Follows the [spec here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Range)
 ///
-/// And here https://www.ietf.org/rfc/rfc2616.txt
+/// And [here](https://www.ietf.org/rfc/rfc2616.txt)
 ///
-/// Will only accept bytes ranges, will update when https://www.iana.org/assignments/http-parameters/http-parameters.xhtml changes to allow other units.
+/// Will only accept bytes ranges, will update when [this spec](https://www.iana.org/assignments/http-parameters/http-parameters.xhtml) changes to allow other units.
 ///
 /// Parses ranges strictly, as in the examples contained in the above specifications.
 ///
@@ -769,27 +774,27 @@
 /// }
 /// ```
 ///
-/// The parser makes two passes, one without a known file_size, ensuring all ranges are syntactically correct.
+/// The parser makes two passes, one without a known file-size, ensuring all ranges are syntactically correct.
 /// The returned struct will through its `validate` method accept a file-size and figure out whether or not the
 /// syntactically correct ranges actually makes sense in context
 ///
-/// The range `bytes=0-20` on a file with 15 bytes will be accepted in the first pass as the content_size is unknown.
-/// On the second pass (`validate`) it will be rejected and produce an error
-/// # Example range fails `validate` because it exceedes file boundaries
+/// The range `bytes=0-20` on a file with 15 bytes will be accepted in the first pass as the content size is unknown.
+/// On the second pass (`validate`) it will be truncated to `file_size - 1` as per [the spec](https://httpwg.org/specs/rfc9110.html#rfc.section.14.1.2).
+/// # Example range truncates in `validate` because it exceedes
 /// ```
 /// let input = &quot;bytes=0-20&quot;;
 /// let file_size_bytes = 15;
 /// let parsed_ranges = http_range_header::parse_range_header(input)
 ///     // Is syntactically correct
 ///     .unwrap();
-/// let validated = parsed_ranges.validate(file_size_bytes);
-/// assert!(validated.is_err());
+/// let validated = parsed_ranges.validate(file_size_bytes).unwrap();
+/// assert_eq!(vec![0..=14], validated);
 /// ```
 ///
 /// Range reversal and overlap is also checked in the second pass, the range `bytes=0-20, 5-10`
 /// will become two syntactically correct ranges, but `validate` will return ann `Err`.
 ///
-/// This is an opinionated implementation, the spec https://datatracker.ietf.org/doc/html/rfc7233
+/// This is an opinionated implementation, [the spec](https://datatracker.ietf.org/doc/html/rfc7233)
 /// allows a server to determine its implementation of overlapping ranges, this api currently does not allow it.
 ///
 /// # Example multipart-range fails `validate` because of an overlap
@@ -803,13 +808,10 @@
 /// // Some ranges overlap, all valid ranges get truncated to 1 Err
 /// assert!(validated.is_err());
 /// ```
-///
-///
-
-</span><span class="kw">const </span>UNIT_SEP: <span class="kw-2">&amp;</span>str = <span class="string">&quot;bytes=&quot;</span>;
-<span class="kw">const </span>COMMA: char = <span class="string">&#39;,&#39;</span>;
-
-<span class="kw">pub fn </span>parse_range_header(
+/// # Errors
+/// Will return an error if the `range_header_value` cannot be strictly parsed into a range
+/// per the http spec.
+</span><span class="kw">pub fn </span>parse_range_header(
     range_header_value: <span class="kw-2">&amp;</span>str,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ParsedRanges, RangeUnsatisfiableError&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>ranges = Vec::new();
@@ -855,7 +857,7 @@
     }
 }
 
-<span class="kw">fn </span>trim&lt;<span class="lifetime">&#39;a</span>&gt;(s: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt; {
+<span class="kw">fn </span>trim(s: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt; {
     <span class="kw">if </span>s.ends_with(char::is_whitespace) || s.match_indices(char::is_whitespace).count() &gt; <span class="number">1 </span>{
         <span class="prelude-val">None
     </span>} <span class="kw">else </span>{
@@ -870,12 +872,11 @@
             <span class="kw">if let </span><span class="prelude-val">Some</span>(end) = strict_parse_u64(end) {
                 <span class="kw">if </span>end == <span class="number">0 </span>{
                     <span class="kw">return </span><span class="macro">invalid!</span>(<span class="macro">format!</span>(<span class="string">&quot;Range: {} is not satisfiable, suffixed number of bytes to retrieve is zero.&quot;</span>, range));
-                } <span class="kw">else </span>{
-                    <span class="kw">return </span><span class="prelude-val">Ok</span>(SyntacticallyCorrectRange::new(
-                        StartPosition::FromLast(end),
-                        EndPosition::LastByte,
-                    ));
                 }
+                <span class="kw">return </span><span class="prelude-val">Ok</span>(SyntacticallyCorrectRange::new(
+                    StartPosition::FromLast(end),
+                    EndPosition::LastByte,
+                ));
             }
             <span class="kw">return </span><span class="macro">invalid!</span>(<span class="macro">format!</span>(
                 <span class="string">&quot;Range: {} is not acceptable, end of range not parseable.&quot;</span>,
@@ -912,8 +913,8 @@
 }
 
 <span class="kw">fn </span>strict_parse_u64(s: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
-    <span class="kw">if </span>!s.starts_with(<span class="string">&quot;+&quot;</span>) &amp;&amp; (s.len() == <span class="number">1 </span>|| !s.starts_with(<span class="string">&quot;0&quot;</span>)) {
-        <span class="kw">return </span>u64::from_str_radix(s, <span class="number">10</span>).ok();
+    <span class="kw">if </span>!s.starts_with(<span class="string">&#39;+&#39;</span>) &amp;&amp; (s.len() == <span class="number">1 </span>|| !s.starts_with(<span class="string">&#39;0&#39;</span>)) {
+        <span class="kw">return </span>s.parse::&lt;u64&gt;().ok();
     }
     <span class="prelude-val">None
 </span>}
@@ -928,7 +929,7 @@
     <span class="prelude-val">Some</span>((left, right))
 }
 
-<span class="kw">fn </span>split_exactly_once_ch&lt;<span class="lifetime">&#39;a</span>&gt;(s: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str, pat: char) -&gt; <span class="prelude-ty">Option</span>&lt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str, <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str)&gt; {
+<span class="kw">fn </span>split_exactly_once_ch(s: <span class="kw-2">&amp;</span>str, pat: char) -&gt; <span class="prelude-ty">Option</span>&lt;(<span class="kw-2">&amp;</span>str, <span class="kw-2">&amp;</span>str)&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>iter = s.split(pat);
     <span class="kw">let </span>left = iter.next()<span class="question-mark">?</span>;
     <span class="kw">let </span>right = iter.next()<span class="question-mark">?</span>;
@@ -947,7 +948,10 @@
         ParsedRanges { ranges }
     }
 
-    <span class="kw">pub fn </span>validate(
+    <span class="doccomment">/// Validates a parsed range for a given file-size in bytes.
+    /// # Errors
+    /// If the range is invalid for the the file-size.
+    </span><span class="kw">pub fn </span>validate(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         file_size_bytes: u64,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;RangeInclusive&lt;u64&gt;&gt;, RangeUnsatisfiableError&gt; {
@@ -966,18 +970,16 @@
                 }
             };
             <span class="kw">let </span>end = <span class="kw">match </span>parsed.end {
-                EndPosition::Index(i) =&gt; i,
+                EndPosition::Index(i) =&gt; core::cmp::min(i, file_size_bytes - <span class="number">1</span>),
                 EndPosition::LastByte =&gt; file_size_bytes - <span class="number">1</span>,
             };
 
-            <span class="kw">if </span>end &lt; file_size_bytes {
-                <span class="kw">let </span>valid = RangeInclusive::new(start, end);
-                validated.push(valid);
-            } <span class="kw">else </span>{
-                <span class="kw">return </span><span class="macro">invalid!</span>(<span class="string">&quot;Range end exceedes EOF&quot;</span>.to_string());
-            }
+            <span class="kw">let </span>valid = RangeInclusive::new(start, end);
+            validated.push(valid);
         }
-        <span class="kw">match </span>validate_ranges(validated.as_slice()) {
+        <span class="comment">// False positive
+        </span><span class="attr">#[allow(clippy::match_same_arms)]
+        </span><span class="kw">match </span>validate_ranges(validated.as_slice()) {
             RangeValidationResult::Valid =&gt; <span class="prelude-val">Ok</span>(validated),
             RangeValidationResult::Overlapping =&gt; <span class="macro">invalid!</span>(<span class="string">&quot;Ranges overlap&quot;</span>.to_string()),
             RangeValidationResult::Reversed =&gt; <span class="macro">invalid!</span>(<span class="string">&quot;Range reversed&quot;</span>.to_string()),
@@ -1003,7 +1005,7 @@
 </span><span class="kw">pub struct </span>RangeUnsatisfiableError;
 
 <span class="kw">impl </span>Display <span class="kw">for </span>RangeUnsatisfiableError {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; core::fmt::Result {
         <span class="attr">#[cfg(feature = <span class="string">&quot;with_error_cause&quot;</span>)]
         </span>{
             f.write_str(<span class="kw-2">&amp;</span><span class="self">self</span>.msg)
@@ -1223,12 +1225,14 @@
     }
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>parse_out_of_bounds_overrun_as_unsatisfiable() {
+    </span><span class="kw">fn </span>parse_out_of_bounds_overrun_as_content_length() {
         <span class="kw">let </span>input = <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;bytes=0-{}&quot;</span>, TEST_FILE_LENGTH);
-        <span class="kw">let </span>parsed = parse_range_header(input)
+        <span class="kw">let </span>expect = <span class="macro">vec!</span>[RangeInclusive::new(<span class="number">0</span>, TEST_FILE_LENGTH - <span class="number">1</span>)];
+        <span class="kw">let </span>actual = parse_range_header(input)
             .unwrap()
-            .validate(TEST_FILE_LENGTH);
-        <span class="macro">assert!</span>(parsed.is_err());
+            .validate(TEST_FILE_LENGTH)
+            .unwrap();
+        <span class="macro">assert_eq!</span>(expect, actual);
     }
 
     <span class="attr">#[test]

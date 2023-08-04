@@ -488,6 +488,9 @@
 <a href="#488" id="488">488</a>
 <a href="#489" id="489">489</a>
 <a href="#490" id="490">490</a>
+<a href="#491" id="491">491</a>
+<a href="#492" id="492">492</a>
+<a href="#493" id="493">493</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::str::FromStr;
 
 <span class="kw">use </span>mirrord_analytics::CollectAnalytics;
@@ -561,6 +564,9 @@
     <span class="doccomment">/// ### target.path {#target-path}
     ///
     /// Specifies the running pod (or deployment) to mirror.
+    ///
+    /// Note: Deployment level steal/mirroring is available only in mirrord for Teams
+    /// If you use it without it, it will choose a random pod replica to work with.
     ///
     /// Supports:
     /// - `pod/{sample-pod}`;
