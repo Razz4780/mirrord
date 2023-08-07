@@ -389,6 +389,7 @@
 <a href="#389" id="389">389</a>
 <a href="#390" id="390">390</a>
 <a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
 </pre></div><pre class="rust"><code><span class="doccomment">/// Controls which files are ignored (open local) by mirrord file operations.
 ///
 /// There are 3 ways of setting this up:
@@ -520,7 +521,8 @@
 <span class="doccomment">/// Global filter used by file operations to bypass (use local) or continue (use remote).
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">static </span>FILE_FILTER: OnceLock&lt;FileFilter&gt; = OnceLock::new();
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>FileFilter {
+<span class="attr">#[derive(Debug)]
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>FileFilter {
     read_only: <span class="prelude-ty">Option</span>&lt;RegexSet&gt;,
     read_write: <span class="prelude-ty">Option</span>&lt;RegexSet&gt;,
     local: <span class="prelude-ty">Option</span>&lt;RegexSet&gt;,

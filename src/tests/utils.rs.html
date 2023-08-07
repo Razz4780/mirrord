@@ -1076,6 +1076,10 @@
 <a href="#1076" id="1076">1076</a>
 <a href="#1077" id="1077">1077</a>
 <a href="#1078" id="1078">1078</a>
+<a href="#1079" id="1079">1079</a>
+<a href="#1080" id="1080">1080</a>
+<a href="#1081" id="1081">1081</a>
+<a href="#1082" id="1082">1082</a>
 </pre></div><pre class="rust"><code><span class="attr">#![allow(clippy::unused_io_amount)]
 #![allow(clippy::indexing_slicing)]
 
@@ -1926,33 +1930,37 @@
     .<span class="kw">await
 </span>}
 
-<span class="attr">#[fixture]
-</span><span class="kw">pub async fn </span>http_logger_service(<span class="attr">#[future] </span>kube_client: Client) -&gt; KubeService {
-    service(
-        <span class="string">&quot;default&quot;</span>,
-        <span class="string">&quot;ClusterIP&quot;</span>,
-        <span class="string">&quot;ghcr.io/metalbear-co/mirrord-http-logger:latest&quot;</span>,
-        <span class="string">&quot;mirrord-tests-http-logger&quot;</span>,
-        <span class="bool-val">false</span>, <span class="comment">// So that requester can reach logger by name.
-        </span>kube_client,
-    )
-    .<span class="kw">await
-</span>}
-
-<span class="attr">#[fixture]
-</span><span class="kw">pub async fn </span>http_log_requester_service(<span class="attr">#[future] </span>kube_client: Client) -&gt; KubeService {
-    service(
-        <span class="string">&quot;default&quot;</span>,
+<span class="doccomment">/// Initiailizes the services needed for pause testing.
+/// Returns the requester service, the logger service
+</span><span class="attr">#[fixture]
+</span><span class="kw">pub async fn </span>pause_services(<span class="attr">#[future] </span>kube_client: Client) -&gt; (KubeService, KubeService) {
+    <span class="kw">let </span>kube_client = kube_client.<span class="kw">await</span>;
+    <span class="kw">let </span>kube_client_clone = kube_client.clone();
+    <span class="kw">let </span>namespace = random_string().to_string();
+    <span class="kw">let </span>requester = service(
+        <span class="kw-2">&amp;</span>namespace,
         <span class="string">&quot;ClusterIP&quot;</span>,
         <span class="string">&quot;ghcr.io/metalbear-co/mirrord-http-log-requester:latest&quot;</span>,
         <span class="string">&quot;mirrord-http-log-requester&quot;</span>,
         <span class="comment">// Have a non-random name, so that there can only be one requester at any point in time
         // so that another requester does not send requests while this one is paused.
         </span><span class="bool-val">false</span>,
-        kube_client,
+        <span class="comment">// have to pass it as future ;_;
+        </span><span class="kw">async </span>{ kube_client_clone },
     )
-    .<span class="kw">await
-</span>}
+    .<span class="kw">await</span>;
+
+    <span class="kw">let </span>logger = service(
+        <span class="kw-2">&amp;</span>namespace,
+        <span class="string">&quot;ClusterIP&quot;</span>,
+        <span class="string">&quot;ghcr.io/metalbear-co/mirrord-http-logger:latest&quot;</span>,
+        <span class="string">&quot;mirrord-tests-http-logger&quot;</span>,
+        <span class="bool-val">false</span>, <span class="comment">// So that requester can reach logger by name.
+        </span><span class="kw">async </span>{ kube_client },
+    )
+    .<span class="kw">await</span>;
+    (requester, logger)
+}
 
 <span class="doccomment">/// Service that listens on port 80 and returns &quot;remote: &lt;DATA&gt;&quot; when getting &quot;&lt;DATA&gt;&quot; directly
 /// over TCP, not HTTP.

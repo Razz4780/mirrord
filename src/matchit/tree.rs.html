@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/matchit-0.7.1/src/tree.rs`."><title>tree.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="matchit" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0-nightly (c609da59d 2023-04-18)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../static.files/source-script-905937fbbdc8e9ea.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-1a524efa7bd4ab32.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../matchit/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/matchit-0.7.2/src/tree.rs`."><title>tree.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="matchit" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0-nightly (c609da59d 2023-04-18)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../static.files/source-script-905937fbbdc8e9ea.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-1a524efa7bd4ab32.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../matchit/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -628,6 +628,15 @@
 <a href="#628" id="628">628</a>
 <a href="#629" id="629">629</a>
 <a href="#630" id="630">630</a>
+<a href="#631" id="631">631</a>
+<a href="#632" id="632">632</a>
+<a href="#633" id="633">633</a>
+<a href="#634" id="634">634</a>
+<a href="#635" id="635">635</a>
+<a href="#636" id="636">636</a>
+<a href="#637" id="637">637</a>
+<a href="#638" id="638">638</a>
+<a href="#639" id="639">639</a>
 </pre></div><pre class="rust"><code><span class="kw">use crate</span>::{InsertError, MatchError, Params};
 
 <span class="kw">use </span>std::cell::UnsafeCell;
@@ -672,7 +681,7 @@
 
         <span class="self">self</span>.priority += <span class="number">1</span>;
 
-        <span class="comment">// empty tree
+        <span class="comment">// the tree is empty
         </span><span class="kw">if </span><span class="self">self</span>.prefix.is_empty() &amp;&amp; <span class="self">self</span>.children.is_empty() {
             <span class="self">self</span>.insert_child(prefix, <span class="kw-2">&amp;</span>route, val)<span class="question-mark">?</span>;
             <span class="self">self</span>.node_type = NodeType::Root;
@@ -683,45 +692,39 @@
 
         <span class="lifetime">&#39;walk</span>: <span class="kw">loop </span>{
             <span class="comment">// find the longest common prefix
-            //
-            // this also implies that the common prefix contains
-            // no &#39;:&#39; or &#39;*&#39;, since the existing key can&#39;t contain
-            // those chars
-            </span><span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
-            <span class="kw">let </span>max = min(prefix.len(), current.prefix.len());
+            </span><span class="kw">let </span>len = min(prefix.len(), current.prefix.len());
+            <span class="kw">let </span>common_prefix = (<span class="number">0</span>..len)
+                .find(|<span class="kw-2">&amp;</span>i| prefix[i] != current.prefix[i])
+                .unwrap_or(len);
 
-            <span class="kw">while </span>i &lt; max &amp;&amp; prefix[i] == current.prefix[i] {
-                i += <span class="number">1</span>;
-            }
-
-            <span class="comment">// split edge
-            </span><span class="kw">if </span>i &lt; current.prefix.len() {
-                <span class="kw">let </span><span class="kw-2">mut </span>child = <span class="self">Self </span>{
-                    prefix: current.prefix[i..].to_owned(),
+            <span class="comment">// the common prefix is a substring of the current node&#39;s prefix, split the node
+            </span><span class="kw">if </span>common_prefix &lt; current.prefix.len() {
+                <span class="kw">let </span>child = Node {
+                    prefix: current.prefix[common_prefix..].to_owned(),
+                    children: mem::take(<span class="kw-2">&amp;mut </span>current.children),
                     wild_child: current.wild_child,
                     indices: current.indices.clone(),
                     value: current.value.take(),
                     priority: current.priority - <span class="number">1</span>,
-                    ..<span class="self">Self</span>::default()
+                    ..Node::default()
                 };
 
-                mem::swap(<span class="kw-2">&amp;mut </span>current.children, <span class="kw-2">&amp;mut </span>child.children);
-
-                current.children = <span class="macro">vec!</span>[child];
-                current.indices = current.prefix[i..=i].to_owned();
-                current.prefix = prefix[..i].to_owned();
+                <span class="comment">// the current node now holds only the common prefix
+                </span>current.children = <span class="macro">vec!</span>[child];
+                current.indices = <span class="macro">vec!</span>[current.prefix[common_prefix]];
+                current.prefix = prefix[..common_prefix].to_owned();
                 current.wild_child = <span class="bool-val">false</span>;
             }
 
-            <span class="comment">// make new node a child of this node
-            </span><span class="kw">if </span>prefix.len() &gt; i {
-                prefix = <span class="kw-2">&amp;</span>prefix[i..];
+            <span class="comment">// the route has a common prefix, search deeper
+            </span><span class="kw">if </span>prefix.len() &gt; common_prefix {
+                prefix = <span class="kw-2">&amp;</span>prefix[common_prefix..];
 
-                <span class="kw">let </span>first = prefix[<span class="number">0</span>];
+                <span class="kw">let </span>next = prefix[<span class="number">0</span>];
 
                 <span class="comment">// `/` after param
                 </span><span class="kw">if </span>current.node_type == NodeType::Param
-                    &amp;&amp; first == <span class="string">b&#39;/&#39;
+                    &amp;&amp; next == <span class="string">b&#39;/&#39;
                     </span>&amp;&amp; current.children.len() == <span class="number">1
                 </span>{
                     current = <span class="kw-2">&amp;mut </span>current.children[<span class="number">0</span>];
@@ -730,49 +733,58 @@
                     <span class="kw">continue </span><span class="lifetime">&#39;walk</span>;
                 }
 
-                <span class="comment">// check if a child with the next path byte exists
+                <span class="comment">// find a child that matches the next path byte
                 </span><span class="kw">for </span><span class="kw-2">mut </span>i <span class="kw">in </span><span class="number">0</span>..current.indices.len() {
-                    <span class="kw">if </span>first == current.indices[i] {
+                    <span class="comment">// found a match
+                    </span><span class="kw">if </span>next == current.indices[i] {
                         i = current.update_child_priority(i);
                         current = <span class="kw-2">&amp;mut </span>current.children[i];
                         <span class="kw">continue </span><span class="lifetime">&#39;walk</span>;
                     }
                 }
 
-                <span class="kw">if </span>first != <span class="string">b&#39;:&#39; </span>&amp;&amp; first != <span class="string">b&#39;*&#39; </span>&amp;&amp; current.node_type != NodeType::CatchAll {
-                    current.indices.push(first);
-                    <span class="kw">let </span><span class="kw-2">mut </span>child = current.add_child(<span class="self">Self</span>::default());
+                <span class="comment">// not a wildcard and there is no matching child node, create a new one
+                </span><span class="kw">if </span>!<span class="macro">matches!</span>(next, <span class="string">b&#39;:&#39; </span>| <span class="string">b&#39;*&#39;</span>) &amp;&amp; current.node_type != NodeType::CatchAll {
+                    current.indices.push(next);
+                    <span class="kw">let </span><span class="kw-2">mut </span>child = current.add_child(Node::default());
                     child = current.update_child_priority(child);
-                    current = <span class="kw-2">&amp;mut </span>current.children[child];
-                } <span class="kw">else if </span>current.wild_child {
-                    <span class="comment">// inserting a wildcard node, check if it conflicts with the existing wildcard
+
+                    <span class="comment">// insert into the new node
+                    </span><span class="kw">return </span>current.children[child].insert_child(prefix, <span class="kw-2">&amp;</span>route, val);
+                }
+
+                <span class="comment">// inserting a wildcard, and this node already has a wildcard child
+                </span><span class="kw">if </span>current.wild_child {
+                    <span class="comment">// wildcards are always at the end
                     </span>current = current.children.last_mut().unwrap();
                     current.priority += <span class="number">1</span>;
 
-                    <span class="comment">// check if the wildcard matches
-                    </span><span class="kw">if </span>prefix.len() &gt;= current.prefix.len()
-                        &amp;&amp; current.prefix == prefix[..current.prefix.len()]
-                        <span class="comment">// adding a child to a catchall Node is not possible
-                        </span>&amp;&amp; current.node_type != NodeType::CatchAll
+                    <span class="comment">// make sure the wildcard matches
+                    </span><span class="kw">if </span>prefix.len() &lt; current.prefix.len()
+                        || current.prefix != prefix[..current.prefix.len()]
+                        <span class="comment">// catch-alls cannot have children 
+                        </span>|| current.node_type == NodeType::CatchAll
                         <span class="comment">// check for longer wildcard, e.g. :name and :names
-                        </span>&amp;&amp; (current.prefix.len() &gt;= prefix.len()
-                            || prefix[current.prefix.len()] == <span class="string">b&#39;/&#39;</span>)
+                        </span>|| (current.prefix.len() &lt; prefix.len()
+                            &amp;&amp; prefix[current.prefix.len()] != <span class="string">b&#39;/&#39;</span>)
                     {
-                        <span class="kw">continue </span><span class="lifetime">&#39;walk</span>;
+                        <span class="kw">return </span><span class="prelude-val">Err</span>(InsertError::conflict(<span class="kw-2">&amp;</span>route, prefix, current));
                     }
 
-                    <span class="kw">return </span><span class="prelude-val">Err</span>(InsertError::conflict(<span class="kw-2">&amp;</span>route, prefix, current));
+                    <span class="kw">continue </span><span class="lifetime">&#39;walk</span>;
                 }
 
-                <span class="kw">return </span>current.insert_child(prefix, <span class="kw-2">&amp;</span>route, val);
+                <span class="comment">// otherwise, create the wildcard node
+                </span><span class="kw">return </span>current.insert_child(prefix, <span class="kw-2">&amp;</span>route, val);
             }
 
-            <span class="comment">// otherwise add value to current node
+            <span class="comment">// exact match, this node should be empty
             </span><span class="kw">if </span>current.value.is_some() {
                 <span class="kw">return </span><span class="prelude-val">Err</span>(InsertError::conflict(<span class="kw-2">&amp;</span>route, prefix, current));
             }
 
-            current.value = <span class="prelude-val">Some</span>(UnsafeCell::new(val));
+            <span class="comment">// add the value to current node
+            </span>current.value = <span class="prelude-val">Some</span>(UnsafeCell::new(val));
 
             <span class="kw">return </span><span class="prelude-val">Ok</span>(());
         }
@@ -791,35 +803,37 @@
         }
     }
 
-    <span class="comment">// increments priority of the given child and reorders if necessary
-    // returns the new position (index) of the child
-    </span><span class="kw">fn </span>update_child_priority(<span class="kw-2">&amp;mut </span><span class="self">self</span>, pos: usize) -&gt; usize {
-        <span class="self">self</span>.children[pos].priority += <span class="number">1</span>;
-        <span class="kw">let </span>priority = <span class="self">self</span>.children[pos].priority;
+    <span class="comment">// increments priority of the given child and reorders if necessary.
+    //
+    // returns the new index of the child
+    </span><span class="kw">fn </span>update_child_priority(<span class="kw-2">&amp;mut </span><span class="self">self</span>, i: usize) -&gt; usize {
+        <span class="self">self</span>.children[i].priority += <span class="number">1</span>;
+        <span class="kw">let </span>priority = <span class="self">self</span>.children[i].priority;
 
         <span class="comment">// adjust position (move to front)
-        </span><span class="kw">let </span><span class="kw-2">mut </span>new_pos = pos;
-        <span class="kw">while </span>new_pos &gt; <span class="number">0 </span>&amp;&amp; <span class="self">self</span>.children[new_pos - <span class="number">1</span>].priority &lt; priority {
+        </span><span class="kw">let </span><span class="kw-2">mut </span>updated = i;
+        <span class="kw">while </span>updated &gt; <span class="number">0 </span>&amp;&amp; <span class="self">self</span>.children[updated - <span class="number">1</span>].priority &lt; priority {
             <span class="comment">// swap node positions
-            </span><span class="self">self</span>.children.swap(new_pos - <span class="number">1</span>, new_pos);
-            new_pos -= <span class="number">1</span>;
+            </span><span class="self">self</span>.children.swap(updated - <span class="number">1</span>, updated);
+            updated -= <span class="number">1</span>;
         }
 
         <span class="comment">// build new index list
-        </span><span class="kw">if </span>new_pos != pos {
+        </span><span class="kw">if </span>updated != i {
             <span class="self">self</span>.indices = [
-                <span class="kw-2">&amp;</span><span class="self">self</span>.indices[..new_pos],    <span class="comment">// unchanged prefix, might be empty
-                </span><span class="kw-2">&amp;</span><span class="self">self</span>.indices[pos..=pos],    <span class="comment">// the index char we move
-                </span><span class="kw-2">&amp;</span><span class="self">self</span>.indices[new_pos..pos], <span class="comment">// rest without char at &#39;pos&#39;
-                </span><span class="kw-2">&amp;</span><span class="self">self</span>.indices[pos + <span class="number">1</span>..],
+                <span class="kw-2">&amp;</span><span class="self">self</span>.indices[..updated],  <span class="comment">// unchanged prefix, might be empty
+                </span><span class="kw-2">&amp;</span><span class="self">self</span>.indices[i..=i],      <span class="comment">// the index char we move
+                </span><span class="kw-2">&amp;</span><span class="self">self</span>.indices[updated..i], <span class="comment">// rest without char at &#39;pos&#39;
+                </span><span class="kw-2">&amp;</span><span class="self">self</span>.indices[i + <span class="number">1</span>..],
             ]
             .concat();
         }
 
-        new_pos
+        updated
     }
 
-    <span class="kw">fn </span>insert_child(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>prefix: <span class="kw-2">&amp;</span>[u8], route: <span class="kw-2">&amp;</span>[u8], val: T) -&gt; <span class="prelude-ty">Result</span>&lt;(), InsertError&gt; {
+    <span class="comment">// insert a child node at this node
+    </span><span class="kw">fn </span>insert_child(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>prefix: <span class="kw-2">&amp;</span>[u8], route: <span class="kw-2">&amp;</span>[u8], val: T) -&gt; <span class="prelude-ty">Result</span>&lt;(), InsertError&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>current = <span class="self">self</span>;
 
         <span class="kw">loop </span>{
@@ -836,12 +850,12 @@
                 }
             };
 
-            <span class="comment">// check if the wildcard has a name
+            <span class="comment">// ensure the wildcard has a name
             </span><span class="kw">if </span>wildcard.len() &lt; <span class="number">2 </span>{
                 <span class="kw">return </span><span class="prelude-val">Err</span>(InsertError::UnnamedParam);
             }
 
-            <span class="comment">// route parameter
+            <span class="comment">// regular route parameter
             </span><span class="kw">if </span>wildcard[<span class="number">0</span>] == <span class="string">b&#39;:&#39; </span>{
                 <span class="comment">// insert prefix before the current wildcard
                 </span><span class="kw">if </span>wildcard_index &gt; <span class="number">0 </span>{
@@ -877,43 +891,43 @@
                 <span class="comment">// otherwise we&#39;re done. Insert the value in the new leaf
                 </span>current.value = <span class="prelude-val">Some</span>(UnsafeCell::new(val));
                 <span class="kw">return </span><span class="prelude-val">Ok</span>(());
-            }
 
-            <span class="comment">// catch all route
-            </span><span class="macro">assert_eq!</span>(wildcard[<span class="number">0</span>], <span class="string">b&#39;*&#39;</span>);
-
-            <span class="comment">// &quot;/foo/*catchall/bar&quot;
-            </span><span class="kw">if </span>wildcard_index + wildcard.len() != prefix.len() {
-                <span class="kw">return </span><span class="prelude-val">Err</span>(InsertError::InvalidCatchAll);
-            }
-
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(i) = wildcard_index.checked_sub(<span class="number">1</span>) {
-                <span class="comment">// &quot;/foo/bar*catchall&quot;
-                </span><span class="kw">if </span>prefix[i] != <span class="string">b&#39;/&#39; </span>{
+            <span class="comment">// catch-all route
+            </span>} <span class="kw">else if </span>wildcard[<span class="number">0</span>] == <span class="string">b&#39;*&#39; </span>{
+                <span class="comment">// &quot;/foo/*x/bar&quot;
+                </span><span class="kw">if </span>wildcard_index + wildcard.len() != prefix.len() {
                     <span class="kw">return </span><span class="prelude-val">Err</span>(InsertError::InvalidCatchAll);
                 }
+
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(i) = wildcard_index.checked_sub(<span class="number">1</span>) {
+                    <span class="comment">// &quot;/foo/bar*x&quot;
+                    </span><span class="kw">if </span>prefix[i] != <span class="string">b&#39;/&#39; </span>{
+                        <span class="kw">return </span><span class="prelude-val">Err</span>(InsertError::InvalidCatchAll);
+                    }
+                }
+
+                <span class="comment">// &quot;*x&quot; without leading `/`
+                </span><span class="kw">if </span>prefix == route &amp;&amp; route[<span class="number">0</span>] != <span class="string">b&#39;/&#39; </span>{
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(InsertError::InvalidCatchAll);
+                }
+
+                <span class="comment">// insert prefix before the current wildcard
+                </span><span class="kw">if </span>wildcard_index &gt; <span class="number">0 </span>{
+                    current.prefix = prefix[..wildcard_index].to_owned();
+                    prefix = <span class="kw-2">&amp;</span>prefix[wildcard_index..];
+                }
+
+                <span class="kw">let </span>child = <span class="self">Self </span>{
+                    prefix: prefix.to_owned(),
+                    node_type: NodeType::CatchAll,
+                    value: <span class="prelude-val">Some</span>(UnsafeCell::new(val)),
+                    priority: <span class="number">1</span>,
+                    ..<span class="self">Self</span>::default()
+                };
+
+                current.add_child(child);
+                current.wild_child = <span class="bool-val">true</span>;
             }
-
-            <span class="comment">// &quot;*catchall&quot;
-            </span><span class="kw">if </span>prefix == route &amp;&amp; route[<span class="number">0</span>] != <span class="string">b&#39;/&#39; </span>{
-                <span class="kw">return </span><span class="prelude-val">Err</span>(InsertError::InvalidCatchAll);
-            }
-
-            <span class="kw">if </span>wildcard_index &gt; <span class="number">0 </span>{
-                current.prefix = prefix[..wildcard_index].to_owned();
-                prefix = <span class="kw-2">&amp;</span>prefix[wildcard_index..];
-            }
-
-            <span class="kw">let </span>child = <span class="self">Self </span>{
-                prefix: prefix.to_owned(),
-                node_type: NodeType::CatchAll,
-                value: <span class="prelude-val">Some</span>(UnsafeCell::new(val)),
-                priority: <span class="number">1</span>,
-                ..<span class="self">Self</span>::default()
-            };
-
-            current.add_child(child);
-            current.wild_child = <span class="bool-val">true</span>;
 
             <span class="kw">return </span><span class="prelude-val">Ok</span>(());
         }
@@ -948,9 +962,9 @@
 }
 
 <span class="kw">impl</span>&lt;T&gt; Node&lt;T&gt; {
-    <span class="comment">// It&#39;s a bit sad that we have to introduce unsafe here but rust doesn&#39;t really have a way
-    // to abstract over mutability, so UnsafeCell lets us avoid having to duplicate logic between
-    // `at` and `at_mut`.
+    <span class="comment">// it&#39;s a bit sad that we have to introduce unsafe here but rust doesn&#39;t really have a way
+    // to abstract over mutability, so `UnsafeCell` lets us avoid having to duplicate logic between
+    // `at` and `at_mut`
     </span><span class="kw">pub fn </span>at&lt;<span class="lifetime">&#39;n</span>, <span class="lifetime">&#39;p</span>&gt;(
         <span class="kw-2">&amp;</span><span class="lifetime">&#39;n </span><span class="self">self</span>,
         full_path: <span class="kw-2">&amp;</span><span class="lifetime">&#39;p </span>[u8],
@@ -964,11 +978,11 @@
         <span class="lifetime">&#39;walk</span>: <span class="kw">loop </span>{
             <span class="macro">backtracker!</span>(skipped_nodes, path, current, params, backtracking, <span class="lifetime">&#39;walk</span>);
 
-            <span class="comment">// the path is longer than this node&#39;s prefix - we are expecting a child node
+            <span class="comment">// the path is longer than this node&#39;s prefix, we are expecting a child node
             </span><span class="kw">if </span>path.len() &gt; current.prefix.len() {
                 <span class="kw">let </span>(prefix, rest) = path.split_at(current.prefix.len());
 
-                <span class="comment">// prefix matches
+                <span class="comment">// the prefix matches
                 </span><span class="kw">if </span>prefix == current.prefix {
                     <span class="kw">let </span>first = rest[<span class="number">0</span>];
                     <span class="kw">let </span>consumed = path;
@@ -1002,8 +1016,7 @@
                         }
                     }
 
-                    <span class="comment">// we didn&#39;t find a match and there are no children with wildcards,
-                    // there is no match
+                    <span class="comment">// we didn&#39;t find a match and there are no children with wildcards, there is no match
                     </span><span class="kw">if </span>!current.wild_child {
                         <span class="comment">// extra trailing slash
                         </span><span class="kw">if </span>path == <span class="string">b&quot;/&quot; </span>&amp;&amp; current.value.is_some() {
@@ -1052,6 +1065,11 @@
                                     // either the path has an extra trailing slash or there is no match
                                     </span><span class="kw">if </span>path.len() == i + <span class="number">1 </span>{
                                         <span class="kw">return </span><span class="prelude-val">Err</span>(MatchError::ExtraTrailingSlash);
+                                    }
+
+                                    <span class="comment">// try backtracking
+                                    </span><span class="kw">if </span>path != <span class="string">b&quot;/&quot; </span>{
+                                        <span class="macro">try_backtrack!</span>();
                                     }
 
                                     <span class="kw">return </span><span class="prelude-val">Err</span>(MatchError::NotFound);
@@ -1115,7 +1133,7 @@
                     <span class="macro">try_backtrack!</span>();
                 }
 
-                <span class="comment">// TODO: does this always means there is an extra trailing slash?
+                <span class="comment">// TODO: does this *always* means there is an extra trailing slash?
                 </span><span class="kw">if </span>path == <span class="string">b&quot;/&quot; </span>&amp;&amp; current.wild_child &amp;&amp; current.node_type != NodeType::Root {
                     <span class="kw">return </span><span class="prelude-val">Err</span>(MatchError::unsure(full_path));
                 }
@@ -1173,7 +1191,7 @@
         <span class="comment">// a wildcard starts with &#39;:&#39; (param) or &#39;*&#39; (catch-all)
         </span><span class="kw">if </span>c != <span class="string">b&#39;:&#39; </span>&amp;&amp; c != <span class="string">b&#39;*&#39; </span>{
             <span class="kw">continue</span>;
-        };
+        }
 
         <span class="comment">// find end and check for invalid characters
         </span><span class="kw">let </span><span class="kw-2">mut </span>valid = <span class="bool-val">true</span>;
@@ -1182,8 +1200,8 @@
             <span class="kw">match </span>c {
                 <span class="string">b&#39;/&#39; </span>=&gt; <span class="kw">return </span>(<span class="prelude-val">Some</span>((<span class="kw-2">&amp;</span>path[start..start + <span class="number">1 </span>+ end], start)), valid),
                 <span class="string">b&#39;:&#39; </span>| <span class="string">b&#39;*&#39; </span>=&gt; valid = <span class="bool-val">false</span>,
-                <span class="kw">_ </span>=&gt; (),
-            };
+                <span class="kw">_ </span>=&gt; {}
+            }
         }
 
         <span class="kw">return </span>(<span class="prelude-val">Some</span>((<span class="kw-2">&amp;</span>path[start..], start)), valid);

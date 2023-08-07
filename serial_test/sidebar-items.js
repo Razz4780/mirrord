@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"attr":["parallel","serial"]};

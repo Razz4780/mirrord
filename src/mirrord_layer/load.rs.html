@@ -138,10 +138,81 @@
 <a href="#138" id="138">138</a>
 <a href="#139" id="139">139</a>
 <a href="#140" id="140">140</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>std::{collections::HashSet, sync::LazyLock};
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span>std::{
+    collections::HashSet,
+    fmt::{<span class="self">self</span>, Display},
+    sync::LazyLock,
+};
 
 <span class="kw">use </span>mirrord_config::{util::VecOrSingle, LayerConfig};
 <span class="kw">use </span>tracing::trace;
+
+<span class="kw">use </span><span class="kw">crate</span>::error::LayerError;
 
 <span class="kw">static </span>BUILD_TOOL_PROCESSES: LazyLock&lt;HashSet&lt;<span class="kw-2">&amp;</span>str&gt;&gt; = LazyLock::new(|| {
     HashSet::from([
@@ -169,8 +240,95 @@
     ])
 });
 
-<span class="kw">fn </span>is_build_tool(given_process: <span class="kw-2">&amp;</span>str) -&gt; bool {
-    BUILD_TOOL_PROCESSES.contains(given_process)
+<span class="doccomment">/// Credentials of the process the layer is injected into.
+</span><span class="kw">pub struct </span>ExecutableName {
+    <span class="doccomment">/// Executable file name, for example `x86_64-linux-gnu-ld.bfd`.
+    </span>exec_name: String,
+    <span class="doccomment">/// Last part of the process name as seen in the arguments, for example `ld` extracted from
+    /// `/usr/bin/ld`.
+    </span>invoked_as: String,
+}
+
+<span class="kw">impl </span>ExecutableName {
+    <span class="doccomment">/// Creates a new instance of this struct using [`std::env::current_exe`] and
+    /// [`std::env::args`].
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>from_env() -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, LayerError&gt; {
+        <span class="kw">let </span>exec_name = std::env::current_exe()
+            .ok()
+            .and_then(|arg| {
+                arg.file_name()
+                    .and_then(|os_str| os_str.to_str())
+                    .map(String::from)
+            })
+            .ok_or(LayerError::NoProcessFound)<span class="question-mark">?</span>;
+
+        <span class="kw">let </span>invoked_as = std::env::args()
+            .next()
+            .as_ref()
+            .and_then(|arg| arg.rsplit(<span class="string">&#39;/&#39;</span>).next())
+            .ok_or(LayerError::NoProcessFound)<span class="question-mark">?
+            </span>.to_string();
+
+        <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
+            exec_name,
+            invoked_as,
+        })
+    }
+
+    <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
+    </span><span class="kw">pub fn </span>ends_with(<span class="kw-2">&amp;</span><span class="self">self</span>, suffix: <span class="kw-2">&amp;</span>str) -&gt; bool {
+        <span class="self">self</span>.exec_name.ends_with(suffix) || <span class="self">self</span>.invoked_as.ends_with(suffix)
+    }
+
+    <span class="kw">fn </span>is_build_tool(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        BUILD_TOOL_PROCESSES.contains(<span class="self">self</span>.exec_name.as_str())
+            || BUILD_TOOL_PROCESSES.contains(<span class="self">self</span>.invoked_as.as_str())
+    }
+
+    <span class="doccomment">/// Checks if mirrord-layer should load with this process.
+    ///
+    /// ## Details
+    ///
+    /// Some processes may start other processes (like an IDE launching a program to be debugged),
+    /// and we don&#39;t want to hook mirrord-layer into those.
+    </span><span class="kw">fn </span>should_load&lt;S: AsRef&lt;str&gt;&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, skip_processes: <span class="kw-2">&amp;</span>[S], skip_build_tools: bool) -&gt; bool {
+        <span class="kw">if </span>skip_build_tools &amp;&amp; <span class="self">self</span>.is_build_tool() {
+            <span class="kw">return </span><span class="bool-val">false</span>;
+        }
+
+        !skip_processes
+            .iter()
+            .any(|name| name.as_ref() == <span class="self">self</span>.exec_name || name.as_ref() == <span class="self">self</span>.invoked_as)
+    }
+
+    <span class="doccomment">/// Determine the [`LoadType`] for this process.
+    </span><span class="kw">pub fn </span>load_type(<span class="kw-2">&amp;</span><span class="self">self</span>, config: LayerConfig) -&gt; LoadType {
+        <span class="kw">let </span>skip_processes = config
+            .skip_processes
+            .as_ref()
+            .map(VecOrSingle::as_slice)
+            .unwrap_or(<span class="kw-2">&amp;</span>[]);
+
+        <span class="kw">if </span><span class="self">self</span>.should_load(skip_processes, config.skip_build_tools) {
+            <span class="macro">trace!</span>(<span class="string">&quot;Loading into process: {self}.&quot;</span>);
+            LoadType::Full(Box::new(config))
+        } <span class="kw">else </span>{
+            <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
+            </span><span class="kw">if </span>sip::is_sip_only(<span class="self">self</span>) {
+                <span class="macro">trace!</span>(<span class="string">&quot;Loading into process: {self}, but only hooking exec/spawn.&quot;</span>);
+                <span class="kw">return </span>LoadType::SIPOnly;
+            }
+
+            <span class="macro">trace!</span>(<span class="string">&quot;Not loading into process: {self}.&quot;</span>);
+            LoadType::Skip
+        }
+    }
+}
+
+<span class="kw">impl </span>Display <span class="kw">for </span>ExecutableName {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
+        <span class="macro">write!</span>(f, <span class="string">&quot;{} invoked as {}&quot;</span>, <span class="self">self</span>.exec_name, <span class="self">self</span>.invoked_as)
+    }
 }
 
 <span class="doccomment">/// For processes that spawn other processes and also specified in `MIRRORD_SKIP_PROCESSES` list we
@@ -181,10 +339,12 @@
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="kw">static </span>SIP_ONLY_PROCESSES: LazyLock&lt;HashSet&lt;<span class="kw-2">&amp;</span>str&gt;&gt; =
-        LazyLock::new(|| HashSet::from([<span class="string">&quot;sh&quot;</span>, <span class="string">&quot;bash&quot;</span>, <span class="string">&quot;env&quot;</span>]));
+        LazyLock::new(|| HashSet::from([<span class="string">&quot;sh&quot;</span>, <span class="string">&quot;bash&quot;</span>, <span class="string">&quot;env&quot;</span>, <span class="string">&quot;go&quot;</span>, <span class="string">&quot;dlv&quot;</span>]));
 
-    <span class="kw">pub fn </span>is_sip_only(given_process: <span class="kw-2">&amp;</span>str) -&gt; bool {
-        is_build_tool(given_process) || SIP_ONLY_PROCESSES.contains(given_process)
+    <span class="kw">pub fn </span>is_sip_only(given_process: <span class="kw-2">&amp;</span>ExecutableName) -&gt; bool {
+        given_process.is_build_tool()
+            || SIP_ONLY_PROCESSES.contains(given_process.exec_name.as_str())
+            || SIP_ONLY_PROCESSES.contains(given_process.invoked_as.as_str())
     }
 }
 
@@ -200,47 +360,6 @@
     </span>Skip,
 }
 
-<span class="doccomment">/// Determine the load type for the `given_process` with the help of [`should_load`]
-</span><span class="kw">pub fn </span>load_type(given_process: <span class="kw-2">&amp;</span>str, config: LayerConfig) -&gt; LoadType {
-    <span class="kw">let </span>skip_processes = config.skip_processes.clone().map(VecOrSingle::to_vec);
-
-    <span class="kw">if </span>should_load(given_process, skip_processes, config.skip_build_tools) {
-        <span class="macro">trace!</span>(<span class="string">&quot;Loading into process: {given_process}.&quot;</span>);
-        LoadType::Full(Box::new(config))
-    } <span class="kw">else </span>{
-        <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
-        </span><span class="kw">if </span>sip::is_sip_only(given_process) {
-            <span class="macro">trace!</span>(<span class="string">&quot;Loading into process: {given_process}, but only hooking exec/spawn.&quot;</span>);
-            <span class="kw">return </span>LoadType::SIPOnly;
-        }
-
-        <span class="macro">trace!</span>(<span class="string">&quot;Not loading into process: {given_process}.&quot;</span>);
-        LoadType::Skip
-    }
-}
-
-<span class="doccomment">/// Checks if mirrord-layer should load with the process named `given_process`.
-///
-/// ## Details
-///
-/// Some processes may start other processes (like an IDE launching a program to be debugged), and
-/// we don&#39;t want to hook mirrord-layer into those.
-</span><span class="kw">fn </span>should_load(
-    given_process: <span class="kw-2">&amp;</span>str,
-    skip_processes: <span class="prelude-ty">Option</span>&lt;Vec&lt;String&gt;&gt;,
-    skip_build_tools: bool,
-) -&gt; bool {
-    <span class="kw">if </span>skip_build_tools &amp;&amp; is_build_tool(given_process) {
-        <span class="kw">return </span><span class="bool-val">false</span>;
-    }
-
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(processes_to_avoid) = skip_processes {
-        !processes_to_avoid.iter().any(|x| x == given_process)
-    } <span class="kw">else </span>{
-        <span class="bool-val">true
-    </span>}
-}
-
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>rstest::rstest;
@@ -248,34 +367,45 @@
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="attr">#[rstest]
-    #[case(<span class="string">&quot;test&quot;</span>, <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[<span class="string">&quot;foo&quot;</span>.to_string()]</span>), <span class="bool-val">false</span>)]
-    <span class="attr">#[case(<span class="string">&quot;test&quot;</span>, <span class="prelude-val">None</span>, <span class="bool-val">false</span>)]
-    #[case(<span class="string">&quot;test&quot;</span>, <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[<span class="string">&quot;foo&quot;</span>.to_owned(), <span class="string">&quot;bar&quot;</span>.to_owned(), <span class="string">&quot;baz&quot;</span>.to_owned()]</span>), <span class="bool-val">false</span>)]
-    <span class="attr">#[case(<span class="string">&quot;cargo&quot;</span>, <span class="prelude-val">None</span>, <span class="bool-val">false</span>)]
-    #[case(<span class="string">&quot;cargo&quot;</span>, <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[<span class="string">&quot;foo&quot;</span>.to_string()]</span>), <span class="bool-val">false</span>)]
+    #[case(<span class="string">&quot;test&quot;</span>, <span class="string">&quot;test&quot;</span>, <span class="kw-2">&amp;</span>[<span class="string">&quot;foo&quot;</span>]</span>, <span class="bool-val">false</span>)]
+    <span class="attr">#[case(<span class="string">&quot;test&quot;</span>, <span class="string">&quot;test&quot;</span>, <span class="kw-2">&amp;</span>[]</span>, <span class="bool-val">false</span>)]
+    <span class="attr">#[case(<span class="string">&quot;test&quot;</span>, <span class="string">&quot;test&quot;</span>, <span class="kw-2">&amp;</span>[<span class="string">&quot;foo&quot;</span>, <span class="string">&quot;bar&quot;</span>, <span class="string">&quot;baz&quot;</span>]</span>, <span class="bool-val">false</span>)]
+    <span class="attr">#[case(<span class="string">&quot;cargo&quot;</span>, <span class="string">&quot;cargo&quot;</span>, <span class="kw-2">&amp;</span>[]</span>, <span class="bool-val">false</span>)]
+    <span class="attr">#[case(<span class="string">&quot;cargo&quot;</span>, <span class="string">&quot;cargo&quot;</span>, <span class="kw-2">&amp;</span>[<span class="string">&quot;foo&quot;</span>]</span>, <span class="bool-val">false</span>)]
+    <span class="attr">#[case(<span class="string">&quot;x86_64-linux-gnu-ld.bfd&quot;</span>, <span class="string">&quot;ld&quot;</span>, <span class="kw-2">&amp;</span>[]</span>, <span class="bool-val">false</span>)]
     <span class="kw">fn </span>should_load_true(
-        <span class="attr">#[case] </span>given_process: <span class="kw-2">&amp;</span>str,
-        <span class="attr">#[case] </span>skip_processes: <span class="prelude-ty">Option</span>&lt;Vec&lt;String&gt;&gt;,
+        <span class="attr">#[case] </span>exec_name: <span class="kw-2">&amp;</span>str,
+        <span class="attr">#[case] </span>invoked_as: <span class="kw-2">&amp;</span>str,
+        <span class="attr">#[case] </span>skip_processes: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>str],
         <span class="attr">#[case] </span>skip_build_tools: bool,
     ) {
-        <span class="macro">assert!</span>(should_load(given_process, skip_processes, skip_build_tools));
+        <span class="kw">let </span>executable_name = ExecutableName {
+            exec_name: exec_name.to_string(),
+            invoked_as: invoked_as.to_string(),
+        };
+
+        <span class="macro">assert!</span>(executable_name.should_load(skip_processes, skip_build_tools));
     }
 
     <span class="attr">#[rstest]
-    #[case(<span class="string">&quot;test&quot;</span>, <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[<span class="string">&quot;test&quot;</span>.to_string()]</span>), <span class="bool-val">false</span>)]
-    <span class="attr">#[case(<span class="string">&quot;test&quot;</span>, <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[<span class="string">&quot;test&quot;</span>.to_owned(), <span class="string">&quot;foo&quot;</span>.to_owned(), <span class="string">&quot;bar&quot;</span>.to_owned(), <span class="string">&quot;baz&quot;</span>.to_owned()]</span>), <span class="bool-val">false</span>)]
-    <span class="attr">#[case(<span class="string">&quot;cargo&quot;</span>, <span class="prelude-val">None</span>, <span class="bool-val">true</span>)]
-    #[case(<span class="string">&quot;cargo&quot;</span>, <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[<span class="string">&quot;foo&quot;</span>.to_string()]</span>), <span class="bool-val">true</span>)]
+    #[case(<span class="string">&quot;test&quot;</span>, <span class="string">&quot;test&quot;</span>, <span class="kw-2">&amp;</span>[<span class="string">&quot;test&quot;</span>]</span>, <span class="bool-val">false</span>)]
+    <span class="attr">#[case(<span class="string">&quot;test&quot;</span>, <span class="string">&quot;test&quot;</span>, <span class="kw-2">&amp;</span>[<span class="string">&quot;test&quot;</span>, <span class="string">&quot;foo&quot;</span>, <span class="string">&quot;bar&quot;</span>, <span class="string">&quot;baz&quot;</span>]</span>, <span class="bool-val">false</span>)]
+    <span class="attr">#[case(<span class="string">&quot;cargo&quot;</span>, <span class="string">&quot;cargo&quot;</span>, <span class="kw-2">&amp;</span>[]</span>, <span class="bool-val">true</span>)]
+    <span class="attr">#[case(<span class="string">&quot;cargo&quot;</span>, <span class="string">&quot;cargo&quot;</span>, <span class="kw-2">&amp;</span>[<span class="string">&quot;foo&quot;</span>]</span>, <span class="bool-val">true</span>)]
+    <span class="attr">#[case(<span class="string">&quot;x86_64-linux-gnu-ld.bfd&quot;</span>, <span class="string">&quot;ld&quot;</span>, <span class="kw-2">&amp;</span>[<span class="string">&quot;ld&quot;</span>]</span>, <span class="bool-val">false</span>)]
+    <span class="attr">#[case(<span class="string">&quot;x86_64-linux-gnu-ld.bfd&quot;</span>, <span class="string">&quot;ld&quot;</span>, <span class="kw-2">&amp;</span>[]</span>, <span class="bool-val">true</span>)]
     <span class="kw">fn </span>should_load_false(
-        <span class="attr">#[case] </span>given_process: <span class="kw-2">&amp;</span>str,
-        <span class="attr">#[case] </span>skip_processes: <span class="prelude-ty">Option</span>&lt;Vec&lt;String&gt;&gt;,
+        <span class="attr">#[case] </span>exec_name: <span class="kw-2">&amp;</span>str,
+        <span class="attr">#[case] </span>invoked_as: <span class="kw-2">&amp;</span>str,
+        <span class="attr">#[case] </span>skip_processes: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>str],
         <span class="attr">#[case] </span>skip_build_tools: bool,
     ) {
-        <span class="macro">assert!</span>(!should_load(
-            given_process,
-            skip_processes,
-            skip_build_tools
-        ));
+        <span class="kw">let </span>executable_name = ExecutableName {
+            exec_name: exec_name.to_string(),
+            invoked_as: invoked_as.to_string(),
+        };
+
+        <span class="macro">assert!</span>(!executable_name.should_load(skip_processes, skip_build_tools));
     }
 }
 </code></pre></div></section></main></body></html>

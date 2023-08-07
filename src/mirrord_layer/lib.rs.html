@@ -1064,38 +1064,6 @@
 <a href="#1064" id="1064">1064</a>
 <a href="#1065" id="1065">1065</a>
 <a href="#1066" id="1066">1066</a>
-<a href="#1067" id="1067">1067</a>
-<a href="#1068" id="1068">1068</a>
-<a href="#1069" id="1069">1069</a>
-<a href="#1070" id="1070">1070</a>
-<a href="#1071" id="1071">1071</a>
-<a href="#1072" id="1072">1072</a>
-<a href="#1073" id="1073">1073</a>
-<a href="#1074" id="1074">1074</a>
-<a href="#1075" id="1075">1075</a>
-<a href="#1076" id="1076">1076</a>
-<a href="#1077" id="1077">1077</a>
-<a href="#1078" id="1078">1078</a>
-<a href="#1079" id="1079">1079</a>
-<a href="#1080" id="1080">1080</a>
-<a href="#1081" id="1081">1081</a>
-<a href="#1082" id="1082">1082</a>
-<a href="#1083" id="1083">1083</a>
-<a href="#1084" id="1084">1084</a>
-<a href="#1085" id="1085">1085</a>
-<a href="#1086" id="1086">1086</a>
-<a href="#1087" id="1087">1087</a>
-<a href="#1088" id="1088">1088</a>
-<a href="#1089" id="1089">1089</a>
-<a href="#1090" id="1090">1090</a>
-<a href="#1091" id="1091">1091</a>
-<a href="#1092" id="1092">1092</a>
-<a href="#1093" id="1093">1093</a>
-<a href="#1094" id="1094">1094</a>
-<a href="#1095" id="1095">1095</a>
-<a href="#1096" id="1096">1096</a>
-<a href="#1097" id="1097">1097</a>
-<a href="#1098" id="1098">1098</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(c_variadic)]
 #![feature(result_option_inspect)]
 #![feature(const_trait_impl)]
@@ -1174,7 +1142,6 @@
 <span class="kw">use </span>std::{
     collections::{HashSet, VecDeque},
     ffi::OsString,
-    mem,
     net::SocketAddr,
     panic,
     sync::{OnceLock, RwLock},
@@ -1188,6 +1155,7 @@
 <span class="kw">use </span>file::{filter::FileFilter, OPEN_FILES};
 <span class="kw">use </span>hooks::HookManager;
 <span class="kw">use </span>libc::{c_int, pid_t};
+<span class="kw">use </span>load::ExecutableName;
 <span class="kw">use </span>mirrord_config::{
     feature::{
         fs::{FsConfig, FsModeConfig},
@@ -1252,34 +1220,11 @@
 </span><span class="kw">mod </span>go_hooks;
 
 <span class="kw">fn </span>build_runtime() -&gt; Runtime {
-    tokio::runtime::Builder::new_multi_thread()
+    tokio::runtime::Builder::new_current_thread()
         .enable_all()
-        .on_thread_start(detour::detour_bypass_on)
-        .on_thread_stop(detour::detour_bypass_off)
         .build()
         .unwrap()
 }
-
-<span class="doccomment">/// Main tokio [`Runtime`] for mirrord-layer async tasks.
-///
-/// Apart from some pre-initialization steps, mirrord-layer mostly runs inside this runtime with
-/// `RUNTIME.block_on`.
-/// This is static because it needs to continue living as long as the process is running.
-///
-/// ## Usage
-///
-/// Currently it&#39;s being used to run 2 big tasks:
-///
-/// 1. [`connection::connect`]: which creates the mirrord-agent connection for this layer instance;
-///
-/// 2. [`start_layer_thread`]: where we [`spawn`](tokio::spawn) mirrord-layer&#39;s main loop.
-///
-/// ## Bypass
-///
-/// To prevent us from intercepting neccessary (local) syscalls (like creating a socket), we use
-/// [`detour::detour_bypass_on`] `on_thread_start`, and [`detour::detour_bypass_off`]
-/// `on_thread_stop`.
-</span><span class="kw">static </span><span class="kw-2">mut </span>RUNTIME: <span class="prelude-ty">Option</span>&lt;Runtime&gt; = <span class="prelude-val">None</span>;
 
 <span class="comment">// TODO: We don&#39;t really need a lock, we just need a type that:
 //  1. Can be initialized as static (with a const constructor or whatever)
@@ -1378,7 +1323,7 @@
 // that aren&#39;t safe to use after fork.
 
 </span><span class="doccomment">/// Executable we&#39;re loaded to
-</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">static </span>EXECUTABLE_NAME: OnceLock&lt;String&gt; = OnceLock::new();
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">static </span>EXECUTABLE_NAME: OnceLock&lt;ExecutableName&gt; = OnceLock::new();
 
 <span class="doccomment">/// Executable path we&#39;re loaded to
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">static </span>EXECUTABLE_PATH: OnceLock&lt;String&gt; = OnceLock::new();
@@ -1396,16 +1341,7 @@
 
 <span class="doccomment">/// Loads mirrord configuration and does some patching (SIP, dotnet, etc)
 </span><span class="kw">fn </span>layer_pre_initialization() -&gt; <span class="prelude-ty">Result</span>&lt;(), LayerError&gt; {
-    <span class="kw">let </span>given_process = EXECUTABLE_NAME.get_or_try_init(|| {
-        std::env::current_exe()
-            .ok()
-            .and_then(|arg| {
-                arg.file_name()
-                    .and_then(|os_str| os_str.to_str())
-                    .map(String::from)
-            })
-            .ok_or(LayerError::NoProcessFound)
-    })<span class="question-mark">?</span>;
+    <span class="kw">let </span>given_process = EXECUTABLE_NAME.get_or_try_init(ExecutableName::from_env)<span class="question-mark">?</span>;
 
     EXECUTABLE_PATH.get_or_try_init(|| {
         std::env::current_exe().map(|arg| arg.to_string_lossy().into_owned())
@@ -1439,7 +1375,7 @@
         }
     }
 
-    <span class="kw">match </span>load::load_type(given_process, config) {
+    <span class="kw">match </span>given_process.load_type(config) {
         LoadType::Full(config) =&gt; layer_start(<span class="kw-2">*</span>config),
         <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
         </span>LoadType::SIPOnly =&gt; sip_only_layer_start(patch_binaries),
@@ -1627,22 +1563,8 @@
         .parse()
         .expect(<span class="string">&quot;couldn&#39;t parse proxy address&quot;</span>);
 
-    <span class="comment">// SAFETY: This function runs once per process, `RUNTIME` is not used anywhere else but this
-    // function, so there are no other threads using `RUNTIME`, so it&#39;s safe to mutate it here.
-    </span><span class="kw">let </span>new_runtime = <span class="kw">unsafe </span>{
-        <span class="comment">// leak the old runtime if there is one (on fork there is).
-        // We do that because we need a new runtime for the child process, and dropping the runtime
-        // inherited from the parent process leads to errors.
-        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(old_runtime) = RUNTIME.take() {
-            mem::forget(old_runtime);
-        }
-        <span class="comment">// We probably don&#39;t even need to keep a global `RUNTIME` at all, we could just create it
-        // here and `mem::forget` it before it goes out of scope.
-        </span>RUNTIME = <span class="prelude-val">Some</span>(build_runtime());
-        RUNTIME.as_ref().unwrap() <span class="comment">// unwrap: we set it in the line above
-    </span>};
-
-    <span class="kw">let </span>(tx, rx) = new_runtime.block_on(connection::connect_to_proxy(address));
+    <span class="kw">let </span>runtime = build_runtime();
+    <span class="kw">let </span>(tx, rx) = runtime.block_on(connection::connect_to_proxy(address));
     <span class="kw">let </span>(sender, receiver) = channel::&lt;HookMessage&gt;(<span class="number">1000</span>);
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(lock) = HOOK_SENDER.get() {
@@ -1661,7 +1583,7 @@
             .expect(<span class="string">&quot;Setting HOOK_SENDER singleton&quot;</span>);
     }
 
-    new_runtime.block_on(start_layer_thread(tx, rx, receiver, config));
+    start_layer_thread(tx, rx, receiver, config, runtime);
 }
 
 <span class="doccomment">/// We need to hook execve syscall to allow mirrord-layer to be loaded with sip patch when loading
@@ -1671,6 +1593,16 @@
     <span class="kw">let </span><span class="kw-2">mut </span>hook_manager = HookManager::default();
 
     <span class="kw">unsafe </span>{ exec_utils::enable_execve_hook(<span class="kw-2">&amp;mut </span>hook_manager, patch_binaries) };
+    <span class="comment">// we need to hook file access to patch path to our temp bin.
+    </span>FILE_FILTER
+        .set(FileFilter::new(FsConfig {
+            mode: FsModeConfig::Local,
+            read_write: <span class="prelude-val">None</span>,
+            read_only: <span class="prelude-val">None</span>,
+            local: <span class="prelude-val">None</span>,
+        }))
+        .expect(<span class="string">&quot;FILE_FILTER set failed&quot;</span>);
+    <span class="kw">unsafe </span>{ file::hooks::enable_file_hooks(<span class="kw-2">&amp;mut </span>hook_manager) };
 }
 
 <span class="doccomment">/// Acts as an API to the various features of mirrord-layer, holding the actual feature handler
@@ -2012,13 +1944,17 @@
 
 <span class="doccomment">/// Initializes mirrord-layer&#39;s [`thread_loop`] in a separate [`tokio::task`].
 </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(tx, rx, receiver))]
-</span><span class="kw">async fn </span>start_layer_thread(
+</span><span class="kw">fn </span>start_layer_thread(
     tx: Sender&lt;ClientMessage&gt;,
     rx: Receiver&lt;DaemonMessage&gt;,
     receiver: Receiver&lt;HookMessage&gt;,
     config: LayerConfig,
+    runtime: Runtime,
 ) {
-    tokio::spawn(thread_loop(receiver, tx, rx, config));
+    std::thread::spawn(<span class="kw">move </span>|| {
+        <span class="kw">let </span>_guard = DetourGuard::new();
+        runtime.block_on(thread_loop(receiver, tx, rx, config))
+    });
 }
 
 <span class="doccomment">/// Prepares the [`HookManager`] and [`replace!`]s [`libc`] calls with our hooks, according to what

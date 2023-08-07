@@ -912,6 +912,7 @@
 <a href="#912" id="912">912</a>
 <a href="#913" id="913">913</a>
 <a href="#914" id="914">914</a>
+<a href="#915" id="915">915</a>
 </pre></div><pre class="rust"><code><span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
 </span><span class="kw">use </span>core::ffi::{c_size_t, c_ssize_t};
 <span class="doccomment">/// FFI functions that override the `libc` calls (see `file` module documentation on how to
@@ -956,6 +957,7 @@
 
 <span class="doccomment">/// Take the original raw c_char pointer and a resulting bypass, and either the original pointer or
 /// a different one according to the bypass.
+/// We pass reference to bypass to make sure the bypass lives with the pointer.
 </span><span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
 </span><span class="kw">fn </span>update_ptr_from_bypass(ptr: <span class="kw-2">*const </span>c_char, bypass: Bypass) -&gt; <span class="kw-2">*const </span>c_char {
     <span class="kw">match </span>bypass {
