@@ -372,6 +372,29 @@
 <a href="#372" id="372">372</a>
 <a href="#373" id="373">373</a>
 <a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>base64::{engine::general_purpose, Engine <span class="kw">as _</span>};
 <span class="kw">use </span>futures::{SinkExt, StreamExt};
 <span class="kw">use </span>http::request::Request;
@@ -442,6 +465,7 @@
     <span class="kw">pub </span>target: TargetCrd,
     <span class="kw">pub </span>fingerprint: <span class="prelude-ty">Option</span>&lt;String&gt;,
     <span class="kw">pub </span>operator_features: Vec&lt;OperatorFeatures&gt;,
+    <span class="kw">pub </span>protocol_version: <span class="prelude-ty">Option</span>&lt;semver::Version&gt;,
 }
 
 <span class="kw">impl </span>OperatorSessionInformation {
@@ -449,12 +473,14 @@
         target: TargetCrd,
         fingerprint: <span class="prelude-ty">Option</span>&lt;String&gt;,
         operator_features: Vec&lt;OperatorFeatures&gt;,
+        protocol_version: <span class="prelude-ty">Option</span>&lt;semver::Version&gt;,
     ) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             session_id: rand::random::&lt;u64&gt;().to_string(),
             target,
             fingerprint,
             operator_features,
+            protocol_version,
         }
     }
 
@@ -500,23 +526,23 @@
             // This is printed multiple times when the local process forks. Can be solved by e.g.
             // propagating an env var, don&#39;t think it&#39;s worth the extra complexity though
             </span><span class="kw">let </span>mirrord_version = Version::parse(<span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_VERSION&quot;</span>)).unwrap();
-            <span class="kw">if </span>operator_version != mirrord_version {
+            <span class="kw">if </span>operator_version &gt; mirrord_version {
                 progress.subtask(<span class="string">&quot;comparing versions&quot;</span>).print_message(MessageKind::Warning, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;Your mirrord plugin/CLI version {} does not match the operator version {}. This can lead to unforeseen issues.&quot;</span>, mirrord_version, operator_version)));
-                <span class="kw">if </span>operator_version &gt; mirrord_version {
-                    progress.subtask(<span class="string">&quot;comparing versions&quot;</span>).print_message(
-                        MessageKind::Warning,
-                        <span class="prelude-val">Some</span>(
-                            <span class="string">&quot;Consider updating your mirrord plugin/CLI to match the operator version.&quot;</span>,
-                        ),
-                    );
-                } <span class="kw">else </span>{
-                    progress.subtask(<span class="string">&quot;comparing versions&quot;</span>).print_message(MessageKind::Warning, <span class="prelude-val">Some</span>(<span class="string">&quot;Consider either updating your operator version to match your mirrord plugin/CLI version, or downgrading your mirrord plugin/CLI.&quot;</span>));
-                }
+                progress.subtask(<span class="string">&quot;comparing versions&quot;</span>).print_message(
+                    MessageKind::Warning,
+                    <span class="prelude-val">Some</span>(
+                        <span class="string">&quot;Consider updating your mirrord plugin/CLI to match the operator version.&quot;</span>,
+                    ),
+                );
             }
             <span class="kw">let </span>operator_session_information = OperatorSessionInformation::new(
                 target,
                 status.spec.license.fingerprint,
                 status.spec.features.unwrap_or_default(),
+                status
+                    .spec
+                    .protocol_version
+                    .and_then(|str_version| str_version.parse().ok()),
             );
 
             <span class="kw">let </span>(sender, receiver) = operator_api
@@ -658,7 +684,10 @@
             .<span class="kw">await
             </span>.map_err(KubeApiError::from)<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(ConnectionWrapper::wrap(connection))
+        <span class="prelude-val">Ok</span>(ConnectionWrapper::wrap(
+            connection,
+            session_information.protocol_version.clone(),
+        ))
     }
 }
 
@@ -666,6 +695,7 @@
     connection: T,
     client_rx: Receiver&lt;ClientMessage&gt;,
     daemon_tx: Sender&lt;DaemonMessage&gt;,
+    protocol_version: <span class="prelude-ty">Option</span>&lt;semver::Version&gt;,
 }
 
 <span class="kw">impl</span>&lt;T&gt; ConnectionWrapper&lt;T&gt;
@@ -676,11 +706,15 @@
         + Unpin
         + <span class="lifetime">&#39;stream</span>,
 {
-    <span class="kw">fn </span>wrap(connection: T) -&gt; (Sender&lt;ClientMessage&gt;, Receiver&lt;DaemonMessage&gt;) {
+    <span class="kw">fn </span>wrap(
+        connection: T,
+        protocol_version: <span class="prelude-ty">Option</span>&lt;semver::Version&gt;,
+    ) -&gt; (Sender&lt;ClientMessage&gt;, Receiver&lt;DaemonMessage&gt;) {
         <span class="kw">let </span>(client_tx, client_rx) = mpsc::channel(CONNECTION_CHANNEL_SIZE);
         <span class="kw">let </span>(daemon_tx, daemon_rx) = mpsc::channel(CONNECTION_CHANNEL_SIZE);
 
         <span class="kw">let </span>connection_wrapper = ConnectionWrapper {
+            protocol_version,
             connection,
             client_rx,
             daemon_tx,
@@ -728,6 +762,18 @@
             <span class="macro">tokio::select! </span>{
                 client_message = <span class="self">self</span>.client_rx.recv() =&gt; {
                     <span class="kw">match </span>client_message {
+                        <span class="prelude-val">Some</span>(ClientMessage::SwitchProtocolVersion(version)) =&gt; {
+                            <span class="kw">if let </span><span class="prelude-val">Some</span>(operator_protocol_version) = <span class="self">self</span>.protocol_version.as_ref() {
+                                <span class="self">self</span>.handle_client_message(ClientMessage::SwitchProtocolVersion(operator_protocol_version.min(<span class="kw-2">&amp;</span>version).clone())).<span class="kw">await</span><span class="question-mark">?</span>;
+                            } <span class="kw">else </span>{
+                                <span class="self">self</span>.daemon_tx
+                                    .send(DaemonMessage::SwitchProtocolVersionResponse(
+                                        <span class="string">&quot;1.2.1&quot;</span>.parse().expect(<span class="string">&quot;Bad static version&quot;</span>),
+                                    ))
+                                    .<span class="kw">await
+                                    </span>.map_err(|<span class="kw">_</span>| OperatorApiError::DaemonReceiverDropped)<span class="question-mark">?</span>;
+                            }
+                        }
                         <span class="prelude-val">Some</span>(client_message) =&gt; <span class="self">self</span>.handle_client_message(client_message).<span class="kw">await</span><span class="question-mark">?</span>,
                         <span class="prelude-val">None </span>=&gt; <span class="kw">break</span>,
                     }

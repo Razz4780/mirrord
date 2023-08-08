@@ -760,6 +760,12 @@
 <a href="#760" id="760">760</a>
 <a href="#761" id="761">761</a>
 <a href="#762" id="762">762</a>
+<a href="#763" id="763">763</a>
+<a href="#764" id="764">764</a>
+<a href="#765" id="765">765</a>
+<a href="#766" id="766">766</a>
+<a href="#767" id="767">767</a>
+<a href="#768" id="768">768</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(slice_concat_trait)]
 #![feature(lazy_cell)]
 #![feature(result_option_inspect)]
@@ -773,6 +779,7 @@
 </span><span class="kw">pub mod </span>agent;
 <span class="kw">pub mod </span>config;
 <span class="kw">pub mod </span>feature;
+<span class="kw">pub mod </span>internal_proxy;
 <span class="kw">pub mod </span>target;
 <span class="kw">pub mod </span>util;
 
@@ -786,7 +793,7 @@
 
 <span class="kw">use crate</span>::{
     agent::AgentConfig, config::source::MirrordConfigSource, feature::FeatureConfig,
-    target::TargetConfig, util::VecOrSingle,
+    internal_proxy::InternalProxyConfig, target::TargetConfig, util::VecOrSingle,
 };
 
 <span class="kw">const </span>PAUSE_WITHOUT_STEAL_WARNING: <span class="kw-2">&amp;</span>str =
@@ -1065,6 +1072,10 @@
     /// ```
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_KUBE_CONTEXT&quot;</span>)]
     </span><span class="kw">pub </span>kube_context: <span class="prelude-ty">Option</span>&lt;String&gt;,
+
+    <span class="doccomment">/// # internal_proxy {#root-internal_proxy}
+    </span><span class="attr">#[config(nested)]
+    </span><span class="kw">pub </span>internal_proxy: InternalProxyConfig,
 }
 
 <span class="kw">impl </span>LayerConfig {
@@ -1428,6 +1439,7 @@
             operator: <span class="prelude-val">None</span>,
             sip_binaries: <span class="prelude-val">None</span>,
             kube_context: <span class="prelude-val">None</span>,
+            internal_proxy: <span class="prelude-val">None</span>,
         };
 
         <span class="macro">assert_eq!</span>(config, expect);

@@ -22,7 +22,7 @@
 <a href="#22" id="22">22</a>
 <a href="#23" id="23">23</a>
 <a href="#24" id="24">24</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>mirrord_protocol::tcp::{HttpRequest, HttpResponse};
+</pre></div><pre class="rust"><code><span class="kw">use </span>mirrord_protocol::tcp::{HttpRequestFallback, HttpResponseFallback};
 <span class="kw">use </span>thiserror::Error;
 <span class="kw">use </span>tokio::sync::mpsc::error::SendError;
 
@@ -32,10 +32,10 @@
     </span>ConnectionCloseSend(<span class="attr">#[from] </span>SendError&lt;u64&gt;),
 
     <span class="attr">#[error(<span class="string">&quot;HTTP Forwarder: Failed to send http response to main layer task with error: {0}.&quot;</span>)]
-    </span>ResponseSend(<span class="attr">#[from] </span>SendError&lt;HttpResponse&gt;),
+    </span>ResponseSend(<span class="attr">#[from] </span>SendError&lt;HttpResponseFallback&gt;),
 
     <span class="attr">#[error(<span class="string">&quot;HTTP Forwarder: Failed to send http request HTTP client task with error: {0}.&quot;</span>)]
-    </span>Request2ClientSend(<span class="attr">#[from] </span>SendError&lt;HttpRequest&gt;),
+    </span>Request2ClientSend(<span class="attr">#[from] </span>SendError&lt;HttpRequestFallback&gt;),
 
     <span class="attr">#[error(<span class="string">&quot;HTTP Forwarder: Could not send http request to application or receive its response with error: {0}.&quot;</span>)]
     </span>HttpForwarding(<span class="attr">#[from] </span>hyper::Error),
@@ -44,6 +44,6 @@
     </span>TcpStream(<span class="attr">#[from] </span>std::io::Error),
 
     <span class="attr">#[error(<span class="string">&quot;HTTP Forwarder: Connection was closed too soon with error: {0:#?}&quot;</span>)]
-    </span>ConnectionClosedTooSoon(HttpRequest),
+    </span>ConnectionClosedTooSoon(HttpRequestFallback),
 }
 </code></pre></div></section></main></body></html>

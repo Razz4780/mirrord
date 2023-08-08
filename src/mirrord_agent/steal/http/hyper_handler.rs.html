@@ -217,35 +217,6 @@
 <a href="#217" id="217">217</a>
 <a href="#218" id="218">218</a>
 <a href="#219" id="219">219</a>
-<a href="#220" id="220">220</a>
-<a href="#221" id="221">221</a>
-<a href="#222" id="222">222</a>
-<a href="#223" id="223">223</a>
-<a href="#224" id="224">224</a>
-<a href="#225" id="225">225</a>
-<a href="#226" id="226">226</a>
-<a href="#227" id="227">227</a>
-<a href="#228" id="228">228</a>
-<a href="#229" id="229">229</a>
-<a href="#230" id="230">230</a>
-<a href="#231" id="231">231</a>
-<a href="#232" id="232">232</a>
-<a href="#233" id="233">233</a>
-<a href="#234" id="234">234</a>
-<a href="#235" id="235">235</a>
-<a href="#236" id="236">236</a>
-<a href="#237" id="237">237</a>
-<a href="#238" id="238">238</a>
-<a href="#239" id="239">239</a>
-<a href="#240" id="240">240</a>
-<a href="#241" id="241">241</a>
-<a href="#242" id="242">242</a>
-<a href="#243" id="243">243</a>
-<a href="#244" id="244">244</a>
-<a href="#245" id="245">245</a>
-<a href="#246" id="246">246</a>
-<a href="#247" id="247">247</a>
-<a href="#248" id="248">248</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! The core part of the whole HTTP traffic stealing feature.
 //!
 //! # [`HyperHandler`]
@@ -257,12 +228,7 @@
 <span class="kw">use </span>bytes::Bytes;
 <span class="kw">use </span>dashmap::DashMap;
 <span class="kw">use </span>futures::TryFutureExt;
-<span class="kw">use </span>http_body_util::{BodyExt, Full};
-<span class="kw">use </span>hyper::{
-    body::Incoming,
-    http::{<span class="self">self</span>, response},
-    Request, Response,
-};
+<span class="kw">use </span>hyper::{body::Incoming, Request};
 <span class="kw">use </span>mirrord_protocol::{ConnectionId, Port, RequestId};
 <span class="kw">use </span>tokio::{
     net::TcpStream,
@@ -273,7 +239,7 @@
 <span class="kw">use super</span>::{
     error::HttpTrafficError,
     filter::{HttpFilter, RequestMatch},
-    HttpV,
+    HttpV, Response,
 };
 <span class="kw">use crate</span>::{
     steal::{HandlerHttpRequest, MatchedHttpRequest},
@@ -342,37 +308,13 @@
     })
 }
 
-<span class="doccomment">/// Remove headers that would be invalid due to us fiddling with the `body`, and rebuilds the
-/// [`Response`].
-</span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>)]
-</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">async fn </span>prepare_response(
-    (<span class="kw-2">mut </span>parts, body): (response::Parts, Full&lt;Bytes&gt;),
-) -&gt; <span class="prelude-ty">Result</span>&lt;Response&lt;Full&lt;Bytes&gt;&gt;, HttpTrafficError&gt; {
-    parts.headers.remove(http::header::CONTENT_LENGTH);
-    parts.headers.remove(http::header::TRANSFER_ENCODING);
-
-    <span class="comment">// Rebuild the `Response` after our fiddling.
-    </span><span class="prelude-val">Ok</span>(Response::from_parts(parts, body))
-}
-
-<span class="doccomment">/// Converts the body of this response from [`Incoming`] into [`Full`].
-///
-/// To be used with [`prepare_response`].
-</span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>)]
-</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">async fn </span>collect_response(
-    response: Response&lt;Incoming&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;(response::Parts, Full&lt;Bytes&gt;), HttpTrafficError&gt; {
-    <span class="kw">let </span>(parts, body) = response.into_parts();
-    <span class="prelude-val">Ok</span>((parts, Full::new(body.collect().<span class="kw">await</span><span class="question-mark">?</span>.to_bytes())))
-}
-
 <span class="doccomment">/// Sends a [`MatchedHttpRequest`] through `tx` to be handled by the stealer -&gt; layer,
 /// and then waits for the response and returns it once it&#39;s there.
 </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(matched_tx))]
 </span><span class="kw">async fn </span>matched_request(
     request: MatchedHttpRequest,
     matched_tx: Sender&lt;HandlerHttpRequest&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;Response&lt;Full&lt;Bytes&gt;&gt;, HttpTrafficError&gt; {
+) -&gt; <span class="prelude-ty">Result</span>&lt;Response, HttpTrafficError&gt; {
     <span class="kw">let </span>(response_tx, response_rx) = oneshot::channel();
     <span class="kw">let </span>request = HandlerHttpRequest {
         request,
@@ -384,8 +326,8 @@
         .map_err(HttpTrafficError::from)
         .<span class="kw">await</span><span class="question-mark">?</span>;
 
-    prepare_response(response_rx.<span class="kw">await</span><span class="question-mark">?</span>.into_parts()).<span class="kw">await
-</span>}
+    response_rx.<span class="kw">await</span>.map_err(HttpTrafficError::from)
+}
 
 <span class="kw">impl</span>&lt;V&gt; HyperHandler&lt;V&gt;
 <span class="kw">where
@@ -443,7 +385,7 @@
         request: Request&lt;Incoming&gt;,
         upgrade_tx: <span class="prelude-ty">Option</span>&lt;oneshot::Sender&lt;RawHyperConnection&gt;&gt;,
         original_destination: SocketAddr,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;Response&lt;Full&lt;Bytes&gt;&gt;, HttpTrafficError&gt; {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;Response, HttpTrafficError&gt; {
         <span class="comment">// TODO(alex): We need a &quot;retry&quot; mechanism here for the client handling part, when the
         // server closes a connection, the client could still be wanting to send a request,
         // so we need to re-connect and send.
@@ -476,7 +418,7 @@
         connection_id: ConnectionId,
         request_id: RequestId,
         matched_tx: Sender&lt;HandlerHttpRequest&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;Response&lt;Full&lt;Bytes&gt;&gt;, HttpTrafficError&gt; {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;Response, HttpTrafficError&gt; {
         <span class="kw">if </span>V::is_upgrade(<span class="kw-2">&amp;</span>request) {
             <span class="self">Self</span>::unmatched_request(request, upgrade_tx, original_destination).<span class="kw">await
         </span>} <span class="kw">else if let </span><span class="prelude-val">Some</span>(client_id) = match_request(<span class="kw-2">&amp;</span>request, <span class="kw-2">&amp;</span>filters) {

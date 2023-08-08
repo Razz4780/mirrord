@@ -226,6 +226,12 @@
 <a href="#226" id="226">226</a>
 <a href="#227" id="227">227</a>
 <a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::io::ErrorKind::ConnectionRefused;
 <span class="doccomment">/// Tcp Traffic management, common code for stealing &amp; mirroring
 </span><span class="kw">use </span>std::{
@@ -238,7 +244,7 @@
 
 <span class="kw">use </span>bimap::BiMap;
 <span class="kw">use </span>mirrord_protocol::{
-    tcp::{DaemonTcp, HttpRequest, NewTcpConnection, TcpClose, TcpData},
+    tcp::{DaemonTcp, HttpRequestFallback, NewTcpConnection, TcpClose, TcpData},
     ClientMessage, Port, ResponseError,
 };
 <span class="kw">use </span>tokio::{net::TcpStream, sync::mpsc::Sender};
@@ -360,9 +366,14 @@
                 <span class="macro">error!</span>(<span class="string">&quot;Port subscription failed with unexpected error: {other_error}.&quot;</span>);
                 <span class="prelude-val">Err</span>(UnexpectedResponseError(other_error))
             }
-            DaemonTcp::HttpRequest(request) =&gt; {
-                <span class="self">self</span>.handle_http_request(request).<span class="kw">await</span>.map_err(From::from)
-            }
+            DaemonTcp::HttpRequest(request) =&gt; <span class="self">self
+                </span>.handle_http_request(HttpRequestFallback::Fallback(request))
+                .<span class="kw">await
+                </span>.map_err(From::from),
+            DaemonTcp::HttpRequestFramed(request) =&gt; <span class="self">self
+                </span>.handle_http_request(HttpRequestFallback::Framed(request))
+                .<span class="kw">await
+                </span>.map_err(From::from),
         }
     }
 
@@ -435,7 +446,8 @@
     </span><span class="kw">async fn </span>handle_new_data(<span class="kw-2">&amp;mut </span><span class="self">self</span>, data: TcpData) -&gt; <span class="prelude-ty">Result</span>&lt;(), LayerError&gt;;
 
     <span class="doccomment">/// Handle New Data messages
-    </span><span class="kw">async fn </span>handle_http_request(<span class="kw-2">&amp;mut </span><span class="self">self</span>, request: HttpRequest) -&gt; <span class="prelude-ty">Result</span>&lt;(), LayerError&gt;;
+    </span><span class="kw">async fn </span>handle_http_request(<span class="kw-2">&amp;mut </span><span class="self">self</span>, request: HttpRequestFallback)
+        -&gt; <span class="prelude-ty">Result</span>&lt;(), LayerError&gt;;
 
     <span class="doccomment">/// Handle connection close from the client side (notified via agent message).
     </span><span class="kw">fn </span>handle_close(<span class="kw-2">&amp;mut </span><span class="self">self</span>, close: TcpClose) -&gt; <span class="prelude-ty">Result</span>&lt;(), LayerError&gt;;

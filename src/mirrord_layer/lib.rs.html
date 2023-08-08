@@ -1064,6 +1064,22 @@
 <a href="#1064" id="1064">1064</a>
 <a href="#1065" id="1065">1065</a>
 <a href="#1066" id="1066">1066</a>
+<a href="#1067" id="1067">1067</a>
+<a href="#1068" id="1068">1068</a>
+<a href="#1069" id="1069">1069</a>
+<a href="#1070" id="1070">1070</a>
+<a href="#1071" id="1071">1071</a>
+<a href="#1072" id="1072">1072</a>
+<a href="#1073" id="1073">1073</a>
+<a href="#1074" id="1074">1074</a>
+<a href="#1075" id="1075">1075</a>
+<a href="#1076" id="1076">1076</a>
+<a href="#1077" id="1077">1077</a>
+<a href="#1078" id="1078">1078</a>
+<a href="#1079" id="1079">1079</a>
+<a href="#1080" id="1080">1080</a>
+<a href="#1081" id="1081">1081</a>
+<a href="#1082" id="1082">1082</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(c_variadic)]
 #![feature(result_option_inspect)]
 #![feature(const_trait_impl)]
@@ -1167,7 +1183,7 @@
 <span class="kw">use </span>mirrord_layer_macro::{hook_fn, hook_guard_fn};
 <span class="kw">use </span>mirrord_protocol::{
     dns::{DnsLookup, GetAddrInfoRequest},
-    tcp::{HttpResponse, LayerTcpSteal},
+    tcp::{HttpResponseFallback, LayerTcpSteal},
     ClientMessage, DaemonMessage,
 };
 <span class="kw">use </span>outgoing::{tcp::TcpOutgoingHandler, udp::UdpOutgoingHandler};
@@ -1665,7 +1681,7 @@
     <span class="doccomment">/// Receives responses in the layer loop to be forwarded to the agent.
     ///
     /// Part of the stealer HTTP traffic feature, see `http`.
-    </span><span class="kw">pub </span>http_response_receiver: Receiver&lt;HttpResponse&gt;,
+    </span><span class="kw">pub </span>http_response_receiver: Receiver&lt;HttpResponseFallback&gt;,
 
     <span class="doccomment">/// Sets the way we handle [`HookMessage::Tcp`] in `handle_hook_message`:
     ///
@@ -1834,6 +1850,7 @@
             DaemonMessage::PauseTarget(<span class="kw">_</span>) =&gt; {
                 <span class="macro">unreachable!</span>(<span class="string">&quot;We set pausing target only on initialization, shouldn&#39;t happen&quot;</span>)
             }
+            DaemonMessage::SwitchProtocolVersionResponse(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(()),
         }
     }
 }
@@ -1878,6 +1895,16 @@
     } = config;
     <span class="kw">let </span><span class="kw-2">mut </span>layer = Layer::new(tx, rx, incoming);
     layer.ping_interval.tick().<span class="kw">await</span>;
+
+    <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = layer
+        .tx
+        .send(ClientMessage::SwitchProtocolVersion(
+            mirrord_protocol::VERSION.clone(),
+        ))
+        .<span class="kw">await
+    </span>{
+        <span class="macro">warn!</span>(<span class="string">&quot;Unable to switch protocol: {err}&quot;</span>);
+    }
 
     <span class="kw">loop </span>{
         <span class="macro">select! </span>{
@@ -1926,7 +1953,12 @@
                 layer.send(message).<span class="kw">await</span>.unwrap();
             }
             <span class="prelude-val">Some</span>(response) = layer.http_response_receiver.recv() =&gt; {
-                layer.send(ClientMessage::TcpSteal(LayerTcpSteal::HttpResponse(response))).<span class="kw">await</span>.unwrap();
+                <span class="kw">let </span>message = <span class="kw">match </span>response {
+                    HttpResponseFallback::Framed(res) =&gt; ClientMessage::TcpSteal(LayerTcpSteal::HttpResponseFramed(res)),
+                    HttpResponseFallback::Fallback(res) =&gt; ClientMessage::TcpSteal(LayerTcpSteal::HttpResponse(res))
+                };
+
+                layer.send(message).<span class="kw">await</span>.unwrap();
             }
             <span class="kw">_ </span>= layer.ping_interval.tick() =&gt; {
                 <span class="kw">if </span>!layer.ping {

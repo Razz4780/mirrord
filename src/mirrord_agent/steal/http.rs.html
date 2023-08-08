@@ -220,6 +220,8 @@
 <a href="#220" id="220">220</a>
 <a href="#221" id="221">221</a>
 <a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Home for most of the HTTP stealer implementation / modules.
 //!
 //! # [`HttpV`]
@@ -235,8 +237,8 @@
 
 <span class="kw">use </span>bytes::Bytes;
 <span class="kw">use </span>dashmap::DashMap;
-<span class="kw">use </span>http_body_util::Full;
-<span class="kw">use </span>hyper::{body::Incoming, Request, Response};
+<span class="kw">use </span>http_body_util::combinators::BoxBody;
+<span class="kw">use </span>hyper::{body::Incoming, Request};
 <span class="kw">use </span>mirrord_protocol::ConnectionId;
 <span class="kw">use </span>tokio::{
     net::TcpStream,
@@ -260,6 +262,8 @@
 <span class="kw">mod </span>v2;
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use </span>filter::HttpFilter;
+
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">type </span>Response&lt;B = BoxBody&lt;Bytes, HttpTrafficError&gt;&gt; = hyper::Response&lt;B&gt;;
 
 <span class="doccomment">/// Handy alias due to [`ReversibleStream`] being generic, avoiding value mismatches.
 </span><span class="kw">type </span>DefaultReversibleStream = ReversibleStream&lt;MINIMAL_HEADER_SIZE&gt;;
@@ -311,7 +315,7 @@
     </span><span class="kw">async fn </span>send_request(
         sender: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Sender,
         request: Request&lt;Incoming&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;Response&lt;Full&lt;Bytes&gt;&gt;, HttpTrafficError&gt;;
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;Response, HttpTrafficError&gt;;
 
     <span class="doccomment">/// Returns `true` if this [`Request`] contains an `UPGRADE` header.
     ///

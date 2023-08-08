@@ -253,7 +253,7 @@
 
 <span class="kw">use </span>bimap::BiMap;
 <span class="kw">use </span>mirrord_protocol::{
-    tcp::{HttpRequest, LayerTcp, NewTcpConnection, TcpClose, TcpData},
+    tcp::{HttpRequestFallback, LayerTcp, NewTcpConnection, TcpClose, TcpData},
     ClientMessage, ConnectionId, Port,
 };
 <span class="kw">use </span>tokio::{
@@ -468,7 +468,7 @@
     /// steal, but steal has some extra messages that should not be used with mirror.
     </span><span class="kw">async fn </span>handle_http_request(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        _request: HttpRequest,
+        _request: HttpRequestFallback,
     ) -&gt; std::result::Result&lt;(), LayerError&gt; {
         <span class="macro">error!</span>(<span class="string">&quot;Error: Mirror handler received http request.&quot;</span>);
         <span class="macro">debug_assert!</span>(<span class="bool-val">false</span>);

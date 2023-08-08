@@ -247,6 +247,9 @@
 <a href="#247" id="247">247</a>
 <a href="#248" id="248">248</a>
 <a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! # [`HttpV`]
 //!
 //! # [`ConnectionTask`]
@@ -258,7 +261,7 @@
     HttpFilterConfig, HttpHeaderFilterConfig,
 };
 <span class="kw">use </span>mirrord_protocol::{
-    tcp::{HttpRequest, HttpResponse},
+    tcp::{HttpRequestFallback, HttpResponseFallback},
     ConnectionId, Port,
 };
 <span class="kw">use </span>tokio::{
@@ -281,8 +284,8 @@
 /// send them through `response_sender`, which is where we get the responses that will be sent back
 /// to the agent, and finally back to the remote pod.
 </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">struct </span>ConnectionTask&lt;HttpVersion: HttpV&gt; {
-    request_receiver: Receiver&lt;HttpRequest&gt;,
-    response_sender: Sender&lt;HttpResponse&gt;,
+    request_receiver: Receiver&lt;HttpRequestFallback&gt;,
+    response_sender: Sender&lt;HttpResponseFallback&gt;,
     port: Port,
     connection_id: ConnectionId,
 
@@ -333,19 +336,22 @@
     ///
     /// [`http1::SendRequest`]: hyper::client::conn::http1::SendRequest
     /// [`http2::SendRequest`]: hyper::client::conn::http2::SendRequest
-    </span><span class="kw">async fn </span>send_request(<span class="kw-2">&amp;mut </span><span class="self">self</span>, request: HttpRequest) -&gt; hyper::Result&lt;Response&lt;Incoming&gt;&gt;;
+    </span><span class="kw">async fn </span>send_request(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        request: HttpRequestFallback,
+    ) -&gt; hyper::Result&lt;Response&lt;Incoming&gt;&gt;;
 
     <span class="doccomment">/// Sends the [`HttpRequest`] through `Self::sender`, converting the response into a
     /// [`HttpResponse`].
     </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(<span class="self">self</span>))]
     </span><span class="kw">async fn </span>send_http_request_to_application(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        request: HttpRequest,
+        request: HttpRequestFallback,
         port: Port,
         connection_id: ConnectionId,
         destination: SocketAddr,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;HttpResponse, HttpForwarderError&gt; {
-        <span class="kw">let </span>request_id = request.request_id;
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;HttpResponseFallback, HttpForwarderError&gt; {
+        <span class="kw">let </span>request_id = request.request_id();
 
         <span class="kw">let </span>response = <span class="self">self
             </span>.send_request(request.clone())
@@ -385,8 +391,8 @@
     </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(request_receiver, response_sender))]
     </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">async fn </span>new(
         connect_to: SocketAddr,
-        request_receiver: Receiver&lt;HttpRequest&gt;,
-        response_sender: Sender&lt;HttpResponse&gt;,
+        request_receiver: Receiver&lt;HttpRequestFallback&gt;,
+        response_sender: Sender&lt;HttpResponseFallback&gt;,
         port: Port,
         connection_id: ConnectionId,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;ConnectionTask&lt;V&gt;, HttpForwarderError&gt; {

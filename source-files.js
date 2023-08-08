@@ -243,7 +243,7 @@ var sourcesIndex = JSON.parse('{\
 "mirrord_agent":["",[["outgoing",[],["socket_stream.rs","udp.rs"]],["runtime",[],["crio.rs"]],["steal",[["http",[],["error.rs","filter.rs","hyper_handler.rs","reversible_stream.rs","v1.rs","v2.rs"]],["ip_tables",[],["chain.rs","flush_connections.rs","mesh.rs","redirect.rs","standard.rs"]]],["api.rs","connection.rs","http.rs","ip_tables.rs","orig_dst.rs"]]],["cli.rs","container_handle.rs","dns.rs","env.rs","error.rs","file.rs","main.rs","outgoing.rs","runtime.rs","sniffer.rs","steal.rs","util.rs","watched_task.rs"]],\
 "mirrord_analytics":["",[],["lib.rs"]],\
 "mirrord_auth":["",[],["certificate.rs","credential_store.rs","credentials.rs","error.rs","key_pair.rs","lib.rs"]],\
-"mirrord_config":["",[["config",[],["deprecated.rs","from_env.rs","source.rs","unstable.rs"]],["feature",[["fs",[],["advanced.rs","mode.rs"]],["network",[["incoming",[],["http_filter.rs"]]],["incoming.rs","outgoing.rs"]]],["env.rs","fs.rs","network.rs"]]],["agent.rs","config.rs","feature.rs","lib.rs","target.rs","util.rs"]],\
+"mirrord_config":["",[["config",[],["deprecated.rs","from_env.rs","source.rs","unstable.rs"]],["feature",[["fs",[],["advanced.rs","mode.rs"]],["network",[["incoming",[],["http_filter.rs"]]],["incoming.rs","outgoing.rs"]]],["env.rs","fs.rs","network.rs"]]],["agent.rs","config.rs","feature.rs","internal_proxy.rs","lib.rs","target.rs","util.rs"]],\
 "mirrord_config_derive":["",[["config",[],["field.rs","flag.rs"]]],["config.rs","lib.rs"]],\
 "mirrord_console":["",[],["error.rs","lib.rs","logger.rs","protocol.rs"]],\
 "mirrord_kube":["",[["api",[["kubernetes",[],["rollout.rs"]]],["container.rs","kubernetes.rs","runtime.rs"]]],["api.rs","error.rs","lib.rs"]],\
@@ -359,7 +359,7 @@ var sourcesIndex = JSON.parse('{\
 "sct":["",[],["lib.rs"]],\
 "sec1":["",[],["error.rs","lib.rs","parameters.rs","point.rs","private_key.rs","traits.rs"]],\
 "secrecy":["",[],["boxed.rs","lib.rs","string.rs","vec.rs"]],\
-"semver":["",[],["backport.rs","display.rs","error.rs","eval.rs","identifier.rs","impls.rs","lib.rs","parse.rs"]],\
+"semver":["",[],["backport.rs","display.rs","error.rs","eval.rs","identifier.rs","impls.rs","lib.rs","parse.rs","serde.rs"]],\
 "serde":["",[["de",[],["format.rs","ignored_any.rs","impls.rs","mod.rs","seed.rs","size_hint.rs","utf8.rs","value.rs"]],["private",[],["de.rs","doc.rs","mod.rs","ser.rs"]],["ser",[],["fmt.rs","impls.rs","impossible.rs","mod.rs"]]],["integer128.rs","lib.rs","macros.rs"]],\
 "serde_derive":["",[],["buffer.rs","bytecode.rs","lib.rs","lib_precompiled.rs"]],\
 "serde_derive_internals":["",[["src",[],["ast.rs","attr.rs","case.rs","check.rs","ctxt.rs","mod.rs","receiver.rs","respan.rs","symbol.rs"]]],["lib.rs"]],\

@@ -711,6 +711,24 @@
 <a href="#711" id="711">711</a>
 <a href="#712" id="712">712</a>
 <a href="#713" id="713">713</a>
+<a href="#714" id="714">714</a>
+<a href="#715" id="715">715</a>
+<a href="#716" id="716">716</a>
+<a href="#717" id="717">717</a>
+<a href="#718" id="718">718</a>
+<a href="#719" id="719">719</a>
+<a href="#720" id="720">720</a>
+<a href="#721" id="721">721</a>
+<a href="#722" id="722">722</a>
+<a href="#723" id="723">723</a>
+<a href="#724" id="724">724</a>
+<a href="#725" id="725">725</a>
+<a href="#726" id="726">726</a>
+<a href="#727" id="727">727</a>
+<a href="#728" id="728">728</a>
+<a href="#729" id="729">729</a>
+<a href="#730" id="730">730</a>
+<a href="#731" id="731">731</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(result_option_inspect)]
 #![feature(hash_drain_filter)]
 #![feature(let_chains)]
@@ -860,6 +878,7 @@
         stream: TcpStream,
         tasks: BackgroundTasks,
         cancellation_token: CancellationToken,
+        protocol_version: semver::Version,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;JoinHandle&lt;u32&gt;&gt;&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>stream = Framed::new(stream, DaemonCodec::new());
 
@@ -890,6 +909,7 @@
                 ephemeral_container,
                 tasks,
                 env,
+                protocol_version,
             )
             .and_then(|client| client.start(cancellation_token))
             .<span class="kw">await</span>;
@@ -963,6 +983,7 @@
         ephemeral: bool,
         bg_tasks: BackgroundTasks,
         env: HashMap&lt;String, String&gt;,
+        protocol_version: semver::Version,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
         <span class="kw">let </span>pid = container_handle.as_ref().map(ContainerHandle::pid);
 
@@ -995,6 +1016,7 @@
             bg_tasks.stealer_sender,
             bg_tasks.stealer_status,
             CHANNEL_SIZE,
+            protocol_version,
         )
         .<span class="kw">await
         </span>{
@@ -1175,6 +1197,14 @@
                 ))
                 .<span class="kw">await</span><span class="question-mark">?</span>;
             }
+            ClientMessage::SwitchProtocolVersion(version) =&gt; {
+                <span class="self">self</span>.tcp_stealer_api
+                    .switch_protocol_version(version.clone())
+                    .<span class="kw">await</span><span class="question-mark">?</span>;
+
+                <span class="self">self</span>.respond(DaemonMessage::SwitchProtocolVersionResponse(version))
+                    .<span class="kw">await</span><span class="question-mark">?</span>;
+            }
         }
 
         <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>)
@@ -1277,7 +1307,12 @@
         <span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>((stream, addr))) =&gt; {
             <span class="macro">trace!</span>(<span class="string">&quot;start -&gt; Connection accepted from {:?}&quot;</span>, addr);
             <span class="kw">if let </span><span class="prelude-val">Some</span>(client) = state
-                .new_connection(stream, bg_tasks.clone(), cancellation_token.clone())
+                .new_connection(
+                    stream,
+                    bg_tasks.clone(),
+                    cancellation_token.clone(),
+                    args.base_protocol_version.clone(),
+                )
                 .<span class="kw">await</span><span class="question-mark">?
             </span>{
                 clients.push(client)
@@ -1305,6 +1340,7 @@
                     stream,
                     bg_tasks.clone(),
                     cancellation_token.clone(),
+                    args.base_protocol_version.clone(),
                 ).<span class="kw">await</span><span class="question-mark">? </span>{clients.push(client) };
             },
             client = clients.next() =&gt; {

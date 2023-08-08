@@ -701,6 +701,29 @@
 <a href="#701" id="701">701</a>
 <a href="#702" id="702">702</a>
 <a href="#703" id="703">703</a>
+<a href="#704" id="704">704</a>
+<a href="#705" id="705">705</a>
+<a href="#706" id="706">706</a>
+<a href="#707" id="707">707</a>
+<a href="#708" id="708">708</a>
+<a href="#709" id="709">709</a>
+<a href="#710" id="710">710</a>
+<a href="#711" id="711">711</a>
+<a href="#712" id="712">712</a>
+<a href="#713" id="713">713</a>
+<a href="#714" id="714">714</a>
+<a href="#715" id="715">715</a>
+<a href="#716" id="716">716</a>
+<a href="#717" id="717">717</a>
+<a href="#718" id="718">718</a>
+<a href="#719" id="719">719</a>
+<a href="#720" id="720">720</a>
+<a href="#721" id="721">721</a>
+<a href="#722" id="722">722</a>
+<a href="#723" id="723">723</a>
+<a href="#724" id="724">724</a>
+<a href="#725" id="725">725</a>
+<a href="#726" id="726">726</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     collections::HashSet,
     io,
@@ -709,11 +732,9 @@
 
 <span class="kw">use </span>bytes::Bytes;
 <span class="kw">use </span>fancy_regex::Regex;
-<span class="kw">use </span>http_body_util::Full;
-<span class="kw">use </span>hyper::Response;
 <span class="kw">use </span>iptables::IPTables;
 <span class="kw">use </span>mirrord_protocol::{
-    tcp::{NewTcpConnection, TcpClose},
+    tcp::{HttpResponseFallback, NewTcpConnection, TcpClose, HTTP_FRAMED_VERSION},
     RemoteError::{BadHttpFilterExRegex, BadHttpFilterRegex},
     ResponseError::PortAlreadyStolen,
 };
@@ -732,7 +753,7 @@
     error::Result,
     steal::{
         connection::StealSubscription::{HttpFiltered, Unfiltered},
-        http::{HttpFilter, HttpFilterManager},
+        http::{HttpFilter, HttpFilterManager, Response},
     },
     AgentError::{AgentInvariantViolated, HttpRequestReceiverClosed},
 };
@@ -763,7 +784,7 @@
 
     <span class="doccomment">/// Connected clients (layer instances) and the channels which the stealer task uses to send
     /// back messages (stealer -&gt; agent -&gt; layer).
-    </span>clients: HashMap&lt;ClientId, Sender&lt;DaemonTcp&gt;&gt;,
+    </span>clients: HashMap&lt;ClientId, (Sender&lt;DaemonTcp&gt;, semver::Version)&gt;,
     index_allocator: IndexAllocator&lt;ConnectionId, <span class="number">100</span>&gt;,
 
     <span class="doccomment">/// Intercepts the connections, instead of letting them go through their normal pathways, this
@@ -812,8 +833,7 @@
 
     <span class="doccomment">/// Maps each pending request id to the sender into the channel with the hyper service that
     /// received that requests and is waiting for the response.
-    </span>http_response_senders:
-        HashMap&lt;(ConnectionId, RequestId), oneshot::Sender&lt;Response&lt;Full&lt;Bytes&gt;&gt;&gt;&gt;,
+    </span>http_response_senders: HashMap&lt;(ConnectionId, RequestId), oneshot::Sender&lt;Response&gt;&gt;,
 }
 
 <span class="kw">impl </span>TcpConnectionStealer {
@@ -910,7 +930,7 @@
                     <span class="comment">// Send a close message to all clients that were subscribed to the connection.
                     </span><span class="kw">if let </span><span class="prelude-val">Some</span>(clients) = <span class="self">self</span>.http_connection_clients.remove(<span class="kw-2">&amp;</span>connection_id) {
                         <span class="kw">for </span>client_id <span class="kw">in </span>clients.into_iter() {
-                            <span class="kw">if let </span><span class="prelude-val">Some</span>(client_tx) = <span class="self">self</span>.clients.get(<span class="kw-2">&amp;</span>client_id) {
+                            <span class="kw">if let </span><span class="prelude-val">Some</span>((client_tx, <span class="kw">_</span>)) = <span class="self">self</span>.clients.get(<span class="kw-2">&amp;</span>client_id) {
                                 client_tx.send(DaemonTcp::Close(TcpClose {connection_id})).<span class="kw">await</span><span class="question-mark">?
                             </span>} <span class="kw">else </span>{
                                 <span class="macro">warn!</span>(<span class="string">&quot;Cannot notify client {client_id} on the closing of a connection.&quot;</span>)
@@ -943,7 +963,7 @@
             response_tx,
         } = request.ok_or(HttpRequestReceiverClosed)<span class="question-mark">?</span>;
 
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(daemon_tx) = <span class="self">self</span>.clients.get(<span class="kw-2">&amp;</span>request.client_id) {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>((daemon_tx, version)) = <span class="self">self</span>.clients.get(<span class="kw-2">&amp;</span>request.client_id) {
             <span class="comment">// Note down: client_id got a request out of connection_id.
             </span><span class="self">self</span>.http_connection_clients
                 .entry(request.connection_id)
@@ -951,9 +971,20 @@
                 .insert(request.client_id);
             <span class="self">self</span>.http_response_senders
                 .insert((request.connection_id, request.request_id), response_tx);
-            <span class="prelude-val">Ok</span>(daemon_tx
-                .send(DaemonTcp::HttpRequest(request.into_serializable().<span class="kw">await</span><span class="question-mark">?</span>))
-                .<span class="kw">await</span><span class="question-mark">?</span>)
+
+            <span class="kw">if </span>HTTP_FRAMED_VERSION.matches(version) {
+                <span class="prelude-val">Ok</span>(daemon_tx
+                    .send(DaemonTcp::HttpRequest(
+                        request.into_serializable_fallback().<span class="kw">await</span><span class="question-mark">?</span>,
+                    ))
+                    .<span class="kw">await</span><span class="question-mark">?</span>)
+            } <span class="kw">else </span>{
+                <span class="prelude-val">Ok</span>(daemon_tx
+                    .send(DaemonTcp::HttpRequestFramed(
+                        request.into_serializable().<span class="kw">await</span><span class="question-mark">?</span>,
+                    ))
+                    .<span class="kw">await</span><span class="question-mark">?</span>)
+            }
         } <span class="kw">else </span>{
             <span class="macro">warn!</span>(
                 <span class="string">&quot;Got stolen request for client {:?} that is not, or no longer, subscribed.&quot;</span>,
@@ -984,7 +1015,7 @@
             })
             .unwrap_or(<span class="prelude-val">Ok</span>(DaemonTcp::Close(TcpClose { connection_id })))<span class="question-mark">?</span>;
 
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(daemon_tx) = <span class="self">self
+        <span class="kw">if let </span><span class="prelude-val">Some</span>((daemon_tx, <span class="kw">_</span>)) = <span class="self">self
             </span>.connection_clients
             .get(<span class="kw-2">&amp;</span>connection_id)
             .and_then(|client_id| <span class="self">self</span>.clients.get(client_id))
@@ -1034,7 +1065,7 @@
 
         <span class="comment">// Send new connection to subscribed layer.
         </span><span class="kw">match </span><span class="self">self</span>.clients.get(<span class="kw-2">&amp;</span>client_id) {
-            <span class="prelude-val">Some</span>(daemon_tx) =&gt; <span class="prelude-val">Ok</span>(daemon_tx.send(new_connection).<span class="kw">await</span><span class="question-mark">?</span>),
+            <span class="prelude-val">Some</span>((daemon_tx, <span class="kw">_</span>)) =&gt; <span class="prelude-val">Ok</span>(daemon_tx.send(new_connection).<span class="kw">await</span><span class="question-mark">?</span>),
             <span class="prelude-val">None </span>=&gt; {
                 <span class="comment">// Should not happen.
                 </span><span class="macro">debug_assert!</span>(<span class="bool-val">false</span>);
@@ -1094,8 +1125,13 @@
 
     <span class="doccomment">/// Registers a new layer instance that has the `steal` feature enabled.
     </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(<span class="self">self</span>, sender))]
-    </span><span class="kw">fn </span>new_client(<span class="kw-2">&amp;mut </span><span class="self">self</span>, client_id: ClientId, sender: Sender&lt;DaemonTcp&gt;) {
-        <span class="self">self</span>.clients.insert(client_id, sender);
+    </span><span class="kw">fn </span>new_client(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        client_id: ClientId,
+        sender: Sender&lt;DaemonTcp&gt;,
+        protocol_version: semver::Version,
+    ) {
+        <span class="self">self</span>.clients.insert(client_id, (sender, protocol_version));
     }
 
     <span class="doccomment">/// Initialize iptables member, which creates an iptables chain for our rules.
@@ -1282,7 +1318,7 @@
         client_id: <span class="kw-2">&amp;</span>ClientId,
         message: DaemonTcp,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(), AgentError&gt; {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(sender) = <span class="self">self</span>.clients.get(client_id) {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>((sender, <span class="kw">_</span>)) = <span class="self">self</span>.clients.get(client_id) {
             <span class="kw">if let </span><span class="prelude-val">Err</span>(fail) = sender.send(message).<span class="kw">await </span>{
                 <span class="macro">warn!</span>(
                     <span class="string">&quot;Failed to send message to client {} with {:#?}!&quot;</span>,
@@ -1322,18 +1358,17 @@
         skip(<span class="self">self</span>),
         fields(response_senders = <span class="question-mark">?</span><span class="self">self</span>.http_response_senders.keys()),
     )]
-    </span><span class="kw">async fn </span>http_response(<span class="kw-2">&amp;mut </span><span class="self">self</span>, response: HttpResponse) {
+    </span><span class="kw">async fn </span>http_response(<span class="kw-2">&amp;mut </span><span class="self">self</span>, response: HttpResponseFallback) {
         <span class="kw">match </span><span class="self">self
             </span>.http_response_senders
-            .remove(<span class="kw-2">&amp;</span>(response.connection_id, response.request_id))
+            .remove(<span class="kw-2">&amp;</span>(response.connection_id(), response.request_id()))
         {
             <span class="prelude-val">None </span>=&gt; {
                 <span class="macro">error!</span>(<span class="string">&quot;Got unexpected http response. Not forwarding.&quot;</span>);
             }
             <span class="prelude-val">Some</span>(response_tx) =&gt; {
                 <span class="kw">let </span>_res = response <span class="comment">// inspecting errors, not propagating.
-                    </span>.internal_response
-                    .try_into()
+                    </span>.into_hyper()
                     .inspect_err(|err| {
                         <span class="macro">error!</span>(<span class="string">&quot;Could not reconstruct http response: {err:?}&quot;</span>);
                         <span class="macro">debug_assert!</span>(<span class="bool-val">false</span>);
@@ -1382,13 +1417,21 @@
         }
     }
 
+    <span class="kw">fn </span>switch_protocol_version(<span class="kw-2">&amp;mut </span><span class="self">self</span>, client_id: ClientId, protocol_version: semver::Version) {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(guard) = <span class="self">self</span>.clients.get_mut(<span class="kw-2">&amp;</span>client_id) {
+            guard.<span class="number">1 </span>= protocol_version;
+        }
+    }
+
     <span class="doccomment">/// Handles [`Command`]s that were received by [`TcpConnectionStealer::command_rx`].
     </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(<span class="self">self</span>))]
     </span><span class="kw">async fn </span>handle_command(<span class="kw-2">&amp;mut </span><span class="self">self</span>, command: StealerCommand) -&gt; <span class="prelude-ty">Result</span>&lt;(), AgentError&gt; {
         <span class="kw">let </span>StealerCommand { client_id, command } = command;
 
         <span class="kw">match </span>command {
-            Command::NewClient(daemon_tx) =&gt; <span class="self">self</span>.new_client(client_id, daemon_tx),
+            Command::NewClient(daemon_tx, protocol_version) =&gt; {
+                <span class="self">self</span>.new_client(client_id, daemon_tx, protocol_version)
+            }
             Command::ConnectionUnsubscribe(connection_id) =&gt; {
                 <span class="self">self</span>.connection_unsubscribe(connection_id)
             }
@@ -1399,6 +1442,9 @@
             Command::ClientClose =&gt; <span class="self">self</span>.close_client(client_id).<span class="kw">await</span><span class="question-mark">?</span>,
             Command::ResponseData(tcp_data) =&gt; <span class="self">self</span>.forward_data(tcp_data).<span class="kw">await</span><span class="question-mark">?</span>,
             Command::HttpResponse(response) =&gt; <span class="self">self</span>.http_response(response).<span class="kw">await</span>,
+            Command::SwitchProtocolVersion(version) =&gt; {
+                <span class="self">self</span>.switch_protocol_version(client_id, version)
+            }
         }
 
         <span class="prelude-val">Ok</span>(())

@@ -150,11 +150,6 @@
 <a href="#150" id="150">150</a>
 <a href="#151" id="151">151</a>
 <a href="#152" id="152">152</a>
-<a href="#153" id="153">153</a>
-<a href="#154" id="154">154</a>
-<a href="#155" id="155">155</a>
-<a href="#156" id="156">156</a>
-<a href="#157" id="157">157</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Holds the implementation of [`Service`] for [`HyperHandler`] (HTTP/2).
 //!
 //! # [`HttpV2`]
@@ -163,16 +158,15 @@
 </span><span class="kw">use </span>core::{fmt::Debug, future::Future, pin::Pin};
 <span class="kw">use </span>std::{net::SocketAddr, sync::Arc};
 
-<span class="kw">use </span>bytes::Bytes;
 <span class="kw">use </span>dashmap::DashMap;
 <span class="kw">use </span>futures::TryFutureExt;
-<span class="kw">use </span>http_body_util::Full;
+<span class="kw">use </span>http_body_util::{combinators::BoxBody, BodyExt};
 <span class="kw">use </span>hyper::{
     body::Incoming,
     client::{<span class="self">self</span>, conn::http2::SendRequest},
     server::conn::http2,
     service::Service,
-    Request, Response,
+    Request,
 };
 <span class="kw">use </span>mirrord_protocol::{ConnectionId, Port};
 <span class="kw">use </span>tokio::{
@@ -183,8 +177,8 @@
 
 <span class="kw">use super</span>::{
     filter::{close_connection, HttpFilter, TokioExecutor},
-    hyper_handler::{collect_response, prepare_response, HyperHandler},
-    DefaultReversibleStream, HttpV, RawHyperConnection,
+    hyper_handler::HyperHandler,
+    DefaultReversibleStream, HttpV, RawHyperConnection, Response,
 };
 <span class="kw">use crate</span>::{
     steal::{http::error::HttpTrafficError, HandlerHttpRequest},
@@ -248,18 +242,14 @@
     </span><span class="kw">async fn </span>send_request(
         sender: <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Sender,
         request: Request&lt;Incoming&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;Response&lt;Full&lt;Bytes&gt;&gt;, HttpTrafficError&gt; {
-        <span class="comment">// Send the request to the original destination.
-        </span>prepare_response(
-            sender
-                .send_request(request)
-                .inspect_err(|fail| <span class="macro">error!</span>(<span class="string">&quot;Failed hyper request sender with {fail:#?}&quot;</span>))
-                .map_err(HttpTrafficError::from)
-                .and_then(collect_response)
-                .<span class="kw">await</span><span class="question-mark">?</span>,
-        )
-        .<span class="kw">await
-    </span>}
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;Response, HttpTrafficError&gt; {
+        sender
+            .send_request(request)
+            .inspect_err(|fail| <span class="macro">error!</span>(<span class="string">&quot;Failed hyper request sender with {fail:#?}&quot;</span>))
+            .map_err(HttpTrafficError::from)
+            .<span class="kw">await
+            </span>.map(|response| response.map(|body| BoxBody::new(body.map_err(HttpTrafficError::from))))
+    }
 
     <span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>)]
     </span><span class="kw">fn </span>is_upgrade(<span class="kw">_</span>: <span class="kw-2">&amp;</span>Request&lt;Incoming&gt;) -&gt; bool {
@@ -290,7 +280,7 @@
 }
 
 <span class="kw">impl </span>Service&lt;Request&lt;Incoming&gt;&gt; <span class="kw">for </span>HyperHandler&lt;HttpV2&gt; {
-    <span class="kw">type </span>Response = Response&lt;Full&lt;Bytes&gt;&gt;;
+    <span class="kw">type </span>Response = Response;
 
     <span class="kw">type </span>Error = HttpTrafficError;
 

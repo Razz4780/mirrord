@@ -71,6 +71,9 @@
 <a href="#71" id="71">71</a>
 <a href="#72" id="72">72</a>
 <a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
 </pre></div><pre class="rust"><code><span class="attr">#![deny(missing_docs)]
 
 </span><span class="kw">use </span>clap::{
@@ -117,6 +120,9 @@
     /// This feature is used internally for debugging purposes only!
     </span><span class="attr">#[arg(long, default_value_t = <span class="bool-val">false</span>, hide = <span class="bool-val">true</span>)]
     </span><span class="kw">pub </span>test_error: bool,
+
+    <span class="attr">#[arg(long, default_value = <span class="string">&quot;1.2.1&quot;</span>)]
+    </span><span class="kw">pub </span>base_protocol_version: semver::Version,
 }
 
 <span class="kw">const </span>DEFAULT_RUNTIME: <span class="kw-2">&amp;</span>str = <span class="string">&quot;containerd&quot;</span>;

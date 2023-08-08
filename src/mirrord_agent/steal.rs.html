@@ -133,13 +133,51 @@
 <a href="#133" id="133">133</a>
 <a href="#134" id="134">134</a>
 <a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::collections::HashMap;
 
-<span class="kw">use </span>bytes::Bytes;
-<span class="kw">use </span>http_body_util::{BodyExt, Full};
-<span class="kw">use </span>hyper::{body::Incoming, http::request, Request, Response};
+<span class="kw">use </span>http_body_util::BodyExt;
+<span class="kw">use </span>hyper::{body::Incoming, http::request, Request};
 <span class="kw">use </span>mirrord_protocol::{
-    tcp::{DaemonTcp, HttpRequest, HttpResponse, InternalHttpRequest, StealType, TcpData},
+    tcp::{
+        DaemonTcp, HttpRequest, HttpResponseFallback, InternalHttpBody, InternalHttpRequest,
+        StealType, TcpData,
+    },
     ConnectionId, Port, RequestId,
 };
 <span class="kw">use </span>tokio::{
@@ -153,6 +191,7 @@
 <span class="kw">use </span><span class="self">self</span>::ip_tables::SafeIpTables;
 <span class="kw">use crate</span>::{
     error::{AgentError, <span class="prelude-ty">Result</span>},
+    steal::http::Response,
     util::{ClientId, IndexAllocator},
 };
 
@@ -170,7 +209,7 @@
 </span><span class="kw">enum </span>Command {
     <span class="doccomment">/// Contains the channel that&#39;s used by the stealer worker to respond back to the agent
     /// (stealer -&gt; agent -&gt; layer).
-    </span>NewClient(Sender&lt;DaemonTcp&gt;),
+    </span>NewClient(Sender&lt;DaemonTcp&gt;, semver::Version),
 
     <span class="doccomment">/// A layer wants to subscribe to this [`Port`].
     ///
@@ -200,7 +239,9 @@
     <span class="doccomment">/// Response from local app to stolen HTTP request.
     ///
     /// Should be forwarded back to the connection it was stolen from.
-    </span>HttpResponse(HttpResponse),
+    </span>HttpResponse(HttpResponseFallback),
+
+    SwitchProtocolVersion(semver::Version),
 }
 
 <span class="doccomment">/// Association between a client (identified by the `client_id`) and a [`Command`].
@@ -224,7 +265,7 @@
 
     <span class="doccomment">/// For sending the response from the stealer task back to the hyper service.
     /// [`TcpConnectionStealer::start`] -----response to this request-----&gt; [`HyperHandler::call`]
-    </span><span class="kw">pub </span>response_tx: oneshot::Sender&lt;Response&lt;Full&lt;Bytes&gt;&gt;&gt;,
+    </span><span class="kw">pub </span>response_tx: oneshot::Sender&lt;Response&gt;,
 }
 
 <span class="doccomment">/// A stolen HTTP request that matched a client&#39;s filter. To be sent from the filter code to the
@@ -239,7 +280,37 @@
 }
 
 <span class="kw">impl </span>MatchedHttpRequest {
-    <span class="kw">async fn </span>into_serializable(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;HttpRequest, hyper::Error&gt; {
+    <span class="kw">async fn </span>into_serializable(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;HttpRequest&lt;InternalHttpBody&gt;, hyper::Error&gt; {
+        <span class="kw">let </span>(
+            request::Parts {
+                method,
+                uri,
+                version,
+                headers,
+                ..
+            },
+            body,
+        ) = <span class="self">self</span>.request.into_parts();
+
+        <span class="kw">let </span>body = InternalHttpBody::from_body(body).<span class="kw">await</span><span class="question-mark">?</span>;
+
+        <span class="kw">let </span>internal_request = InternalHttpRequest {
+            method,
+            uri,
+            headers,
+            version,
+            body,
+        };
+
+        <span class="prelude-val">Ok</span>(HttpRequest {
+            port: <span class="self">self</span>.port,
+            connection_id: <span class="self">self</span>.connection_id,
+            request_id: <span class="self">self</span>.request_id,
+            internal_request,
+        })
+    }
+
+    <span class="kw">async fn </span>into_serializable_fallback(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;HttpRequest&lt;Vec&lt;u8&gt;&gt;, hyper::Error&gt; {
         <span class="kw">let </span>(
             request::Parts {
                 method,
@@ -252,6 +323,7 @@
         ) = <span class="self">self</span>.request.into_parts();
 
         <span class="kw">let </span>body = body.collect().<span class="kw">await</span><span class="question-mark">?</span>.to_bytes().to_vec();
+
         <span class="kw">let </span>internal_request = InternalHttpRequest {
             method,
             uri,

@@ -385,7 +385,6 @@
 <a href="#385" id="385">385</a>
 <a href="#386" id="386">386</a>
 <a href="#387" id="387">387</a>
-<a href="#388" id="388">388</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Internal proxy is accepting connection from local layers and forward it to agent
 //! while having 1:1 relationship - each layer connection is another agent connection.
 //!
@@ -421,10 +420,7 @@
 <span class="kw">use </span>tokio_util::sync::CancellationToken;
 <span class="kw">use </span>tracing::{error, info, log::trace};
 
-<span class="kw">use crate</span>::{
-    config::InternalProxyArgs,
-    error::{InternalProxyError, <span class="prelude-ty">Result</span>},
-};
+<span class="kw">use </span><span class="kw">crate</span>::error::{InternalProxyError, <span class="prelude-ty">Result</span>};
 
 <span class="kw">unsafe fn </span>redirect_fd_to_dev_null(fd: libc::c_int) {
     <span class="kw">let </span>devnull_fd = libc::open(<span class="string">b&quot;/dev/null\0&quot; </span><span class="kw">as </span><span class="kw-2">*const </span>[u8; <span class="number">10</span>] <span class="kw">as _</span>, libc::O_RDWR);
@@ -578,7 +574,7 @@
 
 <span class="doccomment">/// Main entry point for the internal proxy.
 /// It listens for inbound layer connect and forwards to agent.
-</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>proxy(args: InternalProxyArgs) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>proxy() -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="kw">let </span>started = std::time::Instant::now();
     <span class="comment">// Let it assign port for us then print it for the user.
     </span><span class="kw">let </span>listener = create_listen_socket()<span class="question-mark">?</span>;
@@ -606,11 +602,13 @@
 
     print_port(<span class="kw-2">&amp;</span>listener)<span class="question-mark">?</span>;
 
-    <span class="comment">// wait for first connection `FIRST_CONNECTION_TIMEOUT` seconds, or timeout.
-    </span><span class="kw">let </span>(stream, <span class="kw">_</span>) = timeout(Duration::from_secs(args.timeout), listener.accept())
-        .<span class="kw">await
-        </span>.map_err(|<span class="kw">_</span>| InternalProxyError::FirstConnectionTimeout)<span class="question-mark">?
-        </span>.map_err(InternalProxyError::AcceptError)<span class="question-mark">?</span>;
+    <span class="kw">let </span>(stream, <span class="kw">_</span>) = timeout(
+        Duration::from_secs(config.internal_proxy.start_idle_timeout),
+        listener.accept(),
+    )
+    .<span class="kw">await
+    </span>.map_err(|<span class="kw">_</span>| InternalProxyError::FirstConnectionTimeout)<span class="question-mark">?
+    </span>.map_err(InternalProxyError::AcceptError)<span class="question-mark">?</span>;
 
     <span class="kw">let </span><span class="kw-2">mut </span>active_connections = JoinSet::new();
 
@@ -639,12 +637,12 @@
                 <span class="macro">trace!</span>(<span class="string">&quot;intproxy main connection canceled.&quot;</span>);
                 <span class="kw">break</span>;
             }
-            <span class="kw">_ </span>= tokio::time::sleep(Duration::from_secs(<span class="number">5</span>)) =&gt; {
+            <span class="kw">_ </span>= tokio::time::sleep(Duration::from_secs(config.internal_proxy.idle_timeout)) =&gt; {
                 <span class="kw">if </span>active_connections.is_empty() {
                     <span class="macro">trace!</span>(<span class="string">&quot;intproxy timeout, no active connections. Exiting.&quot;</span>);
                     <span class="kw">break</span>;
                 }
-                <span class="macro">trace!</span>(<span class="string">&quot;intproxy 5 sec tick, active_connections: {active_connections:?}.&quot;</span>);
+                <span class="macro">trace!</span>(<span class="string">&quot;intproxy {} sec tick, active_connections: {active_connections:?}.&quot;</span>, config.internal_proxy.idle_timeout);
             }
         }
     }

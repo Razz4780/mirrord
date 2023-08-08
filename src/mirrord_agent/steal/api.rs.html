@@ -167,7 +167,26 @@
 <a href="#167" id="167">167</a>
 <a href="#168" id="168">168</a>
 <a href="#169" id="169">169</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>mirrord_protocol::tcp::{DaemonTcp, HttpResponse, LayerTcpSteal, TcpData};
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span>mirrord_protocol::tcp::{DaemonTcp, HttpResponseFallback, LayerTcpSteal, TcpData};
 <span class="kw">use </span>tokio::sync::mpsc::{<span class="self">self</span>, Receiver, Sender};
 
 <span class="kw">use super</span>::<span class="kw-2">*</span>;
@@ -208,13 +227,14 @@
         command_tx: Sender&lt;StealerCommand&gt;,
         task_status: TaskStatus,
         channel_size: usize,
+        protocol_version: semver::Version,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, AgentError&gt; {
         <span class="kw">let </span>(daemon_tx, daemon_rx) = mpsc::channel(channel_size);
 
         command_tx
             .send(StealerCommand {
                 client_id,
-                command: Command::NewClient(daemon_tx),
+                command: Command::NewClient(daemon_tx, protocol_version),
             })
             .<span class="kw">await</span><span class="question-mark">?</span>;
 
@@ -303,8 +323,19 @@
     /// agent, to an internal stealer command [`Command::HttpResponse`].
     ///
     /// The actual handling of this message is done in [`TcpConnectionStealer`].
-    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>http_response(<span class="kw-2">&amp;mut </span><span class="self">self</span>, response: HttpResponse) -&gt; <span class="prelude-ty">Result</span>&lt;(), AgentError&gt; {
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>http_response(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        response: HttpResponseFallback,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;(), AgentError&gt; {
         <span class="self">self</span>.send_command(Command::HttpResponse(response)).<span class="kw">await
+    </span>}
+
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>switch_protocol_version(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        version: semver::Version,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;(), AgentError&gt; {
+        <span class="self">self</span>.send_command(Command::SwitchProtocolVersion(version))
+            .<span class="kw">await
     </span>}
 
     <span class="doccomment">/// Handles the conversion of [`LayerTcpSteal::ClientClose`], that is passed from the
@@ -325,7 +356,14 @@
             </span>}
             LayerTcpSteal::PortUnsubscribe(port) =&gt; <span class="self">self</span>.port_unsubscribe(port).<span class="kw">await</span>,
             LayerTcpSteal::Data(tcp_data) =&gt; <span class="self">self</span>.client_data(tcp_data).<span class="kw">await</span>,
-            LayerTcpSteal::HttpResponse(response) =&gt; <span class="self">self</span>.http_response(response).<span class="kw">await</span>,
+            LayerTcpSteal::HttpResponse(response) =&gt; {
+                <span class="self">self</span>.http_response(HttpResponseFallback::Fallback(response))
+                    .<span class="kw">await
+            </span>}
+            LayerTcpSteal::HttpResponseFramed(response) =&gt; {
+                <span class="self">self</span>.http_response(HttpResponseFallback::Framed(response))
+                    .<span class="kw">await
+            </span>}
         }
     }
 }
