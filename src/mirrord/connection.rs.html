@@ -109,6 +109,7 @@
 <a href="#109" id="109">109</a>
 <a href="#110" id="110">110</a>
 <a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::time::Duration;
 
 <span class="kw">use </span>mirrord_config::LayerConfig;
@@ -146,26 +147,27 @@
 <span class="kw">where
     </span>P: Progress + Send + Sync,
 {
-    <span class="kw">let </span>sub_progress = progress.subtask(<span class="string">&quot;checking operator&quot;</span>);
+    <span class="kw">let </span><span class="kw-2">mut </span>sub_progress = progress.subtask(<span class="string">&quot;checking operator&quot;</span>);
 
     <span class="kw">match </span>OperatorApi::create_session(config, progress).<span class="kw">await </span>{
         <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(connection)) =&gt; {
-            sub_progress.done_with(<span class="string">&quot;connected to operator&quot;</span>);
-
+            sub_progress.success(<span class="prelude-val">Some</span>(<span class="string">&quot;connected to operator&quot;</span>));
             <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(connection))
         }
         <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>) =&gt; {
-            sub_progress.done_with(<span class="string">&quot;no operator detected&quot;</span>);
+            sub_progress.success(<span class="prelude-val">Some</span>(<span class="string">&quot;no operator detected&quot;</span>));
 
             <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
         }
         <span class="prelude-val">Err</span>(OperatorApiError::ConcurrentStealAbort) =&gt; {
-            sub_progress.fail_with(<span class="string">&quot;operator concurrent port steal lock&quot;</span>);
+            sub_progress.failure(<span class="prelude-val">Some</span>(<span class="string">&quot;operator concurrent port steal lock&quot;</span>));
 
             <span class="prelude-val">Err</span>(CliError::OperatorConcurrentSteal)
         }
         <span class="prelude-val">Err</span>(err) =&gt; {
-            sub_progress.fail_with(<span class="string">&quot;unable to check if operator exists, probably due to RBAC&quot;</span>);
+            sub_progress.failure(<span class="prelude-val">Some</span>(
+                <span class="string">&quot;unable to check if operator exists, probably due to RBAC&quot;</span>,
+            ));
 
             <span class="macro">trace!</span>(
                 <span class="string">&quot;{}&quot;</span>,
@@ -193,9 +195,9 @@
     } <span class="kw">else </span>{
         <span class="kw">if </span><span class="macro">matches!</span>(config.target, mirrord_config::target::TargetConfig{ path: <span class="prelude-val">Some</span>(mirrord_config::target::Target::Deployment{..}), ..}) {
             <span class="comment">// This is CLI Only because the extensions also implement this check with better messaging.
-            </span>progress.print_message(mirrord_progress::MessageKind::CliOnly,<span class="prelude-val">Some</span>( <span class="string">&quot;When targeting multi-pod deployments, mirrord impersonates the first pod in the deployment.\n \
-                   Support for multi-pod impersonation requires the mirrord operator, which is part of mirrord for Teams.\n \
-                   To try it out, join the waitlist with `mirrord waitlist &lt;email address&gt;`, or at this link: https://metalbear.co/#waitlist-form&quot;</span>));
+            </span>progress.print( <span class="string">&quot;When targeting multi-pod deployments, mirrord impersonates the first pod in the deployment.&quot;</span>);
+            progress.print(<span class="string">&quot;Support for multi-pod impersonation requires the mirrord operator, which is part of mirrord for Teams.&quot;</span>);
+            progress.print(<span class="string">&quot;To try it out, join the waitlist with `mirrord waitlist &lt;email address&gt;`, or at this link: https://metalbear.co/#waitlist-form&quot;</span>);
         }
         <span class="kw">let </span>k8s_api = KubernetesAPI::create(config)
             .<span class="kw">await

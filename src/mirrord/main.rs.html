@@ -446,12 +446,16 @@
 <a href="#446" id="446">446</a>
 <a href="#447" id="447">447</a>
 <a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
+<a href="#450" id="450">450</a>
+<a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(let_chains)]
 #![feature(lazy_cell)]
 #![feature(result_option_inspect)]
 #![warn(clippy::indexing_slicing)]
 
-</span><span class="kw">use </span>std::{collections::HashMap, sync::LazyLock, time::Duration};
+</span><span class="kw">use </span>std::{collections::HashMap, time::Duration};
 
 <span class="kw">use </span>clap::Parser;
 <span class="kw">use </span>config::<span class="kw-2">*</span>;
@@ -475,7 +479,7 @@
     },
     error::KubeApiError,
 };
-<span class="kw">use </span>mirrord_progress::{Progress, ProgressMode, TaskProgress};
+<span class="kw">use </span>mirrord_progress::{Progress, ProgressTracker};
 <span class="kw">use </span>operator::operator_command;
 <span class="kw">use </span>semver::Version;
 <span class="kw">use </span>serde::de::DeserializeOwned;
@@ -495,9 +499,10 @@
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use </span>error::{CliError, <span class="prelude-ty">Result</span>};
 
-<span class="kw">async fn </span>exec(args: <span class="kw-2">&amp;</span>ExecArgs, progress: <span class="kw-2">&amp;</span>TaskProgress) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+<span class="kw">async fn </span>exec(args: <span class="kw-2">&amp;</span>ExecArgs) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">let </span>progress = ProgressTracker::from_env(<span class="string">&quot;mirrord exec&quot;</span>);
     <span class="kw">if </span>!args.disable_version_check {
-        prompt_outdated_version().<span class="kw">await</span>;
+        prompt_outdated_version(<span class="kw-2">&amp;</span>progress).<span class="kw">await</span>;
     }
     <span class="macro">info!</span>(
         <span class="string">&quot;Launching {:?} with arguments {:?}&quot;</span>,
@@ -605,14 +610,15 @@
         std::env::set_var(<span class="string">&quot;MIRRORD_CONFIG_FILE&quot;</span>, full_path);
     }
 
-    <span class="kw">let </span>sub_progress = progress.subtask(<span class="string">&quot;preparing to launch process&quot;</span>);
+    <span class="kw">let </span><span class="kw-2">mut </span>sub_progress = progress.subtask(<span class="string">&quot;preparing to launch process&quot;</span>);
 
     <span class="kw">let </span>config = LayerConfig::from_env()<span class="question-mark">?</span>;
 
     <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
-    </span><span class="kw">let </span>execution_info = MirrordExecution::start(<span class="kw-2">&amp;</span>config, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>args.binary), progress).<span class="kw">await</span><span class="question-mark">?</span>;
+    </span><span class="kw">let </span>execution_info =
+        MirrordExecution::start(<span class="kw-2">&amp;</span>config, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>args.binary), <span class="kw-2">&amp;</span>sub_progress).<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="attr">#[cfg(not(target_os = <span class="string">&quot;macos&quot;</span>))]
-    </span><span class="kw">let </span>execution_info = MirrordExecution::start(<span class="kw-2">&amp;</span>config, progress).<span class="kw">await</span><span class="question-mark">?</span>;
+    </span><span class="kw">let </span>execution_info = MirrordExecution::start(<span class="kw-2">&amp;</span>config, <span class="kw-2">&amp;</span>sub_progress).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
     </span><span class="kw">let </span>(_did_sip_patch, binary) = <span class="kw">match </span>execution_info.patched_path {
@@ -635,7 +641,7 @@
     <span class="comment">// Put original executable in argv[0] even if actually running patched version.
     </span>binary_args.insert(<span class="number">0</span>, args.binary.clone());
 
-    sub_progress.done_with(<span class="string">&quot;ready to launch process&quot;</span>);
+    sub_progress.success(<span class="prelude-val">Some</span>(<span class="string">&quot;ready to launch process&quot;</span>));
     <span class="comment">// The execve hook is not yet active and does not hijack this call.
     </span><span class="kw">let </span>err = execvp(binary.clone(), binary_args.clone());
     <span class="macro">error!</span>(<span class="string">&quot;Couldn&#39;t execute {:?}&quot;</span>, err);
@@ -833,19 +839,18 @@
             .init();
     }
 
-    <span class="kw">static </span>MAIN_PROGRESS_TASK: LazyLock&lt;TaskProgress&gt; =
-        LazyLock::new(|| TaskProgress::new(<span class="string">&quot;mirrord cli starting...&quot;</span>));
-
     <span class="kw">match </span>cli.commands {
-        Commands::Exec(args) =&gt; exec(<span class="kw-2">&amp;</span>args, <span class="kw-2">&amp;</span>MAIN_PROGRESS_TASK.subtask(<span class="string">&quot;exec&quot;</span>)).<span class="kw">await</span><span class="question-mark">?</span>,
+        Commands::Exec(args) =&gt; exec(<span class="kw-2">&amp;</span>args).<span class="kw">await</span><span class="question-mark">?</span>,
         Commands::Extract { path } =&gt; {
-            extract_library(<span class="prelude-val">Some</span>(path), <span class="kw-2">&amp;</span>MAIN_PROGRESS_TASK.subtask(<span class="string">&quot;extract&quot;</span>), <span class="bool-val">false</span>)<span class="question-mark">?</span>;
+            extract_library(
+                <span class="prelude-val">Some</span>(path),
+                <span class="kw-2">&amp;</span>ProgressTracker::from_env(<span class="string">&quot;mirrord extract library...&quot;</span>),
+                <span class="bool-val">false</span>,
+            )<span class="question-mark">?</span>;
         }
         Commands::ListTargets(args) =&gt; print_pod_targets(<span class="kw-2">&amp;</span>args).<span class="kw">await</span><span class="question-mark">?</span>,
         Commands::Operator(args) =&gt; operator_command(<span class="kw-2">*</span>args).<span class="kw">await</span><span class="question-mark">?</span>,
-        Commands::ExtensionExec(args) =&gt; {
-            extension_exec(<span class="kw-2">*</span>args, <span class="kw-2">&amp;</span>MAIN_PROGRESS_TASK.subtask(<span class="string">&quot;ext&quot;</span>)).<span class="kw">await</span><span class="question-mark">?
-        </span>}
+        Commands::ExtensionExec(args) =&gt; extension_exec(<span class="kw-2">*</span>args).<span class="kw">await</span><span class="question-mark">?</span>,
         Commands::InternalProxy =&gt; internal_proxy::proxy().<span class="kw">await</span><span class="question-mark">?</span>,
         Commands::Waitlist(args) =&gt; register_to_waitlist(args.email).<span class="kw">await</span><span class="question-mark">?</span>,
     }
@@ -858,7 +863,6 @@
 </span><span class="kw">fn </span>init_ext_error_handler(commands: <span class="kw-2">&amp;</span>Commands) -&gt; bool {
     <span class="kw">match </span>commands {
         Commands::ListTargets(<span class="kw">_</span>) | Commands::ExtensionExec(<span class="kw">_</span>) =&gt; {
-            mirrord_progress::init_from_env(ProgressMode::Json);
             <span class="kw">let _ </span>= miette::set_hook(Box::new(|<span class="kw">_</span>| Box::new(JSONReportHandler::new())));
             <span class="bool-val">true
         </span>}
@@ -866,7 +870,8 @@
     }
 }
 
-<span class="kw">async fn </span>prompt_outdated_version() {
+<span class="kw">async fn </span>prompt_outdated_version(progress: <span class="kw-2">&amp;</span>ProgressTracker) {
+    <span class="kw">let </span><span class="kw-2">mut </span>progress = progress.subtask(<span class="string">&quot;version check&quot;</span>);
     <span class="kw">let </span>check_version: bool = std::env::var(<span class="string">&quot;MIRRORD_CHECK_VERSION&quot;</span>)
         .map(|s| s.parse().unwrap_or(<span class="bool-val">true</span>))
         .unwrap_or(<span class="bool-val">true</span>);
@@ -886,8 +891,11 @@
                     <span class="kw">if </span>latest_version &gt; Version::parse(CURRENT_VERSION).unwrap() {
                         <span class="kw">let </span>is_homebrew = which(<span class="string">&quot;mirrord&quot;</span>).ok().map(|mirrord_path| mirrord_path.to_string_lossy().contains(<span class="string">&quot;homebrew&quot;</span>)).unwrap_or_default();
                         <span class="kw">let </span>command = <span class="kw">if </span>is_homebrew { <span class="string">&quot;brew upgrade metalbear-co/mirrord/mirrord&quot; </span>} <span class="kw">else </span>{ <span class="string">&quot;curl -fsSL https://raw.githubusercontent.com/metalbear-co/mirrord/main/scripts/install.sh | bash&quot; </span>};
-                        <span class="macro">println!</span>(<span class="string">&quot;New mirrord version available: {latest_version}. To update, run: `{command:?}`.&quot;</span>);
-                        <span class="macro">println!</span>(<span class="string">&quot;To disable version checks, set env variable MIRRORD_CHECK_VERSION to &#39;false&#39;.&quot;</span>)
+                        progress.print(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;New mirrord version available: {}. To update, run: `{:?}`.&quot;</span>, latest_version, command));
+                        progress.print(<span class="string">&quot;To disable version checks, set env variable MIRRORD_CHECK_VERSION to &#39;false&#39;.&quot;</span>);
+                        progress.success(<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;Update to {latest_version} available&quot;</span>)));
+                    } <span class="kw">else </span>{
+                        progress.success(<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;Running on latest ({latest_version})!&quot;</span>)));
                     }
                 }
             }

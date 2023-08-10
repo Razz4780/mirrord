@@ -58,6 +58,7 @@
 <a href="#58" id="58">58</a>
 <a href="#59" id="59">59</a>
 <a href="#60" id="60">60</a>
+<a href="#61" id="61">61</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! [`HttpV1`]
 //!
 //! Handles HTTP/1 requests.
@@ -66,6 +67,7 @@
 <span class="kw">use </span>bytes::Bytes;
 <span class="kw">use </span>http_body_util::combinators::BoxBody;
 <span class="kw">use </span>hyper::client::conn::http1::{<span class="self">self</span>, Connection, SendRequest};
+<span class="kw">use </span>hyper_util::rt::TokioIo;
 <span class="kw">use </span>mirrord_protocol::tcp::HttpRequestFallback;
 <span class="kw">use </span>tokio::net::TcpStream;
 
@@ -82,7 +84,7 @@
 <span class="kw">impl </span>HttpV <span class="kw">for </span>HttpV1 {
     <span class="kw">type </span>Sender = SendRequest&lt;BoxBody&lt;Bytes, Infallible&gt;&gt;;
 
-    <span class="kw">type </span>Connection = Connection&lt;TcpStream, BoxBody&lt;Bytes, Infallible&gt;&gt;;
+    <span class="kw">type </span>Connection = Connection&lt;TokioIo&lt;TcpStream&gt;, BoxBody&lt;Bytes, Infallible&gt;&gt;;
 
     <span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>)]
     </span><span class="kw">fn </span>new(http_request_sender: <span class="self">Self</span>::Sender) -&gt; <span class="self">Self </span>{
@@ -93,7 +95,7 @@
     </span><span class="kw">async fn </span>handshake(
         target_stream: TcpStream,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(<span class="self">Self</span>::Sender, <span class="self">Self</span>::Connection), HttpForwarderError&gt; {
-        <span class="prelude-val">Ok</span>(http1::handshake(target_stream).<span class="kw">await</span><span class="question-mark">?</span>)
+        <span class="prelude-val">Ok</span>(http1::handshake(TokioIo::new(target_stream)).<span class="kw">await</span><span class="question-mark">?</span>)
     }
 
     <span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(<span class="self">self</span>))]

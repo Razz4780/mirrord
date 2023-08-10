@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["ansi","spinner"],"struct":["Group","Line","Loop","SharedFrames"],"trait":["Frames"]};

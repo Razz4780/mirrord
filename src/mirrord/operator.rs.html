@@ -188,7 +188,7 @@
     crd::{LicenseInfoOwned, MirrordOperatorCrd, MirrordOperatorSpec, OPERATOR_STATUS_NAME},
     setup::{LicenseType, Operator, OperatorNamespace, OperatorSetup, SetupOptions},
 };
-<span class="kw">use </span>mirrord_progress::{Progress, TaskProgress};
+<span class="kw">use </span>mirrord_progress::{Progress, ProgressTracker};
 <span class="kw">use </span>prettytable::{row, Table};
 <span class="kw">use </span>tokio::fs;
 <span class="kw">use </span>tracing::warn;
@@ -267,11 +267,11 @@
 }
 
 <span class="kw">async fn </span>operator_status(config: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-    <span class="kw">let </span>progress = TaskProgress::new(<span class="string">&quot;Operator Status&quot;</span>).fail_on_drop(<span class="bool-val">true</span>);
+    <span class="kw">let </span><span class="kw-2">mut </span>progress = ProgressTracker::from_env(<span class="string">&quot;Operator Status&quot;</span>);
 
     <span class="kw">let </span>status_api = get_status_api(config).<span class="kw">await</span><span class="question-mark">?</span>;
 
-    <span class="kw">let </span>status_progress = progress.subtask(<span class="string">&quot;fetching status&quot;</span>);
+    <span class="kw">let </span><span class="kw-2">mut </span>status_progress = progress.subtask(<span class="string">&quot;fetching status&quot;</span>);
 
     <span class="kw">let </span>mirrord_status = <span class="kw">match </span>status_api
         .get(OPERATOR_STATUS_NAME)
@@ -282,15 +282,15 @@
     {
         <span class="prelude-val">Ok</span>(status) =&gt; status,
         <span class="prelude-val">Err</span>(err) =&gt; {
-            status_progress.fail_with(<span class="string">&quot;unable to get status&quot;</span>);
+            status_progress.failure(<span class="prelude-val">Some</span>(<span class="string">&quot;unable to get status&quot;</span>));
 
             <span class="kw">return </span><span class="prelude-val">Err</span>(err);
         }
     };
 
-    status_progress.done_with(<span class="string">&quot;fetched status&quot;</span>);
+    status_progress.success(<span class="prelude-val">Some</span>(<span class="string">&quot;fetched status&quot;</span>));
 
-    progress.done();
+    progress.success(<span class="prelude-val">None</span>);
 
     <span class="kw">let </span>MirrordOperatorSpec {
         operator_version,

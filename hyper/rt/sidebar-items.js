@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["bounds"],"trait":["Executor","Sleep","Timer"]};
+window.SIDEBAR_ITEMS = {"mod":["bounds"],"struct":["ReadBuf","ReadBufCursor"],"trait":["Executor","Read","Sleep","Timer","Write"]};

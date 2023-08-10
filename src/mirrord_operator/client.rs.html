@@ -395,6 +395,13 @@
 <a href="#395" id="395">395</a>
 <a href="#396" id="396">396</a>
 <a href="#397" id="397">397</a>
+<a href="#398" id="398">398</a>
+<a href="#399" id="399">399</a>
+<a href="#400" id="400">400</a>
+<a href="#401" id="401">401</a>
+<a href="#402" id="402">402</a>
+<a href="#403" id="403">403</a>
+<a href="#404" id="404">404</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>base64::{engine::general_purpose, Engine <span class="kw">as _</span>};
 <span class="kw">use </span>futures::{SinkExt, StreamExt};
 <span class="kw">use </span>http::request::Request;
@@ -407,7 +414,7 @@
     api::{get_k8s_resource_api, kubernetes::create_kube_api},
     error::KubeApiError,
 };
-<span class="kw">use </span>mirrord_progress::{MessageKind, Progress};
+<span class="kw">use </span>mirrord_progress::Progress;
 <span class="kw">use </span>mirrord_protocol::{ClientMessage, DaemonMessage};
 <span class="kw">use </span>semver::Version;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
@@ -521,20 +528,27 @@
         <span class="kw">if let </span><span class="prelude-val">Some</span>(target) = operator_api.fetch_target().<span class="kw">await</span><span class="question-mark">? </span>{
             <span class="kw">let </span>status = operator_api.get_status().<span class="kw">await</span><span class="question-mark">?</span>;
 
+            <span class="kw">let </span><span class="kw-2">mut </span>version_progress = progress.subtask(<span class="string">&quot;comparing versions&quot;</span>);
             <span class="kw">let </span>operator_version = Version::parse(<span class="kw-2">&amp;</span>status.spec.operator_version).unwrap(); <span class="comment">// TODO: Remove unwrap
 
             // This is printed multiple times when the local process forks. Can be solved by e.g.
             // propagating an env var, don&#39;t think it&#39;s worth the extra complexity though
             </span><span class="kw">let </span>mirrord_version = Version::parse(<span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_VERSION&quot;</span>)).unwrap();
             <span class="kw">if </span>operator_version &gt; mirrord_version {
-                progress.subtask(<span class="string">&quot;comparing versions&quot;</span>).print_message(MessageKind::Warning, <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;Your mirrord plugin/CLI version {} does not match the operator version {}. This can lead to unforeseen issues.&quot;</span>, mirrord_version, operator_version)));
-                progress.subtask(<span class="string">&quot;comparing versions&quot;</span>).print_message(
-                    MessageKind::Warning,
-                    <span class="prelude-val">Some</span>(
-                        <span class="string">&quot;Consider updating your mirrord plugin/CLI to match the operator version.&quot;</span>,
-                    ),
+                <span class="comment">// we make two sub tasks since it looks best this way
+                </span>version_progress.warning(
+                    <span class="kw-2">&amp;</span><span class="macro">format!</span>(
+                        <span class="string">&quot;Your mirrord plugin/CLI version {} does not match the operator version {}. This can lead to unforeseen issues.&quot;</span>,
+                        mirrord_version,
+                        operator_version));
+                version_progress.success(<span class="prelude-val">None</span>);
+                version_progress = progress.subtask(<span class="string">&quot;comparing versions&quot;</span>);
+                version_progress.warning(
+                    <span class="string">&quot;Consider updating your mirrord plugin/CLI to match the operator version.&quot;</span>,
                 );
             }
+            version_progress.success(<span class="prelude-val">None</span>);
+
             <span class="kw">let </span>operator_session_information = OperatorSessionInformation::new(
                 target,
                 status.spec.license.fingerprint,

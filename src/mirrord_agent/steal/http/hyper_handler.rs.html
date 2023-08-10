@@ -217,13 +217,19 @@
 <a href="#217" id="217">217</a>
 <a href="#218" id="218">218</a>
 <a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! The core part of the whole HTTP traffic stealing feature.
 //!
 //! # [`HyperHandler`]
 //!
 //! # [`RawHyperConnection`]
 </span><span class="kw">use </span>core::fmt::Debug;
-<span class="kw">use </span>std::{net::SocketAddr, sync::Arc};
+<span class="kw">use </span>std::{
+    net::SocketAddr,
+    sync::{atomic::AtomicU16, Arc},
+};
 
 <span class="kw">use </span>bytes::Bytes;
 <span class="kw">use </span>dashmap::DashMap;
@@ -278,7 +284,7 @@
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) original_destination: SocketAddr,
 
     <span class="doccomment">/// Keeps track of which HTTP request we&#39;re dealing with, so we don&#39;t mix up [`Request`]s.
-    </span><span class="kw">pub</span>(<span class="kw">crate</span>) request_id: RequestId,
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) next_request_id: AtomicU16,
 
     <span class="kw">pub</span>(<span class="kw">super</span>) handle_version: V,
 }

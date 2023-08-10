@@ -207,13 +207,26 @@
 <a href="#207" id="207">207</a>
 <a href="#208" id="208">208</a>
 <a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Holds the implementation of [`Service`] for [`HyperHandler`] (HTTP/1).
 //!
 //! # [`HttpV1`]
 //!
 //! Handles HTTP/1 requests (with support for upgrades).
 </span><span class="kw">use </span>core::{fmt::Debug, future::Future, pin::Pin};
-<span class="kw">use </span>std::{net::SocketAddr, sync::Arc};
+<span class="kw">use </span>std::{
+    net::SocketAddr,
+    sync::{atomic::Ordering, Arc, Mutex},
+};
 
 <span class="kw">use </span>dashmap::DashMap;
 <span class="kw">use </span>futures::TryFutureExt;
@@ -226,6 +239,7 @@
     service::Service,
     Request,
 };
+<span class="kw">use </span>hyper_util::rt::TokioIo;
 <span class="kw">use </span>mirrord_protocol::{ConnectionId, Port};
 <span class="kw">use </span>tokio::{
     io::{copy_bidirectional, AsyncWriteExt},
@@ -252,11 +266,15 @@
 ///
 /// We use this channel to take control of the upgraded connection back from hyper.
 </span><span class="attr">#[derive(Debug)]
-</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>HttpV1(<span class="prelude-ty">Option</span>&lt;oneshot::Sender&lt;RawHyperConnection&gt;&gt;);
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>HttpV1(Mutex&lt;<span class="prelude-ty">Option</span>&lt;oneshot::Sender&lt;RawHyperConnection&gt;&gt;&gt;);
 
 <span class="kw">impl </span>HttpV1 {
-    <span class="kw">fn </span>take_upgrade_tx(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;oneshot::Sender&lt;RawHyperConnection&gt;&gt; {
-        <span class="self">self</span>.<span class="number">0</span>.take()
+    <span class="kw">fn </span>new(upgrate_tx: <span class="prelude-ty">Option</span>&lt;oneshot::Sender&lt;RawHyperConnection&gt;&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>(Mutex::new(upgrate_tx))
+    }
+
+    <span class="kw">fn </span>take_upgrade_tx(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;oneshot::Sender&lt;RawHyperConnection&gt;&gt; {
+        <span class="self">self</span>.<span class="number">0</span>.lock().expect(<span class="string">&quot;poisoned lock&quot;</span>).take()
     }
 }
 
@@ -277,13 +295,13 @@
         <span class="comment">// We have to keep the connection alive to handle a possible upgrade request
         // manually.
         </span><span class="kw">let </span>server::conn::http1::Parts {
-            io: <span class="kw-2">mut </span>client_agent, <span class="comment">// i.e. browser-agent connection
+            io: client_agent, <span class="comment">// i.e. browser-agent connection
             </span>read_buf: agent_unprocessed,
             ..
         } = http1::Builder::new()
             .preserve_header_case(<span class="bool-val">true</span>)
             .serve_connection(
-                stream,
+                TokioIo::new(stream),
                 HyperHandler::&lt;HttpV1&gt;::new(
                     filters,
                     matched_tx,
@@ -305,6 +323,7 @@
             // HTTP, to the original destination.
             </span>agent_remote.write_all(<span class="kw-2">&amp;</span>agent_unprocessed).<span class="kw">await</span><span class="question-mark">?</span>;
 
+            <span class="kw">let </span><span class="kw-2">mut </span>client_agent = client_agent.into_inner();
             <span class="comment">// Send the data we received from the original destination, and have not
             // processed as HTTP, to the client.
             </span>client_agent.write_all(<span class="kw-2">&amp;</span>client_unprocessed).<span class="kw">await</span><span class="question-mark">?</span>;
@@ -322,9 +341,10 @@
         target_stream: TcpStream,
         upgrade_tx: <span class="prelude-ty">Option</span>&lt;oneshot::Sender&lt;RawHyperConnection&gt;&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Sender, HttpTrafficError&gt; {
-        <span class="kw">let </span>(request_sender, <span class="kw-2">mut </span>connection) = client::conn::http1::handshake(target_stream)
-            .<span class="kw">await
-            </span>.inspect_err(|fail| <span class="macro">error!</span>(<span class="string">&quot;Handshake failed with {fail:#?}&quot;</span>))<span class="question-mark">?</span>;
+        <span class="kw">let </span>(request_sender, <span class="kw-2">mut </span>connection) =
+            client::conn::http1::handshake(TokioIo::new(target_stream))
+                .<span class="kw">await
+                </span>.inspect_err(|fail| <span class="macro">error!</span>(<span class="string">&quot;Handshake failed with {fail:#?}&quot;</span>))<span class="question-mark">?</span>;
 
         <span class="comment">// We need this to progress the connection forward (hyper thing).
         </span>tokio::spawn(<span class="kw">async move </span>{
@@ -341,7 +361,7 @@
 
                 <span class="kw">let _ </span>= sender
                     .send(RawHyperConnection {
-                        stream: io,
+                        stream: io.into_inner(),
                         unprocessed_bytes: read_buf,
                     })
                     .inspect_err(|<span class="kw">_</span>| <span class="macro">error!</span>(<span class="string">&quot;Failed sending interceptor connection!&quot;</span>));
@@ -387,8 +407,8 @@
             connection_id,
             port,
             original_destination,
-            request_id: <span class="number">0</span>,
-            handle_version: HttpV1(upgrade_tx),
+            next_request_id: Default::default(),
+            handle_version: HttpV1::new(upgrade_tx),
         }
     }
 }
@@ -401,8 +421,8 @@
     <span class="kw">type </span>Future = Pin&lt;Box&lt;<span class="kw">dyn </span>Future&lt;Output = <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Response, <span class="self">Self</span>::Error&gt;&gt; + Send&gt;&gt;;
 
     <span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(<span class="self">self</span>))]
-    </span><span class="kw">fn </span>call(<span class="kw-2">&amp;mut </span><span class="self">self</span>, request: Request&lt;Incoming&gt;) -&gt; <span class="self">Self</span>::Future {
-        <span class="self">self</span>.request_id += <span class="number">1</span>;
+    </span><span class="kw">fn </span>call(<span class="kw-2">&amp;</span><span class="self">self</span>, request: Request&lt;Incoming&gt;) -&gt; <span class="self">Self</span>::Future {
+        <span class="kw">let </span>request_id = <span class="self">self</span>.next_request_id.fetch_add(<span class="number">1</span>, Ordering::Relaxed);
 
         Box::pin(HyperHandler::&lt;HttpV1&gt;::handle_request(
             request,
@@ -411,7 +431,7 @@
             <span class="self">self</span>.filters.clone(),
             <span class="self">self</span>.port,
             <span class="self">self</span>.connection_id,
-            <span class="self">self</span>.request_id,
+            request_id,
             <span class="self">self</span>.matched_tx.clone(),
         ))
     }

@@ -612,7 +612,7 @@
     <span class="kw">where
         </span>P: Progress + Send + Sync,
     {
-        <span class="kw">let </span>pod_progress = progress.subtask(<span class="string">&quot;creating agent pod...&quot;</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>pod_progress = progress.subtask(<span class="string">&quot;creating agent pod...&quot;</span>);
         <span class="kw">let </span>mirrord_agent_job_name = get_agent_name();
 
         <span class="kw">let </span><span class="kw-2">mut </span>agent_command_line = <span class="macro">vec!</span>[
@@ -751,9 +751,9 @@
             .labels(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;job-name={mirrord_agent_job_name}&quot;</span>))
             .timeout(<span class="number">60</span>);
 
-        pod_progress.done_with(<span class="string">&quot;agent pod created&quot;</span>);
+        pod_progress.success(<span class="prelude-val">Some</span>(<span class="string">&quot;agent pod created&quot;</span>));
 
-        <span class="kw">let </span>pod_progress = progress.subtask(<span class="string">&quot;waiting for pod to be ready...&quot;</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>pod_progress = progress.subtask(<span class="string">&quot;waiting for pod to be ready...&quot;</span>);
 
         <span class="kw">let </span>pod_api: Api&lt;Pod&gt; = get_k8s_resource_api(client, agent.namespace.as_deref());
 
@@ -782,7 +782,7 @@
 
         wait_for_agent_startup(<span class="kw-2">&amp;</span>pod_api, <span class="kw-2">&amp;</span>pod_name, <span class="string">&quot;mirrord-agent&quot;</span>.to_string()).<span class="kw">await</span><span class="question-mark">?</span>;
 
-        pod_progress.done_with(<span class="string">&quot;pod is ready&quot;</span>);
+        pod_progress.success(<span class="prelude-val">Some</span>(<span class="string">&quot;pod is ready&quot;</span>));
 
         <span class="prelude-val">Ok</span>(pod_name)
     }
@@ -805,7 +805,7 @@
     {
         <span class="comment">// Ephemeral should never be targetless, so there should be runtime data.
         </span><span class="kw">let </span>runtime_data = runtime_data.ok_or(KubeApiError::MissingRuntimeData)<span class="question-mark">?</span>;
-        <span class="kw">let </span>container_progress = progress.subtask(<span class="string">&quot;creating ephemeral container...&quot;</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>container_progress = progress.subtask(<span class="string">&quot;creating ephemeral container...&quot;</span>);
 
         <span class="macro">warn!</span>(<span class="string">&quot;Ephemeral Containers is an experimental feature
                   &gt;&gt; Refer https://kubernetes.io/docs/concepts/workloads/pods/ephemeral-containers/ for more info&quot;</span>);
@@ -876,9 +876,9 @@
             .fields(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;metadata.name={}&quot;</span>, <span class="kw-2">&amp;</span>runtime_data.pod_name))
             .timeout(<span class="number">60</span>);
 
-        container_progress.done_with(<span class="string">&quot;container created&quot;</span>);
+        container_progress.success(<span class="prelude-val">Some</span>(<span class="string">&quot;container created&quot;</span>));
 
-        <span class="kw">let </span>container_progress = progress.subtask(<span class="string">&quot;waiting for container to be ready...&quot;</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>container_progress = progress.subtask(<span class="string">&quot;waiting for container to be ready...&quot;</span>);
 
         <span class="kw">let </span>stream = watcher(pod_api.clone(), watcher_config).applied_objects();
         <span class="macro">pin!</span>(stream);
@@ -894,7 +894,7 @@
 
         wait_for_agent_startup(<span class="kw-2">&amp;</span>pod_api, <span class="kw-2">&amp;</span>runtime_data.pod_name, mirrord_agent_name).<span class="kw">await</span><span class="question-mark">?</span>;
 
-        container_progress.done_with(<span class="string">&quot;container is ready&quot;</span>);
+        container_progress.success(<span class="prelude-val">Some</span>(<span class="string">&quot;container is ready&quot;</span>));
 
         <span class="macro">debug!</span>(<span class="string">&quot;container is ready&quot;</span>);
         <span class="prelude-val">Ok</span>(runtime_data.pod_name.to_string())

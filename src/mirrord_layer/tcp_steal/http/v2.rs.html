@@ -85,6 +85,11 @@
 <a href="#85" id="85">85</a>
 <a href="#86" id="86">86</a>
 <a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! # [`HttpV2`]
 //!
 //! Handles HTTP/2 requests.
@@ -99,6 +104,7 @@
     client::conn::http2::{<span class="self">self</span>, Connection, SendRequest},
     rt::Executor,
 };
+<span class="kw">use </span>hyper_util::rt::{TokioExecutor, TokioIo};
 <span class="kw">use </span>mirrord_protocol::tcp::HttpRequestFallback;
 <span class="kw">use </span>tokio::net::TcpStream;
 <span class="kw">use </span>tracing::trace;
@@ -106,21 +112,24 @@
 <span class="kw">use </span><span class="kw">super</span>::HttpV;
 <span class="kw">use crate</span>::{detour::DetourGuard, tcp_steal::http_forwarding::HttpForwarderError};
 
-<span class="comment">// TODO(alex): Import this from `hyper-util` when the crate is actually published.
-</span><span class="doccomment">/// Future executor that utilises `tokio` threads.
+<span class="doccomment">/// Thin wrapper over [`TokioExecutor`].
+/// Makes sure that detours are bypassed when executing futures.
 </span><span class="attr">#[non_exhaustive]
 #[derive(Default, Debug, Clone)]
-</span><span class="kw">pub struct </span>TokioExecutor;
+</span><span class="kw">pub struct </span>DetourGuardExecutor {
+    inner: TokioExecutor,
+}
 
-<span class="kw">impl</span>&lt;Fut&gt; Executor&lt;Fut&gt; <span class="kw">for </span>TokioExecutor
+<span class="kw">impl</span>&lt;Fut&gt; Executor&lt;Fut&gt; <span class="kw">for </span>DetourGuardExecutor
 <span class="kw">where
     </span>Fut: Future + Send + <span class="lifetime">&#39;static</span>,
     Fut::Output: Send + <span class="lifetime">&#39;static</span>,
 {
     <span class="kw">fn </span>execute(<span class="kw-2">&amp;</span><span class="self">self</span>, fut: Fut) {
         <span class="macro">trace!</span>(<span class="string">&quot;starting tokio executor for hyper HTTP/2&quot;</span>);
-        tokio::spawn(<span class="kw">async move </span>{
-            <span class="kw">let _ </span>= DetourGuard::new();
+
+        <span class="self">self</span>.inner.execute(<span class="kw">async move </span>{
+            <span class="kw">let </span>_guard = DetourGuard::new();
             fut.<span class="kw">await
         </span>});
     }
@@ -136,7 +145,8 @@
 <span class="kw">impl </span>HttpV <span class="kw">for </span>HttpV2 {
     <span class="kw">type </span>Sender = SendRequest&lt;BoxBody&lt;Bytes, Infallible&gt;&gt;;
 
-    <span class="kw">type </span>Connection = Connection&lt;TcpStream, BoxBody&lt;Bytes, Infallible&gt;&gt;;
+    <span class="kw">type </span>Connection =
+        Connection&lt;TokioIo&lt;TcpStream&gt;, BoxBody&lt;Bytes, Infallible&gt;, DetourGuardExecutor&gt;;
 
     <span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>)]
     </span><span class="kw">fn </span>new(http_request_sender: <span class="self">Self</span>::Sender) -&gt; <span class="self">Self </span>{
@@ -147,7 +157,7 @@
     </span><span class="kw">async fn </span>handshake(
         target_stream: TcpStream,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(<span class="self">Self</span>::Sender, <span class="self">Self</span>::Connection), HttpForwarderError&gt; {
-        <span class="prelude-val">Ok</span>(http2::handshake(TokioExecutor::default(), target_stream).<span class="kw">await</span><span class="question-mark">?</span>)
+        <span class="prelude-val">Ok</span>(http2::handshake(DetourGuardExecutor::default(), TokioIo::new(target_stream)).<span class="kw">await</span><span class="question-mark">?</span>)
     }
 
     <span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(<span class="self">self</span>))]

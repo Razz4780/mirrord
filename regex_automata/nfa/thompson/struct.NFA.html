@@ -268,10 +268,10 @@ slice returned by <a href="struct.NFA.html#method.states" title="method regex_au
 <p>This example shows a somewhat contrived example where we can easily
 predict the anchored starting state.</p>
 
-<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>regex_automata::nfa::thompson::{NFA, State};
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>regex_automata::nfa::thompson::{NFA, State, WhichCaptures};
 
 <span class="kw">let </span>nfa = NFA::compiler()
-    .configure(NFA::config().captures(<span class="bool-val">false</span>))
+    .configure(NFA::config().which_captures(WhichCaptures::None))
     .build(<span class="string">&quot;a&quot;</span>)<span class="question-mark">?</span>;
 <span class="kw">let </span>state = nfa.state(nfa.start_anchored());
 <span class="kw">match </span><span class="kw-2">*</span>state {
@@ -422,7 +422,7 @@ work at all.</p>
 <p>This example shows a few different NFAs and whether they have captures
 or not.</p>
 
-<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>regex_automata::nfa::thompson::NFA;
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>regex_automata::nfa::thompson::{NFA, WhichCaptures};
 
 <span class="comment">// Obviously has capture states.
 </span><span class="kw">let </span>nfa = NFA::new(<span class="string">&quot;(a)&quot;</span>)<span class="question-mark">?</span>;
@@ -444,7 +444,7 @@ or not.</p>
 // Notice that &#39;has_capture&#39; is false here even when we have an
 // explicit capture group in the pattern.
 </span><span class="kw">let </span>nfa = NFA::compiler()
-    .configure(NFA::config().captures(<span class="bool-val">false</span>))
+    .configure(NFA::config().which_captures(WhichCaptures::None))
     .build(<span class="string">&quot;(a)&quot;</span>)<span class="question-mark">?</span>;
 <span class="macro">assert!</span>(!nfa.has_capture());
 </code></pre></div>

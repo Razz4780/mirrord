@@ -335,121 +335,307 @@
 <a href="#335" id="335">335</a>
 <a href="#336" id="336">336</a>
 <a href="#337" id="337">337</a>
-<a href="#338" id="338">338</a>
-<a href="#339" id="339">339</a>
-<a href="#340" id="340">340</a>
-<a href="#341" id="341">341</a>
-<a href="#342" id="342">342</a>
-<a href="#343" id="343">343</a>
-<a href="#344" id="344">344</a>
-<a href="#345" id="345">345</a>
-<a href="#346" id="346">346</a>
-<a href="#347" id="347">347</a>
-<a href="#348" id="348">348</a>
-<a href="#349" id="349">349</a>
-<a href="#350" id="350">350</a>
-<a href="#351" id="351">351</a>
-<a href="#352" id="352">352</a>
-<a href="#353" id="353">353</a>
-<a href="#354" id="354">354</a>
-<a href="#355" id="355">355</a>
-<a href="#356" id="356">356</a>
-</pre></div><pre class="rust"><code><span class="attr">#![warn(clippy::indexing_slicing)]
+</pre></div><pre class="rust"><code><span class="kw">use </span>std::time::Duration;
 
-</span><span class="kw">use </span>std::{
-    io::stdout,
-    sync::{
-        atomic::{AtomicUsize, Ordering},
-        OnceLock,
-    },
-    time::Duration,
-};
-
+<span class="kw">use </span>enum_dispatch::enum_dispatch;
+<span class="kw">use </span>indicatif::{MultiProgress, ProgressBar, ProgressStyle};
 <span class="kw">use </span>serde::Serialize;
 <span class="kw">use </span>serde_json::to_string;
-<span class="kw">use </span>termspin::{spinner::dots, Group, Line, Loop, SharedFrames};
 
 <span class="doccomment">/// The environment variable name that is used
 /// to determine the mode of progress reporting
 </span><span class="kw">pub const </span>MIRRORD_PROGRESS_ENV: <span class="kw-2">&amp;</span>str = <span class="string">&quot;MIRRORD_PROGRESS_MODE&quot;</span>;
 
+<span class="attr">#[enum_dispatch]
+</span><span class="kw">pub trait </span>Progress: Sized {
+    <span class="doccomment">/// Create a subtask report from this task.
+    </span><span class="kw">fn </span>subtask(<span class="kw-2">&amp;</span><span class="self">self</span>, text: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self</span>;
+
+    <span class="doccomment">/// When task is done successfully
+    </span><span class="kw">fn </span>success(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;);
+
+    <span class="doccomment">/// When task is done with failure
+    </span><span class="kw">fn </span>failure(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;);
+
+    <span class="doccomment">/// When you want to issue a warning on current task
+    </span><span class="kw">fn </span>warning(<span class="kw-2">&amp;</span><span class="self">self</span>, msg: <span class="kw-2">&amp;</span>str);
+
+    <span class="doccomment">/// When you want to print a message, cli only.
+    </span><span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="self">self</span>, msg: <span class="kw-2">&amp;</span>str);
+
+    <span class="doccomment">/// Control if drop without calling succes is considered failure.
+    </span><span class="kw">fn </span>set_fail_on_drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>, fail: bool);
+}
+
 <span class="doccomment">/// `ProgressMode` specifies the way progress is reported
 /// by [`TaskProgress`].
-</span><span class="attr">#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-</span><span class="kw">pub enum </span>ProgressMode {
-    <span class="doccomment">/// Display dynamic progress with spinners.
-    </span>Standard,
+</span><span class="attr">#[derive(Debug)]
+#[enum_dispatch(Progress)]
+</span><span class="kw">pub enum </span>ProgressTracker {
+    <span class="comment">// /// Display dynamic progress with spinners.
+    </span>SpinnerProgress(SpinnerProgress),
     <span class="doccomment">/// Display simple human-readable messages in new lines.
-    </span>Simple,
-    <span class="doccomment">/// Output progress messages in JSON format for programmatic use.
-    </span>Json,
+    </span>SimpleProgress(SimpleProgress),
+    <span class="comment">// /// Output progress messages in JSON format for programmatic use.
+    </span>JsonProgress(JsonProgress),
     <span class="doccomment">/// Do not output progress.
-    </span>Off,
+    </span>NullProgress(NullProgress),
 }
 
-<span class="attr">#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-</span><span class="kw">pub enum </span>MessageKind {
-    Success,
-    Failure,
-    Warning,
-    CliOnly,
+<span class="attr">#[derive(Debug)]
+</span><span class="kw">pub struct </span>NullProgress;
+
+<span class="kw">impl </span>Progress <span class="kw">for </span>NullProgress {
+    <span class="kw">fn </span>subtask(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="kw-2">&amp;</span>str) -&gt; NullProgress {
+        NullProgress
+    }
+
+    <span class="kw">fn </span>set_fail_on_drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw">_</span>: bool) {}
+
+    <span class="kw">fn </span>success(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw">_</span>: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;) {}
+
+    <span class="kw">fn </span>failure(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw">_</span>: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;) {}
+
+    <span class="kw">fn </span>warning(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="kw-2">&amp;</span>str) {}
+
+    <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="kw-2">&amp;</span>str) {}
 }
 
-<span class="doccomment">/// Initialize progress reporting based on the [`MIRRORD_PROGRESS_ENV`]
-/// environment variable.
-///
-/// If the variable does not exist, the provided fallback
-/// progress mode is used.
-///
-/// This is automatically called with the default
-/// progress mode whenever a [`TaskProgress`] is created.
-</span><span class="kw">pub fn </span>init_from_env(fallback: ProgressMode) {
-    PROGRESS.get_or_init(|| ProgressReport::from_env(fallback));
+<span class="attr">#[derive(Debug)]
+</span><span class="kw">pub struct </span>JsonProgress {
+    parent: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    name: String,
+    done: bool,
+    fail_on_drop: bool,
 }
 
-<span class="kw">static </span>PROGRESS: OnceLock&lt;ProgressReport&gt; = OnceLock::new();
+<span class="kw">impl </span>JsonProgress {
+    <span class="kw">fn </span>new(text: <span class="kw-2">&amp;</span>str) -&gt; JsonProgress {
+        <span class="kw">let </span>progress = JsonProgress {
+            parent: <span class="prelude-val">None</span>,
+            name: text.to_string(),
+            done: <span class="bool-val">false</span>,
+            fail_on_drop: <span class="bool-val">true</span>,
+        };
+        progress.print_new_task();
+        progress
+    }
 
-<span class="kw">fn </span>get_report() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>ProgressReport {
-    PROGRESS.get_or_init(|| {
-        ProgressReport::from_env(<span class="kw">if </span>atty::is(atty::Stream::Stdout) {
-            ProgressMode::Standard
-        } <span class="kw">else </span>{
-            ProgressMode::Simple
-        })
-    })
+    <span class="kw">fn </span>print_new_task(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+        <span class="kw">let </span>message = ProgressMessage::NewTask(NewTaskMessage {
+            name: <span class="self">self</span>.name.clone(),
+            parent: <span class="self">self</span>.parent.clone(),
+        });
+        message.print();
+    }
+
+    <span class="kw">fn </span>print_finished_task(<span class="kw-2">&amp;</span><span class="self">self</span>, success: bool, msg: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;) {
+        <span class="kw">let </span>message = ProgressMessage::FinishedTask(FinishedTaskMessage {
+            name: <span class="self">self</span>.name.clone(),
+            message: msg.map(|s| s.to_string()),
+            success,
+        });
+        message.print();
+    }
 }
 
-<span class="doccomment">/// Global progress state.
-</span><span class="kw">struct </span>ProgressReport {
-    spinner_loop: Loop&lt;SharedFrames&lt;Group&gt;&gt;,
-    mode: ProgressMode,
+<span class="kw">impl </span>Progress <span class="kw">for </span>JsonProgress {
+    <span class="kw">fn </span>subtask(<span class="kw-2">&amp;</span><span class="self">self</span>, text: <span class="kw-2">&amp;</span>str) -&gt; JsonProgress {
+        <span class="kw">let </span>task = JsonProgress {
+            parent: <span class="prelude-val">Some</span>(<span class="self">self</span>.name.clone()),
+            name: text.to_string(),
+            done: <span class="bool-val">false</span>,
+            fail_on_drop: <span class="bool-val">true</span>,
+        };
+        task.print_new_task();
+        task
+    }
+
+    <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="kw-2">&amp;</span>str) {}
+
+    <span class="kw">fn </span>warning(<span class="kw-2">&amp;</span><span class="self">self</span>, msg: <span class="kw-2">&amp;</span>str) {
+        <span class="kw">let </span>message = ProgressMessage::Warning(WarningMessage {
+            message: msg.to_string(),
+        });
+        message.print();
+    }
+    <span class="kw">fn </span>failure(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;) {
+        <span class="self">self</span>.done = <span class="bool-val">true</span>;
+        <span class="self">self</span>.print_finished_task(<span class="bool-val">false</span>, msg)
+    }
+
+    <span class="kw">fn </span>success(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;) {
+        <span class="self">self</span>.done = <span class="bool-val">true</span>;
+        <span class="self">self</span>.print_finished_task(<span class="bool-val">true</span>, msg)
+    }
+
+    <span class="kw">fn </span>set_fail_on_drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>, fail: bool) {
+        <span class="self">self</span>.fail_on_drop = fail;
+    }
 }
 
-<span class="kw">impl </span>ProgressReport {
-    <span class="kw">fn </span>new(mode: ProgressMode) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            mode,
-            spinner_loop: Loop::new(Duration::from_millis(<span class="number">100</span>), Group::new().shared()),
+<span class="kw">impl </span>Drop <span class="kw">for </span>JsonProgress {
+    <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="kw">if </span>!<span class="self">self</span>.done {
+            <span class="kw">if </span><span class="self">self</span>.fail_on_drop {
+                <span class="self">self</span>.failure(<span class="prelude-val">None</span>);
+            } <span class="kw">else </span>{
+                <span class="self">self</span>.success(<span class="prelude-val">None</span>);
+            }
+        }
+    }
+}
+
+<span class="attr">#[derive(Debug)]
+</span><span class="kw">pub struct </span>SimpleProgress;
+
+<span class="kw">impl </span>SimpleProgress {
+    <span class="kw">fn </span>new(text: <span class="kw-2">&amp;</span>str) -&gt; SimpleProgress {
+        <span class="macro">println!</span>(<span class="string">&quot;{text}&quot;</span>);
+        SimpleProgress {}
+    }
+}
+
+<span class="kw">impl </span>Progress <span class="kw">for </span>SimpleProgress {
+    <span class="kw">fn </span>subtask(<span class="kw-2">&amp;</span><span class="self">self</span>, text: <span class="kw-2">&amp;</span>str) -&gt; SimpleProgress {
+        <span class="macro">println!</span>(<span class="string">&quot;{text}&quot;</span>);
+        SimpleProgress {}
+    }
+
+    <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="self">self</span>, text: <span class="kw-2">&amp;</span>str) {
+        <span class="macro">println!</span>(<span class="string">&quot;{text}&quot;</span>);
+    }
+
+    <span class="kw">fn </span>warning(<span class="kw-2">&amp;</span><span class="self">self</span>, msg: <span class="kw-2">&amp;</span>str) {
+        <span class="macro">println!</span>(<span class="string">&quot;{msg}&quot;</span>);
+    }
+    <span class="kw">fn </span>failure(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;) {
+        <span class="macro">println!</span>(<span class="string">&quot;{msg:?}&quot;</span>);
+    }
+
+    <span class="kw">fn </span>success(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;) {
+        <span class="macro">println!</span>(<span class="string">&quot;{msg:?}&quot;</span>);
+    }
+
+    <span class="kw">fn </span>set_fail_on_drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw">_</span>: bool) {}
+}
+
+<span class="kw">fn </span>spinner_template(indent: usize) -&gt; String {
+    <span class="macro">format!</span>(<span class="string">&quot;{indent}{{spinner}} {{msg}}&quot;</span>, indent = <span class="string">&quot;  &quot;</span>.repeat(indent))
+}
+
+<span class="kw">fn </span>spinner(indent: usize) -&gt; ProgressBar {
+    ProgressBar::hidden().with_style(
+        ProgressStyle::default_spinner()
+            .template(<span class="kw-2">&amp;</span>spinner_template(indent))
+            .unwrap(),
+    )
+}
+
+<span class="attr">#[derive(Debug)]
+</span><span class="kw">pub struct </span>SpinnerProgress {
+    done: bool,
+    fail_on_drop: bool,
+    root_progress: MultiProgress,
+    progress: ProgressBar,
+    indent: usize,
+}
+
+<span class="kw">impl </span>SpinnerProgress {
+    <span class="kw">fn </span>new(text: <span class="kw-2">&amp;</span>str) -&gt; SpinnerProgress {
+        <span class="kw">let </span>root_progress = MultiProgress::new();
+        <span class="kw">let </span>progress = spinner(<span class="number">0</span>);
+        progress.set_message(text.to_string());
+        root_progress.add(progress.clone());
+        progress.enable_steady_tick(Duration::from_millis(<span class="number">60</span>));
+
+        SpinnerProgress {
+            done: <span class="bool-val">false</span>,
+            fail_on_drop: <span class="bool-val">true</span>,
+            indent: <span class="number">0</span>,
+            root_progress,
+            progress,
+        }
+    }
+}
+
+<span class="kw">impl </span>Progress <span class="kw">for </span>SpinnerProgress {
+    <span class="kw">fn </span>subtask(<span class="kw-2">&amp;</span><span class="self">self</span>, text: <span class="kw-2">&amp;</span>str) -&gt; SpinnerProgress {
+        <span class="kw">let </span>indent = <span class="self">self</span>.indent + <span class="number">1</span>;
+        <span class="kw">let </span>progress = spinner(indent);
+        progress.set_message(text.to_string());
+        <span class="self">self</span>.root_progress.add(progress.clone());
+        progress.enable_steady_tick(Duration::from_millis(<span class="number">60</span>));
+        SpinnerProgress {
+            done: <span class="bool-val">false</span>,
+            fail_on_drop: <span class="bool-val">true</span>,
+            root_progress: <span class="self">self</span>.root_progress.clone(),
+            indent,
+            progress,
         }
     }
 
-    <span class="kw">fn </span>from_env(fallback: ProgressMode) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::new(<span class="kw">match </span>std::env::var(MIRRORD_PROGRESS_ENV).as_deref() {
-            <span class="prelude-val">Ok</span>(<span class="string">&quot;std&quot; </span>| <span class="string">&quot;standard&quot;</span>) =&gt; ProgressMode::Standard,
-            <span class="prelude-val">Ok</span>(<span class="string">&quot;dumb&quot; </span>| <span class="string">&quot;simple&quot;</span>) =&gt; ProgressMode::Simple,
-            <span class="prelude-val">Ok</span>(<span class="string">&quot;json&quot;</span>) =&gt; ProgressMode::Json,
-            <span class="prelude-val">Ok</span>(<span class="string">&quot;off&quot;</span>) =&gt; ProgressMode::Off,
-            <span class="kw">_ </span>=&gt; fallback,
-        })
+    <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="self">self</span>, msg: <span class="kw-2">&amp;</span>str) {
+        <span class="kw">let _ </span>= <span class="self">self</span>.root_progress.println(msg);
+    }
+
+    <span class="kw">fn </span>warning(<span class="kw-2">&amp;</span><span class="self">self</span>, msg: <span class="kw-2">&amp;</span>str) {
+        <span class="self">self</span>.progress.set_message(<span class="macro">format!</span>(<span class="string">&quot;! {msg}&quot;</span>));
+    }
+
+    <span class="kw">fn </span>failure(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;) {
+        <span class="self">self</span>.done = <span class="bool-val">true</span>;
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(msg) = msg {
+            <span class="self">self</span>.progress.abandon_with_message(<span class="macro">format!</span>(<span class="string">&quot;x {msg}&quot;</span>));
+        } <span class="kw">else </span>{
+            <span class="self">self</span>.progress
+                .abandon_with_message(<span class="macro">format!</span>(<span class="string">&quot;x {}&quot;</span>, <span class="self">self</span>.progress.message()));
+        }
+    }
+
+    <span class="kw">fn </span>success(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;) {
+        <span class="self">self</span>.done = <span class="bool-val">true</span>;
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(msg) = msg {
+            <span class="self">self</span>.progress.finish_with_message(<span class="macro">format!</span>(<span class="string">&quot;✓ {msg}&quot;</span>));
+        } <span class="kw">else </span>{
+            <span class="self">self</span>.progress
+                .finish_with_message(<span class="macro">format!</span>(<span class="string">&quot;✓ {}&quot;</span>, <span class="self">self</span>.progress.message()));
+        }
+    }
+
+    <span class="kw">fn </span>set_fail_on_drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>, fail: bool) {
+        <span class="self">self</span>.fail_on_drop = fail;
     }
 }
 
-<span class="kw">static </span>TASK_COUNT: AtomicUsize = AtomicUsize::new(<span class="number">0</span>);
+<span class="kw">impl </span>Drop <span class="kw">for </span>SpinnerProgress {
+    <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="kw">if </span>!<span class="self">self</span>.done {
+            <span class="kw">if </span><span class="self">self</span>.fail_on_drop {
+                <span class="self">self</span>.failure(<span class="prelude-val">None</span>);
+            } <span class="kw">else </span>{
+                <span class="self">self</span>.success(<span class="prelude-val">None</span>);
+            }
+        }
+    }
+}
+
+<span class="kw">impl </span>ProgressTracker {
+    <span class="kw">pub fn </span>from_env(text: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
+        <span class="kw">match </span>std::env::var(MIRRORD_PROGRESS_ENV).as_deref() {
+            <span class="prelude-val">Ok</span>(<span class="string">&quot;dumb&quot; </span>| <span class="string">&quot;simple&quot;</span>) =&gt; SimpleProgress::new(text).into(),
+            <span class="prelude-val">Ok</span>(<span class="string">&quot;json&quot;</span>) =&gt; JsonProgress::new(text).into(),
+            <span class="prelude-val">Ok</span>(<span class="string">&quot;off&quot;</span>) =&gt; NullProgress.into(),
+            <span class="prelude-val">Ok</span>(<span class="string">&quot;std&quot; </span>| <span class="string">&quot;standard&quot;</span>) =&gt; SpinnerProgress::new(text).into(),
+            <span class="kw">_ </span>=&gt; SpinnerProgress::new(text).into(),
+        }
+    }
+}
 
 <span class="doccomment">/// Message sent when a new task is created using subtask/new
 </span><span class="attr">#[derive(Serialize, Debug, Clone, Default)]
 </span><span class="kw">struct </span>NewTaskMessage {
-    <span class="doccomment">/// Task name (identifier)
+    <span class="doccomment">/// Task name (indentifier)
     </span>name: String,
     <span class="doccomment">/// Parent task name, if subtask.
     </span>parent: <span class="prelude-ty">Option</span>&lt;String&gt;,
@@ -484,230 +670,6 @@
 <span class="kw">impl </span>ProgressMessage {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>print(<span class="kw-2">&amp;</span><span class="self">self</span>) {
         <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, to_string(<span class="self">self</span>).unwrap());
-    }
-}
-
-<span class="kw">pub trait </span>Progress: Sized {
-    <span class="doccomment">/// Create a subtask report from this task.
-    </span><span class="kw">fn </span>subtask(<span class="kw-2">&amp;</span><span class="self">self</span>, text: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self</span>;
-
-    <span class="kw">fn </span>done(<span class="kw-2">mut </span><span class="self">self</span>) {
-        <span class="self">self</span>.set_done(<span class="prelude-val">None</span>, <span class="bool-val">false</span>);
-    }
-
-    <span class="doccomment">/// Finish the task with the given message.
-    </span><span class="kw">fn </span>done_with(<span class="kw-2">mut </span><span class="self">self</span>, text: <span class="kw-2">&amp;</span>str) {
-        <span class="self">self</span>.set_done(<span class="prelude-val">Some</span>(text), <span class="bool-val">false</span>);
-    }
-
-    <span class="doccomment">/// Fail the task without changing the description.
-    </span><span class="kw">fn </span>fail(<span class="kw-2">mut </span><span class="self">self</span>) {
-        <span class="self">self</span>.set_done(<span class="prelude-val">None</span>, <span class="bool-val">true</span>);
-    }
-
-    <span class="doccomment">/// Fail the task with the given message.
-    </span><span class="kw">fn </span>fail_with(<span class="kw-2">mut </span><span class="self">self</span>, text: <span class="kw-2">&amp;</span>str) {
-        <span class="self">self</span>.set_done(<span class="prelude-val">Some</span>(text), <span class="bool-val">true</span>);
-    }
-
-    <span class="kw">fn </span>set_done(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;, failure: bool);
-    <span class="kw">fn </span>print_message(<span class="kw-2">&amp;</span><span class="self">self</span>, kind: MessageKind, msg: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;);
-}
-
-<span class="kw">pub struct </span>NoProgress;
-
-<span class="kw">impl </span>Progress <span class="kw">for </span>NoProgress {
-    <span class="kw">fn </span>subtask(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: <span class="kw-2">&amp;</span>str) -&gt; NoProgress {
-        NoProgress
-    }
-
-    <span class="kw">fn </span>set_done(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw">_</span>: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;, <span class="kw">_</span>: bool) {}
-    <span class="kw">fn </span>print_message(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw">_</span>: MessageKind, <span class="kw">_</span>: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;) {}
-}
-
-<span class="doccomment">/// Progress report for a single task.
-</span><span class="kw">pub struct </span>TaskProgress {
-    group: SharedFrames&lt;Group&gt;,
-    line: SharedFrames&lt;Line&gt;,
-    indent: usize,
-    done: bool,
-    fail_on_drop: bool,
-    name: String,
-}
-
-<span class="kw">impl </span>TaskProgress {
-    <span class="doccomment">/// Report the progress of a new task with the given description.
-    ///
-    /// By default the task is considered failed if it goes out of
-    /// scope without `done` being called.
-    </span><span class="kw">pub fn </span>new(text: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>report = get_report();
-
-        <span class="kw">let </span><span class="kw-2">mut </span>group = Group::new();
-        <span class="kw">let </span>line = Line::new(dots()).with_text(text).shared();
-
-        group.push(line.clone());
-
-        <span class="kw">let </span>group = group.shared();
-
-        <span class="kw">match </span>report.mode {
-            ProgressMode::Standard =&gt; {
-                report.spinner_loop.inner().lock().push(group.clone());
-                report.spinner_loop.spawn_stream(stdout());
-            }
-            ProgressMode::Simple =&gt; {
-                <span class="macro">println!</span>(<span class="string">&quot;{text}&quot;</span>);
-            }
-            ProgressMode::Json =&gt; {
-                <span class="kw">let </span>message = ProgressMessage::NewTask(NewTaskMessage {
-                    name: text.to_string(),
-                    ..Default::default()
-                });
-                message.print();
-            }
-            ProgressMode::Off =&gt; {}
-        }
-
-        TASK_COUNT.fetch_add(<span class="number">1</span>, Ordering::Relaxed);
-
-        <span class="self">Self </span>{
-            group,
-            line,
-            indent: <span class="number">0</span>,
-            done: <span class="bool-val">false</span>,
-            fail_on_drop: <span class="bool-val">true</span>,
-            name: text.to_string(),
-        }
-    }
-
-    <span class="doccomment">/// If set to `true` (default), the task is considered failed
-    /// if it gets dropped.
-    ///
-    /// Set this to `false` if the task cannot fail, or failure
-    /// is not important.
-    </span><span class="kw">pub fn </span>fail_on_drop(<span class="kw-2">mut </span><span class="self">self</span>, fail: bool) -&gt; <span class="self">Self </span>{
-        <span class="self">self</span>.fail_on_drop = fail;
-        <span class="self">self
-    </span>}
-}
-
-<span class="kw">impl </span>Progress <span class="kw">for </span>TaskProgress {
-    <span class="doccomment">/// Create a subtask report from this task.
-    </span><span class="kw">fn </span>subtask(<span class="kw-2">&amp;</span><span class="self">self</span>, text: <span class="kw-2">&amp;</span>str) -&gt; TaskProgress {
-        <span class="kw">let </span>report = get_report();
-        <span class="kw">let </span>sub_indent = <span class="self">self</span>.indent + <span class="number">1</span>;
-
-        <span class="kw">let </span><span class="kw-2">mut </span>group = Group::new().with_indent(sub_indent);
-        <span class="kw">let </span>line = Line::new(dots()).with_text(text).shared();
-
-        group.push(line.clone());
-
-        <span class="kw">let </span>group = group.shared();
-
-        <span class="self">self</span>.group.lock().push(group.clone());
-
-        <span class="kw">match </span>report.mode {
-            ProgressMode::Standard | ProgressMode::Off =&gt; {}
-            ProgressMode::Simple =&gt; {
-                <span class="macro">println!</span>(<span class="string">&quot;{text}&quot;</span>);
-            }
-            ProgressMode::Json =&gt; {
-                <span class="kw">let </span>message = ProgressMessage::NewTask(NewTaskMessage {
-                    name: text.to_string(),
-                    parent: <span class="prelude-val">Some</span>(<span class="self">self</span>.name.clone()),
-                });
-                message.print();
-            }
-        }
-
-        TASK_COUNT.fetch_add(<span class="number">1</span>, Ordering::Relaxed);
-
-        TaskProgress {
-            group,
-            line,
-            indent: sub_indent,
-            done: <span class="bool-val">false</span>,
-            fail_on_drop: <span class="bool-val">true</span>,
-            name: text.to_string(),
-        }
-    }
-
-    <span class="kw">fn </span>set_done(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;, failure: bool) {
-        <span class="self">self</span>.done = <span class="bool-val">true</span>;
-        <span class="kw">let </span>kind = <span class="kw">if </span>failure {
-            MessageKind::Failure
-        } <span class="kw">else </span>{
-            MessageKind::Success
-        };
-        <span class="self">self</span>.print_message(kind, msg);
-    }
-    <span class="kw">fn </span>print_message(<span class="kw-2">&amp;</span><span class="self">self</span>, kind: MessageKind, msg: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;) {
-        <span class="kw">let </span>report = get_report();
-
-        <span class="kw">match </span>report.mode {
-            ProgressMode::Standard =&gt; {
-                <span class="kw">let </span><span class="kw-2">mut </span>line = <span class="self">self</span>.line.lock();
-
-                line.set_spinner_visible(<span class="bool-val">false</span>);
-
-                <span class="kw">let </span>marker = <span class="kw">match </span>kind {
-                    MessageKind::Success =&gt; <span class="string">&#39;✓&#39;</span>,
-                    MessageKind::Failure =&gt; <span class="string">&#39;x&#39;</span>,
-                    MessageKind::Warning =&gt; <span class="string">&#39;!&#39;</span>,
-                    MessageKind::CliOnly =&gt; <span class="string">&#39;#&#39;</span>,
-                };
-
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(msg) = msg {
-                    line.set_text(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;{marker} {msg}&quot;</span>));
-                } <span class="kw">else </span>{
-                    <span class="kw">let </span>msg = <span class="macro">format!</span>(<span class="string">&quot;{marker} {}&quot;</span>, line.text());
-                    line.set_text(<span class="kw-2">&amp;</span>msg);
-                }
-            }
-            ProgressMode::Simple =&gt; {
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(msg) = msg {
-                    <span class="macro">println!</span>(<span class="string">&quot;{msg}&quot;</span>);
-                }
-            }
-            ProgressMode::Json =&gt; {
-                <span class="kw">match </span>kind {
-                    MessageKind::Warning =&gt; {
-                        <span class="kw">let </span>message = ProgressMessage::Warning(WarningMessage {
-                            message: msg.unwrap().to_string(),
-                        });
-                        message.print();
-                    }
-                    MessageKind::Success | MessageKind::Failure =&gt; {
-                        <span class="kw">let </span>message = ProgressMessage::FinishedTask(FinishedTaskMessage {
-                            name: <span class="self">self</span>.name.clone(),
-                            success: kind == MessageKind::Success,
-                            message: msg.map(|s| s.to_string()),
-                        });
-                        message.print();
-                    }
-                    <span class="comment">// ignore cli only messages
-                    </span>MessageKind::CliOnly =&gt; {}
-                }
-            }
-            ProgressMode::Off =&gt; {}
-        }
-    }
-}
-
-<span class="kw">impl </span>Drop <span class="kw">for </span>TaskProgress {
-    <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="kw">let </span>count = TASK_COUNT.fetch_sub(<span class="number">1</span>, Ordering::Relaxed);
-
-        <span class="kw">if </span>!<span class="self">self</span>.done {
-            <span class="self">self</span>.set_done(<span class="prelude-val">None</span>, <span class="self">self</span>.fail_on_drop);
-        }
-
-        <span class="kw">if </span>count == <span class="number">1 </span>{
-            <span class="kw">let </span>report = get_report();
-            report.spinner_loop.stop();
-
-            report.spinner_loop.inner().lock().retain(|<span class="kw">_</span>| <span class="bool-val">false</span>);
-        }
     }
 }
 </code></pre></div></section></main></body></html>

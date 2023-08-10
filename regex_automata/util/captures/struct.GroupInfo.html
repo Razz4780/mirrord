@@ -379,10 +379,10 @@ one NFA, potentially spanning multiple patterns.</p>
 <p>Unlike other capturing group related routines, this routine doesn’t
 panic even if captures aren’t enabled on this NFA:</p>
 
-<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>regex_automata::nfa::thompson::NFA;
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>regex_automata::nfa::thompson::{NFA, WhichCaptures};
 
 <span class="kw">let </span>nfa = NFA::compiler()
-    .configure(NFA::config().captures(<span class="bool-val">false</span>))
+    .configure(NFA::config().which_captures(WhichCaptures::None))
     .build_many(<span class="kw-2">&amp;</span>[
         <span class="string">r&quot;(?P&lt;foo&gt;a)&quot;</span>,
         <span class="string">r&quot;a&quot;</span>,
@@ -458,7 +458,7 @@ patterns.</p>
 <p>This example shows how the values returned by this routine may vary
 for different patterns and NFA configurations.</p>
 
-<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>regex_automata::{nfa::thompson::NFA, PatternID};
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>regex_automata::{nfa::thompson::{NFA, WhichCaptures}, PatternID};
 
 <span class="kw">let </span>nfa = NFA::new(<span class="string">r&quot;(a)(b)(c)&quot;</span>)<span class="question-mark">?</span>;
 <span class="comment">// There are 3 explicit groups in the pattern&#39;s concrete syntax and
@@ -470,13 +470,13 @@ for different patterns and NFA configurations.</p>
 </span><span class="macro">assert_eq!</span>(<span class="number">1</span>, nfa.group_info().group_len(PatternID::ZERO));
 
 <span class="kw">let </span>nfa = NFA::compiler()
-    .configure(NFA::config().captures(<span class="bool-val">false</span>))
+    .configure(NFA::config().which_captures(WhichCaptures::None))
     .build(<span class="string">r&quot;abc&quot;</span>)<span class="question-mark">?</span>;
 <span class="comment">// We disabled capturing groups, so there are none.
 </span><span class="macro">assert_eq!</span>(<span class="number">0</span>, nfa.group_info().group_len(PatternID::ZERO));
 
 <span class="kw">let </span>nfa = NFA::compiler()
-    .configure(NFA::config().captures(<span class="bool-val">false</span>))
+    .configure(NFA::config().which_captures(WhichCaptures::None))
     .build(<span class="string">r&quot;(a)(b)(c)&quot;</span>)<span class="question-mark">?</span>;
 <span class="comment">// We disabled capturing groups, so there are none, even if there are
 // explicit groups in the concrete syntax.
@@ -489,7 +489,7 @@ pattern.</p>
 <p>This example shows how the values returned by this routine may vary
 for different patterns and NFA configurations.</p>
 
-<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>regex_automata::{nfa::thompson::NFA, PatternID};
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>regex_automata::{nfa::thompson::{NFA, WhichCaptures}, PatternID};
 
 <span class="kw">let </span>nfa = NFA::new(<span class="string">r&quot;(a)(b)(c)&quot;</span>)<span class="question-mark">?</span>;
 <span class="comment">// There are 3 explicit groups in the pattern&#39;s concrete syntax and
@@ -506,13 +506,13 @@ for different patterns and NFA configurations.</p>
 </span><span class="macro">assert_eq!</span>(<span class="number">5</span>, nfa.group_info().all_group_len());
 
 <span class="kw">let </span>nfa = NFA::compiler()
-    .configure(NFA::config().captures(<span class="bool-val">false</span>))
+    .configure(NFA::config().which_captures(WhichCaptures::None))
     .build(<span class="string">r&quot;abc&quot;</span>)<span class="question-mark">?</span>;
 <span class="comment">// We disabled capturing groups, so there are none.
 </span><span class="macro">assert_eq!</span>(<span class="number">0</span>, nfa.group_info().all_group_len());
 
 <span class="kw">let </span>nfa = NFA::compiler()
-    .configure(NFA::config().captures(<span class="bool-val">false</span>))
+    .configure(NFA::config().which_captures(WhichCaptures::None))
     .build(<span class="string">r&quot;(a)(b)(c)&quot;</span>)<span class="question-mark">?</span>;
 <span class="comment">// We disabled capturing groups, so there are none, even if there are
 // explicit groups in the concrete syntax.
