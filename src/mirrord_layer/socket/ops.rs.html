@@ -1010,6 +1010,9 @@
 <a href="#1010" id="1010">1010</a>
 <a href="#1011" id="1011">1011</a>
 <a href="#1012" id="1012">1012</a>
+<a href="#1013" id="1013">1013</a>
+<a href="#1014" id="1014">1014</a>
+<a href="#1015" id="1015">1015</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>alloc::ffi::CString;
 <span class="kw">use </span>core::{ffi::CStr, mem};
 <span class="kw">use </span>std::{
@@ -1022,6 +1025,7 @@
 };
 
 <span class="kw">use </span>libc::{c_int, c_void, sockaddr, socklen_t};
+<span class="kw">use </span>mirrord_config::feature::network::incoming::IncomingMode;
 <span class="kw">use </span>mirrord_protocol::{
     dns::LookupRecord,
     file::{OpenFileResponse, OpenOptionsInternal, ReadFileResponse},
@@ -1040,7 +1044,7 @@
     is_debugger_port,
     outgoing::{tcp::TcpOutgoing, udp::UdpOutgoing, Connect, RemoteConnection},
     tcp::{Listen, TcpIncoming},
-    ENABLED_TCP_OUTGOING, ENABLED_UDP_OUTGOING, INCOMING_IGNORE_LOCALHOST, LISTEN_PORTS,
+    ENABLED_TCP_OUTGOING, ENABLED_UDP_OUTGOING, INCOMING_CONFIG, LISTEN_PORTS,
     OUTGOING_IGNORE_LOCALHOST, OUTGOING_SELECTOR, REMOTE_UNIX_STREAMS, TARGETLESS,
 };
 
@@ -1152,11 +1156,11 @@
 ) -&gt; Detour&lt;i32&gt; {
     <span class="kw">let </span>requested_address = SocketAddr::try_from_raw(raw_address, address_length)<span class="question-mark">?</span>;
     <span class="kw">let </span>requested_port = requested_address.port();
-
-    <span class="kw">let </span>ignore_localhost = INCOMING_IGNORE_LOCALHOST
+    <span class="kw">let </span>incoming_config = INCOMING_CONFIG
         .get()
-        .copied()
-        .expect(<span class="string">&quot;Should be set during initialization!&quot;</span>);
+        .expect(<span class="string">&quot;`INCOMING_CONFIG` not set. Please report a bug&quot;</span>);
+
+    <span class="kw">let </span>ignore_localhost = incoming_config.ignore_localhost;
 
     <span class="kw">let </span><span class="kw-2">mut </span>socket = {
         SOCKETS
@@ -1178,26 +1182,9 @@
     <span class="comment">// To handle #1458, we don&#39;t ignore port `0` for UDP.
     </span><span class="kw">if </span>(is_ignored_port(<span class="kw-2">&amp;</span>requested_address) &amp;&amp; <span class="macro">matches!</span>(socket.kind, SocketKind::Tcp(<span class="kw">_</span>)))
         || is_debugger_port(<span class="kw-2">&amp;</span>requested_address)
-        || INCOMING_IGNORE_PORTS
-            .get()
-            .expect(<span class="string">&quot;`INCOMING_IGNORE_PORTS` not set. Please report a bug&quot;</span>)
-            .contains(<span class="kw-2">&amp;</span>requested_port)
+        || incoming_config.ignore_ports.contains(<span class="kw-2">&amp;</span>requested_port)
     {
         <span class="prelude-val">Err</span>(Bypass::Port(requested_address.port()))<span class="question-mark">?</span>;
-    }
-
-    <span class="kw">if </span>TARGETLESS
-        .get()
-        .copied()
-        .expect(<span class="string">&quot;Should be set during initialization!&quot;</span>)
-    {
-        <span class="macro">warn!</span>(
-            <span class="string">&quot;Binding a port ({}) while running targetless. A targetless agent is not exposed by \
-            any service. Therefore, letting this port bind happen locally instead of on the \
-            cluster.&quot;</span>,
-            requested_address.port()
-        );
-        <span class="kw">return </span>Detour::Bypass(Bypass::BindWhenTargetless);
     }
 
     <span class="comment">// Check if the user&#39;s requested address isn&#39;t already in use, even though it&#39;s not actually
@@ -1274,7 +1261,26 @@
             .map(|(<span class="kw">_</span>, socket)| socket)
             .bypass(Bypass::LocalFdNotFound(sockfd))<span class="question-mark">?
     </span>};
+    <span class="kw">let </span>incoming = INCOMING_CONFIG
+        .get()
+        .expect(<span class="string">&quot;`INCOMING_CONFIG` not set. Please report a bug&quot;</span>);
 
+    <span class="kw">if </span><span class="macro">matches!</span>(incoming.mode, IncomingMode::Off) {
+        <span class="kw">return </span>Detour::Bypass(Bypass::DisabledIncoming);
+    }
+
+    <span class="kw">if </span>TARGETLESS
+        .get()
+        .copied()
+        .expect(<span class="string">&quot;Should be set during initialization!&quot;</span>)
+    {
+        <span class="macro">warn!</span>(
+            <span class="string">&quot;Listening while running targetless. A targetless agent is not exposed by \
+        any service. Therefore, letting this port bind happen locally instead of on the \
+        cluster.&quot;</span>,
+        );
+        <span class="kw">return </span>Detour::Bypass(Bypass::BindWhenTargetless);
+    }
     <span class="kw">match </span>socket.state {
         SocketState::Bound(Bound {
             requested_address,

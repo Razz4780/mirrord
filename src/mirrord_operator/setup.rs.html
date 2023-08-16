@@ -690,6 +690,8 @@
 <a href="#690" id="690">690</a>
 <a href="#691" id="691">691</a>
 <a href="#692" id="692">692</a>
+<a href="#693" id="693">693</a>
+<a href="#694" id="694">694</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{collections::BTreeMap, convert::Infallible, io::Write, str::FromStr, sync::LazyLock};
 
 <span class="kw">use </span>k8s_openapi::{
@@ -1111,7 +1113,9 @@
                         <span class="string">&quot;argoproj.io&quot;</span>.to_owned(),
                     ]),
                     resources: <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[
+                        <span class="string">&quot;nodes&quot;</span>.to_owned(),
                         <span class="string">&quot;pods&quot;</span>.to_owned(),
+                        <span class="string">&quot;pods/log&quot;</span>.to_owned(),
                         <span class="string">&quot;pods/ephemeralcontainers&quot;</span>.to_owned(),
                         <span class="string">&quot;deployments&quot;</span>.to_owned(),
                         <span class="string">&quot;jobs&quot;</span>.to_owned(),

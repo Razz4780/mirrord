@@ -282,6 +282,16 @@
 <a href="#282" id="282">282</a>
 <a href="#283" id="283">283</a>
 <a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::collections::HashMap;
 
 <span class="kw">use </span>k8s_openapi::api::core::v1::Toleration;
@@ -497,6 +507,16 @@
     ///
     /// Set to an empty array to have no tolerations at all
     </span><span class="kw">pub </span>tolerations: <span class="prelude-ty">Option</span>&lt;Vec&lt;Toleration&gt;&gt;,
+
+    <span class="doccomment">/// ### agent.check_out_of_pods {#agent-check_out_of_pods}
+    ///
+    /// Determine if to check whether there is room for agent job in target node. (Not applicable
+    /// when using ephemeral containers feature)
+    ///
+    /// Can be disabled if the check takes too long and you are sure there is enough resources on
+    /// each node
+    </span><span class="attr">#[config(default = <span class="bool-val">true</span>)]
+    </span><span class="kw">pub </span>check_out_of_pods: bool,
 
     <span class="doccomment">/// &lt;!--${internal}--&gt;
     /// Create an agent that returns an error after accepting the first client. For testing

@@ -86,7 +86,7 @@ using <code>#[from(short_name)]</code> attribute like following example:</p>
     <span class="macro">assert_eq!</span>(<span class="number">42</span>, short)
 }</code></pre></div>
 <h2 id="once-fixture"><a href="#once-fixture"><code>#[once]</code> Fixture</a></h2>
-<p>Expecially in integration tests there are cases where you need a fixture that is called just once
+<p>Especially in integration tests there are cases where you need a fixture that is called just once
 for every tests. <code>rstest</code> provides <code>#[once]</code> attribute for these cases.</p>
 <p>If you mark your fixture with this attribute, then <code>rstest</code> will compute a static reference to your
 fixture result and return this reference to all your tests that need this fixture.</p>
@@ -120,7 +120,7 @@ for:</p>
 </ul>
 <p>Take care that the <code>#[once]</code> fixture value will <strong>never be dropped</strong>.</p>
 <h2 id="partial-injection"><a href="#partial-injection">Partial Injection</a></h2>
-<p>You can also partialy inject fixture dependency using <code>#[with(v1, v2, ..)]</code> attribute:</p>
+<p>You can also partially inject fixture dependency using <code>#[with(v1, v2, ..)]</code> attribute:</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>rstest::<span class="kw-2">*</span>;
 
@@ -143,7 +143,7 @@ for:</p>
 <p>Note that injected value can be an arbitrary rust expression. <code>#[with(v1, ..., vn)]</code>
 attribute will inject <code>v1, ..., vn</code> expression as fixture arguments: all remaining arguments
 will be resolved as fixtures.</p>
-<p>Sometimes the return type cannot be infered so you must define it: For the few times you may
+<p>Sometimes the return type cannot be inferred so you must define it: For the few times you may
 need to do it, you can use the <code>#[default(type)]</code>, <code>#[partial_n(type)]</code> function attribute
 to define it:</p>
 
@@ -177,8 +177,8 @@ to define it:</p>
 }</code></pre></div>
 <p><code>partial_i</code> is the fixture used when you inject the first <code>i</code> arguments in test call.</p>
 <h2 id="old-compact-syntax"><a href="#old-compact-syntax">Old <em>compact</em> syntax</a></h2>
-<p>There is also a compact form for all previous features. This will mantained for a long time
-but for <code>fixture</code> I strongly recomand to migrate your code because you’ll pay a little
+<p>There is also a compact form for all previous features. This will maintained for a long time
+but for <code>fixture</code> I strongly recommend to migrate your code because you’ll pay a little
 verbosity but get back a more readable code.</p>
 <p>Follow the previous examples in old <em>compact</em> syntax.</p>
 <h3 id="default"><a href="#default">Default</a></h3>

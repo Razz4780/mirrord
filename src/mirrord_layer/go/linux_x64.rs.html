@@ -586,88 +586,6 @@
 <a href="#586" id="586">586</a>
 <a href="#587" id="587">587</a>
 <a href="#588" id="588">588</a>
-<a href="#589" id="589">589</a>
-<a href="#590" id="590">590</a>
-<a href="#591" id="591">591</a>
-<a href="#592" id="592">592</a>
-<a href="#593" id="593">593</a>
-<a href="#594" id="594">594</a>
-<a href="#595" id="595">595</a>
-<a href="#596" id="596">596</a>
-<a href="#597" id="597">597</a>
-<a href="#598" id="598">598</a>
-<a href="#599" id="599">599</a>
-<a href="#600" id="600">600</a>
-<a href="#601" id="601">601</a>
-<a href="#602" id="602">602</a>
-<a href="#603" id="603">603</a>
-<a href="#604" id="604">604</a>
-<a href="#605" id="605">605</a>
-<a href="#606" id="606">606</a>
-<a href="#607" id="607">607</a>
-<a href="#608" id="608">608</a>
-<a href="#609" id="609">609</a>
-<a href="#610" id="610">610</a>
-<a href="#611" id="611">611</a>
-<a href="#612" id="612">612</a>
-<a href="#613" id="613">613</a>
-<a href="#614" id="614">614</a>
-<a href="#615" id="615">615</a>
-<a href="#616" id="616">616</a>
-<a href="#617" id="617">617</a>
-<a href="#618" id="618">618</a>
-<a href="#619" id="619">619</a>
-<a href="#620" id="620">620</a>
-<a href="#621" id="621">621</a>
-<a href="#622" id="622">622</a>
-<a href="#623" id="623">623</a>
-<a href="#624" id="624">624</a>
-<a href="#625" id="625">625</a>
-<a href="#626" id="626">626</a>
-<a href="#627" id="627">627</a>
-<a href="#628" id="628">628</a>
-<a href="#629" id="629">629</a>
-<a href="#630" id="630">630</a>
-<a href="#631" id="631">631</a>
-<a href="#632" id="632">632</a>
-<a href="#633" id="633">633</a>
-<a href="#634" id="634">634</a>
-<a href="#635" id="635">635</a>
-<a href="#636" id="636">636</a>
-<a href="#637" id="637">637</a>
-<a href="#638" id="638">638</a>
-<a href="#639" id="639">639</a>
-<a href="#640" id="640">640</a>
-<a href="#641" id="641">641</a>
-<a href="#642" id="642">642</a>
-<a href="#643" id="643">643</a>
-<a href="#644" id="644">644</a>
-<a href="#645" id="645">645</a>
-<a href="#646" id="646">646</a>
-<a href="#647" id="647">647</a>
-<a href="#648" id="648">648</a>
-<a href="#649" id="649">649</a>
-<a href="#650" id="650">650</a>
-<a href="#651" id="651">651</a>
-<a href="#652" id="652">652</a>
-<a href="#653" id="653">653</a>
-<a href="#654" id="654">654</a>
-<a href="#655" id="655">655</a>
-<a href="#656" id="656">656</a>
-<a href="#657" id="657">657</a>
-<a href="#658" id="658">658</a>
-<a href="#659" id="659">659</a>
-<a href="#660" id="660">660</a>
-<a href="#661" id="661">661</a>
-<a href="#662" id="662">662</a>
-<a href="#663" id="663">663</a>
-<a href="#664" id="664">664</a>
-<a href="#665" id="665">665</a>
-<a href="#666" id="666">666</a>
-<a href="#667" id="667">667</a>
-<a href="#668" id="668">668</a>
-<a href="#669" id="669">669</a>
-<a href="#670" id="670">670</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::arch::asm;
 
 <span class="kw">use </span>errno::errno;
@@ -1032,88 +950,6 @@
     }
 }
 
-<span class="doccomment">/// Syscall &amp; Syscall6 handler - supports upto 6 params, mainly used for
-/// accept4 Note: Depending on success/failure Syscall may or may not call this handler
-</span><span class="attr">#[no_mangle]
-</span><span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>c_abi_syscall6_handler(
-    syscall: i64,
-    param1: i64,
-    param2: i64,
-    param3: i64,
-    param4: i64,
-    param5: i64,
-    param6: i64,
-) -&gt; i64 {
-    <span class="macro">trace!</span>(
-        <span class="string">&quot;c_abi_syscall6_handler: syscall={} param1={} param2={} param3={} param4={} param5={} param6={}&quot;</span>,
-        syscall, param1, param2, param3, param4, param5, param6
-    );
-    <span class="kw">let </span>res = <span class="kw">match </span>syscall {
-        libc::SYS_accept4 =&gt; {
-            accept4_detour(param1 <span class="kw">as _</span>, param2 <span class="kw">as _</span>, param3 <span class="kw">as _</span>, param4 <span class="kw">as _</span>) <span class="kw">as </span>i64
-        }
-        libc::SYS_socket =&gt; socket_detour(param1 <span class="kw">as _</span>, param2 <span class="kw">as _</span>, param3 <span class="kw">as _</span>) <span class="kw">as </span>i64,
-        libc::SYS_bind =&gt; bind_detour(param1 <span class="kw">as _</span>, param2 <span class="kw">as _</span>, param3 <span class="kw">as _</span>) <span class="kw">as </span>i64,
-        libc::SYS_listen =&gt; listen_detour(param1 <span class="kw">as _</span>, param2 <span class="kw">as _</span>) <span class="kw">as </span>i64,
-        libc::SYS_accept =&gt; accept_detour(param1 <span class="kw">as _</span>, param2 <span class="kw">as _</span>, param3 <span class="kw">as _</span>) <span class="kw">as </span>i64,
-        libc::SYS_close =&gt; close_detour(param1 <span class="kw">as _</span>) <span class="kw">as </span>i64,
-        libc::SYS_connect =&gt; connect_detour(param1 <span class="kw">as _</span>, param2 <span class="kw">as _</span>, param3 <span class="kw">as _</span>) <span class="kw">as </span>i64,
-
-        <span class="kw">_ if </span>FILE_MODE
-            .get()
-            .expect(<span class="string">&quot;FILE_MODE needs to be initialized&quot;</span>)
-            .is_active() =&gt;
-        {
-            <span class="kw">match </span>syscall {
-                libc::SYS_read =&gt; read_detour(param1 <span class="kw">as _</span>, param2 <span class="kw">as _</span>, param3 <span class="kw">as _</span>) <span class="kw">as </span>i64,
-                libc::SYS_write =&gt; write_detour(param1 <span class="kw">as _</span>, param2 <span class="kw">as _</span>, param3 <span class="kw">as _</span>) <span class="kw">as </span>i64,
-                libc::SYS_lseek =&gt; lseek_detour(param1 <span class="kw">as _</span>, param2 <span class="kw">as _</span>, param3 <span class="kw">as _</span>),
-                <span class="comment">// Note(syscall_linux.go)
-                // if flags == 0 {
-                // 	return faccessat(dirfd, path, mode)
-                // }
-                // The Linux kernel faccessat system call does not take any flags.
-                // The glibc faccessat implements the flags itself; see
-                // https://sourceware.org/git/?p=glibc.git;a=blob;f=sysdeps/unix/sysv/linux/faccessat.c;hb=HEAD
-                // Because people naturally expect syscall.Faccessat to act
-                // like C faccessat, we do the same.
-                </span>libc::SYS_faccessat =&gt; {
-                    faccessat_detour(param1 <span class="kw">as _</span>, param2 <span class="kw">as _</span>, param3 <span class="kw">as _</span>, <span class="number">0</span>) <span class="kw">as </span>i64
-                }
-                <span class="comment">// Stat hooks:
-                // - SYS_stat: maps to fstatat with AT_FDCWD in go - no additional hook needed
-                // |-- fstatat(_AT_FDCWD, path, stat, 0)
-                // - SYS_fstat will use fstat_detour, maps to the same syscall number i.e. SYS_FSTAT
-                //   (5)
-                // - SYS_newfstatat will use fstatat_detour, maps to the same syscall number i.e.
-                //   SYS_NEWFSTATAT (262)
-                // - SYS_lstat: maps to fstatat with AT_FDCWD and AT_SYMLINK_NOFOLLOW in go - no
-                //   additional hook needed
-                // - SYS_statx: not supported in go
-                </span>libc::SYS_newfstatat =&gt; {
-                    fstatat_logic(param1 <span class="kw">as _</span>, param2 <span class="kw">as _</span>, param3 <span class="kw">as _</span>, param4 <span class="kw">as _</span>)
-                        .unwrap_or_bypass_with(|<span class="kw">_</span>| {
-                            syscall_6(syscall, param1, param2, param3, param4, param5, param6)
-                                .try_into()
-                                .unwrap()
-                        })
-                        .into()
-                }
-                libc::SYS_openat =&gt; openat_detour(param1 <span class="kw">as _</span>, param2 <span class="kw">as _</span>, param3 <span class="kw">as _</span>) <span class="kw">as </span>i64,
-                libc::SYS_getdents64 =&gt; {
-                    getdents64_detour(param1 <span class="kw">as _</span>, param2 <span class="kw">as _</span>, param3 <span class="kw">as _</span>) <span class="kw">as </span>i64
-                }
-                <span class="kw">_ </span>=&gt; syscall_6(syscall, param1, param2, param3, param4, param5, param6),
-            }
-        }
-        <span class="kw">_ </span>=&gt; syscall_6(syscall, param1, param2, param3, param4, param5, param6),
-    };
-    <span class="kw">match </span>res {
-        -<span class="number">1 </span>=&gt; -errno().<span class="number">0 </span><span class="kw">as </span>i64,
-        <span class="kw">_ </span>=&gt; res,
-    }
-}
-
 <span class="doccomment">/// [Naked function] 3 param version (Syscall6) for making the syscall, libc&#39;s syscall is not
 /// used here as it doesn&#39;t return the value that go expects (it does translation)
 </span><span class="attr">#[naked]
@@ -1131,7 +967,7 @@
 
 <span class="doccomment">/// [Naked function] 6 param version, used by Rawsyscall &amp; Syscall
 </span><span class="attr">#[naked]
-</span><span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>syscall_6(
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>syscall_6(
     syscall: i64,
     param1: i64,
     param2: i64,

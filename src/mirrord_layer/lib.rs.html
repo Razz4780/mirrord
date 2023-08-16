@@ -1080,6 +1080,21 @@
 <a href="#1080" id="1080">1080</a>
 <a href="#1081" id="1081">1081</a>
 <a href="#1082" id="1082">1082</a>
+<a href="#1083" id="1083">1083</a>
+<a href="#1084" id="1084">1084</a>
+<a href="#1085" id="1085">1085</a>
+<a href="#1086" id="1086">1086</a>
+<a href="#1087" id="1087">1087</a>
+<a href="#1088" id="1088">1088</a>
+<a href="#1089" id="1089">1089</a>
+<a href="#1090" id="1090">1090</a>
+<a href="#1091" id="1091">1091</a>
+<a href="#1092" id="1092">1092</a>
+<a href="#1093" id="1093">1093</a>
+<a href="#1094" id="1094">1094</a>
+<a href="#1095" id="1095">1095</a>
+<a href="#1096" id="1096">1096</a>
+<a href="#1097" id="1097">1097</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(c_variadic)]
 #![feature(result_option_inspect)]
 #![feature(const_trait_impl)]
@@ -1155,13 +1170,7 @@
 </span><span class="kw">extern crate </span>alloc;
 <span class="kw">extern crate </span>core;
 
-<span class="kw">use </span>std::{
-    collections::{HashSet, VecDeque},
-    ffi::OsString,
-    net::SocketAddr,
-    panic,
-    sync::{OnceLock, RwLock},
-};
+<span class="kw">use </span>std::{collections::VecDeque, ffi::OsString, net::SocketAddr, panic, sync::OnceLock};
 
 <span class="kw">use </span>bimap::BiMap;
 <span class="kw">use </span>common::ResponseChannel;
@@ -1175,7 +1184,10 @@
 <span class="kw">use </span>mirrord_config::{
     feature::{
         fs::{FsConfig, FsModeConfig},
-        network::{incoming::IncomingConfig, NetworkConfig},
+        network::{
+            incoming::{IncomingConfig, IncomingMode},
+            NetworkConfig,
+        },
         FeatureConfig,
     },
     LayerConfig,
@@ -1228,12 +1240,19 @@
 <span class="kw">mod </span>tcp_mirror;
 <span class="kw">mod </span>tcp_steal;
 
-<span class="attr">#[cfg(all(target_arch = <span class="string">&quot;x86_64&quot;</span>, target_os = <span class="string">&quot;linux&quot;</span>))]
-#[cfg_attr(
-    all(target_os = <span class="string">&quot;linux&quot;</span>, target_arch = <span class="string">&quot;x86_64&quot;</span>),
-    path = <span class="string">&quot;go/linux_x64.rs&quot;
-</span>)]
-</span><span class="kw">mod </span>go_hooks;
+<span class="attr">#[cfg(all(
+    any(target_arch = <span class="string">&quot;x86_64&quot;</span>, target_arch = <span class="string">&quot;aarch64&quot;</span>),
+    target_os = <span class="string">&quot;linux&quot;
+</span>))]
+</span><span class="kw">mod </span>go;
+
+<span class="attr">#[cfg(all(
+    any(target_arch = <span class="string">&quot;x86_64&quot;</span>, target_arch = <span class="string">&quot;aarch64&quot;</span>),
+    target_os = <span class="string">&quot;linux&quot;
+</span>))]
+</span><span class="kw">use </span><span class="kw">crate</span>::go::go_hooks;
+
+<span class="kw">const </span>TRACE_ONLY_ENV: <span class="kw-2">&amp;</span>str = <span class="string">&quot;MIRRORD_LAYER_TRACE_ONLY&quot;</span>;
 
 <span class="kw">fn </span>build_runtime() -&gt; Runtime {
     tokio::runtime::Builder::new_current_thread()
@@ -1260,7 +1279,7 @@
 ///
 /// You probably don&#39;t want to use this directly, instead prefer calling
 /// [`blocking_send_hook_message`](common::blocking_send_hook_message) to send internal messages.
-</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">static </span>HOOK_SENDER: OnceLock&lt;RwLock&lt;Sender&lt;HookMessage&gt;&gt;&gt; = OnceLock::new();
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">static </span><span class="kw-2">mut </span>HOOK_SENDER: OnceLock&lt;Sender&lt;HookMessage&gt;&gt; = OnceLock::new();
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">static </span>LAYER_INITIALIZED: OnceLock&lt;()&gt; = OnceLock::new();
 
@@ -1303,19 +1322,12 @@
 /// When true, localhost connections will stay local (won&#39;t go to the remote pod localhost)
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">static </span>OUTGOING_IGNORE_LOCALHOST: OnceLock&lt;bool&gt; = OnceLock::new();
 
-<span class="doccomment">/// Tells us if the user enabled wants to ignore listening on localhost in [`IncomingConfig`].
-///
-/// ## Usage
-///
-/// When true, localhost connections will stay local - wont mirror or steal.
-</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">static </span>INCOMING_IGNORE_LOCALHOST: OnceLock&lt;bool&gt; = OnceLock::new();
+<span class="doccomment">/// Incoming config [`IncomingConfig`].
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">static </span>INCOMING_CONFIG: OnceLock&lt;IncomingConfig&gt; = OnceLock::new();
 
 <span class="doccomment">/// Indicates this is a targetless run, so that users can be warned if their application is
 /// mirroring/stealing from a targetless agent.
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">static </span>TARGETLESS: OnceLock&lt;bool&gt; = OnceLock::new();
-
-<span class="doccomment">/// Ports to ignore on listening for mirroring/stealing.
-</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">static </span>INCOMING_IGNORE_PORTS: OnceLock&lt;HashSet&lt;u16&gt;&gt; = OnceLock::new();
 
 <span class="comment">// TODO(alex): To support DNS on the selector, change it to `LazyLock&lt;Arc&lt;Mutex&gt;&gt;`, so we can modify
 // the global on `OutgoingSelector::connect_remote`, converting `AddressFilter:Name` to however
@@ -1460,6 +1472,10 @@
         .set(config.feature.network.outgoing.udp)
         .expect(<span class="string">&quot;Setting ENABLED_UDP_OUTGOING singleton&quot;</span>);
 
+    INCOMING_CONFIG
+        .set(config.feature.network.incoming.clone())
+        .expect(<span class="string">&quot;SETTING INCOMING_CONFIG singleton&quot;</span>);
+
     {
         <span class="kw">let </span>outgoing_selector = config
             .feature
@@ -1495,17 +1511,9 @@
         .set(config.feature.network.outgoing.ignore_localhost)
         .expect(<span class="string">&quot;Setting OUTGOING_IGNORE_LOCALHOST singleton&quot;</span>);
 
-    INCOMING_IGNORE_LOCALHOST
-        .set(config.feature.network.incoming.ignore_localhost)
-        .expect(<span class="string">&quot;Setting INCOMING_IGNORE_LOCALHOST singleton&quot;</span>);
-
     TARGETLESS
         .set(config.target.path.is_none())
         .expect(<span class="string">&quot;Setting TARGETLESS singleton&quot;</span>);
-
-    INCOMING_IGNORE_PORTS
-        .set(config.feature.network.incoming.ignore_ports.clone())
-        .expect(<span class="string">&quot;Setting INCOMING_IGNORE_PORTS failed&quot;</span>);
 
     FILE_FILTER.get_or_init(|| FileFilter::new(config.feature.fs.clone()));
 
@@ -1541,6 +1549,21 @@
         </span>config.feature.fs.mode = FsModeConfig::LocalWithOverrides;
     }
 
+    <span class="comment">// Check if we&#39;re in trace only mode (no agent)
+    </span><span class="kw">let </span>trace_only = std::env::var(TRACE_ONLY_ENV)
+        .unwrap_or_default()
+        .parse()
+        .unwrap_or(<span class="bool-val">false</span>);
+
+    <span class="comment">// Disable all features that require the agent
+    </span><span class="kw">if </span>trace_only {
+        config.feature.fs.mode = FsModeConfig::Local;
+        config.feature.network.dns = <span class="bool-val">false</span>;
+        config.feature.network.incoming.mode = IncomingMode::Off;
+        config.feature.network.outgoing.tcp = <span class="bool-val">false</span>;
+        config.feature.network.outgoing.udp = <span class="bool-val">false</span>;
+    }
+
     <span class="comment">// does not need to be atomic because on the first call there are never other threads.
     // Will be false when manually called from fork hook.
     </span><span class="kw">if </span>LAYER_INITIALIZED.get().is_none() {
@@ -1572,6 +1595,10 @@
             .expect(<span class="string">&quot;EXECUTABLE_ARGS needs to be set!&quot;</span>)
     );
 
+    <span class="kw">if </span>trace_only {
+        <span class="kw">return</span>;
+    }
+
     <span class="kw">let </span>address = config
         .connect_tcp
         .as_ref()
@@ -1583,21 +1610,21 @@
     <span class="kw">let </span>(tx, rx) = runtime.block_on(connection::connect_to_proxy(address));
     <span class="kw">let </span>(sender, receiver) = channel::&lt;HookMessage&gt;(<span class="number">1000</span>);
 
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(lock) = HOOK_SENDER.get() {
-        <span class="comment">// HOOK_SENDER is already set, we&#39;re currently on a fork detour.
+    <span class="comment">// SAFETY: mutation of `HOOK_SENDER` happens only in the ctor, or in the fork hook, and in all
+    // of those cases there&#39;s only one thread so we can do this safely.
+    </span><span class="kw">unsafe </span>{
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(old_sender) = HOOK_SENDER.take() {
+            <span class="comment">// HOOK_SENDER is already set, we&#39;re currently on a fork detour.
 
-        // `expect`: `lock` returns error if another thread panicked while holding the lock, but
-        // when this code runs there are still no other threads in the process, because it&#39;s called
-        // either from the ctor, or from the child in a `fork` hook, before execution is returned to
-        // the user application.
-        </span><span class="kw-2">*</span>(lock.write().expect(<span class="string">&quot;Could not reset HOOK_SENDER&quot;</span>)) = sender;
-    } <span class="kw">else </span>{
-        <span class="comment">// First call to this func, we&#39;re in the ctor.
-
-        </span>HOOK_SENDER
-            .set(RwLock::new(sender))
+            // we can&#39;t call drop since it might trigger the traceback that can be seen here
+            // https://github.com/metalbear-co/mirrord/issues/1792
+            // so we leak it.
+            </span>std::mem::forget(old_sender);
+        }
+        HOOK_SENDER
+            .set(sender)
             .expect(<span class="string">&quot;Setting HOOK_SENDER singleton&quot;</span>);
-    }
+    };
 
     start_layer_thread(tx, rx, receiver, config, runtime);
 }
@@ -2056,7 +2083,10 @@
         <span class="kw">unsafe </span>{ file::hooks::enable_file_hooks(<span class="kw-2">&amp;mut </span>hook_manager) };
     }
 
-    <span class="attr">#[cfg(all(target_arch = <span class="string">&quot;x86_64&quot;</span>, target_os = <span class="string">&quot;linux&quot;</span>))]
+    <span class="attr">#[cfg(all(
+        any(target_arch = <span class="string">&quot;x86_64&quot;</span>, target_arch = <span class="string">&quot;aarch64&quot;</span>),
+        target_os = <span class="string">&quot;linux&quot;
+    </span>))]
     </span>{
         go_hooks::enable_hooks(<span class="kw-2">&amp;mut </span>hook_manager);
     }

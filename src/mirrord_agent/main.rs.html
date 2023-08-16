@@ -729,6 +729,7 @@
 <a href="#729" id="729">729</a>
 <a href="#730" id="730">730</a>
 <a href="#731" id="731">731</a>
+<a href="#732" id="732">732</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(result_option_inspect)]
 #![feature(hash_drain_filter)]
 #![feature(let_chains)]
@@ -1290,9 +1291,10 @@
         dns_api,
     };
 
-    <span class="comment">// WARNING: This exact string is expected to be read in `pod_api.rs`, more specifically in
-    // `wait_for_agent_startup`. If you change this then mirrord fails to initialize.
-    </span><span class="macro">println!</span>(<span class="string">&quot;agent ready&quot;</span>);
+    <span class="comment">// WARNING: `wait_for_agent_startup` in `mirrord/kube/src/api/container.rs` expects a line
+    // containing &quot;agent_ready&quot; to be printed. If you change this then mirrord fails to
+    // initialize.
+    </span><span class="macro">println!</span>(<span class="string">&quot;agent ready - version {}&quot;</span>, <span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_VERSION&quot;</span>));
 
     <span class="kw">let </span><span class="kw-2">mut </span>clients = FuturesUnordered::new();
 

@@ -194,6 +194,7 @@
 <a href="#194" id="194">194</a>
 <a href="#195" id="195">195</a>
 <a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::ops::Deref;
 <span class="attr">#[cfg(feature = <span class="string">&quot;incluster&quot;</span>)]
 </span><span class="kw">use </span>std::{net::SocketAddr, time::Duration};
@@ -313,10 +314,11 @@
         </span>P: Progress + Send + Sync,
     {
         <span class="kw">let </span>runtime_data = <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>path) = <span class="self">self</span>.target.path {
-            <span class="prelude-val">Some</span>(
-                path.runtime_data(<span class="kw-2">&amp;</span><span class="self">self</span>.client, <span class="self">self</span>.target.namespace.as_deref())
-                    .<span class="kw">await</span><span class="question-mark">?</span>,
-            )
+            <span class="kw">let </span>runtime_data = path
+                .runtime_data(<span class="kw-2">&amp;</span><span class="self">self</span>.client, <span class="self">self</span>.target.namespace.as_deref())
+                .<span class="kw">await</span><span class="question-mark">?</span>;
+
+            <span class="prelude-val">Some</span>(runtime_data)
         } <span class="kw">else </span>{
             <span class="comment">// Most users won&#39;t see this, since the default log level is error, and also progress
             // reporting overrides logs in this stage of the run.

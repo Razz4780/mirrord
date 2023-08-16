@@ -131,6 +131,8 @@
 <a href="#131" id="131">131</a>
 <a href="#132" id="132">132</a>
 <a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{ptr::null_mut, sync::LazyLock};
 
 <span class="kw">use </span>frida_gum::{interceptor::Interceptor, Gum, Module, NativePointer};
@@ -238,8 +240,10 @@
     }
 
     <span class="doccomment">/// Resolve symbol in main module
-    </span><span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
-    #[cfg(target_arch = <span class="string">&quot;x86_64&quot;</span>)]
+    </span><span class="attr">#[cfg(all(
+        target_os = <span class="string">&quot;linux&quot;</span>,
+        any(target_arch = <span class="string">&quot;x86_64&quot;</span>, target_arch = <span class="string">&quot;aarch64&quot;</span>)
+    ))]
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>resolve_symbol_main_module(<span class="kw-2">&amp;</span><span class="self">self</span>, symbol: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;NativePointer&gt; {
         <span class="comment">// This can&#39;t fail
         </span><span class="kw">let </span>module = <span class="self">self</span>.modules.first().unwrap().clone();

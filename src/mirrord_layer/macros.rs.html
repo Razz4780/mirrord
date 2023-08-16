@@ -130,6 +130,12 @@
 <a href="#130" id="130">130</a>
 <a href="#131" id="131">131</a>
 <a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Macros used by mirrord-layer (mostly for hooking [`libc`] functions).
 //!
 //! ## Macros
@@ -215,7 +221,10 @@
 ///     go_rawsyscall_detour
 /// );
 /// ```
-</span><span class="attr">#[cfg(all(target_os = <span class="string">&quot;linux&quot;</span>, not(target_arch = <span class="string">&quot;aarch64&quot;</span>)))]
+</span><span class="attr">#[cfg(all(
+    target_os = <span class="string">&quot;linux&quot;</span>,
+    any(target_arch = <span class="string">&quot;x86_64&quot;</span>, target_arch = <span class="string">&quot;aarch64&quot;</span>)
+))]
 </span><span class="macro">macro_rules! </span>hook_symbol {
     (<span class="macro-nonterminal">$hook_manager</span>:expr, <span class="macro-nonterminal">$func</span>:expr, <span class="macro-nonterminal">$detour_name</span>:expr) =&gt; {
         <span class="kw">match </span><span class="macro-nonterminal">$hook_manager</span>.hook_symbol_main_module(<span class="macro-nonterminal">$func</span>, <span class="macro-nonterminal">$detour_name </span><span class="kw">as </span><span class="kw-2">*mut </span>libc::c_void) {
@@ -260,6 +269,9 @@
     }};
 }
 
-<span class="attr">#[cfg(all(target_os = <span class="string">&quot;linux&quot;</span>, not(target_arch = <span class="string">&quot;aarch64&quot;</span>)))]
+<span class="attr">#[cfg(all(
+    target_os = <span class="string">&quot;linux&quot;</span>,
+    any(target_arch = <span class="string">&quot;x86_64&quot;</span>, target_arch = <span class="string">&quot;aarch64&quot;</span>)
+))]
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use </span>hook_symbol;
 </code></pre></div></section></main></body></html>

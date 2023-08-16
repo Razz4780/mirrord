@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="The attribute that you should use for your tests. Your annotated function’s arguments can be injected with `[fixture]`s, provided by parametrized cases or by value lists."><title>rstest in rstest_macros - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="rstest_macros" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0-nightly (c609da59d 2023-04-18)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../static.files/storage-62ce34ea385b278a.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-1a524efa7bd4ab32.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc attr"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../rstest_macros/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../rstest_macros/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><div class="sidebar-elems"><h2><a href="index.html">In rstest_macros</a></h2></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Attribute Macro <a href="index.html">rstest_macros</a>::<wbr><a class="attr" href="#">rstest</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../src/rstest_macros/lib.rs.html#1077-1104">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><pre class="rust item-decl"><code>#[rstest]</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>The attribute that you should use for your tests. Your
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="The attribute that you should use for your tests. Your annotated function’s arguments can be injected with `[fixture]`s, provided by parametrized cases or by value lists."><title>rstest in rstest_macros - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="rstest_macros" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0-nightly (c609da59d 2023-04-18)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../static.files/storage-62ce34ea385b278a.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-1a524efa7bd4ab32.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc attr"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../rstest_macros/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../rstest_macros/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><div class="sidebar-elems"><h2><a href="index.html">In rstest_macros</a></h2></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Attribute Macro <a href="index.html">rstest_macros</a>::<wbr><a class="attr" href="#">rstest</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../src/rstest_macros/lib.rs.html#1084-1111">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><pre class="rust item-decl"><code>#[rstest]</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>The attribute that you should use for your tests. Your
 annotated function’s arguments can be
 <a href="attr.rstest.html#injecting-fixtures">injected</a> with
 <a href="attr.fixture.html" title="attr rstest_macros::fixture"><code>[fixture]</code></a>s, provided by
@@ -24,7 +24,7 @@ tests. You can use it just with <code>async-std</code> and you should include <c
 <p>The simplest case is write a test that can be injected with
 <a href="attr.fixture.html" title="attr rstest_macros::fixture"><code>[fixture]</code></a>s. You can just declare all used fixtures by passing
 them as a function’s arguments. This can help your test to be neat
-and make your dependecy clear.</p>
+and make your dependency clear.</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>rstest::<span class="kw-2">*</span>;
 
@@ -56,7 +56,7 @@ shorter names inside your tests you use rename feature described in
 </span><span class="kw">fn </span>the_test(<span class="attr">#[from(long_and_boring_descriptive_name)] </span>short: i32) {
     <span class="macro">assert_eq!</span>(<span class="number">42</span>, short)
 }</code></pre></div>
-<p>Sometimes is useful to have some parametes in your fixtures but your test would
+<p>Sometimes is useful to have some parameters in your fixtures but your test would
 override the fixture’s default values in some cases. Like in
 <a href="attr.fixture.html#partial-injection">fixture partial injection</a> you use <code>#[with]</code>
 attribute to indicate some fixture’s arguments also in <code>rstest</code>.</p>
@@ -98,8 +98,8 @@ the classical Fibonacci example. In this case we would give the
         n =&gt; fibonacci(n - <span class="number">2</span>) + fibonacci(n - <span class="number">1</span>)
     }
 }</code></pre></div>
-<p><code>rstest</code> will produce 5 indipendent tests and not just one that
-check every case. Every test can fail indipendently and <code>cargo test</code>
+<p><code>rstest</code> will produce 5 independent tests and not just one that
+check every case. Every test can fail independently and <code>cargo test</code>
 will give follow output:</p>
 <div class="example-wrap"><pre class="language-text"><code>running 5 tests
 test fibonacci_test::case_1 ... ok
@@ -110,7 +110,7 @@ test fibonacci_test::case_5 ... ok
 
 test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
 </code></pre></div>
-<p>The cases input values can be arbitrary Rust expresions that return the
+<p>The cases input values can be arbitrary Rust expressions that return the
 argument type.</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>rstest::rstest;
@@ -130,7 +130,7 @@ where its type define <code>FromStr</code> trait: test will parse the string to 
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="attr">#[rstest]
 #[case(<span class="string">&quot;resources/empty&quot;</span>, <span class="number">0</span>)]
-#[case(<span class="string">&quot;resources/divine_commedy&quot;</span>, <span class="number">101.698</span>)]
+#[case(<span class="string">&quot;resources/divine_comedy&quot;</span>, <span class="number">101.698</span>)]
 </span><span class="kw">fn </span>test_count_words(<span class="attr">#[case] </span>path: PathBuf, <span class="attr">#[case] </span>expected: usize) {
     <span class="macro">assert_eq!</span>(expected, count_words(path))
 }</code></pre></div>
@@ -148,7 +148,7 @@ Rust ident.</p>
     <span class="macro">assert_eq!</span>(expected, fibonacci(input))
 }
 </code></pre></div>
-<p>Outuput will be</p>
+<p>Output will be</p>
 <div class="example-wrap"><pre class="language-text"><code>running 4 tests
 test fibonacci_test::case_1_zero_base_case ... ok
 test fibonacci_test::case_2_one_base_case ... ok
@@ -200,13 +200,13 @@ test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
 </span><span class="kw">fn </span>fail(<span class="attr">#[case] </span>v: u32) { <span class="macro">assert_eq!</span>(<span class="number">0</span>, v) }</code></pre></div>
 <h3 id="values-lists"><a href="#values-lists">Values Lists</a></h3>
 <p>Another useful way to write a test and execute it for some values
-is to use the values list syntax. This syntax can be usefull both
+is to use the values list syntax. This syntax can be useful both
 for a plain list and for testing all combination of input arguments.</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code>
 <span class="attr">#[rstest]
 </span><span class="kw">fn </span>should_be_valid(
-    <span class="attr">#[values(<span class="string">&quot;Jhon&quot;</span>, <span class="string">&quot;alice&quot;</span>, <span class="string">&quot;My_Name&quot;</span>, <span class="string">&quot;Zigy_2001&quot;</span>)]
+    <span class="attr">#[values(<span class="string">&quot;John&quot;</span>, <span class="string">&quot;alice&quot;</span>, <span class="string">&quot;My_Name&quot;</span>, <span class="string">&quot;Zigy_2001&quot;</span>)]
     </span>input: <span class="kw-2">&amp;</span>str
 ) {
     <span class="macro">assert!</span>(is_valid(input))
@@ -234,7 +234,7 @@ test should_accept_all_corner_cases::name_1___J__::age_1_14 ... ok
 test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 </code></pre></div>
 <p>Note that the test names contains the given expression sanitized into
-a valid Rust identifier name. This should help to identify wich case fails.</p>
+a valid Rust identifier name. This should help to identify which case fails.</p>
 <p>Also value list implements the magic conversion feature: every time the value type
 implements <code>FromStr</code> trait you can use a literal string to define it.</p>
 
@@ -251,11 +251,17 @@ satisfy the given glob path.</p>
 </span><span class="kw">fn </span>for_each_file(<span class="attr">#[files(<span class="string">&quot;src/**/*.rs&quot;</span>)] #[exclude(<span class="string">&quot;test&quot;</span>)] </span>path: PathBuf) {
     <span class="macro">assert!</span>(check_file(<span class="kw-2">&amp;</span>path))
 }</code></pre></div>
-<p>The default behavior is to ignore the files that starts with <code>&quot;.&quot;</code> but you can
+<p>The default behavior is to ignore the files that start with <code>&quot;.&quot;</code>, but you can
 modify this by use <code>#[include_dot_files]</code> attribute. The <code>files</code> attribute can be
-used more than once on the same variable and you can also create some custom
+used more than once on the same variable, and you can also create some custom
 exclusion rules with the <code>#[exclude(&quot;regex&quot;)]</code> attributes that filter out all
 paths that verify the regular expression.</p>
+<p>Sometime is useful to have test files in a workspace folder to share them between the
+crates in your workspace. You can do that by use the usual parent folders <code>..</code> in
+the glob path. In this case the test names will be the relative path from the crate root
+where the parent folder components are replaced by <code>_UP</code>: for instance if you have a
+<code>valid_call.yaml</code> in the folder <code>../test_cases</code> (from your crate root) a test name could be
+<code>path_1__UP_test_cases_valid_call_yaml</code>.</p>
 <h3 id="use-parametrize-definition-in-more-tests"><a href="#use-parametrize-definition-in-more-tests">Use Parametrize definition in more tests</a></h3>
 <p>If you need to use a test list for more than one test you can use
 <a href="https://crates.io/crates/rstest_reuse"><code>rstest_reuse</code></a> crate.
@@ -274,7 +280,7 @@ With this helper crate you can define a template and use it everywhere.</p>
 </span><span class="kw">fn </span>it_works(<span class="attr">#[case] </span>a: u32,<span class="attr">#[case] </span>b: u32) {
     <span class="macro">assert_eq!</span>(a, b);
 }</code></pre></div>
-<p>See <a href="https://crates.io/crates/rstest_reuse"><code>rstest_reuse</code></a> for more dettails.</p>
+<p>See <a href="https://crates.io/crates/rstest_reuse"><code>rstest_reuse</code></a> for more details.</p>
 <h3 id="async"><a href="#async">Async</a></h3>
 <p><code>rstest</code> provides out of the box <code>async</code> support. Just mark your
 test function as <code>async</code> and it’ll use <code>#[async-std::test]</code> to
@@ -336,7 +342,7 @@ simplified like follow:</p>
 <p>You can set a default timeout for test using the <code>RSTEST_TIMEOUT</code> environment variable.
 The value is in seconds and is evaluated on test compile time.///</p>
 <h4 id="test-timeout"><a href="#test-timeout">Test <code>#[timeout()]</code></a></h4>
-<p>You can define an execution timeout for your tests with <code>#[timeout(&lt;duration&gt;)]</code> attribute. Timeouts
+<p>You can define an execution timeout for your tests with <code>#[timeout(&lt;duration&gt;)]</code> attribute. Timeout
 works both for sync and async tests and is runtime agnostic. <code>#[timeout(&lt;duration&gt;)]</code> take an
 expression that should return a <code>std::time::Duration</code>. Follow a simple async example:</p>
 
@@ -355,9 +361,9 @@ expression that should return a <code>std::time::Duration</code>. Follow a simpl
 }</code></pre></div>
 <p>In this case test pass because the delay is just 10 milliseconds and timeout is
 80 milliseconds.</p>
-<p>You can use <code>timeout</code> attribute like any other attibute in your tests and you can
+<p>You can use <code>timeout</code> attribute like any other attribute in your tests, and you can
 override a group timeout with a test specific one. In the follow example we have
-3 tests where first and third use 100 millis but the second one use 10 millis.
+3 tests where first and third use 100 milliseconds but the second one use 10 milliseconds.
 Another valuable point in this example is to use an expression to compute the
 duration.</p>
 
@@ -416,9 +422,9 @@ test cases which test for panics, one for a logged in user and one for a guest u
 }
 
 <span class="attr">#[rstest]
-#[case::authed_user(alice())] </span><span class="comment">// We can use `fixture` also as standard function
+#[case::authorized_user(alice())] </span><span class="comment">// We can use `fixture` also as standard function
 </span><span class="attr">#[case::guest(User::Guest)]   </span><span class="comment">// We can give a name to every case : `guest` in this case
-</span><span class="attr">#[should_panic(expected = <span class="string">&quot;Invalid query error&quot;</span>)] </span><span class="comment">// We whould test a panic
+</span><span class="attr">#[should_panic(expected = <span class="string">&quot;Invalid query error&quot;</span>)] </span><span class="comment">// We would test a panic
 </span><span class="kw">fn </span>should_be_invalid_query_error(
     repository: <span class="kw">impl </span>Repository,
     <span class="attr">#[case] </span>user: User,
@@ -474,7 +480,7 @@ implement the <code>Debug</code> trait, you can also use the
 <h2 id="old-compact-syntax"><a href="#old-compact-syntax">Old <em>compact</em> syntax</a></h2>
 <p><code>rstest</code> support also a syntax where all options and configuration can be write as
 <code>rstest</code> attribute arguments. This syntax is a little less verbose but make
-composition harder: for istance try to add some cases to a <code>rstest_reuse</code> template
+composition harder: for instance try to add some cases to a <code>rstest_reuse</code> template
 is really hard.</p>
 <p>So we’ll continue to maintain the old syntax for a long time but we strongly encourage
 to switch your test in the new form.</p>
@@ -530,7 +536,7 @@ that and <code>v1, ..., vl</code> is a partial list of fixture’s arguments</li
 <h3 id="values-lists-1"><a href="#values-lists-1">Values Lists</a></h3>
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code>
 <span class="attr">#[rstest(
-    input =&gt; [<span class="string">&quot;Jhon&quot;</span>, <span class="string">&quot;alice&quot;</span>, <span class="string">&quot;My_Name&quot;</span>, <span class="string">&quot;Zigy_2001&quot;</span>]
+    input =&gt; [<span class="string">&quot;John&quot;</span>, <span class="string">&quot;alice&quot;</span>, <span class="string">&quot;My_Name&quot;</span>, <span class="string">&quot;Zigy_2001&quot;</span>]
 </span>)]
 <span class="kw">fn </span>should_be_valid(input: <span class="kw-2">&amp;</span>str) {
     <span class="macro">assert!</span>(is_valid(input))
