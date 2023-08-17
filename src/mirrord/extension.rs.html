@@ -43,16 +43,18 @@
 <a href="#43" id="43">43</a>
 <a href="#44" id="44">44</a>
 <a href="#45" id="45">45</a>
+<a href="#46" id="46">46</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::collections::HashMap;
 
 <span class="kw">use </span>mirrord_config::LayerConfig;
-<span class="kw">use </span>mirrord_progress::{Progress, ProgressTracker};
+<span class="kw">use </span>mirrord_progress::{JsonProgress, Progress, ProgressTracker};
 
 <span class="kw">use crate</span>::{config::ExtensionExecArgs, error::CliError, execution::MirrordExecution, <span class="prelude-ty">Result</span>};
 
 <span class="doccomment">/// Facilitate the execution of a process using mirrord by an IDE extension
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>extension_exec(args: ExtensionExecArgs) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-    <span class="kw">let </span><span class="kw-2">mut </span>progress = ProgressTracker::from_env(<span class="string">&quot;mirrord preparing to launch&quot;</span>);
+    <span class="kw">let </span><span class="kw-2">mut </span>progress = ProgressTracker::try_from_env(<span class="string">&quot;mirrord preparing to launch&quot;</span>)
+        .unwrap_or_else(|| JsonProgress::new(<span class="string">&quot;mirrord preparing to launch&quot;</span>).into());
     <span class="kw">let </span><span class="kw-2">mut </span>env: HashMap&lt;String, String&gt; = HashMap::new();
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(config_file) = args.config_file {
