@@ -767,6 +767,7 @@
 <a href="#767" id="767">767</a>
 <a href="#768" id="768">768</a>
 <a href="#769" id="769">769</a>
+<a href="#770" id="770">770</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(slice_concat_trait)]
 #![feature(lazy_cell)]
 #![feature(result_option_inspect)]
@@ -1395,6 +1396,7 @@
             skip_processes: <span class="prelude-val">None</span>,
             skip_build_tools: <span class="prelude-val">None</span>,
             agent: <span class="prelude-val">Some</span>(AgentFileConfig {
+                privileged: <span class="prelude-val">None</span>,
                 log_level: <span class="prelude-val">Some</span>(<span class="string">&quot;info&quot;</span>.to_owned()),
                 namespace: <span class="prelude-val">Some</span>(<span class="string">&quot;default&quot;</span>.to_owned()),
                 image: <span class="prelude-val">Some</span>(<span class="string">&quot;&quot;</span>.to_owned()),

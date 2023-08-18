@@ -292,6 +292,15 @@
 <a href="#292" id="292">292</a>
 <a href="#293" id="293">293</a>
 <a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::collections::HashMap;
 
 <span class="kw">use </span>k8s_openapi::api::core::v1::Toleration;
@@ -517,6 +526,15 @@
     /// each node
     </span><span class="attr">#[config(default = <span class="bool-val">true</span>)]
     </span><span class="kw">pub </span>check_out_of_pods: bool,
+
+    <span class="doccomment">/// ### agent.privileged {#agent-privileged}
+    ///
+    /// Run the mirror agent as privileged container. (Not applicable when using ephemeral)
+    /// Defaults to `false`.
+    ///
+    /// Might be needed in strict environments such as Bottlerocket.
+    </span><span class="attr">#[config(default = <span class="bool-val">false</span>)]
+    </span><span class="kw">pub </span>privileged: bool,
 
     <span class="doccomment">/// &lt;!--${internal}--&gt;
     /// Create an agent that returns an error after accepting the first client. For testing

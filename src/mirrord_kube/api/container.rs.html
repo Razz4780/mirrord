@@ -519,6 +519,7 @@
 <a href="#519" id="519">519</a>
 <a href="#520" id="520">520</a>
 <a href="#521" id="521">521</a>
+<a href="#522" id="522">522</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{collections::HashSet, sync::LazyLock};
 
 <span class="kw">use </span>futures::{AsyncBufReadExt, StreamExt, TryStreamExt};
@@ -799,6 +800,7 @@
                                 <span class="string">&quot;securityContext&quot;</span>: targeted.then(||
                                     <span class="macro">json!</span>({
                                         <span class="string">&quot;runAsGroup&quot;</span>: agent_gid,
+                                        <span class="string">&quot;privileged&quot;</span>: agent.privileged,
                                         <span class="string">&quot;capabilities&quot;</span>: {
                                             <span class="string">&quot;add&quot;</span>: get_capabilities(agent),
                                         }
