@@ -730,6 +730,19 @@
 <a href="#730" id="730">730</a>
 <a href="#731" id="731">731</a>
 <a href="#732" id="732">732</a>
+<a href="#733" id="733">733</a>
+<a href="#734" id="734">734</a>
+<a href="#735" id="735">735</a>
+<a href="#736" id="736">736</a>
+<a href="#737" id="737">737</a>
+<a href="#738" id="738">738</a>
+<a href="#739" id="739">739</a>
+<a href="#740" id="740">740</a>
+<a href="#741" id="741">741</a>
+<a href="#742" id="742">742</a>
+<a href="#743" id="743">743</a>
+<a href="#744" id="744">744</a>
+<a href="#745" id="745">745</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(result_option_inspect)]
 #![feature(hash_drain_filter)]
 #![feature(let_chains)]
@@ -829,20 +842,32 @@
             <span class="prelude-val">None </span>=&gt; <span class="prelude-val">None</span>,
         };
 
-        <span class="kw">let </span>environ_path = PathBuf::from(<span class="string">&quot;/proc&quot;</span>)
-            .join(
+        <span class="comment">// If we are in an ephemeral container, we use pid 1.
+        // if not, we use the pid of the target container or fallback to self
+        </span><span class="kw">let </span>pid = {
+            <span class="kw">if </span>args.ephemeral_container {
+                <span class="string">&quot;1&quot;</span>.to_string()
+            } <span class="kw">else </span>{
                 container
                     .as_ref()
                     .map(|h| h.pid().to_string())
-                    .unwrap_or_else(|| <span class="string">&quot;self&quot;</span>.to_string()),
-            )
-            .join(<span class="string">&quot;environ&quot;</span>);
+                    .unwrap_or_else(|| <span class="string">&quot;self&quot;</span>.to_string())
+            }
+        };
 
-        <span class="kw">let </span><span class="kw-2">mut </span>env = container
-            .as_ref()
-            .map(ContainerHandle::raw_env)
-            .cloned()
-            .unwrap_or_default();
+        <span class="kw">let </span><span class="kw-2">mut </span>env: HashMap&lt;String, String&gt; = HashMap::new();
+
+        <span class="kw">let </span>environ_path = PathBuf::from(<span class="string">&quot;/proc&quot;</span>).join(pid).join(<span class="string">&quot;environ&quot;</span>);
+
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(container) = container.as_ref() {
+            env.extend(container.raw_env().clone());
+        }
+
+        <span class="comment">// in ephemeral container, we get same env as the target container, so copy our env.
+        </span><span class="kw">if </span>args.ephemeral_container {
+            env.extend(std::env::vars())
+        }
+
         <span class="kw">match </span>env::get_proc_environ(environ_path).<span class="kw">await </span>{
             <span class="prelude-val">Ok</span>(environ) =&gt; env.extend(environ.into_iter()),
             <span class="prelude-val">Err</span>(err) =&gt; {
@@ -1206,6 +1231,7 @@
                 <span class="self">self</span>.respond(DaemonMessage::SwitchProtocolVersionResponse(version))
                     .<span class="kw">await</span><span class="question-mark">?</span>;
             }
+            ClientMessage::ReadyForLogs =&gt; {}
         }
 
         <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>)

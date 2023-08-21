@@ -946,6 +946,30 @@
 <a href="#946" id="946">946</a>
 <a href="#947" id="947">947</a>
 <a href="#948" id="948">948</a>
+<a href="#949" id="949">949</a>
+<a href="#950" id="950">950</a>
+<a href="#951" id="951">951</a>
+<a href="#952" id="952">952</a>
+<a href="#953" id="953">953</a>
+<a href="#954" id="954">954</a>
+<a href="#955" id="955">955</a>
+<a href="#956" id="956">956</a>
+<a href="#957" id="957">957</a>
+<a href="#958" id="958">958</a>
+<a href="#959" id="959">959</a>
+<a href="#960" id="960">960</a>
+<a href="#961" id="961">961</a>
+<a href="#962" id="962">962</a>
+<a href="#963" id="963">963</a>
+<a href="#964" id="964">964</a>
+<a href="#965" id="965">965</a>
+<a href="#966" id="966">966</a>
+<a href="#967" id="967">967</a>
+<a href="#968" id="968">968</a>
+<a href="#969" id="969">969</a>
+<a href="#970" id="970">970</a>
+<a href="#971" id="971">971</a>
+<a href="#972" id="972">972</a>
 </pre></div><pre class="rust"><code><span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
 </span><span class="kw">use </span>core::ffi::{c_size_t, c_ssize_t};
 <span class="doccomment">/// FFI functions that override the `libc` calls (see `file` module documentation on how to
@@ -1034,6 +1058,29 @@
             <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
             </span><span class="kw">let </span>raw_path = update_ptr_from_bypass(raw_path, _bypass);
             FN_OPEN(raw_path, open_flags, mode)
+        })
+    }
+}
+
+<span class="doccomment">/// Hook for `libc::open64`.
+///
+/// **Bypassed** by `raw_path`s that match what&#39;s in the `generate_local_set` regex, see
+/// [`super::filter`].
+</span><span class="attr">#[hook_fn]
+</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>open64_detour(
+    raw_path: <span class="kw-2">*const </span>c_char,
+    open_flags: c_int,
+    <span class="kw-2">mut </span>args: ...
+) -&gt; RawFd {
+    <span class="kw">let </span>mode: c_int = args.arg();
+    <span class="kw">let </span>guard = DetourGuard::new();
+    <span class="kw">if </span>guard.is_none() {
+        FN_OPEN64(raw_path, open_flags, mode)
+    } <span class="kw">else </span>{
+        open_logic(raw_path, open_flags, mode).unwrap_or_bypass_with(|_bypass| {
+            <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
+            </span><span class="kw">let </span>raw_path = update_ptr_from_bypass(raw_path, _bypass);
+            FN_OPEN64(raw_path, open_flags, mode)
         })
     }
 }
@@ -1719,6 +1766,7 @@
 </span><span class="doccomment">/// Convenience function to setup file hooks (`x_detour`) with `frida_gum`.
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe fn </span>enable_file_hooks(hook_manager: <span class="kw-2">&amp;mut </span>HookManager) {
     <span class="macro">replace!</span>(hook_manager, <span class="string">&quot;open&quot;</span>, open_detour, FnOpen, FN_OPEN);
+    <span class="macro">replace!</span>(hook_manager, <span class="string">&quot;open64&quot;</span>, open64_detour, FnOpen64, FN_OPEN64);
     <span class="macro">replace!</span>(
         hook_manager,
         <span class="string">&quot;open$NOCANCEL&quot;</span>,

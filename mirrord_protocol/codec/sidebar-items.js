@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["ClientMessage","DaemonMessage","FileRequest","FileResponse","LogLevel"],"struct":["ClientCodec","DaemonCodec","GetEnvVarsRequest","LogMessage"],"type":["RemoteResult"]};
+window.SIDEBAR_ITEMS = {"enum":["ClientMessage","DaemonMessage","FileRequest","FileResponse","LogLevel"],"static":["CLIENT_READY_FOR_LOGS"],"struct":["ClientCodec","DaemonCodec","GetEnvVarsRequest","LogMessage"],"type":["RemoteResult"]};

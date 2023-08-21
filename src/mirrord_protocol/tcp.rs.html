@@ -700,6 +700,8 @@
 <a href="#700" id="700">700</a>
 <a href="#701" id="701">701</a>
 <a href="#702" id="702">702</a>
+<a href="#703" id="703">703</a>
+<a href="#704" id="704">704</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>core::fmt::Display;
 <span class="kw">use </span>std::{
     collections::VecDeque,
@@ -951,8 +953,10 @@
     }
 }
 
-<span class="kw">pub static </span>HTTP_FRAMED_VERSION: LazyLock&lt;VersionReq&gt; =
-    LazyLock::new(|| <span class="string">&quot;&lt;1.3.0&quot;</span>.parse().expect(<span class="string">&quot;Bad Identifier&quot;</span>));
+<span class="doccomment">/// Minimal mirrord-protocol version that allows `DaemonTcp::HttpRequestFramed` instead of
+/// `DaemonTcp::HttpRequest`.
+</span><span class="kw">pub static </span>HTTP_FRAMED_VERSION: LazyLock&lt;VersionReq&gt; =
+    LazyLock::new(|| <span class="string">&quot;&gt;=1.3.0&quot;</span>.parse().expect(<span class="string">&quot;Bad Identifier&quot;</span>));
 
 <span class="doccomment">/// Protocol break - on version 2, please add source port, dest/src IP to the message
 /// so we can avoid losing this information.

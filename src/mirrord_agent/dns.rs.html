@@ -120,6 +120,16 @@
 <a href="#120" id="120">120</a>
 <a href="#121" id="121">121</a>
 <a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     fs::{<span class="self">self</span>, File},
     path::{Path, PathBuf},
@@ -127,7 +137,7 @@
 
 <span class="kw">use </span>mirrord_protocol::{
     dns::{DnsLookup, GetAddrInfoRequest, GetAddrInfoResponse},
-    RemoteResult,
+    DnsLookupError, RemoteResult, ResolveErrorKindInternal, ResponseError,
 };
 <span class="kw">use </span>tokio::sync::{
     mpsc::{<span class="self">self</span>, Receiver, Sender},
@@ -189,8 +199,18 @@
     <span class="kw">while let </span><span class="prelude-val">Some</span>(DnsRequest { request, tx }) = rx.recv().<span class="kw">await </span>{
         <span class="macro">trace!</span>(<span class="string">&quot;dns_worker -&gt; request {:#?}&quot;</span>, request);
 
-        <span class="kw">let </span>result = dns_lookup(root_path.as_path(), request.node);
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(result) = tx.send(GetAddrInfoResponse(result.<span class="kw">await</span>)) {
+        <span class="kw">let </span>result = dns_lookup(root_path.as_path(), request.node)
+            .<span class="kw">await
+            </span>.map_err(|err| {
+                <span class="macro">error!</span>(<span class="string">&quot;dns_lookup -&gt; ResponseError:: {err:?}&quot;</span>);
+                <span class="kw">match </span>err {
+                    ResponseError::DnsLookup(err) =&gt; ResponseError::DnsLookup(err),
+                    <span class="kw">_ </span>=&gt; ResponseError::DnsLookup(DnsLookupError {
+                        kind: ResolveErrorKindInternal::Unknown,
+                    }),
+                }
+            });
+        <span class="kw">if let </span><span class="prelude-val">Err</span>(result) = tx.send(GetAddrInfoResponse(result)) {
             <span class="macro">error!</span>(<span class="string">&quot;couldn&#39;t send result to caller {result:?}&quot;</span>);
         }
     }

@@ -342,6 +342,8 @@
 <a href="#342" id="342">342</a>
 <a href="#343" id="343">343</a>
 <a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     collections::BTreeMap,
     convert::Infallible,
@@ -454,7 +456,8 @@
         })
     }
 
-    <span class="kw">pub async fn </span>check_node(<span class="kw-2">&amp;</span><span class="self">self</span>, client: <span class="kw-2">&amp;</span>kube::Client) -&gt; NodeCheck {
+    <span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(client), ret)]
+    </span><span class="kw">pub async fn </span>check_node(<span class="kw-2">&amp;</span><span class="self">self</span>, client: <span class="kw-2">&amp;</span>kube::Client) -&gt; NodeCheck {
         <span class="kw">let </span>node_api: Api&lt;Node&gt; = Api::all(client.clone());
         <span class="kw">let </span>pod_api: Api&lt;Pod&gt; = Api::all(client.clone());
 
@@ -497,7 +500,8 @@
     }
 }
 
-<span class="kw">pub enum </span>NodeCheck {
+<span class="attr">#[derive(Debug)]
+</span><span class="kw">pub enum </span>NodeCheck {
     Success,
     Failed(String, usize),
     Error(KubeApiError),

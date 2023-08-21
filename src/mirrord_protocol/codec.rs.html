@@ -314,15 +314,24 @@
 <a href="#314" id="314">314</a>
 <a href="#315" id="315">315</a>
 <a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     collections::{HashMap, HashSet},
     io,
+    sync::LazyLock,
 };
 
 <span class="kw">use </span>actix_codec::{Decoder, Encoder};
 <span class="kw">use </span>bincode::{error::DecodeError, Decode, Encode};
 <span class="kw">use </span>bytes::{Buf, BufMut, BytesMut};
 <span class="kw">use </span>mirrord_macros::protocol_break;
+<span class="kw">use </span>semver::VersionReq;
 
 <span class="kw">use crate</span>::{
     dns::{GetAddrInfoRequest, GetAddrInfoResponse},
@@ -396,6 +405,10 @@
     GetDEnts64(GetDEnts64Request),
 }
 
+<span class="doccomment">/// Minimal mirrord-protocol version that allows `ClientMessage::ReadyForLogs` message.
+</span><span class="kw">pub static </span>CLIENT_READY_FOR_LOGS: LazyLock&lt;VersionReq&gt; =
+    LazyLock::new(|| <span class="string">&quot;&gt;=1.3.1&quot;</span>.parse().expect(<span class="string">&quot;Bad Identifier&quot;</span>));
+
 <span class="doccomment">/// `-layer` --&gt; `-agent` messages.
 </span><span class="attr">#[derive(Encode, Decode, Debug, PartialEq, Eq, Clone)]
 </span><span class="kw">pub enum </span>ClientMessage {
@@ -411,6 +424,7 @@
     <span class="doccomment">/// Whether to pause or unpause the target container.
     </span>PauseTargetRequest(bool),
     SwitchProtocolVersion(<span class="attr">#[bincode(with_serde)] </span>semver::Version),
+    ReadyForLogs,
 }
 
 <span class="doccomment">/// Type alias for `Result`s that should be returned from mirrord-agent to mirrord-layer.

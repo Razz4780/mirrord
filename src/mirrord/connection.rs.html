@@ -110,6 +110,11 @@
 <a href="#110" id="110">110</a>
 <a href="#111" id="111">111</a>
 <a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::time::Duration;
 
 <span class="kw">use </span>mirrord_config::LayerConfig;
@@ -202,6 +207,11 @@
         <span class="kw">let </span>k8s_api = KubernetesAPI::create(config)
             .<span class="kw">await
             </span>.map_err(CliError::KubernetesApiFailed)<span class="question-mark">?</span>;
+
+        <span class="kw">let </span><span class="kw-2">mut </span>detect_openshift_task = progress.subtask(<span class="string">&quot;detecting OpenShift...&quot;</span>);
+        <span class="kw">if </span>(k8s_api.detect_openshift(<span class="kw-2">&amp;mut </span>detect_openshift_task).<span class="kw">await</span>).is_err() {
+            detect_openshift_task.warning(<span class="string">&quot;couldn&#39;t determine OpenShift&quot;</span>);
+        };
 
         <span class="kw">let </span>(pod_agent_name, agent_port) = tokio::time::timeout(
             Duration::from_secs(config.agent.startup_timeout),
