@@ -136,6 +136,8 @@
 <a href="#136" id="136">136</a>
 <a href="#137" id="137">137</a>
 <a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! &lt;!--${internal}--&gt;
 //! mirrord file operations support 2 modes of configuration:
 //!
@@ -225,6 +227,7 @@
                 local: FromEnv::new(<span class="string">&quot;MIRRORD_FILE_LOCAL_PATTERN&quot;</span>)
                     .source_value()
                     .transpose()<span class="question-mark">?</span>,
+                not_found: <span class="prelude-val">None</span>,
             },
             FsUserConfig::Advanced(advanced) =&gt; advanced.generate_config()<span class="question-mark">?</span>,
         };
@@ -251,6 +254,7 @@
             read_write,
             read_only,
             local,
+            not_found: <span class="prelude-val">None</span>,
         })
     }
 }

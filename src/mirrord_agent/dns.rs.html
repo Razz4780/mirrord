@@ -130,6 +130,8 @@
 <a href="#130" id="130">130</a>
 <a href="#131" id="131">131</a>
 <a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     fs::{<span class="self">self</span>, File},
     path::{Path, PathBuf},
@@ -164,7 +166,7 @@
 </span><span class="doccomment">/// Uses `AsyncResolver:::lookup_ip` to resolve `host`.
 ///
 /// `root_path` is used to read `/proc/{pid}/root` configuration files when creating a resolver.
-</span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>)]
+</span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, ret)]
 </span><span class="kw">async fn </span>dns_lookup(root_path: <span class="kw-2">&amp;</span>Path, host: String) -&gt; RemoteResult&lt;DnsLookup&gt; {
     <span class="kw">let </span>resolv_conf_path = root_path.join(<span class="string">&quot;etc&quot;</span>).join(<span class="string">&quot;resolv.conf&quot;</span>);
     <span class="kw">let </span>hosts_path = root_path.join(<span class="string">&quot;etc&quot;</span>).join(<span class="string">&quot;hosts&quot;</span>);
@@ -245,14 +247,16 @@
         }
     }
 
-    <span class="kw">async fn </span>try_make_request(<span class="kw-2">&amp;</span><span class="self">self</span>, request: GetAddrInfoRequest) -&gt; <span class="prelude-ty">Result</span>&lt;GetAddrInfoResponse&gt; {
+    <span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, ret, skip(<span class="self">self</span>))]
+    </span><span class="kw">async fn </span>try_make_request(<span class="kw-2">&amp;</span><span class="self">self</span>, request: GetAddrInfoRequest) -&gt; <span class="prelude-ty">Result</span>&lt;GetAddrInfoResponse&gt; {
         <span class="kw">let </span>(tx, rx) = oneshot::channel();
         <span class="kw">let </span>request = DnsRequest { request, tx };
         <span class="self">self</span>.sender.send(request).<span class="kw">await</span><span class="question-mark">?</span>;
         rx.<span class="kw">await</span>.map_err(Into::into)
     }
 
-    <span class="kw">pub async fn </span>make_request(
+    <span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, ret, skip(<span class="self">self</span>))]
+    </span><span class="kw">pub async fn </span>make_request(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         request: GetAddrInfoRequest,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;GetAddrInfoResponse&gt; {

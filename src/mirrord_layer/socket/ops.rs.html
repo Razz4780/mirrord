@@ -1103,6 +1103,51 @@
 <a href="#1103" id="1103">1103</a>
 <a href="#1104" id="1104">1104</a>
 <a href="#1105" id="1105">1105</a>
+<a href="#1106" id="1106">1106</a>
+<a href="#1107" id="1107">1107</a>
+<a href="#1108" id="1108">1108</a>
+<a href="#1109" id="1109">1109</a>
+<a href="#1110" id="1110">1110</a>
+<a href="#1111" id="1111">1111</a>
+<a href="#1112" id="1112">1112</a>
+<a href="#1113" id="1113">1113</a>
+<a href="#1114" id="1114">1114</a>
+<a href="#1115" id="1115">1115</a>
+<a href="#1116" id="1116">1116</a>
+<a href="#1117" id="1117">1117</a>
+<a href="#1118" id="1118">1118</a>
+<a href="#1119" id="1119">1119</a>
+<a href="#1120" id="1120">1120</a>
+<a href="#1121" id="1121">1121</a>
+<a href="#1122" id="1122">1122</a>
+<a href="#1123" id="1123">1123</a>
+<a href="#1124" id="1124">1124</a>
+<a href="#1125" id="1125">1125</a>
+<a href="#1126" id="1126">1126</a>
+<a href="#1127" id="1127">1127</a>
+<a href="#1128" id="1128">1128</a>
+<a href="#1129" id="1129">1129</a>
+<a href="#1130" id="1130">1130</a>
+<a href="#1131" id="1131">1131</a>
+<a href="#1132" id="1132">1132</a>
+<a href="#1133" id="1133">1133</a>
+<a href="#1134" id="1134">1134</a>
+<a href="#1135" id="1135">1135</a>
+<a href="#1136" id="1136">1136</a>
+<a href="#1137" id="1137">1137</a>
+<a href="#1138" id="1138">1138</a>
+<a href="#1139" id="1139">1139</a>
+<a href="#1140" id="1140">1140</a>
+<a href="#1141" id="1141">1141</a>
+<a href="#1142" id="1142">1142</a>
+<a href="#1143" id="1143">1143</a>
+<a href="#1144" id="1144">1144</a>
+<a href="#1145" id="1145">1145</a>
+<a href="#1146" id="1146">1146</a>
+<a href="#1147" id="1147">1147</a>
+<a href="#1148" id="1148">1148</a>
+<a href="#1149" id="1149">1149</a>
+<a href="#1150" id="1150">1150</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>alloc::ffi::CString;
 <span class="kw">use </span>core::{ffi::CStr, mem};
 <span class="kw">use </span>std::{
@@ -1137,6 +1182,14 @@
     ENABLED_TCP_OUTGOING, ENABLED_UDP_OUTGOING, INCOMING_CONFIG, LISTEN_PORTS,
     OUTGOING_IGNORE_LOCALHOST, OUTGOING_SELECTOR, REMOTE_UNIX_STREAMS, TARGETLESS,
 };
+
+<span class="doccomment">/// Holds the pair of [`SocketAddr`] with their hostnames, resolved remotely through
+/// [`getaddrinfo`].
+///
+/// Used by [`connect_outgoing`] to retrieve the hostname from the address that the user called
+/// [`connect`] with, so we can resolve it locally when neccessary.
+</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">static </span>REMOTE_DNS_REVERSE_MAPPING: LazyLock&lt;DashMap&lt;SocketAddr, String&gt;&gt; =
+    LazyLock::new(|| DashMap::with_capacity(<span class="number">8</span>));
 
 <span class="doccomment">/// Hostname initialized from the agent with [`gethostname`].
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">static </span>HOSTNAME: OnceLock&lt;CString&gt; = OnceLock::new();
@@ -1415,11 +1468,8 @@
     remote_address: SockAddr,
     <span class="kw-2">mut </span>user_socket_info: Arc&lt;UserSocket&gt;,
 ) -&gt; Detour&lt;ConnectResult&gt; {
-    <span class="kw">if </span>remote_address.is_unix()
-        || OUTGOING_SELECTOR
-            .get()<span class="question-mark">?
-            </span>.connect_remote::&lt;PROTOCOL&gt;(remote_address.as_socket()<span class="question-mark">?</span>)
-    {
+    <span class="comment">// Closure that performs the connection with mirrord messaging.
+    </span><span class="kw">let </span>remote_connection = |remote_address: SockAddr| {
         <span class="comment">// Prepare this socket to be intercepted.
         </span><span class="kw">let </span>(mirror_tx, mirror_rx) = oneshot::channel();
 
@@ -1475,8 +1525,33 @@
         SOCKETS.insert(sockfd, user_socket_info);
 
         Detour::Success(connect_result)
+    };
+
+    <span class="kw">if </span>remote_address.is_unix() {
+        <span class="kw">let </span>connect_result = remote_connection(remote_address)<span class="question-mark">?</span>;
+        Detour::Success(connect_result)
     } <span class="kw">else </span>{
-        Detour::Bypass(Bypass::FilteredConnection)
+        <span class="comment">// Can&#39;t just connect to whatever `remote_address` is, as it might be a remotely resolved
+        // address, in a local connection context (or vice-versa), so we let `remote_connection`
+        // handle this address trickery.
+        </span><span class="kw">match </span>OUTGOING_SELECTOR
+            .get()<span class="question-mark">?
+            </span>.get_connection_through::&lt;PROTOCOL&gt;(remote_address.as_socket()<span class="question-mark">?</span>)<span class="question-mark">?
+        </span>{
+            ConnectionThrough::Remote(addr) =&gt; {
+                <span class="kw">let </span>connect_result = remote_connection(SockAddr::from(addr))<span class="question-mark">?</span>;
+                Detour::Success(connect_result)
+            }
+            ConnectionThrough::Local(addr) =&gt; {
+                <span class="kw">let </span>rawish_local_addr = SockAddr::from(addr);
+
+                <span class="kw">let </span>connect_result = ConnectResult::from(<span class="kw">unsafe </span>{
+                    FN_CONNECT(sockfd, rawish_local_addr.as_ptr(), rawish_local_addr.len())
+                });
+
+                Detour::Success(connect_result)
+            }
+        }
     }
 }
 
@@ -1795,6 +1870,29 @@
     <span class="prelude-val">Ok</span>(())
 }
 
+<span class="doccomment">/// Handles the remote communication part of [`getaddrinfo`], call this if you want to resolve a DNS
+/// through the agent, but don&#39;t need to deal with all the [`libc::getaddrinfo`] stuff.
+</span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, ret)]
+</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>remote_getaddrinfo(
+    node: String,
+    service: u16,
+) -&gt; HookResult&lt;Vec&lt;(String, SocketAddr)&gt;&gt; {
+    <span class="kw">let </span>(hook_channel_tx, hook_channel_rx) = oneshot::channel();
+    <span class="kw">let </span>hook = GetAddrInfo {
+        node,
+        hook_channel_tx,
+    };
+
+    blocking_send_hook_message(HookMessage::GetAddrinfo(hook))<span class="question-mark">?</span>;
+
+    <span class="kw">let </span>addr_info_list = hook_channel_rx.blocking_recv()<span class="question-mark">??</span>;
+
+    <span class="prelude-val">Ok</span>(addr_info_list
+        .into_iter()
+        .map(|LookupRecord { name, ip }| (name, SocketAddr::from((ip, service))))
+        .collect())
+}
+
 <span class="doccomment">/// Retrieves the result of calling `getaddrinfo` from a remote host (resolves remote DNS),
 /// converting the result into a `Box` allocated raw pointer of `libc::addrinfo` (which is basically
 /// a linked list of such type).
@@ -1812,7 +1910,7 @@
     rawish_service: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>CStr&gt;,
     raw_hints: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>libc::addrinfo&gt;,
 ) -&gt; Detour&lt;<span class="kw-2">*mut </span>libc::addrinfo&gt; {
-    <span class="kw">let </span>node = rawish_node
+    <span class="kw">let </span>node: String = rawish_node
         .bypass(Bypass::NullNode)<span class="question-mark">?
         </span>.to_str()
         .map_err(|fail| {
@@ -1849,23 +1947,19 @@
         ..
     } = raw_hints;
 
-    <span class="kw">let </span>(hook_channel_tx, hook_channel_rx) = oneshot::channel();
-    <span class="kw">let </span>hook = GetAddrInfo {
-        node,
-        hook_channel_tx,
-    };
-
-    blocking_send_hook_message(HookMessage::GetAddrinfo(hook))<span class="question-mark">?</span>;
-
-    <span class="kw">let </span>addr_info_list = hook_channel_rx.blocking_recv()<span class="question-mark">??</span>;
-
     <span class="comment">// Convert `service` into a port.
     </span><span class="kw">let </span>service = service.map_or(<span class="number">0</span>, |s| s.parse().unwrap_or_default());
+
     <span class="comment">// Only care about: `ai_family`, `ai_socktype`, `ai_protocol`.
-    </span><span class="kw">let </span>result = addr_info_list
-        .into_iter()
-        .map(|LookupRecord { name, ip }| (name, SockAddr::from(SocketAddr::from((ip, service)))))
-        .map(|(name, rawish_sock_addr)| {
+    </span><span class="kw">let </span>result = remote_getaddrinfo(node.clone(), service)<span class="question-mark">?
+        </span>.into_iter()
+        .map(|(name, address)| {
+            <span class="comment">// Cache the resolved hosts to use in the outgoing traffic filter.
+            </span>{
+                <span class="kw">let _ </span>= REMOTE_DNS_REVERSE_MAPPING.insert(address, node.clone());
+            }
+
+            <span class="kw">let </span>rawish_sock_addr = SockAddr::from(address);
             <span class="kw">let </span>ai_addrlen = rawish_sock_addr.len();
             <span class="kw">let </span>ai_family = rawish_sock_addr.family() <span class="kw">as _</span>;
 
@@ -1971,11 +2065,6 @@
     raw_source: <span class="kw-2">*mut </span>sockaddr,
     source_length: <span class="kw-2">*mut </span>socklen_t,
 ) -&gt; Detour&lt;isize&gt; {
-    <span class="kw">if </span>errno::errno() == errno::Errno(libc::EAGAIN) {
-        <span class="macro">trace!</span>(<span class="string">&quot;recvfrom/recvmsg hit EAGAIN, setting errno to 0&quot;</span>);
-        errno::set_errno(errno::Errno(<span class="number">0</span>));
-    }
-
     SOCKETS
         .get(<span class="kw-2">&amp;</span>sockfd)
         .and_then(|socket| <span class="kw">match </span><span class="kw-2">&amp;</span>socket.state {
@@ -1987,6 +2076,7 @@
         .map(SocketAddress::try_into)<span class="question-mark">?
         </span>.map(|address| fill_address(raw_source, source_length, address))<span class="question-mark">??</span>;
 
+    errno::set_errno(errno::Errno(<span class="number">0</span>));
     Detour::Success(recv_from_result)
 }
 

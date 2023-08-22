@@ -1099,10 +1099,6 @@
 <a href="#1099" id="1099">1099</a>
 <a href="#1100" id="1100">1100</a>
 <a href="#1101" id="1101">1101</a>
-<a href="#1102" id="1102">1102</a>
-<a href="#1103" id="1103">1103</a>
-<a href="#1104" id="1104">1104</a>
-<a href="#1105" id="1105">1105</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(c_variadic)]
 #![feature(result_option_inspect)]
 #![feature(const_trait_impl)]
@@ -1337,14 +1333,10 @@
 /// mirroring/stealing from a targetless agent.
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">static </span>TARGETLESS: OnceLock&lt;bool&gt; = OnceLock::new();
 
-<span class="comment">// TODO(alex): To support DNS on the selector, change it to `LazyLock&lt;Arc&lt;Mutex&gt;&gt;`, so we can modify
-// the global on `OutgoingSelector::connect_remote`, converting `AddressFilter:Name` to however
-// many addresses we resolve into `AddressFilter::Socket`.
-//
-// Also, we need a global for `REMOTE_DNS`, so we can check it in
-// `OutgoingSelector::connect_remote`, and only resolve DNS through remote if it&#39;s `true`.
+<span class="doccomment">/// Whether to resolve DNS locally or through the remote pod.
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">static </span>REMOTE_DNS: OnceLock&lt;bool&gt; = OnceLock::new();
 
-</span><span class="doccomment">/// Selector for how outgoing connection will behave, either sending traffic via the remote or from
+<span class="doccomment">/// Selector for how outgoing connection will behave, either sending traffic via the remote or from
 /// local app, according to how the user set up the `remote`, and `local` filter, in
 /// `feature.network.outgoing`.
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">static </span>OUTGOING_SELECTOR: OnceLock&lt;OutgoingSelector&gt; = OnceLock::new();
@@ -1471,6 +1463,9 @@
     FILE_MODE
         .set(config.feature.fs.clone())
         .expect(<span class="string">&quot;Setting FILE_MODE failed.&quot;</span>);
+    INCOMING_CONFIG
+        .set(config.feature.network.incoming.clone())
+        .expect(<span class="string">&quot;SETTING INCOMING_CONFIG singleton&quot;</span>);
 
     <span class="comment">// These must come before `OutgoingSelector::new`.
     </span>ENABLED_TCP_OUTGOING
@@ -1480,12 +1475,12 @@
         .set(config.feature.network.outgoing.udp)
         .expect(<span class="string">&quot;Setting ENABLED_UDP_OUTGOING singleton&quot;</span>);
 
-    INCOMING_CONFIG
-        .set(config.feature.network.incoming.clone())
-        .expect(<span class="string">&quot;SETTING INCOMING_CONFIG singleton&quot;</span>);
+    REMOTE_DNS
+        .set(config.feature.network.dns)
+        .expect(<span class="string">&quot;Setting REMOTE_DNS singleton&quot;</span>);
 
     {
-        <span class="kw">let </span>outgoing_selector = config
+        <span class="kw">let </span>outgoing_selector: OutgoingSelector = config
             .feature
             .network
             .outgoing
@@ -1651,6 +1646,7 @@
             read_write: <span class="prelude-val">None</span>,
             read_only: <span class="prelude-val">None</span>,
             local: <span class="prelude-val">None</span>,
+            not_found: <span class="prelude-val">None</span>,
         }))
         .expect(<span class="string">&quot;FILE_FILTER set failed&quot;</span>);
     <span class="kw">unsafe </span>{ file::hooks::enable_file_hooks(<span class="kw-2">&amp;mut </span>hook_manager) };
@@ -2167,13 +2163,11 @@
     res
 }
 
-<span class="comment">// TODO(alex) [mid] 2023-01-24: What is this?
-</span><span class="doccomment">///
-/// No need to guard because we call another detour which will do the guard for us.
+<span class="doccomment">/// No need to guard because we call another detour which will do the guard for us.
 ///
 /// ## Hook
 ///
-/// Replaces `?`.
+/// One of the many [`libc::close`]-ish functions.
 </span><span class="attr">#[hook_fn]
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>close_nocancel_detour(fd: c_int) -&gt; c_int {
     close_detour(fd)
@@ -2189,9 +2183,7 @@
     close_detour(fd)
 }
 
-<span class="comment">// TODO(alex) [mid] 2023-01-24: What is this?
-</span><span class="doccomment">///
-/// ## Hook
+<span class="doccomment">/// ## Hook
 ///
 /// Needed for libuv that calls the syscall directly.
 /// https://github.dev/libuv/libuv/blob/7b84d5b0ecb737b4cc30ce63eade690d994e00a6/src/unix/core.c#L557-L558

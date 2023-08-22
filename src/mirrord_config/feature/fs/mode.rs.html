@@ -171,6 +171,10 @@
 <a href="#171" id="171">171</a>
 <a href="#172" id="172">172</a>
 <a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::str::FromStr;
 
 <span class="kw">use </span>schemars::JsonSchema;
@@ -219,6 +223,10 @@
 }
 
 <span class="kw">impl </span>FsModeConfig {
+    <span class="kw">pub fn </span>is_local(<span class="self">self</span>) -&gt; bool {
+        <span class="macro">matches!</span>(<span class="self">self</span>, FsModeConfig::Local)
+    }
+
     <span class="kw">pub fn </span>is_read(<span class="self">self</span>) -&gt; bool {
         <span class="macro">matches!</span>(<span class="self">self</span>, FsModeConfig::Read | FsModeConfig::LocalWithOverrides)
     }

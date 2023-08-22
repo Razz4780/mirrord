@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/relative-path-1.8.0/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="relative_path" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0-nightly (c609da59d 2023-04-18)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../static.files/source-script-905937fbbdc8e9ea.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-1a524efa7bd4ab32.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../relative_path/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/relative-path-1.9.0/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="relative_path" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0-nightly (c609da59d 2023-04-18)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../static.files/source-script-905937fbbdc8e9ea.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-1a524efa7bd4ab32.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../relative_path/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -2295,10 +2295,27 @@
 <a href="#2295" id="2295">2295</a>
 <a href="#2296" id="2296">2296</a>
 <a href="#2297" id="2297">2297</a>
+<a href="#2298" id="2298">2298</a>
+<a href="#2299" id="2299">2299</a>
+<a href="#2300" id="2300">2300</a>
+<a href="#2301" id="2301">2301</a>
+<a href="#2302" id="2302">2302</a>
+<a href="#2303" id="2303">2303</a>
+<a href="#2304" id="2304">2304</a>
+<a href="#2305" id="2305">2305</a>
+<a href="#2306" id="2306">2306</a>
+<a href="#2307" id="2307">2307</a>
+<a href="#2308" id="2308">2308</a>
+<a href="#2309" id="2309">2309</a>
+<a href="#2310" id="2310">2310</a>
+<a href="#2311" id="2311">2311</a>
+<a href="#2312" id="2312">2312</a>
+<a href="#2313" id="2313">2313</a>
+<a href="#2314" id="2314">2314</a>
+<a href="#2315" id="2315">2315</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! [&lt;img alt=&quot;github&quot; src=&quot;https://img.shields.io/badge/github-udoprog/relative--path-8da0cb?style=for-the-badge&amp;logo=github&quot; height=&quot;20&quot;&gt;](https://github.com/udoprog/relative-path)
 //! [&lt;img alt=&quot;crates.io&quot; src=&quot;https://img.shields.io/crates/v/relative-path.svg?style=for-the-badge&amp;color=fc8d62&amp;logo=rust&quot; height=&quot;20&quot;&gt;](https://crates.io/crates/relative-path)
 //! [&lt;img alt=&quot;docs.rs&quot; src=&quot;https://img.shields.io/badge/docs.rs-relative--path-66c2a5?style=for-the-badge&amp;logoColor=white&amp;logo=data:image/svg+xml;base64,PHN2ZyByb2xlPSJpbWciIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDUxMiA1MTIiPjxwYXRoIGZpbGw9IiNmNWY1ZjUiIGQ9Ik00ODguNiAyNTAuMkwzOTIgMjE0VjEwNS41YzAtMTUtOS4zLTI4LjQtMjMuNC0zMy43bC0xMDAtMzcuNWMtOC4xLTMuMS0xNy4xLTMuMS0yNS4zIDBsLTEwMCAzNy41Yy0xNC4xIDUuMy0yMy40IDE4LjctMjMuNCAzMy43VjIxNGwtOTYuNiAzNi4yQzkuMyAyNTUuNSAwIDI2OC45IDAgMjgzLjlWMzk0YzAgMTMuNiA3LjcgMjYuMSAxOS45IDMyLjJsMTAwIDUwYzEwLjEgNS4xIDIyLjEgNS4xIDMyLjIgMGwxMDMuOS01MiAxMDMuOSA1MmMxMC4xIDUuMSAyMi4xIDUuMSAzMi4yIDBsMTAwLTUwYzEyLjItNi4xIDE5LjktMTguNiAxOS45LTMyLjJWMjgzLjljMC0xNS05LjMtMjguNC0yMy40LTMzLjd6TTM1OCAyMTQuOGwtODUgMzEuOXYtNjguMmw4NS0zN3Y3My4zek0xNTQgMTA0LjFsMTAyLTM4LjIgMTAyIDM4LjJ2LjZsLTEwMiA0MS40LTEwMi00MS40di0uNnptODQgMjkxLjFsLTg1IDQyLjV2LTc5LjFsODUtMzguOHY3NS40em0wLTExMmwtMTAyIDQxLjQtMTAyLTQxLjR2LS42bDEwMi0zOC4yIDEwMiAzOC4ydi42em0yNDAgMTEybC04NSA0Mi41di03OS4xbDg1LTM4Ljh2NzUuNHptMC0xMTJsLTEwMiA0MS40LTEwMi00MS40di0uNmwxMDItMzguMiAxMDIgMzguMnYuNnoiPjwvcGF0aD48L3N2Zz4K&quot; height=&quot;20&quot;&gt;](https://docs.rs/relative-path)
-//! [&lt;img alt=&quot;build status&quot; src=&quot;https://img.shields.io/github/actions/workflow/status/udoprog/relative-path/ci.yml?branch=main&amp;style=for-the-badge&quot; height=&quot;20&quot;&gt;](https://github.com/udoprog/relative-path/actions?query=branch%3Amain)
 //!
 //! Portable relative UTF-8 paths for Rust.
 //!
@@ -2322,7 +2339,7 @@
 //! Add `relative-path` to your `Cargo.toml`:
 //!
 //! ```toml
-//! relative-path = &quot;1.8.0&quot;
+//! relative-path = &quot;1.9.0&quot;
 //! ```
 //!
 //! Start using relative paths:
@@ -2533,13 +2550,16 @@
 //! * Windows has a number of [reserved characters and names][windows-reserved]
 //!   (like `CON`, `PRN`, and `AUX`) which cannot legally be part of a
 //!   filesystem component.
+//! * Windows paths are [case-insensitive by default][windows-case]. So,
+//!   `Foo.txt` and `foo.txt` are the same files on windows. But they are
+//!   considered different paths on most unix systems.
 //!
 //! A relative path that *accidentally* contains a platform-specific components
 //! will largely result in a nonsensical paths being generated in the hope that
 //! they will fail fast during development and testing.
 //!
 //! ```rust
-//! use relative_path::RelativePath;
+//! use relative_path::{RelativePath, PathExt};
 //! use std::path::Path;
 //!
 //! if cfg!(windows) {
@@ -2555,6 +2575,12 @@
 //!         RelativePath::new(&quot;/bar/baz&quot;).to_path(&quot;foo&quot;)
 //!     );
 //! }
+//!
+//! assert_eq!(
+//!     Path::new(&quot;foo&quot;).relative_to(&quot;bar&quot;)?,
+//!     RelativePath::new(&quot;../foo&quot;),
+//! );
+//! # Ok::&lt;_, Box&lt;dyn std::error::Error&gt;&gt;(())
 //! ```
 //!
 //! [`None`]: https://doc.rust-lang.org/std/option/enum.Option.html
@@ -2567,16 +2593,20 @@
 //! [`to_logical_path`]: https://docs.rs/relative-path/1/relative_path/struct.RelativePath.html#method.to_logical_path
 //! [`to_path`]: https://docs.rs/relative-path/1/relative_path/struct.RelativePath.html#method.to_path
 //! [windows-reserved]: https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247(v=vs.85).aspx
+//! [windows-case]: https://learn.microsoft.com/en-us/windows/wsl/case-sensitivity
 
 </span><span class="comment">// This file contains parts that are Copyright 2015 The Rust Project Developers, copied from:
 // https://github.com/rust-lang/rust
 // cb2a656cdfb6400ac0200c661267f91fabf237e2 src/libstd/path.rs
 
 </span><span class="attr">#![deny(missing_docs)]
-#![deny(rustdoc::broken_intra_doc_links)]
 
-#[cfg(test)]
+</span><span class="kw">mod </span>path_ext;
+
+<span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests;
+
+<span class="kw">pub use </span>path_ext::{PathExt, RelativeToError};
 
 <span class="kw">use </span>std::borrow::{Borrow, Cow};
 <span class="kw">use </span>std::cmp;
@@ -2641,7 +2671,7 @@
 ///
 /// # Examples
 ///
-/// ```rust
+/// ```
 /// use relative_path::{Component, RelativePath};
 ///
 /// let path = RelativePath::new(&quot;foo/../bar/./baz&quot;);
@@ -2687,7 +2717,7 @@
     }
 }
 
-<span class="doccomment">/// [AsRef&lt;RelativePath&gt;] implementation for [Component].
+<span class="doccomment">/// [`AsRef&lt;RelativePath&gt;`] implementation for [`Component`].
 ///
 /// # Examples
 ///
@@ -2764,7 +2794,7 @@
                 <span class="self">self</span>.source = rest.trim_start_matches(SEP);
                 slice
             }
-            <span class="prelude-val">None </span>=&gt; mem::replace(<span class="kw-2">&amp;mut </span><span class="self">self</span>.source, <span class="string">&quot;&quot;</span>),
+            <span class="prelude-val">None </span>=&gt; mem::take(<span class="kw-2">&amp;mut </span><span class="self">self</span>.source),
         };
 
         <span class="kw">match </span>slice {
@@ -2786,7 +2816,7 @@
                 <span class="self">self</span>.source = rest.trim_end_matches(SEP);
                 slice
             }
-            <span class="prelude-val">None </span>=&gt; mem::replace(<span class="kw-2">&amp;mut </span><span class="self">self</span>.source, <span class="string">&quot;&quot;</span>),
+            <span class="prelude-val">None </span>=&gt; mem::take(<span class="kw-2">&amp;mut </span><span class="self">self</span>.source),
         };
 
         <span class="kw">match </span>slice {
@@ -2863,7 +2893,8 @@
     </span>BadSeparator,
 }
 
-<span class="doccomment">/// An error raised when attempting to convert a path using [RelativePathBuf::from_path].
+<span class="doccomment">/// An error raised when attempting to convert a path using
+/// [`RelativePathBuf::from_path`].
 </span><span class="attr">#[derive(Debug, Clone, PartialEq, Eq)]
 </span><span class="kw">pub struct </span>FromPathError {
     kind: FromPathErrorKind,
@@ -3859,9 +3890,10 @@
     /// path like `foo/../bar` might reference a different location other than
     /// `./bar`.
     ///
-    /// Normalization is a logical operation that is only valid if the relative
-    /// path is part of some context which doesn&#39;t have semantics that causes it
-    /// to break, like symbolic links.
+    /// Normalization is a logical operation and does not guarantee that the
+    /// constructed path corresponds to what the filesystem would do. On Linux
+    /// for example symbolic links could mean that the logical path doesn&#39;t
+    /// correspond to the filesystem path.
     ///
     /// # Examples
     ///
@@ -4002,7 +4034,7 @@
     }
 }
 
-<span class="doccomment">/// Conversion from a [Box&lt;str&gt;] reference to a [Box&lt;RelativePath&gt;].
+<span class="doccomment">/// Conversion from a [`Box&lt;str&gt;`] reference to a [`Box&lt;RelativePath&gt;`].
 ///
 /// # Examples
 ///
@@ -4020,7 +4052,9 @@
     }
 }
 
-<span class="doccomment">/// Conversion from a [str] reference to a [Box&lt;RelativePath&gt;].
+<span class="doccomment">/// Conversion from a [`str`] reference to a [`Box&lt;RelativePath&gt;`].
+///
+/// [`str`]: prim@str
 ///
 /// # Examples
 ///
@@ -4043,7 +4077,7 @@
     }
 }
 
-<span class="doccomment">/// Conversion from [RelativePathBuf] to [Box&lt;RelativePath&gt;].
+<span class="doccomment">/// Conversion from [`RelativePathBuf`] to [`Box&lt;RelativePath&gt;`].
 ///
 /// # Examples
 ///
@@ -4064,7 +4098,7 @@
     }
 }
 
-<span class="doccomment">/// Clone implementation for [Box&lt;RelativePath&gt;].
+<span class="doccomment">/// Clone implementation for [`Box&lt;RelativePath&gt;`].
 ///
 /// # Examples
 ///
@@ -4082,7 +4116,7 @@
     }
 }
 
-<span class="doccomment">/// Conversion from [RelativePath] to [Arc&lt;RelativePath&gt;].
+<span class="doccomment">/// Conversion from [RelativePath] to [`Arc&lt;RelativePath&gt;`].
 ///
 /// # Examples
 ///
@@ -4102,7 +4136,7 @@
     }
 }
 
-<span class="doccomment">/// Conversion from [RelativePathBuf] to [Arc&lt;RelativePath&gt;].
+<span class="doccomment">/// Conversion from [`RelativePathBuf`] to [`Arc&lt;RelativePath&gt;`].
 ///
 /// # Examples
 ///
@@ -4123,7 +4157,7 @@
     }
 }
 
-<span class="doccomment">/// Conversion from [RelativePathBuf] to [Arc&lt;RelativePath&gt;].
+<span class="doccomment">/// Conversion from [`RelativePathBuf`] to [`Arc&lt;RelativePath&gt;`].
 ///
 /// # Examples
 ///
@@ -4143,7 +4177,7 @@
     }
 }
 
-<span class="doccomment">/// Conversion from [RelativePathBuf] to [Rc&lt;RelativePath&gt;].
+<span class="doccomment">/// Conversion from [`RelativePathBuf`] to [`Rc&lt;RelativePath&gt;`].
 ///
 /// # Examples
 ///
@@ -4164,7 +4198,7 @@
     }
 }
 
-<span class="doccomment">/// [ToOwned] implementation for [RelativePath].
+<span class="doccomment">/// [`ToOwned`] implementation for [`RelativePath`].
 ///
 /// # Examples
 ///
@@ -4190,7 +4224,7 @@
     }
 }
 
-<span class="doccomment">/// [AsRef&lt;str&gt;] implementation for [RelativePathBuf].
+<span class="doccomment">/// [`AsRef&lt;str&gt;`] implementation for [`RelativePathBuf`].
 ///
 /// # Examples
 ///
@@ -4208,7 +4242,7 @@
     }
 }
 
-<span class="doccomment">/// [AsRef&lt;RelativePath&gt;] implementation for [String].
+<span class="doccomment">/// [`AsRef&lt;RelativePath&gt;`] implementation for [String].
 ///
 /// # Examples
 ///
@@ -4226,7 +4260,9 @@
     }
 }
 
-<span class="doccomment">/// [AsRef&lt;RelativePath&gt;] implementation for [str].
+<span class="doccomment">/// [`AsRef&lt;RelativePath&gt;`] implementation for [`str`].
+///
+/// [`str`]: prim@str
 ///
 /// # Examples
 ///
@@ -4322,7 +4358,7 @@
     }
 }
 
-<span class="doccomment">/// [serde::ser::Serialize] implementation for [RelativePathBuf].
+<span class="doccomment">/// [serde::ser::Serialize] implementation for [`RelativePathBuf`].
 ///
 /// ```
 /// use serde::Serialize;
@@ -4344,7 +4380,7 @@
     }
 }
 
-<span class="doccomment">/// [serde::de::Deserialize] implementation for [RelativePathBuf].
+<span class="doccomment">/// [`serde::de::Deserialize`] implementation for [`RelativePathBuf`].
 ///
 /// ```
 /// use serde::Deserialize;
@@ -4392,7 +4428,7 @@
     }
 }
 
-<span class="doccomment">/// [serde::de::Deserialize] implementation for [Box&lt;RelativePath&gt;].
+<span class="doccomment">/// [`serde::de::Deserialize`] implementation for [`Box&lt;RelativePath&gt;`].
 ///
 /// ```
 /// use serde::Deserialize;
@@ -4440,7 +4476,7 @@
     }
 }
 
-<span class="doccomment">/// [serde::de::Deserialize] implementation for a [RelativePath] reference.
+<span class="doccomment">/// [`serde::de::Deserialize`] implementation for a [RelativePath] reference.
 ///
 /// ```
 /// use serde::Deserialize;

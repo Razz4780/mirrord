@@ -364,6 +364,12 @@
 <a href="#364" id="364">364</a>
 <a href="#365" id="365">365</a>
 <a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{env::VarError, net::SocketAddr, ptr, str::ParseBoolError};
 
 <span class="kw">use </span>errno::set_errno;
@@ -462,6 +468,11 @@
 
     <span class="attr">#[error(<span class="string">&quot;mirrord-layer: Socket address `{0}` is already bound!&quot;</span>)]
     </span>AddressAlreadyBound(SocketAddr),
+
+    <span class="doccomment">/// When the user&#39;s application tries to access a file filtered out by the `not-found` file
+    /// filter.
+    </span><span class="attr">#[error(<span class="string">&quot;mirrord-layer: Ignored file&quot;</span>)]
+    </span>FileNotFound,
 }
 
 <span class="doccomment">/// Errors internal to mirrord-layer.
@@ -673,6 +684,7 @@
             HookError::UnsupportedSocketType =&gt; libc::EAFNOSUPPORT,
             HookError::BadPointer =&gt; libc::EFAULT,
             HookError::AddressAlreadyBound(<span class="kw">_</span>) =&gt; libc::EADDRINUSE,
+            HookError::FileNotFound =&gt; libc::ENOENT,
         };
 
         set_errno(errno::Errno(libc_error));

@@ -546,6 +546,7 @@
 <a href="#546" id="546">546</a>
 <a href="#547" id="547">547</a>
 <a href="#548" id="548">548</a>
+<a href="#549" id="549">549</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>alloc::ffi::CString;
 <span class="kw">use </span>core::{cmp, ffi::CStr, mem};
 <span class="kw">use </span>std::{os::unix::io::RawFd, sync::LazyLock};
@@ -780,6 +781,7 @@
         }
     }
 }
+
 <span class="doccomment">/// Turns the raw pointer parameters into Rust types and calls `ops::getaddrinfo`.
 ///
 /// # Warning:
@@ -930,7 +932,7 @@
 ) -&gt; ssize_t {
     <span class="kw">let </span>recvmsg_result = FN_RECVMSG(sockfd, message_header, flags);
 
-    <span class="kw">if </span>recvmsg_result == -<span class="number">1 </span>&amp;&amp; errno::errno() != errno::Errno(libc::EAGAIN) {
+    <span class="kw">if </span>recvmsg_result == -<span class="number">1 </span>{
         recvmsg_result
     } <span class="kw">else </span>{
         <span class="comment">// Fills the address, similar to how `recv_from` works.

@@ -173,6 +173,28 @@
 <a href="#173" id="173">173</a>
 <a href="#174" id="174">174</a>
 <a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>mirrord_analytics::{AnalyticValue, CollectAnalytics};
 <span class="kw">use </span>mirrord_config_derive::MirrordConfig;
 <span class="kw">use </span>schemars::JsonSchema;
@@ -200,6 +222,8 @@
 /// 1. `&quot;read_write&quot;` - List of patterns that should be read/write remotely.
 /// 2. `&quot;read_only&quot;` - List of patterns that should be read only remotely.
 /// 3. `&quot;local&quot;` - List of patterns that should be read locally.
+/// 4. `&quot;not_found&quot;` - List of patters that should never be read nor written. These files should be
+/// treated as non-existent.
 ///
 /// The logic for choosing the behavior is as follows:
 ///
@@ -225,7 +249,8 @@
 ///       &quot;mode&quot;: &quot;write&quot;,
 ///       &quot;read_write&quot;: &quot;.+\.json&quot; ,
 ///       &quot;read_only&quot;: [ &quot;.+\.yaml&quot;, &quot;.+important-file\.txt&quot; ],
-///       &quot;local&quot;: [ &quot;.+\.js&quot;, &quot;.+\.mjs&quot; ]
+///       &quot;local&quot;: [ &quot;.+\.js&quot;, &quot;.+\.mjs&quot; ],
+///       &quot;not_found&quot;: [ &quot;\.config/gcloud&quot; ]
 ///     }
 ///   }
 /// }
@@ -258,6 +283,11 @@
     /// Specify file path patterns that if matched will be opened locally.
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_FILE_LOCAL_PATTERN&quot;</span>)]
     </span><span class="kw">pub </span>local: <span class="prelude-ty">Option</span>&lt;VecOrSingle&lt;String&gt;&gt;,
+
+    <span class="doccomment">/// ### feature.fs.not_found {#feature-fs-not_found}
+    ///
+    /// Specify file path patterns that if matched will be treated as non-existent.
+    </span><span class="kw">pub </span>not_found: <span class="prelude-ty">Option</span>&lt;VecOrSingle&lt;String&gt;&gt;,
 }
 
 <span class="kw">impl </span>MirrordToggleableConfig <span class="kw">for </span>AdvancedFsUserConfig {
@@ -278,6 +308,7 @@
             read_write,
             read_only,
             local,
+            not_found: <span class="prelude-val">None</span>,
         })
     }
 }
@@ -313,18 +344,31 @@
         analytics.add(<span class="string">&quot;mode&quot;</span>, <span class="self">self</span>.mode);
         analytics.add(
             <span class="string">&quot;local_paths&quot;</span>,
-            <span class="self">self</span>.local.as_ref().map(|v| v.len()).unwrap_or_default(),
+            <span class="self">self</span>.local
+                .as_ref()
+                .map(VecOrSingle::len)
+                .unwrap_or_default(),
         );
         analytics.add(
             <span class="string">&quot;read_write_paths&quot;</span>,
             <span class="self">self</span>.read_write
                 .as_ref()
-                .map(|v| v.len())
+                .map(VecOrSingle::len)
                 .unwrap_or_default(),
         );
         analytics.add(
             <span class="string">&quot;read_only_paths&quot;</span>,
-            <span class="self">self</span>.read_only.as_ref().map(|v| v.len()).unwrap_or_default(),
+            <span class="self">self</span>.read_only
+                .as_ref()
+                .map(VecOrSingle::len)
+                .unwrap_or_default(),
+        );
+        analytics.add(
+            <span class="string">&quot;not_found_paths&quot;</span>,
+            <span class="self">self</span>.not_found
+                .as_ref()
+                .map(VecOrSingle::len)
+                .unwrap_or_default(),
         );
     }
 }
