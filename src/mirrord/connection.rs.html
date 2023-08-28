@@ -127,24 +127,74 @@
 <a href="#127" id="127">127</a>
 <a href="#128" id="128">128</a>
 <a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::time::Duration;
 
+<span class="kw">use </span>mirrord_analytics::AnalyticsReporter;
 <span class="kw">use </span>mirrord_config::{feature::network::outgoing::OutgoingFilterConfig, LayerConfig};
-<span class="kw">use </span>mirrord_kube::api::{kubernetes::KubernetesAPI, AgentManagment};
+<span class="kw">use </span>mirrord_kube::api::{
+    kubernetes::{AgentKubernetesConnectInfo, KubernetesAPI},
+    AgentManagment,
+};
 <span class="kw">use </span>mirrord_operator::client::{OperatorApi, OperatorApiError, OperatorSessionInformation};
 <span class="kw">use </span>mirrord_progress::Progress;
 <span class="kw">use </span>mirrord_protocol::{ClientMessage, DaemonMessage};
+<span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>tokio::sync::mpsc;
 <span class="kw">use </span>tracing::trace;
 
 <span class="kw">use crate</span>::{CliError, <span class="prelude-ty">Result</span>};
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum </span>AgentConnectInfo {
+<span class="attr">#[derive(Debug, Serialize, Deserialize)]
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum </span>AgentConnectInfo {
     Operator(OperatorSessionInformation),
     <span class="doccomment">/// Connect directly to an agent by name and port using k8s port forward.
-    </span>DirectKubernetes(String, u16),
+    </span>DirectKubernetes(AgentKubernetesConnectInfo),
 }
 
+<span class="kw">const </span>AGENT_CONNECT_INFO_KEY: <span class="kw-2">&amp;</span>str = <span class="string">&quot;MIRRORD_AGENT_CONNECT_INFO&quot;</span>;
+
+<span class="kw">impl </span>AgentConnectInfo {
+    <span class="doccomment">/// Returns environment variable holding the information
+    </span><span class="kw">pub const fn </span>env_key() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
+        AGENT_CONNECT_INFO_KEY
+    }
+
+    <span class="doccomment">/// Loads the information from environment variables
+    </span><span class="kw">pub fn </span>from_env() -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt;&gt; {
+        std::env::var(<span class="self">Self</span>::env_key())
+            .ok()
+            .map(|val| {
+                serde_json::from_str(<span class="kw-2">&amp;</span>val).map_err(|e| CliError::ConnectInfoLoadFailed(val, e))
+            })
+            .transpose()
+    }
+}
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>AgentConnection {
     <span class="kw">pub </span>sender: mpsc::Sender&lt;ClientMessage&gt;,
     <span class="kw">pub </span>receiver: mpsc::Receiver&lt;DaemonMessage&gt;,
@@ -153,6 +203,7 @@
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>create_operator_session&lt;P&gt;(
     config: <span class="kw-2">&amp;</span>LayerConfig,
     progress: <span class="kw-2">&amp;</span>P,
+    analytics: <span class="kw-2">&amp;mut </span>AnalyticsReporter,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;
     <span class="prelude-ty">Option</span>&lt;(
         mpsc::Sender&lt;ClientMessage&gt;,
@@ -166,7 +217,7 @@
 {
     <span class="kw">let </span><span class="kw-2">mut </span>sub_progress = progress.subtask(<span class="string">&quot;checking operator&quot;</span>);
 
-    <span class="kw">match </span>OperatorApi::create_session(config, progress).<span class="kw">await </span>{
+    <span class="kw">match </span>OperatorApi::create_session(config, progress, analytics).<span class="kw">await </span>{
         <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(connection)) =&gt; {
             sub_progress.success(<span class="prelude-val">Some</span>(<span class="string">&quot;connected to operator&quot;</span>));
             <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(connection))
@@ -200,6 +251,7 @@
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>create_and_connect&lt;P&gt;(
     config: <span class="kw-2">&amp;</span>LayerConfig,
     progress: <span class="kw-2">&amp;</span>P,
+    analytics: <span class="kw-2">&amp;mut </span>AnalyticsReporter,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(AgentConnectInfo, AgentConnection)&gt;
 <span class="kw">where
     </span>P: Progress + Send + Sync,
@@ -216,7 +268,7 @@
         }
     }
 
-    <span class="kw">if </span>config.operator &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>((sender, receiver, operator_information)) = create_operator_session(config, progress).<span class="kw">await</span><span class="question-mark">? </span>{
+    <span class="kw">if </span>config.operator &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>((sender, receiver, operator_information)) = create_operator_session(config, progress, analytics).<span class="kw">await</span><span class="question-mark">? </span>{
         <span class="prelude-val">Ok</span>((
             AgentConnectInfo::Operator(operator_information),
             AgentConnection { sender, receiver },
@@ -237,7 +289,7 @@
             detect_openshift_task.warning(<span class="string">&quot;couldn&#39;t determine OpenShift&quot;</span>);
         };
 
-        <span class="kw">let </span>(pod_agent_name, agent_port) = tokio::time::timeout(
+        <span class="kw">let </span>agent_connect_info = tokio::time::timeout(
             Duration::from_secs(config.agent.startup_timeout),
             k8s_api.create_agent(progress),
         )
@@ -246,12 +298,12 @@
         </span>.map_err(CliError::CreateAgentFailed)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>(sender, receiver) = k8s_api
-            .create_connection((pod_agent_name.clone(), agent_port))
+            .create_connection(agent_connect_info.clone())
             .<span class="kw">await
             </span>.map_err(CliError::AgentConnectionFailed)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>((
-            AgentConnectInfo::DirectKubernetes(pod_agent_name, agent_port),
+            AgentConnectInfo::DirectKubernetes(agent_connect_info),
             AgentConnection { sender, receiver },
         ))
     }

@@ -343,6 +343,8 @@
 <a href="#343" id="343">343</a>
 <a href="#344" id="344">344</a>
 <a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::time::Duration;
 
 <span class="kw">use </span>enum_dispatch::enum_dispatch;
@@ -588,7 +590,9 @@
     }
 
     <span class="kw">fn </span>warning(<span class="kw-2">&amp;</span><span class="self">self</span>, msg: <span class="kw-2">&amp;</span>str) {
-        <span class="self">self</span>.progress.set_message(<span class="macro">format!</span>(<span class="string">&quot;! {msg}&quot;</span>));
+        <span class="kw">let </span>formatted_message = <span class="macro">format!</span>(<span class="string">&quot;! {msg}&quot;</span>);
+        <span class="self">self</span>.print(<span class="kw-2">&amp;</span>formatted_message);
+        <span class="self">self</span>.progress.set_message(formatted_message);
     }
 
     <span class="kw">fn </span>failure(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;) {

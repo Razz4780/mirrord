@@ -138,6 +138,9 @@
 <a href="#138" id="138">138</a>
 <a href="#139" id="139">139</a>
 <a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(vec_into_raw_parts)]
 #![warn(clippy::indexing_slicing)]
 
@@ -216,7 +219,10 @@
 
     <span class="kw">unsafe </span>{
         <span class="kw">let </span>mode = CString::new(<span class="string">&quot;r&quot;</span>).expect(<span class="string">&quot;valid C string&quot;</span>);
-        <span class="kw">let </span>(buffer, _length, _capacity) = <span class="macro">vec!</span>[<span class="number">0i8</span>; <span class="number">1500</span>].into_raw_parts();
+        <span class="attr">#[cfg(not(all(target_os = <span class="string">&quot;linux&quot;</span>, target_arch = <span class="string">&quot;aarch64&quot;</span>)))]
+        </span><span class="kw">let </span>(buffer, _length, _capacity) = <span class="macro">vec!</span>[<span class="number">0i8</span>; <span class="number">1500</span>].into_raw_parts();
+        <span class="attr">#[cfg(all(target_os = <span class="string">&quot;linux&quot;</span>, target_arch = <span class="string">&quot;aarch64&quot;</span>))]
+        </span><span class="kw">let </span>(buffer, _length, _capacity) = <span class="macro">vec!</span>[<span class="number">0u8</span>; <span class="number">1500</span>].into_raw_parts();
         <span class="kw">let </span>file_stream = libc::fdopen(fd, mode.as_ptr());
 
         <span class="kw">if </span>libc::fgets(buffer, <span class="number">12</span>, file_stream).is_null() {

@@ -743,31 +743,6 @@
 <a href="#743" id="743">743</a>
 <a href="#744" id="744">744</a>
 <a href="#745" id="745">745</a>
-<a href="#746" id="746">746</a>
-<a href="#747" id="747">747</a>
-<a href="#748" id="748">748</a>
-<a href="#749" id="749">749</a>
-<a href="#750" id="750">750</a>
-<a href="#751" id="751">751</a>
-<a href="#752" id="752">752</a>
-<a href="#753" id="753">753</a>
-<a href="#754" id="754">754</a>
-<a href="#755" id="755">755</a>
-<a href="#756" id="756">756</a>
-<a href="#757" id="757">757</a>
-<a href="#758" id="758">758</a>
-<a href="#759" id="759">759</a>
-<a href="#760" id="760">760</a>
-<a href="#761" id="761">761</a>
-<a href="#762" id="762">762</a>
-<a href="#763" id="763">763</a>
-<a href="#764" id="764">764</a>
-<a href="#765" id="765">765</a>
-<a href="#766" id="766">766</a>
-<a href="#767" id="767">767</a>
-<a href="#768" id="768">768</a>
-<a href="#769" id="769">769</a>
-<a href="#770" id="770">770</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(slice_concat_trait)]
 #![feature(lazy_cell)]
 #![feature(result_option_inspect)]
@@ -971,39 +946,6 @@
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_CONNECT_TCP&quot;</span>)]
     </span><span class="kw">pub </span>connect_tcp: <span class="prelude-ty">Option</span>&lt;String&gt;,
 
-    <span class="doccomment">/// &lt;!--${internal}--&gt;
-    ///
-    /// ## connect_agent_name {#root-connect_agent_name}
-    ///
-    /// Agent name that already exists that we can connect to.
-    ///
-    /// Keep in mind that the intention here is to allow reusing a long living mirrord-agent pod,
-    /// and **not** to connect multiple (simultaneos) mirrord instances to a single
-    /// mirrord-agent, as the later is not properly supported without the use of
-    /// [mirrord-operator](https://metalbear.co/#waitlist-form).
-    ///
-    /// ```json
-    /// {
-    ///   &quot;connect_agent_name&quot;: &quot;mirrord-agent-still-alive&quot;
-    /// }
-    /// ```
-    </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_CONNECT_AGENT&quot;</span>)]
-    </span><span class="kw">pub </span>connect_agent_name: <span class="prelude-ty">Option</span>&lt;String&gt;,
-
-    <span class="doccomment">/// &lt;!--${internal}--&gt;
-    ///
-    /// ## connect_agent_port {#root-connect_agent_port}
-    ///
-    /// Agent listen port that already exists that we can connect to.
-    ///
-    /// ```json
-    /// {
-    ///   &quot;connect_agent_port&quot;: &quot;8888&quot;
-    /// }
-    /// ```
-    </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_CONNECT_PORT&quot;</span>)]
-    </span><span class="kw">pub </span>connect_agent_port: <span class="prelude-ty">Option</span>&lt;u16&gt;,
-
     <span class="doccomment">/// ## operator {#root-operator}
     ///
     /// Allow to lookup if operator is installed on cluster and use it.
@@ -1091,16 +1033,26 @@
 
     <span class="doccomment">/// Verify that there are no conflicting settings.
     /// We don&#39;t call it from `from_env` since we want to verify it only once (from cli)
-    </span><span class="kw">pub fn </span>verify(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), ConfigError&gt; {
+    /// Returns vec of warnings
+    </span><span class="kw">pub fn </span>verify(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;String&gt;, ConfigError&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>warnings = Vec::new();
         <span class="kw">if </span><span class="self">self</span>.pause {
             <span class="kw">if </span><span class="self">self</span>.agent.ephemeral {
                 <span class="prelude-val">Err</span>(ConfigError::Conflict(<span class="string">&quot;Pausing is not yet supported together with an ephemeral agent container.
                 Mutually exclusive arguments `--pause` and `--ephemeral-container` passed together.&quot;</span>.to_string()))<span class="question-mark">?</span>;
             }
             <span class="kw">if </span>!<span class="self">self</span>.feature.network.incoming.is_steal() {
-                <span class="macro">warn!</span>(<span class="string">&quot;{PAUSE_WITHOUT_STEAL_WARNING}&quot;</span>);
+                warnings.push(PAUSE_WITHOUT_STEAL_WARNING.to_string());
             }
         }
+
+        <span class="kw">if </span><span class="self">self</span>.agent.ephemeral &amp;&amp; <span class="self">self</span>.agent.namespace.is_some() {
+            warnings.push(
+                <span class="string">&quot;Agent namespace is ignored when using an ephemeral container for the agent.&quot;
+                    </span>.to_string(),
+            );
+        }
+
         <span class="kw">if </span><span class="self">self
             </span>.feature
             .network
@@ -1162,7 +1114,7 @@
                 ))<span class="question-mark">?</span>;
             }
         }
-        <span class="prelude-val">Ok</span>(())
+        <span class="prelude-val">Ok</span>(warnings)
     }
 }
 
@@ -1384,8 +1336,6 @@
             pause: <span class="prelude-val">Some</span>(<span class="bool-val">false</span>),
             kubeconfig: <span class="prelude-val">None</span>,
             telemetry: <span class="prelude-val">None</span>,
-            connect_agent_name: <span class="prelude-val">None</span>,
-            connect_agent_port: <span class="prelude-val">None</span>,
             target: <span class="prelude-val">Some</span>(TargetFileConfig::Advanced {
                 path: <span class="prelude-val">Some</span>(Target::Pod(PodTarget {
                     pod: <span class="string">&quot;test-service-abcdefg-abcd&quot;</span>.to_owned(),

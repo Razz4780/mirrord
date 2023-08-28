@@ -385,6 +385,31 @@
 <a href="#385" id="385">385</a>
 <a href="#386" id="386">386</a>
 <a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a>
+<a href="#398" id="398">398</a>
+<a href="#399" id="399">399</a>
+<a href="#400" id="400">400</a>
+<a href="#401" id="401">401</a>
+<a href="#402" id="402">402</a>
+<a href="#403" id="403">403</a>
+<a href="#404" id="404">404</a>
+<a href="#405" id="405">405</a>
+<a href="#406" id="406">406</a>
+<a href="#407" id="407">407</a>
+<a href="#408" id="408">408</a>
+<a href="#409" id="409">409</a>
+<a href="#410" id="410">410</a>
+<a href="#411" id="411">411</a>
+<a href="#412" id="412">412</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Internal proxy is accepting connection from local layers and forward it to agent
 //! while having 1:1 relationship - each layer connection is another agent connection.
 //!
@@ -404,7 +429,7 @@
 };
 
 <span class="kw">use </span>futures::{stream::StreamExt, SinkExt};
-<span class="kw">use </span>mirrord_analytics::{send_analytics, Analytics, CollectAnalytics};
+<span class="kw">use </span>mirrord_analytics::{AnalyticsError, AnalyticsReporter, CollectAnalytics};
 <span class="kw">use </span>mirrord_config::LayerConfig;
 <span class="kw">use </span>mirrord_kube::api::{kubernetes::KubernetesAPI, wrap_raw_connection, AgentManagment};
 <span class="kw">use </span>mirrord_operator::client::{OperatorApi, OperatorSessionInformation};
@@ -418,9 +443,14 @@
     time::timeout,
 };
 <span class="kw">use </span>tokio_util::sync::CancellationToken;
-<span class="kw">use </span>tracing::{error, info, log::trace};
+<span class="kw">use </span>tracing::{error, info, log::trace, warn};
 
-<span class="kw">use </span><span class="kw">crate</span>::error::{InternalProxyError, <span class="prelude-ty">Result</span>};
+<span class="kw">use crate</span>::{
+    connection::AgentConnectInfo,
+    error::{InternalProxyError, <span class="prelude-ty">Result</span>},
+};
+
+<span class="kw">const </span>PING_INTERVAL_DURATION: Duration = Duration::from_secs(<span class="number">30</span>);
 
 <span class="kw">unsafe fn </span>redirect_fd_to_dev_null(fd: libc::c_int) {
     <span class="kw">let </span>devnull_fd = libc::open(<span class="string">b&quot;/dev/null\0&quot; </span><span class="kw">as </span><span class="kw-2">*const </span>[u8; <span class="number">10</span>] <span class="kw">as _</span>, libc::O_RDWR);
@@ -458,19 +488,25 @@
 
 <span class="doccomment">/// Supposed to run as an async detached task, proxying the connection.
 /// We parse the protocol so we might add some logic here in the future?
+/// We also handle pings here, meaning that if layer is too quiet (for example if it has a
+/// breakpoint hit and someone is holding it) It will keep the agent alive and send pings on its
+/// behalf.
 </span><span class="kw">async fn </span>connection_task(config: LayerConfig, stream: TcpStream) {
-    <span class="kw">let </span>agent_connection = <span class="kw">match </span>connect_and_ping(<span class="kw-2">&amp;</span>config).<span class="kw">await </span>{
-        <span class="prelude-val">Ok</span>((agent_connection, <span class="kw">_</span>)) =&gt; agent_connection,
-        <span class="prelude-val">Err</span>(err) =&gt; {
-            <span class="macro">error!</span>(<span class="string">&quot;connection to agent failed {err:#?}&quot;</span>);
-            <span class="kw">return</span>;
-        }
-    };
+    <span class="kw">let </span><span class="kw-2">mut </span>inactive_analytics = AnalyticsReporter::new(<span class="bool-val">false</span>);
+
+    <span class="kw">let </span><span class="prelude-val">Ok</span>(agent_connection) = connect_and_ping(<span class="kw-2">&amp;</span>config, <span class="kw-2">&amp;mut </span>inactive_analytics)
+        .<span class="kw">await
+        </span>.inspect_err(|err| <span class="macro">error!</span>(<span class="string">&quot;connection to agent failed {err:#?}&quot;</span>)) <span class="kw">else </span>{ <span class="kw">return</span>; };
+
     <span class="kw">let </span><span class="kw-2">mut </span>layer_connection = actix_codec::Framed::new(stream, DaemonCodec::new());
     <span class="kw">let </span>(agent_sender, <span class="kw-2">mut </span>agent_receiver) = agent_connection;
+    <span class="kw">let </span><span class="kw-2">mut </span>ping = <span class="bool-val">false</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>ping_interval = tokio::time::interval(PING_INTERVAL_DURATION);
+    ping_interval.tick().<span class="kw">await</span>;
     <span class="kw">loop </span>{
         <span class="macro">select! </span>{
             layer_message = layer_connection.next() =&gt; {
+                ping_interval.reset();
                 <span class="kw">match </span>layer_message {
                     <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(layer_message)) =&gt; {
                         <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = agent_sender.send(layer_message).<span class="kw">await </span>{
@@ -494,16 +530,31 @@
             },
             agent_message = agent_receiver.recv() =&gt; {
                 <span class="kw">match </span>agent_message {
+                    <span class="prelude-val">Some</span>(DaemonMessage::Pong) =&gt; {
+                        ping = <span class="bool-val">false</span>;
+                    },
                     <span class="prelude-val">Some</span>(agent_message) =&gt; {
                         <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = layer_connection.send(agent_message).<span class="kw">await </span>{
                             <span class="macro">trace!</span>(<span class="string">&quot;Error sending agent message to layer: {err:#?}&quot;</span>);
                             <span class="kw">break</span>;
                         }
-                    },
+                    }
                     <span class="prelude-val">None </span>=&gt; {
                         <span class="macro">trace!</span>(<span class="string">&quot;agent connection closed&quot;</span>);
                         <span class="kw">break</span>;
                     }
+                }
+            },
+            <span class="kw">_ </span>= ping_interval.tick() =&gt; {
+                <span class="kw">if </span>!ping {
+                    <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = agent_sender.send(ClientMessage::Ping).<span class="kw">await </span>{
+                        <span class="macro">trace!</span>(<span class="string">&quot;Error sending ping to agent: {err:#?}&quot;</span>);
+                        <span class="kw">break</span>;
+                    }
+                    ping = <span class="bool-val">true</span>;
+                } <span class="kw">else </span>{
+                    <span class="macro">warn!</span>(<span class="string">&quot;Unmatched ping, timeout!&quot;</span>);
+                    <span class="kw">break</span>;
                 }
             }
         }
@@ -575,15 +626,21 @@
 <span class="doccomment">/// Main entry point for the internal proxy.
 /// It listens for inbound layer connect and forwards to agent.
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>proxy() -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-    <span class="kw">let </span>started = std::time::Instant::now();
+    <span class="kw">let </span>config = LayerConfig::from_env()<span class="question-mark">?</span>;
+
+    <span class="kw">let </span><span class="kw-2">mut </span>analytics = AnalyticsReporter::new(config.telemetry);
+    (<span class="kw-2">&amp;</span>config).collect_analytics(analytics.get_mut());
+
     <span class="comment">// Let it assign port for us then print it for the user.
     </span><span class="kw">let </span>listener = create_listen_socket()<span class="question-mark">?</span>;
 
-    <span class="kw">let </span>config = LayerConfig::from_env()<span class="question-mark">?</span>;
     <span class="comment">// Create a main connection, that will be held until proxy is closed.
     // This will guarantee agent staying alive and will enable us to
     // make the agent close on last connection close immediately (will help in tests)
-    </span><span class="kw">let </span>(<span class="kw-2">mut </span>main_connection, operator) = connect_and_ping(<span class="kw-2">&amp;</span>config).<span class="kw">await</span><span class="question-mark">?</span>;
+    </span><span class="kw">let </span><span class="kw-2">mut </span>main_connection = connect_and_ping(<span class="kw-2">&amp;</span>config, <span class="kw-2">&amp;mut </span>analytics)
+        .<span class="kw">await
+        </span>.inspect_err(|<span class="kw">_</span>| analytics.set_error(AnalyticsError::AgentConnection))<span class="question-mark">?</span>;
+
     <span class="kw">if </span>config.pause {
         tokio::time::timeout(
             Duration::from_secs(config.agent.communication_timeout.unwrap_or(<span class="number">30</span>).into()),
@@ -607,7 +664,11 @@
         listener.accept(),
     )
     .<span class="kw">await
-    </span>.map_err(|<span class="kw">_</span>| InternalProxyError::FirstConnectionTimeout)<span class="question-mark">?
+    </span>.map_err(|<span class="kw">_</span>| {
+        analytics.set_error(AnalyticsError::IntProxyFirstConnection);
+
+        InternalProxyError::FirstConnectionTimeout
+    })<span class="question-mark">?
     </span>.map_err(InternalProxyError::AcceptError)<span class="question-mark">?</span>;
 
     <span class="kw">let </span><span class="kw-2">mut </span>active_connections = JoinSet::new();
@@ -648,17 +709,6 @@
     }
     main_connection_cancellation_token.cancel();
 
-    <span class="kw">let </span><span class="kw-2">mut </span>analytics = Analytics::default();
-    (<span class="kw-2">&amp;</span>config).collect_analytics(<span class="kw-2">&amp;mut </span>analytics);
-    <span class="kw">if </span>config.telemetry {
-        send_analytics(
-            analytics,
-            started.elapsed().as_secs().try_into().unwrap_or(u32::MAX),
-            operator,
-        )
-        .<span class="kw">await</span>;
-    }
-
     <span class="macro">trace!</span>(<span class="string">&quot;intproxy joining main connection task&quot;</span>);
     <span class="kw">match </span>main_connection_task_join.<span class="kw">await </span>{
         <span class="prelude-val">Ok</span>(<span class="prelude-val">Err</span>(err)) =&gt; <span class="prelude-val">Err</span>(err.into()),
@@ -676,13 +726,11 @@
 /// sending the first message
 </span><span class="kw">async fn </span>connect_and_ping(
     config: <span class="kw-2">&amp;</span>LayerConfig,
-) -&gt; <span class="prelude-ty">Result</span>&lt;(
-    (mpsc::Sender&lt;ClientMessage&gt;, mpsc::Receiver&lt;DaemonMessage&gt;),
-    bool,
-)&gt; {
-    <span class="kw">let </span>((<span class="kw-2">mut </span>sender, <span class="kw-2">mut </span>receiver), operator) = connect(config).<span class="kw">await</span><span class="question-mark">?</span>;
+    analytics: <span class="kw-2">&amp;mut </span>AnalyticsReporter,
+) -&gt; <span class="prelude-ty">Result</span>&lt;(mpsc::Sender&lt;ClientMessage&gt;, mpsc::Receiver&lt;DaemonMessage&gt;)&gt; {
+    <span class="kw">let </span>((<span class="kw-2">mut </span>sender, <span class="kw-2">mut </span>receiver), <span class="kw">_</span>) = connect(config, analytics).<span class="kw">await</span><span class="question-mark">?</span>;
     ping(<span class="kw-2">&amp;mut </span>sender, <span class="kw-2">&amp;mut </span>receiver).<span class="kw">await</span><span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>(((sender, receiver), operator))
+    <span class="prelude-val">Ok</span>((sender, receiver))
 }
 
 <span class="doccomment">/// Sends a ping the connection and expects a pong.
@@ -746,30 +794,32 @@
 /// Returns the tx/rx and whether the operator is used.
 </span><span class="kw">async fn </span>connect(
     config: <span class="kw-2">&amp;</span>LayerConfig,
+    analytics: <span class="kw-2">&amp;mut </span>AnalyticsReporter,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(
     (mpsc::Sender&lt;ClientMessage&gt;, mpsc::Receiver&lt;DaemonMessage&gt;),
-    bool,
+    <span class="prelude-ty">Option</span>&lt;OperatorSessionInformation&gt;,
 )&gt; {
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(operator_session_information) = OperatorSessionInformation::from_env()<span class="question-mark">? </span>{
-        <span class="prelude-val">Ok</span>((
-            OperatorApi::connect(config, <span class="kw-2">&amp;</span>operator_session_information).<span class="kw">await</span><span class="question-mark">?</span>,
-            <span class="bool-val">true</span>,
-        ))
-    } <span class="kw">else if let </span><span class="prelude-val">Some</span>(address) = <span class="kw-2">&amp;</span>config.connect_tcp {
-        <span class="kw">let </span>stream = TcpStream::connect(address)
-            .<span class="kw">await
-            </span>.map_err(InternalProxyError::TcpConnectError)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>((wrap_raw_connection(stream), <span class="bool-val">false</span>))
-    } <span class="kw">else if let </span>(<span class="prelude-val">Some</span>(agent_name), <span class="prelude-val">Some</span>(port)) =
-        (<span class="kw-2">&amp;</span>config.connect_agent_name, config.connect_agent_port)
-    {
-        <span class="kw">let </span>k8s_api = KubernetesAPI::create(config).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let </span>connection = k8s_api
-            .create_connection((agent_name.clone(), port))
-            .<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>((connection, <span class="bool-val">false</span>))
-    } <span class="kw">else </span>{
-        <span class="prelude-val">Err</span>(InternalProxyError::NoConnectionMethod.into())
+    <span class="kw">let </span>agent_connect_info = AgentConnectInfo::from_env()<span class="question-mark">?</span>;
+    <span class="kw">match </span>agent_connect_info {
+        <span class="prelude-val">Some</span>(AgentConnectInfo::Operator(operator_session_information)) =&gt; <span class="prelude-val">Ok</span>((
+            OperatorApi::connect(config, <span class="kw-2">&amp;</span>operator_session_information, analytics).<span class="kw">await</span><span class="question-mark">?</span>,
+            <span class="prelude-val">Some</span>(operator_session_information),
+        )),
+        <span class="prelude-val">Some</span>(AgentConnectInfo::DirectKubernetes(connect_info)) =&gt; {
+            <span class="kw">let </span>k8s_api = KubernetesAPI::create(config).<span class="kw">await</span><span class="question-mark">?</span>;
+            <span class="kw">let </span>connection = k8s_api.create_connection(connect_info).<span class="kw">await</span><span class="question-mark">?</span>;
+            <span class="prelude-val">Ok</span>((connection, <span class="prelude-val">None</span>))
+        }
+        <span class="prelude-val">None </span>=&gt; {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(address) = <span class="kw-2">&amp;</span>config.connect_tcp {
+                <span class="kw">let </span>stream = TcpStream::connect(address)
+                    .<span class="kw">await
+                    </span>.map_err(InternalProxyError::TcpConnectError)<span class="question-mark">?</span>;
+                <span class="prelude-val">Ok</span>((wrap_raw_connection(stream), <span class="prelude-val">None</span>))
+            } <span class="kw">else </span>{
+                <span class="prelude-val">Err</span>(InternalProxyError::NoConnectionMethod.into())
+            }
+        }
     }
 }
 </code></pre></div></section></main></body></html>

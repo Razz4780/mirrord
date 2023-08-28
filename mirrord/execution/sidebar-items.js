@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["INJECTION_ENV_VAR"],"static":["CALLSITE"],"struct":["MirrordExecution"]};
+window.SIDEBAR_ITEMS = {"constant":["INJECTION_ENV_VAR"],"fn":["watch_stderr"],"static":["CALLSITE"],"struct":["DropProgress","MirrordExecution"]};

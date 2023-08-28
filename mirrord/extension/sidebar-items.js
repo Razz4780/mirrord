@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["extension_exec"]};
+window.SIDEBAR_ITEMS = {"fn":["extension_exec","mirrord_exec"]};

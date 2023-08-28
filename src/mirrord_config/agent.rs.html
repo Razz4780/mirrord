@@ -379,7 +379,7 @@
     <span class="doccomment">/// ### agent.namespace {#agent-namespace}
     ///
     /// Namespace where the agent shall live.
-    ///
+    /// Note: Doesn&#39;t work with ephemeral containers.
     /// Defaults to the current kubernetes namespace.
     </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_AGENT_NAMESPACE&quot;</span>)]
     </span><span class="kw">pub </span>namespace: <span class="prelude-ty">Option</span>&lt;String&gt;,

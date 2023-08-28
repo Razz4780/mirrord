@@ -211,6 +211,27 @@
 <a href="#211" id="211">211</a>
 <a href="#212" id="212">212</a>
 <a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::ops::Deref;
 <span class="attr">#[cfg(feature = <span class="string">&quot;incluster&quot;</span>)]
 </span><span class="kw">use </span>std::{net::SocketAddr, time::Duration};
@@ -224,6 +245,7 @@
 <span class="kw">use </span>mirrord_progress::Progress;
 <span class="kw">use </span>mirrord_protocol::{ClientMessage, DaemonMessage};
 <span class="kw">use </span>rand::Rng;
+<span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="attr">#[cfg(feature = <span class="string">&quot;incluster&quot;</span>)]
 </span><span class="kw">use </span>tokio::net::TcpStream;
 <span class="kw">use </span>tokio::sync::mpsc;
@@ -275,7 +297,9 @@
     <span class="kw">where
         </span>P: Progress + Send + Sync,
     {
-        <span class="kw">if </span>Discovery::new(<span class="self">self</span>.client.clone())
+        <span class="comment">// filter openshift to make it a lot faster
+        </span><span class="kw">if </span>Discovery::new(<span class="self">self</span>.client.clone())
+            .filter(<span class="kw-2">&amp;</span>[<span class="string">&quot;route.openshift.io&quot;</span>])
             .run()
             .<span class="kw">await</span><span class="question-mark">?
             </span>.has_group(<span class="string">&quot;route.openshift.io&quot;</span>)
@@ -288,21 +312,32 @@
     }
 }
 
+<span class="attr">#[derive(Debug, Clone, Serialize, Deserialize, Hash, PartialEq, Eq)]
+</span><span class="kw">pub struct </span>AgentKubernetesConnectInfo {
+    <span class="kw">pub </span>pod_name: String,
+    <span class="kw">pub </span>agent_port: u16,
+    <span class="kw">pub </span>namespace: <span class="prelude-ty">Option</span>&lt;String&gt;,
+}
+
 <span class="kw">impl </span>AgentManagment <span class="kw">for </span>KubernetesAPI {
-    <span class="kw">type </span>AgentRef = (String, u16);
+    <span class="kw">type </span>AgentRef = AgentKubernetesConnectInfo;
     <span class="kw">type </span><span class="prelude-val">Err </span>= KubeApiError;
 
     <span class="attr">#[cfg(feature = <span class="string">&quot;incluster&quot;</span>)]
     </span><span class="kw">async fn </span>create_connection(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        (pod_agent_name, agent_port): <span class="self">Self</span>::AgentRef,
+        AgentKubernetesConnectInfo {
+            pod_name,
+            agent_port,
+            namespace,
+        }: <span class="self">Self</span>::AgentRef,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(mpsc::Sender&lt;ClientMessage&gt;, mpsc::Receiver&lt;DaemonMessage&gt;)&gt; {
-        <span class="kw">let </span>pod_api: Api&lt;Pod&gt; = get_k8s_resource_api(<span class="kw-2">&amp;</span><span class="self">self</span>.client, <span class="self">self</span>.agent.namespace.as_deref());
+        <span class="kw">let </span>pod_api: Api&lt;Pod&gt; = get_k8s_resource_api(<span class="kw-2">&amp;</span><span class="self">self</span>.client, namespace.as_deref());
 
-        <span class="kw">let </span>pod = pod_api.get(<span class="kw-2">&amp;</span>pod_agent_name).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>pod = pod_api.get(<span class="kw-2">&amp;</span>pod_name).<span class="kw">await</span><span class="question-mark">?</span>;
 
         <span class="kw">let </span>conn = <span class="kw">if let </span><span class="prelude-val">Some</span>(pod_ip) = pod.status.and_then(|status| status.pod_ip) {
-            <span class="macro">trace!</span>(<span class="string">&quot;connecting to pod_ip {pod_ip}:{agent_port}&quot;</span>);
+            <span class="macro">trace!</span>(<span class="string">&quot;connecting to pod_ip {pod_ip}:{}&quot;</span>, agent_port);
 
             <span class="comment">// When pod_ip is available we directly create it as SocketAddr to prevent tokio from
             // performing a DNS lookup
@@ -312,11 +347,15 @@
             )
             .<span class="kw">await
         </span>} <span class="kw">else </span>{
-            <span class="macro">trace!</span>(<span class="string">&quot;connecting to pod {pod_agent_name}:{agent_port}&quot;</span>);
-
+            <span class="macro">trace!</span>(<span class="string">&quot;connecting to pod {pod_name}:{agent_port}&quot;</span>);
+            <span class="kw">let </span>connection_string = <span class="kw">if let </span><span class="prelude-val">Some</span>(namespace) = namespace {
+                <span class="macro">format!</span>(<span class="string">&quot;{pod_name}.{namespace}:{agent_port}&quot;</span>)
+            } <span class="kw">else </span>{
+                <span class="macro">format!</span>(<span class="string">&quot;{pod_name}:{agent_port}&quot;</span>)
+            };
             tokio::time::timeout(
                 Duration::from_secs(<span class="self">self</span>.agent.startup_timeout),
-                TcpStream::connect(<span class="macro">format!</span>(<span class="string">&quot;{}:{}&quot;</span>, pod_agent_name, agent_port)),
+                TcpStream::connect(connection_string),
             )
             .<span class="kw">await
         </span>}
@@ -328,15 +367,18 @@
     <span class="attr">#[cfg(not(feature = <span class="string">&quot;incluster&quot;</span>))]
     </span><span class="kw">async fn </span>create_connection(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        (pod_agent_name, agent_port): <span class="self">Self</span>::AgentRef,
+        connect_info: <span class="self">Self</span>::AgentRef,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(mpsc::Sender&lt;ClientMessage&gt;, mpsc::Receiver&lt;DaemonMessage&gt;)&gt; {
-        <span class="kw">let </span>pod_api: Api&lt;Pod&gt; = get_k8s_resource_api(<span class="kw-2">&amp;</span><span class="self">self</span>.client, <span class="self">self</span>.agent.namespace.as_deref());
-        <span class="macro">trace!</span>(<span class="string">&quot;port-forward to pod {}:{}&quot;</span>, <span class="kw-2">&amp;</span>pod_agent_name, <span class="kw-2">&amp;</span>agent_port);
-        <span class="kw">let </span><span class="kw-2">mut </span>port_forwarder = pod_api.portforward(<span class="kw-2">&amp;</span>pod_agent_name, <span class="kw-2">&amp;</span>[agent_port]).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>pod_api: Api&lt;Pod&gt; =
+            get_k8s_resource_api(<span class="kw-2">&amp;</span><span class="self">self</span>.client, connect_info.namespace.as_deref());
+        <span class="macro">trace!</span>(<span class="string">&quot;port-forward to pod {:?}&quot;</span>, <span class="kw-2">&amp;</span>connect_info);
+        <span class="kw">let </span><span class="kw-2">mut </span>port_forwarder = pod_api
+            .portforward(<span class="kw-2">&amp;</span>connect_info.pod_name, <span class="kw-2">&amp;</span>[connect_info.agent_port])
+            .<span class="kw">await</span><span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(wrap_raw_connection(
             port_forwarder
-                .take_stream(agent_port)
+                .take_stream(connect_info.agent_port)
                 .ok_or(KubeApiError::PortForwardFailed)<span class="question-mark">?</span>,
         ))
     }
@@ -369,7 +411,7 @@
         <span class="kw">let </span>agent_gid: u16 = rand::thread_rng().gen_range(<span class="number">3000</span>..u16::MAX);
         <span class="macro">info!</span>(<span class="string">&quot;Using group-id `{agent_gid:?}`&quot;</span>);
 
-        <span class="kw">let </span>pod_agent_name = <span class="kw">if </span><span class="self">self</span>.agent.ephemeral {
+        <span class="kw">let </span>agent_connect_info = <span class="kw">if </span><span class="self">self</span>.agent.ephemeral {
             EphemeralContainer::create_agent(
                 <span class="kw-2">&amp;</span><span class="self">self</span>.client,
                 <span class="kw-2">&amp;</span><span class="self">self</span>.agent,
@@ -391,8 +433,8 @@
             .<span class="kw">await</span><span class="question-mark">?
         </span>};
 
-        <span class="macro">info!</span>(<span class="string">&quot;Created agent pod {pod_agent_name:?}&quot;</span>);
-        <span class="prelude-val">Ok</span>((pod_agent_name, agent_port))
+        <span class="macro">info!</span>(<span class="string">&quot;Created agent pod {agent_connect_info:?}&quot;</span>);
+        <span class="prelude-val">Ok</span>(agent_connect_info)
     }
 }
 

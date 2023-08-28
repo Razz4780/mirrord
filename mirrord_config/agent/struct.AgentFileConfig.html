@@ -43,8 +43,9 @@ with <code>RUST_LOG</code>.</p>
   }
 }
 </code></pre></div></div><span id="structfield.namespace" class="structfield small-section-header"><a href="#structfield.namespace" class="anchor field">§</a><code>namespace: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>&gt;</code></span><div class="docblock"><h5 id="agentnamespace-agent-namespace"><a href="#agentnamespace-agent-namespace">agent.namespace {#agent-namespace}</a></h5>
-<p>Namespace where the agent shall live.</p>
-<p>Defaults to the current kubernetes namespace.</p>
+<p>Namespace where the agent shall live.
+Note: Doesn’t work with ephemeral containers.
+Defaults to the current kubernetes namespace.</p>
 </div><span id="structfield.image" class="structfield small-section-header"><a href="#structfield.image" class="anchor field">§</a><code>image: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>&gt;</code></span><div class="docblock"><h5 id="agentimage-agent-image"><a href="#agentimage-agent-image">agent.image {#agent-image}</a></h5>
 <p>Name of the agent’s docker image.</p>
 <p>Useful when a custom build of mirrord-agent is required, or when using an internal

@@ -543,6 +543,15 @@
 <a href="#543" id="543">543</a>
 <a href="#544" id="544">544</a>
 <a href="#545" id="545">545</a>
+<a href="#546" id="546">546</a>
+<a href="#547" id="547">547</a>
+<a href="#548" id="548">548</a>
+<a href="#549" id="549">549</a>
+<a href="#550" id="550">550</a>
+<a href="#551" id="551">551</a>
+<a href="#552" id="552">552</a>
+<a href="#553" id="553">553</a>
+<a href="#554" id="554">554</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{collections::HashSet, sync::LazyLock};
 
 <span class="kw">use </span>futures::{AsyncBufReadExt, StreamExt, TryStreamExt};
@@ -563,6 +572,7 @@
 <span class="kw">use </span>tokio::pin;
 <span class="kw">use </span>tracing::{debug, warn};
 
+<span class="kw">use </span><span class="kw">super</span>::kubernetes::AgentKubernetesConnectInfo;
 <span class="kw">use crate</span>::{
     api::{
         get_k8s_resource_api,
@@ -597,7 +607,7 @@
         connection_port: u16,
         progress: <span class="kw-2">&amp;</span>P,
         agent_gid: u16,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;String&gt;
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;AgentKubernetesConnectInfo&gt;
     <span class="kw">where
         </span>P: Progress + Send + Sync;
 }
@@ -719,7 +729,7 @@
         connection_port: u16,
         progress: <span class="kw-2">&amp;</span>P,
         agent_gid: u16,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;String&gt;
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;AgentKubernetesConnectInfo&gt;
     <span class="kw">where
         </span>P: Progress + Send + Sync,
     {
@@ -923,7 +933,11 @@
 
         pod_progress.success(<span class="prelude-val">Some</span>(<span class="string">&quot;pod is ready&quot;</span>));
 
-        <span class="prelude-val">Ok</span>(pod_name)
+        <span class="prelude-val">Ok</span>(AgentKubernetesConnectInfo {
+            pod_name,
+            agent_port: connection_port,
+            namespace: agent.namespace.clone(),
+        })
     }
 }
 
@@ -938,7 +952,7 @@
         connection_port: u16,
         progress: <span class="kw-2">&amp;</span>P,
         agent_gid: u16,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;String&gt;
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;AgentKubernetesConnectInfo&gt;
     <span class="kw">where
         </span>P: Progress + Send + Sync,
     {
@@ -982,7 +996,7 @@
         }))<span class="question-mark">?</span>;
         <span class="macro">debug!</span>(<span class="string">&quot;Requesting ephemeral_containers_subresource&quot;</span>);
 
-        <span class="kw">let </span>pod_api = get_k8s_resource_api(client, agent.namespace.as_deref());
+        <span class="kw">let </span>pod_api = get_k8s_resource_api(client, runtime_data.pod_namespace.as_deref());
         <span class="kw">let </span>pod: Pod = pod_api.get(<span class="kw-2">&amp;</span>runtime_data.pod_name).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="kw">let </span>pod_spec = pod.spec.ok_or(KubeApiError::PodSpecNotFound)<span class="question-mark">?</span>;
 
@@ -1069,7 +1083,11 @@
         container_progress.success(<span class="prelude-val">Some</span>(<span class="string">&quot;container is ready&quot;</span>));
 
         <span class="macro">debug!</span>(<span class="string">&quot;container is ready&quot;</span>);
-        <span class="prelude-val">Ok</span>(runtime_data.pod_name.to_string())
+        <span class="prelude-val">Ok</span>(AgentKubernetesConnectInfo {
+            pod_name: runtime_data.pod_name.to_string(),
+            agent_port: connection_port,
+            namespace: runtime_data.pod_namespace.clone(),
+        })
     }
 }
 
