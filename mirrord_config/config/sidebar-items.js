@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["ConfigError"],"mod":["deprecated","from_env","source","unstable"],"trait":["FromMirrordConfig","MirrordConfig"],"type":["Result"]};
+window.SIDEBAR_ITEMS = {"enum":["ConfigError"],"mod":["deprecated","from_env","source","unstable"],"struct":["ConfigContext"],"trait":["FromMirrordConfig","MirrordConfig"],"type":["Result"]};

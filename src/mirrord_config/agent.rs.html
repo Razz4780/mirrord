@@ -301,6 +301,12 @@
 <a href="#301" id="301">301</a>
 <a href="#302" id="302">302</a>
 <a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::collections::HashMap;
 
 <span class="kw">use </span>k8s_openapi::api::core::v1::Toleration;
@@ -556,7 +562,10 @@
     <span class="kw">use </span>rstest::rstest;
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use crate</span>::{config::MirrordConfig, util::testing::with_env_vars};
+    <span class="kw">use crate</span>::{
+        config::{ConfigContext, MirrordConfig},
+        util::testing::with_env_vars,
+    };
 
     <span class="attr">#[rstest]
     </span><span class="kw">fn </span>default(
@@ -590,7 +599,10 @@
                 (<span class="string">&quot;MIRRORD_AGENT_STARTUP_TIMEOUT&quot;</span>, startup_timeout.<span class="number">0</span>),
             ],
             || {
-                <span class="kw">let </span>agent = AgentFileConfig::default().generate_config().unwrap();
+                <span class="kw">let </span><span class="kw-2">mut </span>cfg_context = ConfigContext::default();
+                <span class="kw">let </span>agent = AgentFileConfig::default()
+                    .generate_config(<span class="kw-2">&amp;mut </span>cfg_context)
+                    .unwrap();
 
                 <span class="macro">assert_eq!</span>(agent.log_level, log_level.<span class="number">1</span>);
                 <span class="macro">assert_eq!</span>(agent.namespace.as_deref(), namespace.<span class="number">1</span>);

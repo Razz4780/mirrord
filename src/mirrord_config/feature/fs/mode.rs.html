@@ -175,6 +175,10 @@
 <a href="#175" id="175">175</a>
 <a href="#176" id="176">176</a>
 <a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::str::FromStr;
 
 <span class="kw">use </span>schemars::JsonSchema;
@@ -182,8 +186,8 @@
 
 <span class="kw">use crate</span>::{
     config::{
-        from_env::FromEnv, source::MirrordConfigSource, ConfigError, FromMirrordConfig,
-        MirrordConfig, <span class="prelude-ty">Result</span>,
+        from_env::FromEnv, source::MirrordConfigSource, ConfigContext, ConfigError,
+        FromMirrordConfig, MirrordConfig, <span class="prelude-ty">Result</span>,
     },
     util::MirrordToggleableConfig,
 };
@@ -266,15 +270,15 @@
 <span class="kw">impl </span>MirrordConfig <span class="kw">for </span>FsModeConfig {
     <span class="kw">type </span>Generated = FsModeConfig;
 
-    <span class="kw">fn </span>generate_config(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Generated&gt; {
+    <span class="kw">fn </span>generate_config(<span class="self">self</span>, context: <span class="kw-2">&amp;mut </span>ConfigContext) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Generated&gt; {
         <span class="kw">let </span>fs = FromEnv::new(<span class="string">&quot;MIRRORD_FILE_OPS&quot;</span>)
-            .source_value()
+            .source_value(context)
             .transpose()<span class="question-mark">?</span>;
         <span class="kw">let </span>ro_fs = FromEnv::new(<span class="string">&quot;MIRRORD_FILE_RO_OPS&quot;</span>)
-            .source_value()
+            .source_value(context)
             .transpose()<span class="question-mark">?</span>;
         <span class="kw">let </span>mode = FromEnv::new(<span class="string">&quot;MIRRORD_FILE_MODE&quot;</span>)
-            .source_value()
+            .source_value(context)
             .transpose()<span class="question-mark">?</span>;
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(mode) = mode {
@@ -286,15 +290,15 @@
 }
 
 <span class="kw">impl </span>MirrordToggleableConfig <span class="kw">for </span>FsModeConfig {
-    <span class="kw">fn </span>disabled_config() -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Generated&gt; {
+    <span class="kw">fn </span>disabled_config(context: <span class="kw-2">&amp;mut </span>ConfigContext) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Generated&gt; {
         <span class="kw">let </span>fs = FromEnv::new(<span class="string">&quot;MIRRORD_FILE_OPS&quot;</span>)
-            .source_value()
+            .source_value(context)
             .transpose()<span class="question-mark">?</span>;
         <span class="kw">let </span>ro_fs = FromEnv::new(<span class="string">&quot;MIRRORD_FILE_RO_OPS&quot;</span>)
-            .source_value()
+            .source_value(context)
             .transpose()<span class="question-mark">?</span>;
         <span class="kw">let </span>mode = FromEnv::new(<span class="string">&quot;MIRRORD_FILE_MODE&quot;</span>)
-            .source_value()
+            .source_value(context)
             .transpose()<span class="question-mark">?</span>;
         <span class="kw">if let </span><span class="prelude-val">Some</span>(mode) = mode {
             <span class="prelude-val">Ok</span>(mode)
@@ -327,7 +331,10 @@
         with_env_vars(
             <span class="macro">vec!</span>[(<span class="string">&quot;MIRRORD_FILE_OPS&quot;</span>, fs), (<span class="string">&quot;MIRRORD_FILE_RO_OPS&quot;</span>, ro)],
             || {
-                <span class="kw">let </span>fs = FsModeConfig::default().generate_config().unwrap();
+                <span class="kw">let </span><span class="kw-2">mut </span>cfg_context = ConfigContext::default();
+                <span class="kw">let </span>fs = FsModeConfig::default()
+                    .generate_config(<span class="kw-2">&amp;mut </span>cfg_context)
+                    .unwrap();
 
                 <span class="macro">assert_eq!</span>(fs, expect);
             },
@@ -343,8 +350,9 @@
         with_env_vars(
             <span class="macro">vec!</span>[(<span class="string">&quot;MIRRORD_FILE_OPS&quot;</span>, fs), (<span class="string">&quot;MIRRORD_FILE_RO_OPS&quot;</span>, ro)],
             || {
+                <span class="kw">let </span><span class="kw-2">mut </span>cfg_context = ConfigContext::default();
                 <span class="kw">let </span>fs = ToggleableConfig::&lt;FsModeConfig&gt;::Enabled(<span class="bool-val">false</span>)
-                    .generate_config()
+                    .generate_config(<span class="kw-2">&amp;mut </span>cfg_context)
                     .unwrap();
 
                 <span class="macro">assert_eq!</span>(fs, expect);

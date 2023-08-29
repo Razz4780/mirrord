@@ -743,6 +743,17 @@
 <a href="#743" id="743">743</a>
 <a href="#744" id="744">744</a>
 <a href="#745" id="745">745</a>
+<a href="#746" id="746">746</a>
+<a href="#747" id="747">747</a>
+<a href="#748" id="748">748</a>
+<a href="#749" id="749">749</a>
+<a href="#750" id="750">750</a>
+<a href="#751" id="751">751</a>
+<a href="#752" id="752">752</a>
+<a href="#753" id="753">753</a>
+<a href="#754" id="754">754</a>
+<a href="#755" id="755">755</a>
+<a href="#756" id="756">756</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(slice_concat_trait)]
 #![feature(lazy_cell)]
 #![feature(result_option_inspect)]
@@ -762,7 +773,7 @@
 
 <span class="kw">use </span>std::path::Path;
 
-<span class="kw">use </span>config::{ConfigError, MirrordConfig};
+<span class="kw">use </span>config::{ConfigContext, ConfigError, MirrordConfig};
 <span class="kw">use </span>mirrord_analytics::CollectAnalytics;
 <span class="kw">use </span>mirrord_config_derive::MirrordConfig;
 <span class="kw">use </span>schemars::JsonSchema;
@@ -1023,31 +1034,42 @@
 }
 
 <span class="kw">impl </span>LayerConfig {
-    <span class="kw">pub fn </span>from_env() -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, ConfigError&gt; {
+    <span class="doccomment">/// Generate a config from the environment variables and/or a config file.
+    /// On success, returns the config and a vec of warnings.
+    /// To be used from CLI to verify config and print warnings
+    </span><span class="kw">pub fn </span>from_env_with_warnings() -&gt; <span class="prelude-ty">Result</span>&lt;(<span class="self">Self</span>, ConfigContext), ConfigError&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>cfg_context = ConfigContext::default();
         <span class="kw">if let </span><span class="prelude-val">Ok</span>(path) = std::env::var(<span class="string">&quot;MIRRORD_CONFIG_FILE&quot;</span>) {
-            LayerFileConfig::from_path(path)<span class="question-mark">?</span>.generate_config()
+            LayerFileConfig::from_path(path)<span class="question-mark">?</span>.generate_config(<span class="kw-2">&amp;mut </span>cfg_context)
         } <span class="kw">else </span>{
-            LayerFileConfig::default().generate_config()
+            LayerFileConfig::default().generate_config(<span class="kw-2">&amp;mut </span>cfg_context)
         }
+        .map(|config| (config, cfg_context))
+    }
+
+    <span class="doccomment">/// Generate a config from the environment variables and/or a config file.
+    /// On success, returns the config.
+    /// To be used from parts that load configuration but aren&#39;t the first one to do so
+    </span><span class="kw">pub fn </span>from_env() -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, ConfigError&gt; {
+        <span class="self">Self</span>::from_env_with_warnings().map(|(config, <span class="kw">_</span>)| config)
     }
 
     <span class="doccomment">/// Verify that there are no conflicting settings.
     /// We don&#39;t call it from `from_env` since we want to verify it only once (from cli)
     /// Returns vec of warnings
-    </span><span class="kw">pub fn </span>verify(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;String&gt;, ConfigError&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>warnings = Vec::new();
+    </span><span class="kw">pub fn </span>verify(<span class="kw-2">&amp;</span><span class="self">self</span>, context: <span class="kw-2">&amp;mut </span>ConfigContext) -&gt; <span class="prelude-ty">Result</span>&lt;(), ConfigError&gt; {
         <span class="kw">if </span><span class="self">self</span>.pause {
             <span class="kw">if </span><span class="self">self</span>.agent.ephemeral {
                 <span class="prelude-val">Err</span>(ConfigError::Conflict(<span class="string">&quot;Pausing is not yet supported together with an ephemeral agent container.
                 Mutually exclusive arguments `--pause` and `--ephemeral-container` passed together.&quot;</span>.to_string()))<span class="question-mark">?</span>;
             }
             <span class="kw">if </span>!<span class="self">self</span>.feature.network.incoming.is_steal() {
-                warnings.push(PAUSE_WITHOUT_STEAL_WARNING.to_string());
+                context.add_warning(PAUSE_WITHOUT_STEAL_WARNING.to_string());
             }
         }
 
         <span class="kw">if </span><span class="self">self</span>.agent.ephemeral &amp;&amp; <span class="self">self</span>.agent.namespace.is_some() {
-            warnings.push(
+            context.add_warning(
                 <span class="string">&quot;Agent namespace is ignored when using an ephemeral container for the agent.&quot;
                     </span>.to_string(),
             );
@@ -1114,7 +1136,7 @@
                 ))<span class="question-mark">?</span>;
             }
         }
-        <span class="prelude-val">Ok</span>(warnings)
+        <span class="prelude-val">Ok</span>(())
     }
 }
 

@@ -195,13 +195,16 @@
 <a href="#195" id="195">195</a>
 <a href="#196" id="196">196</a>
 <a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>mirrord_analytics::{AnalyticValue, CollectAnalytics};
 <span class="kw">use </span>mirrord_config_derive::MirrordConfig;
 <span class="kw">use </span>schemars::JsonSchema;
 
 <span class="kw">use super</span>::{FsModeConfig, FsUserConfig};
 <span class="kw">use crate</span>::{
-    config::{from_env::FromEnv, source::MirrordConfigSource, ConfigError},
+    config::{from_env::FromEnv, source::MirrordConfigSource, ConfigContext, ConfigError},
     util::{MirrordToggleableConfig, VecOrSingle},
 };
 
@@ -291,16 +294,16 @@
 }
 
 <span class="kw">impl </span>MirrordToggleableConfig <span class="kw">for </span>AdvancedFsUserConfig {
-    <span class="kw">fn </span>disabled_config() -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Generated, ConfigError&gt; {
-        <span class="kw">let </span>mode = FsModeConfig::disabled_config()<span class="question-mark">?</span>;
+    <span class="kw">fn </span>disabled_config(context: <span class="kw-2">&amp;mut </span>ConfigContext) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Generated, ConfigError&gt; {
+        <span class="kw">let </span>mode = FsModeConfig::disabled_config(context)<span class="question-mark">?</span>;
         <span class="kw">let </span>read_write = FromEnv::new(<span class="string">&quot;MIRRORD_FILE_READ_WRITE_PATTERN&quot;</span>)
-            .source_value()
+            .source_value(context)
             .transpose()<span class="question-mark">?</span>;
         <span class="kw">let </span>read_only = FromEnv::new(<span class="string">&quot;MIRRORD_FILE_READ_ONLY_PATTERN&quot;</span>)
-            .source_value()
+            .source_value(context)
             .transpose()<span class="question-mark">?</span>;
         <span class="kw">let </span>local = FromEnv::new(<span class="string">&quot;MIRRORD_FILE_LOCAL_PATTERN&quot;</span>)
-            .source_value()
+            .source_value(context)
             .transpose()<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(<span class="self">Self</span>::Generated {
@@ -387,7 +390,10 @@
             ..Default::default()
         };
 
-        <span class="kw">let </span>fs_config = AdvancedFsUserConfig::default().generate_config().unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>cfg_context = ConfigContext::default();
+        <span class="kw">let </span>fs_config = AdvancedFsUserConfig::default()
+            .generate_config(<span class="kw-2">&amp;mut </span>cfg_context)
+            .unwrap();
 
         <span class="macro">assert_eq!</span>(fs_config, expect);
     }

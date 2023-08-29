@@ -319,11 +319,6 @@
 <a href="#319" id="319">319</a>
 <a href="#320" id="320">320</a>
 <a href="#321" id="321">321</a>
-<a href="#322" id="322">322</a>
-<a href="#323" id="323">323</a>
-<a href="#324" id="324">324</a>
-<a href="#325" id="325">325</a>
-<a href="#326" id="326">326</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     collections::{HashMap, HashSet},
     sync::Arc,
@@ -456,11 +451,6 @@
     <span class="kw">where
         </span>P: Progress + Send + Sync,
     {
-        <span class="kw">let </span>warnings = config.verify()<span class="question-mark">?</span>;
-        <span class="kw">for </span>warning <span class="kw">in </span>warnings {
-            progress.warning(<span class="kw-2">&amp;</span>warning);
-        }
-
         <span class="kw">let </span>lib_path = extract_library(<span class="prelude-val">None</span>, progress, <span class="bool-val">true</span>)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>(connect_info, <span class="kw-2">mut </span>connection) = create_and_connect(config, progress, analytics)

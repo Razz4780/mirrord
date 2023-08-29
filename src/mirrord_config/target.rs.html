@@ -491,6 +491,14 @@
 <a href="#491" id="491">491</a>
 <a href="#492" id="492">492</a>
 <a href="#493" id="493">493</a>
+<a href="#494" id="494">494</a>
+<a href="#495" id="495">495</a>
+<a href="#496" id="496">496</a>
+<a href="#497" id="497">497</a>
+<a href="#498" id="498">498</a>
+<a href="#499" id="499">499</a>
+<a href="#500" id="500">500</a>
+<a href="#501" id="501">501</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::str::FromStr;
 
 <span class="kw">use </span>mirrord_analytics::CollectAnalytics;
@@ -501,7 +509,7 @@
     config::{
         from_env::{FromEnv, FromEnvWithError},
         source::MirrordConfigSource,
-        ConfigError, FromMirrordConfig, MirrordConfig, <span class="prelude-ty">Result</span>,
+        ConfigContext, ConfigError, FromMirrordConfig, MirrordConfig, <span class="prelude-ty">Result</span>,
     },
     util::string_or_struct_option,
 };
@@ -596,16 +604,16 @@
 
 <span class="kw">impl </span>TargetFileConfig {
     <span class="doccomment">/// Get the target path from the env var, `Ok(None)` if not set, `Err` if invalid value.
-    </span><span class="kw">fn </span>get_target_path_from_env() -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;Target&gt;&gt; {
+    </span><span class="kw">fn </span>get_target_path_from_env(context: <span class="kw-2">&amp;mut </span>ConfigContext) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;Target&gt;&gt; {
         FromEnvWithError::new(<span class="string">&quot;MIRRORD_IMPERSONATED_TARGET&quot;</span>)
-            .source_value()
+            .source_value(context)
             .transpose()
     }
 
     <span class="doccomment">/// Get the target namespace from the env var, `Ok(None)` if not set, `Err` if invalid value.
-    </span><span class="kw">fn </span>get_target_namespace_from_env() -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;String&gt;&gt; {
+    </span><span class="kw">fn </span>get_target_namespace_from_env(context: <span class="kw-2">&amp;mut </span>ConfigContext) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;String&gt;&gt; {
         FromEnv::new(<span class="string">&quot;MIRRORD_TARGET_NAMESPACE&quot;</span>)
-            .source_value()
+            .source_value(context)
             .transpose()
     }
 }
@@ -615,15 +623,15 @@
 
     <span class="doccomment">/// Generate the final config object, out of the configuration parsed from a configuration file,
     /// factoring in environment variables (which are also set by the front end - CLI/IDE-plugin).
-    </span><span class="kw">fn </span>generate_config(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Generated&gt; {
+    </span><span class="kw">fn </span>generate_config(<span class="self">self</span>, context: <span class="kw-2">&amp;mut </span>ConfigContext) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Generated&gt; {
         <span class="kw">let </span>(path_from_conf_file, namespace_from_conf_file) = <span class="kw">match </span><span class="self">self </span>{
             TargetFileConfig::Simple(path) =&gt; (path, <span class="prelude-val">None</span>),
             TargetFileConfig::Advanced { path, namespace } =&gt; (path, namespace),
         };
 
         <span class="comment">// Env overrides configuration if both there.
-        </span><span class="kw">let </span>path = <span class="self">Self</span>::get_target_path_from_env()<span class="question-mark">?</span>.or(path_from_conf_file);
-        <span class="kw">let </span>namespace = <span class="self">Self</span>::get_target_namespace_from_env()<span class="question-mark">?</span>.or(namespace_from_conf_file);
+        </span><span class="kw">let </span>path = <span class="self">Self</span>::get_target_path_from_env(context)<span class="question-mark">?</span>.or(path_from_conf_file);
+        <span class="kw">let </span>namespace = <span class="self">Self</span>::get_target_namespace_from_env(context)<span class="question-mark">?</span>.or(namespace_from_conf_file);
         <span class="prelude-val">Ok</span>(TargetConfig { path, namespace })
     }
 }
@@ -839,7 +847,10 @@ mirrord-layer failed to parse the provided target!
     <span class="kw">use </span>rstest::rstest;
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use crate</span>::{config::MirrordConfig, util::testing::with_env_vars};
+    <span class="kw">use crate</span>::{
+        config::{ConfigContext, MirrordConfig},
+        util::testing::with_env_vars,
+    };
 
     <span class="attr">#[rstest]
     #[case(<span class="prelude-val">None</span>, <span class="prelude-val">None</span>,
@@ -905,8 +916,10 @@ mirrord-layer failed to parse the provided target!
                 (<span class="string">&quot;MIRRORD_TARGET_NAMESPACE&quot;</span>, namespace_env),
             ],
             || {
-                <span class="kw">let </span>generated_target_config =
-                    TargetFileConfig::default().generate_config().unwrap();
+                <span class="kw">let </span><span class="kw-2">mut </span>cfg_context = ConfigContext::default();
+                <span class="kw">let </span>generated_target_config = TargetFileConfig::default()
+                    .generate_config(<span class="kw-2">&amp;mut </span>cfg_context)
+                    .unwrap();
 
                 <span class="macro">assert_eq!</span>(expected_target_config, generated_target_config);
             },
@@ -917,7 +930,10 @@ mirrord-layer failed to parse the provided target!
     </span><span class="kw">fn </span>verify_config(config_json_string: <span class="kw-2">&amp;</span>str, expected_target_config: <span class="kw-2">&amp;</span>TargetConfig) {
         <span class="kw">let </span>target_file_config: TargetFileConfig =
             serde_json::from_str(config_json_string).unwrap();
-        <span class="kw">let </span>target_config: TargetConfig = target_file_config.generate_config().unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>cfg_context = ConfigContext::default();
+        <span class="kw">let </span>target_config: TargetConfig = target_file_config
+            .generate_config(<span class="kw-2">&amp;mut </span>cfg_context)
+            .unwrap();
         <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>target_config, expected_target_config);
     }
 

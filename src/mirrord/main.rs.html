@@ -473,6 +473,16 @@
 <a href="#473" id="473">473</a>
 <a href="#474" id="474">474</a>
 <a href="#475" id="475">475</a>
+<a href="#476" id="476">476</a>
+<a href="#477" id="477">477</a>
+<a href="#478" id="478">478</a>
+<a href="#479" id="479">479</a>
+<a href="#480" id="480">480</a>
+<a href="#481" id="481">481</a>
+<a href="#482" id="482">482</a>
+<a href="#483" id="483">483</a>
+<a href="#484" id="484">484</a>
+<a href="#485" id="485">485</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(let_chains)]
 #![feature(lazy_cell)]
 #![feature(result_option_inspect)]
@@ -494,7 +504,10 @@
 <span class="kw">use </span>kube::api::ListParams;
 <span class="kw">use </span>miette::JSONReportHandler;
 <span class="kw">use </span>mirrord_analytics::{AnalyticsError, AnalyticsReporter, CollectAnalytics};
-<span class="kw">use </span>mirrord_config::{config::MirrordConfig, LayerConfig, LayerFileConfig};
+<span class="kw">use </span>mirrord_config::{
+    config::{ConfigContext, MirrordConfig},
+    LayerConfig, LayerFileConfig,
+};
 <span class="kw">use </span>mirrord_kube::{
     api::{
         container::SKIP_NAMES,
@@ -689,10 +702,15 @@
         std::env::set_var(<span class="string">&quot;MIRRORD_CONFIG_FILE&quot;</span>, full_path);
     }
 
-    <span class="kw">let </span>config = LayerConfig::from_env()<span class="question-mark">?</span>;
+    <span class="kw">let </span>(config, <span class="kw-2">mut </span>context) = LayerConfig::from_env_with_warnings()<span class="question-mark">?</span>;
 
     <span class="kw">let </span><span class="kw-2">mut </span>analytics = AnalyticsReporter::only_error(config.telemetry);
     (<span class="kw-2">&amp;</span>config).collect_analytics(analytics.get_mut());
+
+    config.verify(<span class="kw-2">&amp;mut </span>context)<span class="question-mark">?</span>;
+    <span class="kw">for </span>warning <span class="kw">in </span>context.get_warnings() {
+        progress.warning(warning);
+    }
 
     <span class="kw">let </span>execution_result = exec_process(config, args, <span class="kw-2">&amp;</span>progress, <span class="kw-2">&amp;mut </span>analytics).<span class="kw">await</span>;
 
@@ -802,18 +820,20 @@
 ///  &quot;pod/py-serv-deployment-5c57fbdc98-pdbn4/container/py-serv&quot;,
 /// ]```
 </span><span class="kw">async fn </span>print_pod_targets(args: <span class="kw-2">&amp;</span>ListTargetArgs) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-    <span class="kw">let </span>(accept_invalid_certificates, kubeconfig, namespace, kube_context) =
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(config) = <span class="kw-2">&amp;</span>args.config_file {
-            <span class="kw">let </span>layer_config = LayerFileConfig::from_path(config)<span class="question-mark">?</span>.generate_config()<span class="question-mark">?</span>;
-            (
-                layer_config.accept_invalid_certificates,
-                layer_config.kubeconfig,
-                layer_config.target.namespace,
-                layer_config.kube_context,
-            )
-        } <span class="kw">else </span>{
-            (<span class="bool-val">false</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)
-        };
+    <span class="kw">let </span>(accept_invalid_certificates, kubeconfig, namespace, kube_context) = <span class="kw">if let </span><span class="prelude-val">Some</span>(config) =
+        <span class="kw-2">&amp;</span>args.config_file
+    {
+        <span class="kw">let </span><span class="kw-2">mut </span>cfg_context = ConfigContext::default();
+        <span class="kw">let </span>layer_config = LayerFileConfig::from_path(config)<span class="question-mark">?</span>.generate_config(<span class="kw-2">&amp;mut </span>cfg_context)<span class="question-mark">?</span>;
+        (
+            layer_config.accept_invalid_certificates,
+            layer_config.kubeconfig,
+            layer_config.target.namespace,
+            layer_config.kube_context,
+        )
+    } <span class="kw">else </span>{
+        (<span class="bool-val">false</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>)
+    };
 
     <span class="kw">let </span>client = create_kube_api(accept_invalid_certificates, kubeconfig, kube_context)
         .<span class="kw">await

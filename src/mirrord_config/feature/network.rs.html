@@ -128,13 +128,16 @@
 <a href="#128" id="128">128</a>
 <a href="#129" id="129">129</a>
 <a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>mirrord_analytics::CollectAnalytics;
 <span class="kw">use </span>mirrord_config_derive::MirrordConfig;
 <span class="kw">use </span>schemars::JsonSchema;
 
 <span class="kw">use </span><span class="self">self</span>::{incoming::<span class="kw-2">*</span>, outgoing::<span class="kw-2">*</span>};
 <span class="kw">use crate</span>::{
-    config::{from_env::FromEnv, source::MirrordConfigSource, ConfigError},
+    config::{from_env::FromEnv, source::MirrordConfigSource, ConfigContext, ConfigError},
     util::MirrordToggleableConfig,
 };
 
@@ -196,16 +199,16 @@
 }
 
 <span class="kw">impl </span>MirrordToggleableConfig <span class="kw">for </span>NetworkFileConfig {
-    <span class="kw">fn </span>disabled_config() -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Generated, ConfigError&gt; {
+    <span class="kw">fn </span>disabled_config(context: <span class="kw-2">&amp;mut </span>ConfigContext) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Generated, ConfigError&gt; {
         <span class="kw">let </span>dns = FromEnv::new(<span class="string">&quot;MIRRORD_REMOTE_DNS&quot;</span>)
-            .source_value()
+            .source_value(context)
             .transpose()<span class="question-mark">?
             </span>.unwrap_or(<span class="bool-val">false</span>);
 
         <span class="prelude-val">Ok</span>(NetworkConfig {
-            incoming: IncomingFileConfig::disabled_config()<span class="question-mark">?</span>,
+            incoming: IncomingFileConfig::disabled_config(context)<span class="question-mark">?</span>,
             dns,
-            outgoing: OutgoingFileConfig::disabled_config()<span class="question-mark">?</span>,
+            outgoing: OutgoingFileConfig::disabled_config(context)<span class="question-mark">?</span>,
         })
     }
 }
@@ -250,7 +253,10 @@
                 (<span class="string">&quot;MIRRORD_REMOTE_DNS&quot;</span>, dns.<span class="number">0</span>),
             ],
             || {
-                <span class="kw">let </span>env = NetworkFileConfig::default().generate_config().unwrap();
+                <span class="kw">let </span><span class="kw-2">mut </span>cfg_context = ConfigContext::default();
+                <span class="kw">let </span>env = NetworkFileConfig::default()
+                    .generate_config(<span class="kw-2">&amp;mut </span>cfg_context)
+                    .unwrap();
 
                 <span class="macro">assert_eq!</span>(env.incoming, incoming.<span class="number">1</span>);
                 <span class="macro">assert_eq!</span>(env.dns, dns.<span class="number">1</span>);

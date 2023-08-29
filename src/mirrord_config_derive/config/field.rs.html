@@ -349,7 +349,7 @@
 
         <span class="comment">// Rest of flow is irrelevant for nested config.
         </span><span class="kw">if </span>flags.nested {
-            <span class="kw">return </span><span class="macro">quote! </span>{ #ident: <span class="self">self</span>.#ident.unwrap_or_default().generate_config()<span class="question-mark">? </span>};
+            <span class="kw">return </span><span class="macro">quote! </span>{ #ident: <span class="self">self</span>.#ident.unwrap_or_default().generate_config(context)<span class="question-mark">? </span>};
         }
 
         <span class="kw">let </span><span class="kw-2">mut </span>impls = Vec::new();
@@ -393,9 +393,9 @@
             .reduce(|acc, impl_| <span class="macro">quote! </span>{ #acc.or(#impl_) });
 
         <span class="kw">if </span>layers.is_empty() {
-            <span class="macro">quote! </span>{ #ident: #impls .source_value().transpose()<span class="question-mark">?</span>#unwrapper }
+            <span class="macro">quote! </span>{ #ident: #impls .source_value(context).transpose()<span class="question-mark">?</span>#unwrapper }
         } <span class="kw">else </span>{
-            <span class="macro">quote! </span>{ #ident: #impls #(#layers),* .source_value().transpose()<span class="question-mark">?</span>#unwrapper }
+            <span class="macro">quote! </span>{ #ident: #impls #(#layers),* .source_value(context).transpose()<span class="question-mark">?</span>#unwrapper }
         }
     }
 }

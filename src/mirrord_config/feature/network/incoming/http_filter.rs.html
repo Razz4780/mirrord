@@ -190,7 +190,7 @@
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
 <span class="kw">use crate</span>::{
-    config::{from_env::FromEnv, source::MirrordConfigSource, ConfigError},
+    config::{from_env::FromEnv, source::MirrordConfigSource, ConfigContext, ConfigError},
     util::{MirrordToggleableConfig, VecOrSingle},
 };
 
@@ -305,13 +305,13 @@
 </span><span class="kw">pub struct </span>PortList(VecOrSingle&lt;u16&gt;);
 
 <span class="kw">impl </span>MirrordToggleableConfig <span class="kw">for </span>HttpHeaderFilterFileConfig {
-    <span class="kw">fn </span>disabled_config() -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Generated, ConfigError&gt; {
+    <span class="kw">fn </span>disabled_config(context: <span class="kw-2">&amp;mut </span>ConfigContext) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Generated, ConfigError&gt; {
         <span class="kw">let </span>filter = FromEnv::new(<span class="string">&quot;MIRRORD_HTTP_HEADER_FILTER&quot;</span>)
-            .source_value()
+            .source_value(context)
             .transpose()<span class="question-mark">?</span>;
 
         <span class="kw">let </span>ports = FromEnv::new(<span class="string">&quot;MIRRORD_HTTP_HEADER_FILTER_PORTS&quot;</span>)
-            .source_value()
+            .source_value(context)
             .transpose()<span class="question-mark">?
             </span>.unwrap_or_default();
 
@@ -320,7 +320,7 @@
 }
 
 <span class="kw">impl </span>MirrordToggleableConfig <span class="kw">for </span>HttpFilterFileConfig {
-    <span class="kw">fn </span>disabled_config() -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Generated, ConfigError&gt; {
+    <span class="kw">fn </span>disabled_config(_context: <span class="kw-2">&amp;mut </span>ConfigContext) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Generated, ConfigError&gt; {
         <span class="prelude-val">Ok</span>(HttpFilterConfig::default())
     }
 }

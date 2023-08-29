@@ -503,6 +503,10 @@
 <a href="#503" id="503">503</a>
 <a href="#504" id="504">504</a>
 <a href="#505" id="505">505</a>
+<a href="#506" id="506">506</a>
+<a href="#507" id="507">507</a>
+<a href="#508" id="508">508</a>
+<a href="#509" id="509">509</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{collections::HashSet, fmt, str::FromStr};
 
 <span class="kw">use </span>bimap::BiMap;
@@ -513,8 +517,8 @@
 
 <span class="kw">use crate</span>::{
     config::{
-        from_env::FromEnv, source::MirrordConfigSource, unstable::Unstable, ConfigError,
-        FromMirrordConfig, MirrordConfig, <span class="prelude-ty">Result</span>,
+        from_env::FromEnv, source::MirrordConfigSource, unstable::Unstable, ConfigContext,
+        ConfigError, FromMirrordConfig, MirrordConfig, <span class="prelude-ty">Result</span>,
     },
     util::{MirrordToggleableConfig, ToggleableConfig},
 };
@@ -592,20 +596,21 @@
 <span class="kw">impl </span>MirrordConfig <span class="kw">for </span>IncomingFileConfig {
     <span class="kw">type </span>Generated = IncomingConfig;
 
-    <span class="kw">fn </span>generate_config(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Generated&gt; {
+    <span class="kw">fn </span>generate_config(<span class="self">self</span>, context: <span class="kw-2">&amp;mut </span>ConfigContext) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Generated&gt; {
         <span class="kw">let </span>config = <span class="kw">match </span><span class="self">self </span>{
             IncomingFileConfig::Simple(mode) =&gt; IncomingConfig {
                 mode: FromEnv::new(<span class="string">&quot;MIRRORD_AGENT_TCP_STEAL_TRAFFIC&quot;</span>)
                     .or(mode)
-                    .source_value()
+                    .source_value(context)
                     .transpose()<span class="question-mark">?
                     </span>.unwrap_or_default(),
-                http_header_filter: HttpHeaderFilterFileConfig::default().generate_config()<span class="question-mark">?</span>,
+                http_header_filter: HttpHeaderFilterFileConfig::default()
+                    .generate_config(context)<span class="question-mark">?</span>,
                 on_concurrent_steal: FromEnv::new(<span class="string">&quot;MIRRORD_OPERATOR_ON_CONCURRENT_STEAL&quot;</span>)
                     .layer(|layer| {
                         Unstable::new(<span class="string">&quot;IncomingFileConfig&quot;</span>, <span class="string">&quot;on_concurrent_steal&quot;</span>, layer)
                     })
-                    .source_value()
+                    .source_value(context)
                     .transpose()<span class="question-mark">?
                     </span>.unwrap_or_default(),
                 ..Default::default()
@@ -613,14 +618,17 @@
             IncomingFileConfig::Advanced(advanced) =&gt; IncomingConfig {
                 mode: FromEnv::new(<span class="string">&quot;MIRRORD_AGENT_TCP_STEAL_TRAFFIC&quot;</span>)
                     .or(advanced.mode)
-                    .source_value()
+                    .source_value(context)
                     .transpose()<span class="question-mark">?
                     </span>.unwrap_or_default(),
                 http_header_filter: advanced
                     .http_header_filter
                     .unwrap_or_default()
-                    .generate_config()<span class="question-mark">?</span>,
-                http_filter: advanced.http_filter.unwrap_or_default().generate_config()<span class="question-mark">?</span>,
+                    .generate_config(context)<span class="question-mark">?</span>,
+                http_filter: advanced
+                    .http_filter
+                    .unwrap_or_default()
+                    .generate_config(context)<span class="question-mark">?</span>,
                 port_mapping: advanced
                     .port_mapping
                     .map(|m| m.into_iter().collect())
@@ -632,7 +640,7 @@
                 ignore_localhost: advanced
                     .ignore_localhost
                     .layer(|layer| Unstable::new(<span class="string">&quot;IncomingFileConfig&quot;</span>, <span class="string">&quot;ignore_localhost&quot;</span>, layer))
-                    .source_value()
+                    .source_value(context)
                     .transpose()<span class="question-mark">?
                     </span>.unwrap_or_default(),
                 listen_ports: advanced
@@ -644,7 +652,7 @@
                     .layer(|layer| {
                         Unstable::new(<span class="string">&quot;IncomingFileConfig&quot;</span>, <span class="string">&quot;on_concurrent_steal&quot;</span>, layer)
                     })
-                    .source_value()
+                    .source_value(context)
                     .transpose()<span class="question-mark">?
                     </span>.unwrap_or_default(),
             },
@@ -654,21 +662,21 @@
     }
 }
 <span class="kw">impl </span>MirrordToggleableConfig <span class="kw">for </span>IncomingFileConfig {
-    <span class="kw">fn </span>disabled_config() -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Generated, ConfigError&gt; {
+    <span class="kw">fn </span>disabled_config(context: <span class="kw-2">&amp;mut </span>ConfigContext) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Generated, ConfigError&gt; {
         <span class="kw">let </span>mode = FromEnv::new(<span class="string">&quot;MIRRORD_AGENT_TCP_STEAL_TRAFFIC&quot;</span>)
-            .source_value()
+            .source_value(context)
             .unwrap_or_else(|| <span class="prelude-val">Ok</span>(Default::default()))<span class="question-mark">?</span>;
 
         <span class="kw">let </span>on_concurrent_steal = FromEnv::new(<span class="string">&quot;MIRRORD_OPERATOR_ON_CONCURRENT_STEAL&quot;</span>)
             .layer(|layer| Unstable::new(<span class="string">&quot;IncomingFileConfig&quot;</span>, <span class="string">&quot;on_concurrent_steal&quot;</span>, layer))
-            .source_value()
+            .source_value(context)
             .transpose()<span class="question-mark">?
             </span>.unwrap_or_default();
 
         <span class="prelude-val">Ok</span>(IncomingConfig {
             mode,
             on_concurrent_steal,
-            http_header_filter: HttpHeaderFilterFileConfig::disabled_config()<span class="question-mark">?</span>,
+            http_header_filter: HttpHeaderFilterFileConfig::disabled_config(context)<span class="question-mark">?</span>,
             ..Default::default()
         })
     }
