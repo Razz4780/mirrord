@@ -142,12 +142,18 @@
 <a href="#142" id="142">142</a>
 <a href="#143" id="143">143</a>
 <a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::hash::Hash;
 
 <span class="kw">use </span>actix_codec::{AsyncRead, AsyncWrite};
 <span class="kw">use </span>futures::{SinkExt, StreamExt};
 <span class="kw">use </span>k8s_openapi::{api::core::v1::Namespace, NamespaceResourceScope};
 <span class="kw">use </span>kube::{api::ListParams, Api, Client};
+<span class="kw">use </span>mirrord_config::LayerConfig;
 <span class="kw">use </span>mirrord_progress::Progress;
 <span class="kw">use </span>mirrord_protocol::{ClientCodec, ClientMessage, DaemonMessage, LogLevel};
 <span class="kw">use </span>tokio::sync::mpsc;
@@ -266,14 +272,14 @@
 
     <span class="kw">async fn </span>connect&lt;P&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        progress: <span class="kw-2">&amp;</span>P,
+        progress: <span class="kw-2">&amp;mut </span>P,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(mpsc::Sender&lt;ClientMessage&gt;, mpsc::Receiver&lt;DaemonMessage&gt;), <span class="self">Self</span>::Err&gt;
     <span class="kw">where
         </span>P: Progress + Send + Sync,
         <span class="self">Self</span>::AgentRef: Send + Sync,
         <span class="self">Self</span>::Err: Send + Sync,
     {
-        <span class="self">self</span>.create_connection(<span class="self">self</span>.create_agent(progress).<span class="kw">await</span><span class="question-mark">?</span>)
+        <span class="self">self</span>.create_connection(<span class="self">self</span>.create_agent(progress, <span class="prelude-val">None</span>).<span class="kw">await</span><span class="question-mark">?</span>)
             .<span class="kw">await
     </span>}
 
@@ -282,7 +288,11 @@
         agent_ref: <span class="self">Self</span>::AgentRef,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(mpsc::Sender&lt;ClientMessage&gt;, mpsc::Receiver&lt;DaemonMessage&gt;), <span class="self">Self</span>::Err&gt;;
 
-    <span class="kw">async fn </span>create_agent&lt;P&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, progress: <span class="kw-2">&amp;</span>P) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::AgentRef, <span class="self">Self</span>::Err&gt;
+    <span class="kw">async fn </span>create_agent&lt;P&gt;(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        progress: <span class="kw-2">&amp;mut </span>P,
+        config: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>LayerConfig&gt;,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::AgentRef, <span class="self">Self</span>::Err&gt;
     <span class="kw">where
         </span>P: Progress + Send + Sync;
 }

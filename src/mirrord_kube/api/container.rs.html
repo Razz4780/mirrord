@@ -552,6 +552,17 @@
 <a href="#552" id="552">552</a>
 <a href="#553" id="553">553</a>
 <a href="#554" id="554">554</a>
+<a href="#555" id="555">555</a>
+<a href="#556" id="556">556</a>
+<a href="#557" id="557">557</a>
+<a href="#558" id="558">558</a>
+<a href="#559" id="559">559</a>
+<a href="#560" id="560">560</a>
+<a href="#561" id="561">561</a>
+<a href="#562" id="562">562</a>
+<a href="#563" id="563">563</a>
+<a href="#564" id="564">564</a>
+<a href="#565" id="565">565</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{collections::HashSet, sync::LazyLock};
 
 <span class="kw">use </span>futures::{AsyncBufReadExt, StreamExt, TryStreamExt};
@@ -631,14 +642,23 @@
 });
 
 <span class="doccomment">/// Choose container logic:
+///
 /// 1. Try to find based on given name
 /// 2. Try to find first container in pod that isn&#39;t a mesh side car
 /// 3. Take first container in pod
+///
+/// We also check if we&#39;re in a mesh based on `MESH_LIST`, returning whether we are or not.
+</span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, ret)]
 </span><span class="kw">pub fn </span>choose_container&lt;<span class="lifetime">&#39;a</span>&gt;(
     container_name: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
     container_statuses: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[ContainerStatus],
-) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>ContainerStatus&gt; {
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(name) = container_name {
+) -&gt; (<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>ContainerStatus&gt;, bool) {
+    <span class="kw">const </span>MESH_LIST: [<span class="kw-2">&amp;</span>str; <span class="number">4</span>] = [<span class="string">&quot;istio-proxy&quot;</span>, <span class="string">&quot;istio-init&quot;</span>, <span class="string">&quot;linkerd-proxy&quot;</span>, <span class="string">&quot;linkerd-init&quot;</span>];
+    <span class="kw">let </span>is_mesh = container_statuses
+        .iter()
+        .any(|status| MESH_LIST.contains(<span class="kw-2">&amp;</span>status.name.as_str()));
+
+    <span class="kw">let </span>container = <span class="kw">if let </span><span class="prelude-val">Some</span>(name) = container_name {
         container_statuses
             .iter()
             .find(|<span class="kw-2">&amp;</span>status| <span class="kw-2">&amp;</span>status.name == name)
@@ -648,7 +668,9 @@
             .iter()
             .find(|<span class="kw-2">&amp;</span>status| !SKIP_NAMES.contains(status.name.as_str()))
             .or_else(|| container_statuses.first())
-    }
+    };
+
+    (container, is_mesh)
 }
 
 <span class="kw">fn </span>is_ephemeral_container_running(pod: Pod, container_name: <span class="kw-2">&amp;</span>String) -&gt; bool {

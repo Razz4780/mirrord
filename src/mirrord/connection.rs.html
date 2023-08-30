@@ -250,7 +250,7 @@
 <span class="doccomment">/// Creates an agent if needed then connects to it.
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>create_and_connect&lt;P&gt;(
     config: <span class="kw-2">&amp;</span>LayerConfig,
-    progress: <span class="kw-2">&amp;</span>P,
+    progress: <span class="kw-2">&amp;mut </span>P,
     analytics: <span class="kw-2">&amp;mut </span>AnalyticsReporter,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(AgentConnectInfo, AgentConnection)&gt;
 <span class="kw">where
@@ -291,7 +291,7 @@
 
         <span class="kw">let </span>agent_connect_info = tokio::time::timeout(
             Duration::from_secs(config.agent.startup_timeout),
-            k8s_api.create_agent(progress),
+            k8s_api.create_agent(progress, <span class="prelude-val">Some</span>(config)),
         )
         .<span class="kw">await
         </span>.map_err(|<span class="kw">_</span>| CliError::AgentReadyTimeout)<span class="question-mark">?

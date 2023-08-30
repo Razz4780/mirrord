@@ -296,6 +296,11 @@
 <a href="#296" id="296">296</a>
 <a href="#297" id="297">297</a>
 <a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{collections::HashMap, time::Instant};
 
 <span class="kw">use </span>base64::{engine::general_purpose, Engine <span class="kw">as _</span>};
@@ -307,7 +312,7 @@
 <span class="doccomment">/// Possible values for analytic data
 /// This is strict so we won&#39;t send sensitive data by accident.
 /// (Don&#39;t add strings)
-</span><span class="attr">#[derive(Debug, Serialize, Deserialize)]
+</span><span class="attr">#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(untagged)]
 </span><span class="kw">pub enum </span>AnalyticValue {
     Bool(bool),
@@ -315,7 +320,7 @@
     Nested(Analytics),
 }
 
-<span class="attr">#[derive(Default, Debug, Serialize, Deserialize)]
+<span class="attr">#[derive(Default, Debug, Serialize, Deserialize, Clone, Copy)]
 #[serde(rename_all = <span class="string">&quot;snake_case&quot;</span>)]
 </span><span class="kw">pub enum </span>AnalyticsError {
     AgentConnection,
@@ -365,7 +370,7 @@
 /// let b = B {};
 /// analytics.add(&quot;extra&quot;, b);
 /// ```
-</span><span class="attr">#[derive(Debug, Default, Serialize, Deserialize)]
+</span><span class="attr">#[derive(Debug, Default, Serialize, Deserialize, Clone)]
 </span><span class="kw">pub struct </span>Analytics {
     <span class="attr">#[serde(flatten)]
     </span>data: HashMap&lt;String, AnalyticValue&gt;,
@@ -381,7 +386,7 @@
 /// accidentaly send sensitive data
 ///
 /// Saved as base64 for more optimal size of json
-</span><span class="attr">#[derive(Debug, Serialize, Deserialize)]
+</span><span class="attr">#[derive(Debug, Serialize, Deserialize, Clone)]
 </span><span class="kw">pub struct </span>AnalyticsHash(String);
 
 <span class="kw">impl </span>AnalyticsHash {
@@ -434,7 +439,8 @@
     }
 }
 
-<span class="attr">#[derive(Debug)]
+<span class="doccomment">/// Due to the drop nature using tokio::spawn, runtime must be started.
+</span><span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span>AnalyticsReporter {
     <span class="kw">pub </span>enabled: bool,
     error_only_send: bool,
@@ -484,7 +490,7 @@
         <span class="self">self</span>.error.is_some()
     }
 
-    <span class="kw">fn </span>as_report(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; AnalyticsReport&lt;<span class="lifetime">&#39;_</span>&gt; {
+    <span class="kw">fn </span>as_report(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; AnalyticsReport {
         <span class="kw">let </span>duration = <span class="self">self
             </span>.start_instant
             .elapsed()
@@ -494,26 +500,29 @@
 
         AnalyticsReport {
             duration,
-            error: <span class="kw-2">&amp;</span><span class="self">self</span>.error,
-            event_properties: <span class="kw-2">&amp;</span><span class="self">self</span>.analytics,
+            error: <span class="self">self</span>.error,
+            event_properties: <span class="self">self</span>.analytics.clone(),
             operator: <span class="self">self</span>.operator_properties.is_some(),
-            operator_properties: <span class="kw-2">&amp;</span><span class="self">self</span>.operator_properties,
+            operator_properties: <span class="self">self</span>.operator_properties.clone(),
             platform: std::env::consts::OS,
             version: CURRENT_VERSION,
         }
     }
 }
 
-<span class="kw">impl </span>Drop <span class="kw">for </span>AnalyticsReporter {
+<span class="doccomment">/// Must be called in tokio runtime
+/// We rely on the main tokio runtime to be started using the macro,
+/// meaning it will wait for all ongoing tasks to finish before exiting.
+</span><span class="kw">impl </span>Drop <span class="kw">for </span>AnalyticsReporter {
     <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
         <span class="kw">if </span><span class="self">self</span>.enabled &amp;&amp; (<span class="self">self</span>.error.is_some() || !<span class="self">self</span>.error_only_send) {
-            send_analytics(<span class="self">self</span>.as_report());
+            tokio::spawn(send_analytics(<span class="self">self</span>.as_report()));
         }
     }
 }
 
 <span class="doccomment">/// Extra fields for `AnalyticsReport` when using mirrord with operator.
-</span><span class="attr">#[derive(Debug, Serialize, Deserialize)]
+</span><span class="attr">#[derive(Debug, Serialize, Deserialize, Clone)]
 </span><span class="kw">pub struct </span>AnalyticsOperatorProperties {
     <span class="doccomment">/// sha256 fingerprint from client certificate
     </span><span class="kw">pub </span>client_hash: <span class="prelude-ty">Option</span>&lt;AnalyticsHash&gt;,
@@ -523,25 +532,26 @@
 }
 
 <span class="attr">#[derive(Debug, Serialize)]
-</span><span class="kw">struct </span>AnalyticsReport&lt;<span class="lifetime">&#39;r</span>&gt; {
-    event_properties: <span class="kw-2">&amp;</span><span class="lifetime">&#39;r </span>Analytics,
-    platform: <span class="kw-2">&amp;</span><span class="lifetime">&#39;r </span>str,
+</span><span class="kw">struct </span>AnalyticsReport {
+    event_properties: Analytics,
+    platform: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
     duration: u32,
-    version: <span class="kw-2">&amp;</span><span class="lifetime">&#39;r </span>str,
+    version: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
     operator: bool,
     <span class="attr">#[serde(flatten)]
-    </span>operator_properties: <span class="kw-2">&amp;</span><span class="lifetime">&#39;r </span><span class="prelude-ty">Option</span>&lt;AnalyticsOperatorProperties&gt;,
-    error: <span class="kw-2">&amp;</span><span class="lifetime">&#39;r </span><span class="prelude-ty">Option</span>&lt;AnalyticsError&gt;,
+    </span>operator_properties: <span class="prelude-ty">Option</span>&lt;AnalyticsOperatorProperties&gt;,
+    error: <span class="prelude-ty">Option</span>&lt;AnalyticsError&gt;,
 }
 
 <span class="doccomment">/// Actualy send `Analytics` &amp; `AnalyticsOperatorProperties` to analytics.metalbear.co
 </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>)]
-</span><span class="kw">fn </span>send_analytics(report: AnalyticsReport) {
-    <span class="kw">let </span>client = reqwest::blocking::Client::new();
+</span><span class="kw">async fn </span>send_analytics(report: AnalyticsReport) {
+    <span class="kw">let </span>client = reqwest::Client::new();
     <span class="kw">let </span>res = client
         .post(<span class="string">&quot;https://analytics.metalbear.co/api/v1/event&quot;</span>)
         .json(<span class="kw-2">&amp;</span>report)
-        .send();
+        .send()
+        .<span class="kw">await</span>;
     <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = res {
         <span class="macro">info!</span>(<span class="string">&quot;Failed to send analytics: {e}&quot;</span>);
     }

@@ -877,7 +877,7 @@
 /// 2. HTTP traffic stealing: Steals only HTTP traffic, mirrord tries to detect if the incoming
 /// data on a port is HTTP (in a best-effort kind of way, not guaranteed to be HTTP), and
 /// steals the traffic on the port if it is HTTP;
-</span><span class="attr">#[derive(Deserialize, PartialEq, Eq, Clone, Debug, JsonSchema, Default)]
+</span><span class="attr">#[derive(Deserialize, PartialEq, Eq, Clone, Copy, Debug, JsonSchema, Default)]
 #[serde(rename_all = <span class="string">&quot;lowercase&quot;</span>)]
 </span><span class="kw">pub enum </span>IncomingMode {
     <span class="doccomment">/// &lt;!--${internal}--&gt;

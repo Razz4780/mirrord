@@ -346,6 +346,12 @@
 <a href="#346" id="346">346</a>
 <a href="#347" id="347">347</a>
 <a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     collections::BTreeMap,
     convert::Infallible,
@@ -393,6 +399,9 @@
     <span class="kw">pub </span>container_id: String,
     <span class="kw">pub </span>container_runtime: ContainerRuntime,
     <span class="kw">pub </span>container_name: String,
+
+    <span class="doccomment">/// Used to check if we&#39;re running with a mesh/sidecar in `detect_mesh_mirror_mode`.
+    </span><span class="kw">pub </span>is_mesh: bool,
 }
 
 <span class="kw">impl </span>RuntimeData {
@@ -416,14 +425,16 @@
             .as_ref()
             .ok_or(KubeApiError::PodStatusNotFound)<span class="question-mark">?
             </span>.container_statuses
-            .as_ref()
+            .clone()
             .ok_or(KubeApiError::ContainerStatusNotFound)<span class="question-mark">?</span>;
-        <span class="kw">let </span>chosen_status =
-            choose_container(container_name, container_statuses).ok_or_else(|| {
-                KubeApiError::ContainerNotFound(
-                    container_name.clone().unwrap_or_else(|| <span class="string">&quot;None&quot;</span>.to_string()),
-                )
-            })<span class="question-mark">?</span>;
+        <span class="kw">let </span>(chosen_container, is_mesh) =
+            choose_container(container_name, container_statuses.as_ref());
+
+        <span class="kw">let </span>chosen_status = chosen_container.ok_or_else(|| {
+            KubeApiError::ContainerNotFound(
+                container_name.clone().unwrap_or_else(|| <span class="string">&quot;None&quot;</span>.to_string()),
+            )
+        })<span class="question-mark">?</span>;
 
         <span class="kw">let </span>container_name = chosen_status.name.clone();
         <span class="kw">let </span>container_id_full = chosen_status
@@ -457,6 +468,7 @@
             container_id,
             container_runtime,
             container_name,
+            is_mesh,
         })
     }
 

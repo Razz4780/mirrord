@@ -107,9 +107,9 @@
     // or run tasks before actually launching.
     </span><span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
     </span><span class="kw">let </span><span class="kw-2">mut </span>execution_info =
-        MirrordExecution::start(<span class="kw-2">&amp;</span>config, executable, <span class="kw-2">&amp;</span>progress, analytics).<span class="kw">await</span><span class="question-mark">?</span>;
+        MirrordExecution::start(<span class="kw-2">&amp;</span>config, executable, <span class="kw-2">&amp;mut </span>progress, analytics).<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="attr">#[cfg(not(target_os = <span class="string">&quot;macos&quot;</span>))]
-    </span><span class="kw">let </span><span class="kw-2">mut </span>execution_info = MirrordExecution::start(<span class="kw-2">&amp;</span>config, <span class="kw-2">&amp;</span>progress, analytics).<span class="kw">await</span><span class="question-mark">?</span>;
+    </span><span class="kw">let </span><span class="kw-2">mut </span>execution_info = MirrordExecution::start(<span class="kw-2">&amp;</span>config, <span class="kw-2">&amp;mut </span>progress, analytics).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="comment">// We don&#39;t execute so set envs aren&#39;t passed, so we need to add config file and target to
     // env.
