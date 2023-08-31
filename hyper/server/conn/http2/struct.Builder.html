@@ -5,7 +5,7 @@ that implements <a href="../../../rt/bounds/trait.Http2ConnExec.html" title="tra
 </div></details><details class="toggle method-toggle" open><summary><section id="method.initial_stream_window_size" class="method"><a class="srclink rightside" href="../../../../src/hyper/server/conn/http2.rs.html#122-128">source</a><h4 class="code-header">pub fn <a href="#method.initial_stream_window_size" class="fn">initial_stream_window_size</a>(
     &amp;mut self,
     sz: impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>&gt;&gt;
-) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut Self</a></h4></section></summary><div class="docblock"><p>Sets the <a href="https://http2.github.io/http2-spec/#SETTINGS_INITIAL_WINDOW_SIZE"><code>SETTINGS_INITIAL_WINDOW_SIZE</code></a> option for HTTP2
+) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut Self</a></h4></section></summary><div class="docblock"><p>Sets the <a href="https://httpwg.org/specs/rfc9113.html#SETTINGS_INITIAL_WINDOW_SIZE"><code>SETTINGS_INITIAL_WINDOW_SIZE</code></a> option for HTTP2
 stream-level flow control.</p>
 <p>Passing <code>None</code> will do nothing.</p>
 <p>If not set, hyper will use a default.</p>
@@ -25,7 +25,7 @@ stream-level flow control.</p>
 </div></details><details class="toggle method-toggle" open><summary><section id="method.max_concurrent_streams" class="method"><a class="srclink rightside" href="../../../../src/hyper/server/conn/http2.rs.html#177-180">source</a><h4 class="code-header">pub fn <a href="#method.max_concurrent_streams" class="fn">max_concurrent_streams</a>(
     &amp;mut self,
     max: impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;<a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u32.html">u32</a>&gt;&gt;
-) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut Self</a></h4></section></summary><div class="docblock"><p>Sets the <a href="https://http2.github.io/http2-spec/#SETTINGS_MAX_CONCURRENT_STREAMS"><code>SETTINGS_MAX_CONCURRENT_STREAMS</code></a> option for HTTP2
+) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;mut Self</a></h4></section></summary><div class="docblock"><p>Sets the <a href="https://httpwg.org/specs/rfc9113.html#SETTINGS_MAX_CONCURRENT_STREAMS"><code>SETTINGS_MAX_CONCURRENT_STREAMS</code></a> option for HTTP2
 connections.</p>
 <p>Default is no limit (<code>std::u32::MAX</code>). Passing <code>None</code> will do nothing.</p>
 </div></details><details class="toggle method-toggle" open><summary><section id="method.keep_alive_interval" class="method"><a class="srclink rightside" href="../../../../src/hyper/server/conn/http2.rs.html#191-194">source</a><h4 class="code-header">pub fn <a href="#method.keep_alive_interval" class="fn">keep_alive_interval</a>(
