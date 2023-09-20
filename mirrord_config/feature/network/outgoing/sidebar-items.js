@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["AddressFilter","OutgoingFilterConfig","OutgoingFilterError","ProtocolFilter"],"mod":["parser"],"static":["CALLSITE"],"struct":["OutgoingConfig","OutgoingFileConfig","OutgoingFilter"]};
+window.SIDEBAR_ITEMS = {"enum":["AddressFilter","OutgoingFilterConfig","OutgoingFilterError","ProtocolFilter"],"mod":["parser"],"struct":["OutgoingConfig","OutgoingFileConfig","OutgoingFilter"]};

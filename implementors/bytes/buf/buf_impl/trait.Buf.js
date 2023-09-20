@@ -1,4 +1,5 @@
 (function() {var implementors = {
+"actix_web":[],
 "aws_smithy_http":[["impl <a class=\"trait\" href=\"bytes/buf/buf_impl/trait.Buf.html\" title=\"trait bytes::buf::buf_impl::Buf\">Buf</a> for <a class=\"struct\" href=\"aws_smithy_http/byte_stream/struct.AggregatedBytes.html\" title=\"struct aws_smithy_http::byte_stream::AggregatedBytes\">AggregatedBytes</a>"]],
 "bytes":[],
 "bytes_utils":[["impl&lt;'a, B: <a class=\"trait\" href=\"bytes/buf/buf_impl/trait.Buf.html\" title=\"trait bytes::buf::buf_impl::Buf\">Buf</a>&gt; <a class=\"trait\" href=\"bytes/buf/buf_impl/trait.Buf.html\" title=\"trait bytes::buf::buf_impl::Buf\">Buf</a> for <a class=\"struct\" href=\"bytes_utils/struct.SegmentedSlice.html\" title=\"struct bytes_utils::SegmentedSlice\">SegmentedSlice</a>&lt;'a, B&gt;"],["impl&lt;B: <a class=\"trait\" href=\"bytes/buf/buf_impl/trait.Buf.html\" title=\"trait bytes::buf::buf_impl::Buf\">Buf</a>&gt; <a class=\"trait\" href=\"bytes/buf/buf_impl/trait.Buf.html\" title=\"trait bytes::buf::buf_impl::Buf\">Buf</a> for <a class=\"struct\" href=\"bytes_utils/struct.SegmentedBuf.html\" title=\"struct bytes_utils::SegmentedBuf\">SegmentedBuf</a>&lt;B&gt;"]],

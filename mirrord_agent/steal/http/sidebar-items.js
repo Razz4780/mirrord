@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["HttpVersion"],"mod":["error","filter","hyper_handler","reversible_stream","v1","v2"],"static":["CALLSITE"],"struct":["HttpFilterManager"],"trait":["HttpV"],"type":["DefaultReversibleStream","Response"]};
+window.SIDEBAR_ITEMS = {"enum":["HttpVersion"],"mod":["error","filter","hyper_handler","reversible_stream","v1","v2"],"struct":["HttpFilterManager"],"trait":["HttpV"],"type":["DefaultReversibleStream","Response"]};

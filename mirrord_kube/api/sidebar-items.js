@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["CONNECTION_CHANNEL_SIZE"],"fn":["get_k8s_resource_api","get_namespaces","namespace_exists_for_client","wrap_raw_connection"],"mod":["container","kubernetes","runtime"],"trait":["AgentManagment"]};
+window.SIDEBAR_ITEMS = {"constant":["CONNECTION_CHANNEL_SIZE"],"fn":["wrap_raw_connection"],"mod":["container","kubernetes","runtime"],"trait":["AgentManagment"]};

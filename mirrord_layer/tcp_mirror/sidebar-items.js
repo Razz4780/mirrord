@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["tcp_tunnel"],"static":["CALLSITE"],"struct":["Connection","TcpMirrorHandler"]};
+window.SIDEBAR_ITEMS = {"fn":["tcp_tunnel"],"struct":["Connection","TcpMirrorHandler"]};

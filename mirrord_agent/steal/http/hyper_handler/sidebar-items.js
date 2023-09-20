@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["match_request","matched_request"],"static":["CALLSITE"],"struct":["HyperHandler","RawHyperConnection"]};
+window.SIDEBAR_ITEMS = {"fn":["match_request","matched_request"],"struct":["HyperHandler","RawHyperConnection"]};

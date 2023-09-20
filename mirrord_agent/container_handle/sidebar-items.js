@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"static":["CALLSITE"],"struct":["ContainerHandle","Inner"]};
+window.SIDEBAR_ITEMS = {"struct":["ContainerHandle","Inner"]};

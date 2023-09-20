@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["DEFAULT_RUNTIME"],"fn":["parse_args"],"static":["DEFAULT_VALUE"],"struct":["Args"]};
+window.SIDEBAR_ITEMS = {"constant":["DEFAULT_RUNTIME"],"enum":["Mode"],"fn":["parse_args"],"struct":["Args"]};

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `medschool/src/main.rs`."><title>main.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="medschool" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0-nightly (c609da59d 2023-04-18)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../static.files/source-script-905937fbbdc8e9ea.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-1a524efa7bd4ab32.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../medschool/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `medschool/src/main.rs`."><title>main.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="medschool" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (e3abbd499 2023-09-06)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../medschool/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -840,11 +840,6 @@
 <a href="#840" id="840">840</a>
 <a href="#841" id="841">841</a>
 <a href="#842" id="842">842</a>
-<a href="#843" id="843">843</a>
-<a href="#844" id="844">844</a>
-<a href="#845" id="845">845</a>
-<a href="#846" id="846">846</a>
-<a href="#847" id="847">847</a>
 </pre></div><pre class="rust"><code><span class="attr">#![doc = <span class="macro">include_str!</span>(<span class="string">&quot;../readme.md&quot;</span>)]
 </span><span class="doccomment">//! `medschool` will extract the docs from the current directory, and build a nice
 //! `configuration.md` file.
@@ -1022,13 +1017,13 @@
 <span class="kw">impl </span>Eq <span class="kw">for </span>PartialField {}
 
 <span class="kw">impl </span>Hash <span class="kw">for </span>PartialType {
-    <span class="kw">fn </span>hash&lt;H: ~<span class="kw">const </span>std::hash::Hasher&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>H) {
+    <span class="kw">fn </span>hash&lt;H: std::hash::Hasher&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>H) {
         <span class="self">self</span>.ident.hash(state)
     }
 }
 
 <span class="kw">impl </span>Hash <span class="kw">for </span>PartialField {
-    <span class="kw">fn </span>hash&lt;H: ~<span class="kw">const </span>std::hash::Hasher&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>H) {
+    <span class="kw">fn </span>hash&lt;H: std::hash::Hasher&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>H) {
         <span class="self">self</span>.ident.hash(state)
     }
 }
@@ -1039,8 +1034,11 @@
         </span><span class="kw">let </span>docs = <span class="self">self</span>.docs.last().cloned().unwrap_or_default();
         f.write_str(<span class="kw-2">&amp;</span>docs)<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>fields: String = <span class="self">self</span>.fields.iter().map(|field| <span class="macro">format!</span>(<span class="string">&quot;{field}&quot;</span>)).collect();
-        f.write_str(<span class="kw-2">&amp;</span>fields)
+        <span class="self">self</span>.fields.iter().fold(f, |accum, s| {
+            accum.write_str(<span class="kw-2">&amp;</span>s.to_string()).expect(<span class="string">&quot;writing failed&quot;</span>);
+            accum
+        });
+        <span class="prelude-val">Ok</span>(())
     }
 }
 
@@ -1211,15 +1209,11 @@
                             .any(|doc| doc.contains(<span class="string">r&quot;&lt;!--${internal}--&gt;&quot;</span>));
 
                         <span class="comment">// We only care about types that have docs.
-                        </span><span class="kw">if </span>!thing_docs_untreated.is_empty() &amp;&amp; !is_internal {
-                            <span class="prelude-val">Some</span>(PartialType {
-                                ident: item.ident.to_string(),
-                                docs: thing_docs_untreated,
-                                fields: Default::default(),
-                            })
-                        } <span class="kw">else </span>{
-                            <span class="prelude-val">None
-                        </span>}
+                        </span>(!thing_docs_untreated.is_empty() &amp;&amp; !is_internal).then(|| PartialType {
+                            ident: item.ident.to_string(),
+                            docs: thing_docs_untreated,
+                            fields: Default::default(),
+                        })
                     }
                     syn::Item::Struct(item) =&gt; {
                         <span class="kw">let </span>fields = item
@@ -1243,18 +1237,14 @@
                         public_fields.sort();
 
                         <span class="comment">// We only care about types that have docs.
-                        </span><span class="kw">if </span>!thing_docs_untreated.is_empty()
+                        </span>(!thing_docs_untreated.is_empty()
                             &amp;&amp; !public_fields.is_empty()
-                            &amp;&amp; !is_internal
-                        {
-                            <span class="prelude-val">Some</span>(PartialType {
+                            &amp;&amp; !is_internal)
+                            .then(|| PartialType {
                                 ident: item.ident.to_string(),
                                 docs: thing_docs_untreated,
                                 fields: public_fields,
                             })
-                        } <span class="kw">else </span>{
-                            <span class="prelude-val">None
-                        </span>}
                     }
                     <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
                 })

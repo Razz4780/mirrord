@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"static":["CALLSITE"],"struct":["ReversibleStream"]};
+window.SIDEBAR_ITEMS = {"struct":["ReversibleStream"]};

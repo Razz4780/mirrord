@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["NamespaceError","NamespaceType"],"fn":["set_namespace"]};

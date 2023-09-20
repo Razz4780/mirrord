@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["create_ephemeral_agent","is_ephemeral_container_running"],"struct":["EphemeralTargetedVariant"]};

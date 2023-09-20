@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `mirrord/layer/src/file/hooks.rs`."><title>hooks.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="mirrord_layer" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0-nightly (c609da59d 2023-04-18)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../static.files/source-script-905937fbbdc8e9ea.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-1a524efa7bd4ab32.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../mirrord_layer/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `mirrord/layer/src/file/hooks.rs`."><title>hooks.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="mirrord_layer" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (e3abbd499 2023-09-06)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../mirrord_layer/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -970,6 +970,175 @@
 <a href="#970" id="970">970</a>
 <a href="#971" id="971">971</a>
 <a href="#972" id="972">972</a>
+<a href="#973" id="973">973</a>
+<a href="#974" id="974">974</a>
+<a href="#975" id="975">975</a>
+<a href="#976" id="976">976</a>
+<a href="#977" id="977">977</a>
+<a href="#978" id="978">978</a>
+<a href="#979" id="979">979</a>
+<a href="#980" id="980">980</a>
+<a href="#981" id="981">981</a>
+<a href="#982" id="982">982</a>
+<a href="#983" id="983">983</a>
+<a href="#984" id="984">984</a>
+<a href="#985" id="985">985</a>
+<a href="#986" id="986">986</a>
+<a href="#987" id="987">987</a>
+<a href="#988" id="988">988</a>
+<a href="#989" id="989">989</a>
+<a href="#990" id="990">990</a>
+<a href="#991" id="991">991</a>
+<a href="#992" id="992">992</a>
+<a href="#993" id="993">993</a>
+<a href="#994" id="994">994</a>
+<a href="#995" id="995">995</a>
+<a href="#996" id="996">996</a>
+<a href="#997" id="997">997</a>
+<a href="#998" id="998">998</a>
+<a href="#999" id="999">999</a>
+<a href="#1000" id="1000">1000</a>
+<a href="#1001" id="1001">1001</a>
+<a href="#1002" id="1002">1002</a>
+<a href="#1003" id="1003">1003</a>
+<a href="#1004" id="1004">1004</a>
+<a href="#1005" id="1005">1005</a>
+<a href="#1006" id="1006">1006</a>
+<a href="#1007" id="1007">1007</a>
+<a href="#1008" id="1008">1008</a>
+<a href="#1009" id="1009">1009</a>
+<a href="#1010" id="1010">1010</a>
+<a href="#1011" id="1011">1011</a>
+<a href="#1012" id="1012">1012</a>
+<a href="#1013" id="1013">1013</a>
+<a href="#1014" id="1014">1014</a>
+<a href="#1015" id="1015">1015</a>
+<a href="#1016" id="1016">1016</a>
+<a href="#1017" id="1017">1017</a>
+<a href="#1018" id="1018">1018</a>
+<a href="#1019" id="1019">1019</a>
+<a href="#1020" id="1020">1020</a>
+<a href="#1021" id="1021">1021</a>
+<a href="#1022" id="1022">1022</a>
+<a href="#1023" id="1023">1023</a>
+<a href="#1024" id="1024">1024</a>
+<a href="#1025" id="1025">1025</a>
+<a href="#1026" id="1026">1026</a>
+<a href="#1027" id="1027">1027</a>
+<a href="#1028" id="1028">1028</a>
+<a href="#1029" id="1029">1029</a>
+<a href="#1030" id="1030">1030</a>
+<a href="#1031" id="1031">1031</a>
+<a href="#1032" id="1032">1032</a>
+<a href="#1033" id="1033">1033</a>
+<a href="#1034" id="1034">1034</a>
+<a href="#1035" id="1035">1035</a>
+<a href="#1036" id="1036">1036</a>
+<a href="#1037" id="1037">1037</a>
+<a href="#1038" id="1038">1038</a>
+<a href="#1039" id="1039">1039</a>
+<a href="#1040" id="1040">1040</a>
+<a href="#1041" id="1041">1041</a>
+<a href="#1042" id="1042">1042</a>
+<a href="#1043" id="1043">1043</a>
+<a href="#1044" id="1044">1044</a>
+<a href="#1045" id="1045">1045</a>
+<a href="#1046" id="1046">1046</a>
+<a href="#1047" id="1047">1047</a>
+<a href="#1048" id="1048">1048</a>
+<a href="#1049" id="1049">1049</a>
+<a href="#1050" id="1050">1050</a>
+<a href="#1051" id="1051">1051</a>
+<a href="#1052" id="1052">1052</a>
+<a href="#1053" id="1053">1053</a>
+<a href="#1054" id="1054">1054</a>
+<a href="#1055" id="1055">1055</a>
+<a href="#1056" id="1056">1056</a>
+<a href="#1057" id="1057">1057</a>
+<a href="#1058" id="1058">1058</a>
+<a href="#1059" id="1059">1059</a>
+<a href="#1060" id="1060">1060</a>
+<a href="#1061" id="1061">1061</a>
+<a href="#1062" id="1062">1062</a>
+<a href="#1063" id="1063">1063</a>
+<a href="#1064" id="1064">1064</a>
+<a href="#1065" id="1065">1065</a>
+<a href="#1066" id="1066">1066</a>
+<a href="#1067" id="1067">1067</a>
+<a href="#1068" id="1068">1068</a>
+<a href="#1069" id="1069">1069</a>
+<a href="#1070" id="1070">1070</a>
+<a href="#1071" id="1071">1071</a>
+<a href="#1072" id="1072">1072</a>
+<a href="#1073" id="1073">1073</a>
+<a href="#1074" id="1074">1074</a>
+<a href="#1075" id="1075">1075</a>
+<a href="#1076" id="1076">1076</a>
+<a href="#1077" id="1077">1077</a>
+<a href="#1078" id="1078">1078</a>
+<a href="#1079" id="1079">1079</a>
+<a href="#1080" id="1080">1080</a>
+<a href="#1081" id="1081">1081</a>
+<a href="#1082" id="1082">1082</a>
+<a href="#1083" id="1083">1083</a>
+<a href="#1084" id="1084">1084</a>
+<a href="#1085" id="1085">1085</a>
+<a href="#1086" id="1086">1086</a>
+<a href="#1087" id="1087">1087</a>
+<a href="#1088" id="1088">1088</a>
+<a href="#1089" id="1089">1089</a>
+<a href="#1090" id="1090">1090</a>
+<a href="#1091" id="1091">1091</a>
+<a href="#1092" id="1092">1092</a>
+<a href="#1093" id="1093">1093</a>
+<a href="#1094" id="1094">1094</a>
+<a href="#1095" id="1095">1095</a>
+<a href="#1096" id="1096">1096</a>
+<a href="#1097" id="1097">1097</a>
+<a href="#1098" id="1098">1098</a>
+<a href="#1099" id="1099">1099</a>
+<a href="#1100" id="1100">1100</a>
+<a href="#1101" id="1101">1101</a>
+<a href="#1102" id="1102">1102</a>
+<a href="#1103" id="1103">1103</a>
+<a href="#1104" id="1104">1104</a>
+<a href="#1105" id="1105">1105</a>
+<a href="#1106" id="1106">1106</a>
+<a href="#1107" id="1107">1107</a>
+<a href="#1108" id="1108">1108</a>
+<a href="#1109" id="1109">1109</a>
+<a href="#1110" id="1110">1110</a>
+<a href="#1111" id="1111">1111</a>
+<a href="#1112" id="1112">1112</a>
+<a href="#1113" id="1113">1113</a>
+<a href="#1114" id="1114">1114</a>
+<a href="#1115" id="1115">1115</a>
+<a href="#1116" id="1116">1116</a>
+<a href="#1117" id="1117">1117</a>
+<a href="#1118" id="1118">1118</a>
+<a href="#1119" id="1119">1119</a>
+<a href="#1120" id="1120">1120</a>
+<a href="#1121" id="1121">1121</a>
+<a href="#1122" id="1122">1122</a>
+<a href="#1123" id="1123">1123</a>
+<a href="#1124" id="1124">1124</a>
+<a href="#1125" id="1125">1125</a>
+<a href="#1126" id="1126">1126</a>
+<a href="#1127" id="1127">1127</a>
+<a href="#1128" id="1128">1128</a>
+<a href="#1129" id="1129">1129</a>
+<a href="#1130" id="1130">1130</a>
+<a href="#1131" id="1131">1131</a>
+<a href="#1132" id="1132">1132</a>
+<a href="#1133" id="1133">1133</a>
+<a href="#1134" id="1134">1134</a>
+<a href="#1135" id="1135">1135</a>
+<a href="#1136" id="1136">1136</a>
+<a href="#1137" id="1137">1137</a>
+<a href="#1138" id="1138">1138</a>
+<a href="#1139" id="1139">1139</a>
+<a href="#1140" id="1140">1140</a>
+<a href="#1141" id="1141">1141</a>
 </pre></div><pre class="rust"><code><span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
 </span><span class="kw">use </span>core::ffi::{c_size_t, c_ssize_t};
 <span class="doccomment">/// FFI functions that override the `libc` calls (see `file` module documentation on how to
@@ -986,7 +1155,9 @@
     AT_FDCWD, DIR,
 };
 <span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
-</span><span class="kw">use </span>libc::{EBADF, EINVAL, ENOENT, ENOTDIR};
+</span><span class="kw">use </span>libc::{dirent64, stat64, EBADF, EINVAL, ENOENT, ENOTDIR};
+<span class="attr">#[cfg(not(all(target_os = <span class="string">&quot;macos&quot;</span>, target_arch = <span class="string">&quot;aarch64&quot;</span>)))]
+</span><span class="kw">use </span>libc::{O_DIRECTORY, O_RDONLY};
 <span class="kw">use </span>mirrord_layer_macro::{hook_fn, hook_guard_fn};
 <span class="kw">use </span>mirrord_protocol::file::{
     DirEntryInternal, FsMetadataInternal, MetadataInternal, ReadFileResponse, WriteFileResponse,
@@ -999,6 +1170,8 @@
 </span><span class="kw">use </span>tracing::{error, info, warn};
 
 <span class="kw">use super</span>::{ops::<span class="kw-2">*</span>, OpenOptionsInternalExt};
+<span class="attr">#[cfg(not(all(target_os = <span class="string">&quot;macos&quot;</span>, target_arch = <span class="string">&quot;aarch64&quot;</span>)))]
+</span><span class="kw">use </span><span class="kw">crate</span>::close_layer_fd;
 <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
 </span><span class="kw">use </span><span class="kw">crate</span>::detour::Bypass;
 <span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
@@ -1011,6 +1184,10 @@
     hooks::HookManager,
     replace,
 };
+
+<span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
+#[allow(non_camel_case_types)]
+</span><span class="kw">type </span>stat64 = stat;
 
 <span class="doccomment">/// Take the original raw c_char pointer and a resulting bypass, and either the original pointer or
 /// a different one according to the bypass.
@@ -1105,6 +1282,25 @@
     }
 }
 
+<span class="doccomment">/// Hook for [`libc::opendir`].
+///
+/// Opens the directory with `read` permission using the [`open_logic`] flow, then calls
+/// [`fdopendir`] to convert the [`RawFd`] into a `*DIR` stream (which we treat as `usize`).
+</span><span class="attr">#[cfg(not(all(target_os = <span class="string">&quot;macos&quot;</span>, target_arch = <span class="string">&quot;aarch64&quot;</span>)))]
+#[hook_guard_fn]
+</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>opendir_detour(raw_filename: <span class="kw-2">*const </span>c_char) -&gt; usize {
+    open_logic(raw_filename, O_RDONLY, O_DIRECTORY)
+        .and_then(|fd| <span class="kw">match </span>fdopendir(fd) {
+            Detour::Success(success) =&gt; Detour::Success(success),
+            Detour::Bypass(bypass) =&gt; Detour::Bypass(bypass),
+            Detour::Error(fail) =&gt; {
+                close_layer_fd(fd);
+                Detour::Error(fail)
+            }
+        })
+        .unwrap_or_bypass_with(|<span class="kw">_</span>| FN_OPENDIR(raw_filename))
+}
+
 <span class="attr">#[hook_guard_fn]
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>fdopendir_detour(fd: RawFd) -&gt; usize {
     fdopendir(fd).unwrap_or_bypass_with(|<span class="kw">_</span>| FN_FDOPENDIR(fd))
@@ -1147,6 +1343,34 @@
     <span class="prelude-val">Ok</span>(())
 }
 
+<span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
+</span><span class="kw">unsafe fn </span>assign_direntry64(
+    in_entry: DirEntryInternal,
+    out_entry: <span class="kw-2">*mut </span>dirent64,
+    getdents: bool,
+) -&gt; <span class="prelude-ty">Result</span>&lt;(), HookError&gt; {
+    (<span class="kw-2">*</span>out_entry).d_ino = in_entry.inode;
+    (<span class="kw-2">*</span>out_entry).d_reclen = <span class="kw">if </span>getdents {
+        <span class="comment">// The structs written by the kernel for the getdents syscall do not have a fixed size.
+        </span>in_entry.get_d_reclen64()
+    } <span class="kw">else </span>{
+        std::mem::size_of::&lt;dirent64&gt;() <span class="kw">as </span>u16
+    };
+    (<span class="kw-2">*</span>out_entry).d_type = in_entry.file_type;
+
+    <span class="kw">let </span>dir_name = CString::new(in_entry.name)<span class="question-mark">?</span>;
+    <span class="kw">let </span>dir_name_bytes = dir_name.as_bytes_with_nul();
+    (<span class="kw-2">*</span>out_entry)
+        .d_name
+        .get_mut(..dir_name_bytes.len())
+        .expect(<span class="string">&quot;directory name length exceeds limit&quot;</span>)
+        .copy_from_slice(bytemuck::cast_slice(dir_name_bytes));
+
+    (<span class="kw-2">*</span>out_entry).d_off = in_entry.position <span class="kw">as </span>i64;
+
+    <span class="prelude-val">Ok</span>(())
+}
+
 <span class="attr">#[hook_guard_fn]
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>readdir_r_detour(
     dirp: <span class="kw-2">*mut </span>DIR,
@@ -1172,6 +1396,32 @@
         .unwrap_or_bypass_with(|<span class="kw">_</span>| FN_READDIR_R(dirp, entry, result))
 }
 
+<span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
+#[hook_guard_fn]
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>readdir64_r_detour(
+    dirp: <span class="kw-2">*mut </span>DIR,
+    entry: <span class="kw-2">*mut </span>dirent64,
+    result: <span class="kw-2">*mut *mut </span>dirent64,
+) -&gt; c_int {
+    readdir_r(dirp <span class="kw">as </span>usize)
+        .map(|resp| {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(direntry) = resp {
+                <span class="kw">match </span>assign_direntry64(direntry, entry, <span class="bool-val">false</span>) {
+                    <span class="prelude-val">Err</span>(e) =&gt; <span class="kw">return </span>c_int::from(e),
+                    <span class="prelude-val">Ok</span>(()) =&gt; {
+                        <span class="kw-2">*</span>result = entry;
+                    }
+                }
+            } <span class="kw">else </span>{
+                {
+                    <span class="kw-2">*</span>result = std::ptr::null_mut();
+                }
+            }
+            <span class="number">0
+        </span>})
+        .unwrap_or_bypass_with(|<span class="kw">_</span>| FN_READDIR64_R(dirp, entry, result))
+}
+
 <span class="attr">#[hook_guard_fn]
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>closedir_detour(dirp: <span class="kw-2">*mut </span>DIR) -&gt; c_int {
     closedir(dirp <span class="kw">as </span>usize).unwrap_or_bypass_with(|<span class="kw">_</span>| FN_CLOSEDIR(dirp))
@@ -1194,6 +1444,26 @@
         <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
         </span><span class="kw">let </span>raw_path = update_ptr_from_bypass(raw_path, _bypass);
         FN_OPENAT(fd, raw_path, open_flags)
+    })
+}
+
+<span class="doccomment">/// Equivalent to `open_detour`, **except** when `raw_path` specifies a relative path.
+///
+/// If `fd == AT_FDCWD`, the current working directory is used, and the behavior is the same as
+/// `open_detour`.
+/// `fd` for a file descriptor with the `O_DIRECTORY` flag.
+</span><span class="attr">#[hook_guard_fn]
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>openat64_detour(
+    fd: RawFd,
+    raw_path: <span class="kw-2">*const </span>c_char,
+    open_flags: c_int,
+) -&gt; RawFd {
+    <span class="kw">let </span>open_options = OpenOptionsInternalExt::from_flags(open_flags);
+
+    openat(fd, raw_path.checked_into(), open_options).unwrap_or_bypass_with(|_bypass| {
+        <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
+        </span><span class="kw">let </span>raw_path = update_ptr_from_bypass(raw_path, _bypass);
+        FN_OPENAT64(fd, raw_path, open_flags)
     })
 }
 
@@ -1541,7 +1811,7 @@
 }
 
 <span class="doccomment">/// Fills the `stat` struct with the metadata
-</span><span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>fill_stat(out_stat: <span class="kw-2">*mut </span>stat, metadata: <span class="kw-2">&amp;</span>MetadataInternal) {
+</span><span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>fill_stat(out_stat: <span class="kw-2">*mut </span>stat64, metadata: <span class="kw-2">&amp;</span>MetadataInternal) {
     out_stat.write_bytes(<span class="number">0</span>, <span class="number">1</span>);
     <span class="kw">let </span>out = <span class="kw-2">&amp;mut *</span>out_stat;
     <span class="comment">// on macOS the types might be different, so we try to cast and do our best..
@@ -1579,60 +1849,54 @@
     out.f_ffree = metadata.files_free;
 }
 
+<span class="kw">fn </span>stat_logic&lt;<span class="kw">const </span>FOLLOW_SYMLINK: bool&gt;(
+    _ver: c_int,
+    fd: <span class="prelude-ty">Option</span>&lt;RawFd&gt;,
+    raw_path: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">*const </span>c_char&gt;,
+    out_stat: <span class="kw-2">*mut </span>stat64,
+) -&gt; Detour&lt;c_int&gt; {
+    <span class="kw">if </span>out_stat.is_null() {
+        Detour::Error(HookError::BadPointer)
+    } <span class="kw">else </span>{
+        <span class="kw">let </span>path = raw_path.map(CheckedInto::checked_into);
+
+        xstat(path, fd, FOLLOW_SYMLINK).map(|res| {
+            <span class="kw">let </span>res = res.metadata;
+            <span class="kw">unsafe </span>{ fill_stat(out_stat, <span class="kw-2">&amp;</span>res) };
+            <span class="number">0
+        </span>})
+    }
+}
+
 <span class="doccomment">/// Hook for `libc::lstat`.
 </span><span class="attr">#[hook_guard_fn]
 </span><span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>lstat_detour(raw_path: <span class="kw-2">*const </span>c_char, out_stat: <span class="kw-2">*mut </span>stat) -&gt; c_int {
-    <span class="kw">if </span>out_stat.is_null() {
-        <span class="kw">return </span>HookError::BadPointer.into();
-    }
-
-    xstat(<span class="prelude-val">Some</span>(raw_path.checked_into()), <span class="prelude-val">None</span>, <span class="bool-val">false</span>)
-        .map(|res| {
-            <span class="kw">let </span>res = res.metadata;
-            fill_stat(out_stat, <span class="kw-2">&amp;</span>res);
-            <span class="number">0
-        </span>})
-        .unwrap_or_bypass_with(|_bypass| {
+    stat_logic::&lt;<span class="bool-val">false</span>&gt;(<span class="number">0</span>, <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(raw_path), out_stat <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>).unwrap_or_bypass_with(
+        |_bypass| {
             <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
             </span><span class="kw">let </span>raw_path = update_ptr_from_bypass(raw_path, _bypass);
             FN_LSTAT(raw_path, out_stat)
-        })
+        },
+    )
 }
 
 <span class="doccomment">/// Hook for `libc::fstat`.
 </span><span class="attr">#[hook_guard_fn]
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>fstat_detour(fd: RawFd, out_stat: <span class="kw-2">*mut </span>stat) -&gt; c_int {
-    <span class="kw">if </span>out_stat.is_null() {
-        <span class="kw">return </span>HookError::BadPointer.into();
-    }
-
-    xstat(<span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(fd), <span class="bool-val">true</span>)
-        .map(|res| {
-            <span class="kw">let </span>res = res.metadata;
-            fill_stat(out_stat, <span class="kw-2">&amp;</span>res);
-            <span class="number">0
-        </span>})
+    stat_logic::&lt;<span class="bool-val">true</span>&gt;(<span class="number">0</span>, <span class="prelude-val">Some</span>(fd), <span class="prelude-val">None</span>, out_stat <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>)
         .unwrap_or_bypass_with(|<span class="kw">_</span>| FN_FSTAT(fd, out_stat))
 }
 
 <span class="doccomment">/// Hook for `libc::stat`.
 </span><span class="attr">#[hook_guard_fn]
 </span><span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>stat_detour(raw_path: <span class="kw-2">*const </span>c_char, out_stat: <span class="kw-2">*mut </span>stat) -&gt; c_int {
-    <span class="kw">if </span>out_stat.is_null() {
-        <span class="kw">return </span>HookError::BadPointer.into();
-    }
-
-    xstat(<span class="prelude-val">Some</span>(raw_path.checked_into()), <span class="prelude-val">None</span>, <span class="bool-val">true</span>)
-        .map(|res| {
-            <span class="kw">let </span>res = res.metadata;
-            fill_stat(out_stat, <span class="kw-2">&amp;</span>res);
-            <span class="number">0
-        </span>})
-        .unwrap_or_bypass_with(|_bypass| {
+    stat_logic::&lt;<span class="bool-val">true</span>&gt;(<span class="number">0</span>, <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(raw_path), out_stat <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>).unwrap_or_bypass_with(
+        |_bypass| {
             <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
             </span><span class="kw">let </span>raw_path = update_ptr_from_bypass(raw_path, _bypass);
-            FN_STAT(raw_path, out_stat)
-        })
+            FN_LSTAT(raw_path, out_stat)
+        },
+    )
 }
 
 <span class="doccomment">/// Hook for libc&#39;s stat syscall wrapper.
@@ -1642,25 +1906,57 @@
     raw_path: <span class="kw-2">*const </span>c_char,
     out_stat: <span class="kw-2">*mut </span>stat,
 ) -&gt; c_int {
-    <span class="kw">if </span>out_stat.is_null() {
-        <span class="kw">return </span>HookError::BadPointer.into();
-    }
-
-    <span class="kw">if </span>ver != <span class="number">1 </span>{
-        <span class="comment">// TODO: strip temp dir also here? What is this case?
-        </span><span class="kw">return </span>FN___XSTAT(ver, raw_path, out_stat);
-    }
-    xstat(<span class="prelude-val">Some</span>(raw_path.checked_into()), <span class="prelude-val">None</span>, <span class="bool-val">true</span>)
-        .map(|res| {
-            <span class="kw">let </span>res = res.metadata;
-            fill_stat(out_stat, <span class="kw-2">&amp;</span>res);
-            <span class="number">0
-        </span>})
-        .unwrap_or_bypass_with(|_bypass| {
+    stat_logic::&lt;<span class="bool-val">true</span>&gt;(ver, <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(raw_path), out_stat <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>).unwrap_or_bypass_with(
+        |_bypass| {
             <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
             </span><span class="kw">let </span>raw_path = update_ptr_from_bypass(raw_path, _bypass);
             FN___XSTAT(ver, raw_path, out_stat)
-        })
+        },
+    )
+}
+
+<span class="doccomment">/// Hook for libc&#39;s stat syscall wrapper.
+</span><span class="attr">#[hook_guard_fn]
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>__lxstat_detour(
+    ver: c_int,
+    raw_path: <span class="kw-2">*const </span>c_char,
+    out_stat: <span class="kw-2">*mut </span>stat,
+) -&gt; c_int {
+    stat_logic::&lt;<span class="bool-val">true</span>&gt;(ver, <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(raw_path), out_stat <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>).unwrap_or_bypass_with(
+        |_bypass| {
+            <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
+            </span><span class="kw">let </span>raw_path = update_ptr_from_bypass(raw_path, _bypass);
+            FN___LXSTAT(ver, raw_path, out_stat)
+        },
+    )
+}
+
+<span class="doccomment">/// Hook for libc&#39;s stat syscall wrapper.
+</span><span class="attr">#[hook_guard_fn]
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>__xstat64_detour(
+    ver: c_int,
+    raw_path: <span class="kw-2">*const </span>c_char,
+    out_stat: <span class="kw-2">*mut </span>stat64,
+) -&gt; c_int {
+    stat_logic::&lt;<span class="bool-val">true</span>&gt;(ver, <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(raw_path), out_stat).unwrap_or_bypass_with(|_bypass| {
+        <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
+        </span><span class="kw">let </span>raw_path = update_ptr_from_bypass(raw_path, _bypass);
+        FN___XSTAT64(ver, raw_path, out_stat)
+    })
+}
+
+<span class="doccomment">/// Hook for libc&#39;s stat syscall wrapper.
+</span><span class="attr">#[hook_guard_fn]
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>__lxstat64_detour(
+    ver: c_int,
+    raw_path: <span class="kw-2">*const </span>c_char,
+    out_stat: <span class="kw-2">*mut </span>stat64,
+) -&gt; c_int {
+    stat_logic::&lt;<span class="bool-val">true</span>&gt;(ver, <span class="prelude-val">None</span>, <span class="prelude-val">Some</span>(raw_path), out_stat).unwrap_or_bypass_with(|_bypass| {
+        <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
+        </span><span class="kw">let </span>raw_path = update_ptr_from_bypass(raw_path, _bypass);
+        FN___LXSTAT64(ver, raw_path, out_stat)
+    })
 }
 
 <span class="doccomment">/// Separated out logic for `fstatat` so that it can be used by go to match on the xstat result.
@@ -1677,7 +1973,7 @@
     <span class="kw">let </span>follow_symlink = (flag &amp; libc::AT_SYMLINK_NOFOLLOW) == <span class="number">0</span>;
     xstat(<span class="prelude-val">Some</span>(raw_path.checked_into()), <span class="prelude-val">Some</span>(fd), follow_symlink).map(|res| {
         <span class="kw">let </span>res = res.metadata;
-        fill_stat(out_stat, <span class="kw-2">&amp;</span>res);
+        fill_stat(out_stat <span class="kw">as </span><span class="kw-2">*mut </span><span class="kw">_</span>, <span class="kw-2">&amp;</span>res);
         <span class="number">0
     </span>})
 }
@@ -1722,34 +2018,20 @@
 //     raw_path: *const c_char,
 //     flag: c_int,
 //     out_stat: *mut statx,
-// ) -&gt; c_int {
-//     let follow_symlink = (flag &amp; libc::AT_SYMLINK_NOFOLLOW) == 0;
-//     let path = if flags &amp; libc::AT_EMPTYPATH != 0 {
-//         None
-//     } else {
-//         Some((!raw_path.is_null()).then(|| CStr::from_ptr(raw_path)))
-//     };
-//     let (Ok(result) | Err(result)) = xstat(path, Some(fd), follow_symlink)
-//         .map(|res| {
-//             let res = res.metadata;
-//             out_stat.write_bytes(0, 1);
-//             let out = &amp;mut *out_stat;
-//             // Set mask for available fields
-//             out.stx_mask = libc::STATX_BASIC_STATS;
-//             out.stx_mode = best_effort_cast(metadata.mode);
-//             out.stx_size = best_effort_cast(metadata.size);
-//             out.stx_atime.tv_nsec = metadata.access_time;
-//             out.stx_mtime.tv_nsec = metadata.modification_time;
-//             out.stx_ctime.tv_nsec = metadata.creation_time;
-//             out.stx_atime.tv_sec = nano_to_secs(metadata.access_time);
-//             out.stx_mtime.tv_sec = nano_to_secs(metadata.modification_time);
-//             out.stx_ctime.tv_sec = nano_to_secs(metadata.creation_time);
-//             out.stx_nlink = best_effort_cast(metadata.hard_links);
-//             out.stx_uid = metadata.user_id;
-//             out.stx_gid = metadata.group_id;
-//             out.stx_ino = best_effort_cast(metadata.inode);
-//             out.stx_blksize = best_effort_cast(metadata.block_size);
-//             out.stx_blocks = best_effort_cast(metadata.blocks);
+// ) -&gt; c_int { let follow_symlink = (flag &amp; libc::AT_SYMLINK_NOFOLLOW) == 0; let path = if flags &amp;
+//   libc::AT_EMPTYPATH != 0 { None } else { Some((!raw_path.is_null()).then(||
+//   CStr::from_ptr(raw_path))) }; let (Ok(result) | Err(result)) = xstat(path, Some(fd),
+//   follow_symlink) .map(|res| { let res = res.metadata; out_stat.write_bytes(0, 1); let out = &amp;mut
+//   *out_stat; // Set mask for available fields out.stx_mask = libc::STATX_BASIC_STATS;
+//   out.stx_mode = best_effort_cast(metadata.mode); out.stx_size = best_effort_cast(metadata.size);
+//   out.stx_atime.tv_nsec = metadata.access_time; out.stx_mtime.tv_nsec =
+//   metadata.modification_time; out.stx_ctime.tv_nsec = metadata.creation_time;
+//   out.stx_atime.tv_sec = nano_to_secs(metadata.access_time); out.stx_mtime.tv_sec =
+//   nano_to_secs(metadata.modification_time); out.stx_ctime.tv_sec =
+//   nano_to_secs(metadata.creation_time); out.stx_nlink = best_effort_cast(metadata.hard_links);
+//   out.stx_uid = metadata.user_id; out.stx_gid = metadata.group_id; out.stx_ino =
+//   best_effort_cast(metadata.inode); out.stx_blksize = best_effort_cast(metadata.block_size);
+//   out.stx_blocks = best_effort_cast(metadata.blocks);
 
 //             out.stx_dev_major = libc::major(metadata.device_id);
 //             out.stx_dev_minor = libc::minor(metadata.device_id);
@@ -1776,6 +2058,13 @@
     );
 
     <span class="macro">replace!</span>(hook_manager, <span class="string">&quot;openat&quot;</span>, openat_detour, FnOpenat, FN_OPENAT);
+    <span class="macro">replace!</span>(
+        hook_manager,
+        <span class="string">&quot;openat64&quot;</span>,
+        openat64_detour,
+        FnOpenat64,
+        FN_OPENAT64
+    );
     <span class="macro">replace!</span>(
         hook_manager,
         <span class="string">&quot;_openat$NOCANCEL&quot;</span>,
@@ -1861,6 +2150,27 @@
             Fn__xstat,
             FN___XSTAT
         );
+        <span class="macro">replace!</span>(
+            hook_manager,
+            <span class="string">&quot;__xstat64&quot;</span>,
+            __xstat64_detour,
+            Fn__xstat64,
+            FN___XSTAT64
+        );
+        <span class="macro">replace!</span>(
+            hook_manager,
+            <span class="string">&quot;__lxstat&quot;</span>,
+            __lxstat_detour,
+            Fn__lxstat,
+            FN___LXSTAT
+        );
+        <span class="macro">replace!</span>(
+            hook_manager,
+            <span class="string">&quot;__lxstat64&quot;</span>,
+            __lxstat64_detour,
+            Fn__lxstat64,
+            FN___LXSTAT64
+        );
         <span class="macro">replace!</span>(hook_manager, <span class="string">&quot;lstat&quot;</span>, lstat_detour, FnLstat, FN_LSTAT);
         <span class="macro">replace!</span>(hook_manager, <span class="string">&quot;fstat&quot;</span>, fstat_detour, FnFstat, FN_FSTAT);
         <span class="macro">replace!</span>(hook_manager, <span class="string">&quot;stat&quot;</span>, stat_detour, FnStat, FN_STAT);
@@ -1892,6 +2202,27 @@
             readdir_r_detour,
             FnReaddir_r,
             FN_READDIR_R
+        );
+        <span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
+        </span><span class="macro">replace!</span>(
+            hook_manager,
+            <span class="string">&quot;readdir64_r&quot;</span>,
+            readdir64_r_detour,
+            FnReaddir64_r,
+            FN_READDIR64_R
+        );
+        <span class="comment">// aarch + macOS hooks fail
+        // because macOs internally calls this with pointer authentication
+        // and we don&#39;t compile to arm64e yet, so it breaks.
+        // but it seems we&#39;ll be able to compile to arm64e soon.
+        // https://github.com/rust-lang/rust/pull/115526
+        </span><span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
+        </span><span class="macro">replace!</span>(
+            hook_manager,
+            <span class="string">&quot;opendir&quot;</span>,
+            opendir_detour,
+            FnOpendir,
+            FN_OPENDIR
         );
     }
     <span class="comment">// on non aarch64 (Intel) we need to hook also $INODE64 variants
@@ -1939,6 +2270,13 @@
             readdir_r_detour,
             FnReaddir_r,
             FN_READDIR_R
+        );
+        <span class="macro">replace!</span>(
+            hook_manager,
+            <span class="string">&quot;opendir$INODE64&quot;</span>,
+            opendir_detour,
+            FnOpendir,
+            FN_OPENDIR
         );
     }
 }

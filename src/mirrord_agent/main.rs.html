@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `mirrord/agent/src/main.rs`."><title>main.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="mirrord_agent" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0-nightly (c609da59d 2023-04-18)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../static.files/source-script-905937fbbdc8e9ea.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-1a524efa7bd4ab32.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../mirrord_agent/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `mirrord/agent/src/main.rs`."><title>main.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="mirrord_agent" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (e3abbd499 2023-09-06)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../mirrord_agent/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -743,8 +743,90 @@
 <a href="#743" id="743">743</a>
 <a href="#744" id="744">744</a>
 <a href="#745" id="745">745</a>
+<a href="#746" id="746">746</a>
+<a href="#747" id="747">747</a>
+<a href="#748" id="748">748</a>
+<a href="#749" id="749">749</a>
+<a href="#750" id="750">750</a>
+<a href="#751" id="751">751</a>
+<a href="#752" id="752">752</a>
+<a href="#753" id="753">753</a>
+<a href="#754" id="754">754</a>
+<a href="#755" id="755">755</a>
+<a href="#756" id="756">756</a>
+<a href="#757" id="757">757</a>
+<a href="#758" id="758">758</a>
+<a href="#759" id="759">759</a>
+<a href="#760" id="760">760</a>
+<a href="#761" id="761">761</a>
+<a href="#762" id="762">762</a>
+<a href="#763" id="763">763</a>
+<a href="#764" id="764">764</a>
+<a href="#765" id="765">765</a>
+<a href="#766" id="766">766</a>
+<a href="#767" id="767">767</a>
+<a href="#768" id="768">768</a>
+<a href="#769" id="769">769</a>
+<a href="#770" id="770">770</a>
+<a href="#771" id="771">771</a>
+<a href="#772" id="772">772</a>
+<a href="#773" id="773">773</a>
+<a href="#774" id="774">774</a>
+<a href="#775" id="775">775</a>
+<a href="#776" id="776">776</a>
+<a href="#777" id="777">777</a>
+<a href="#778" id="778">778</a>
+<a href="#779" id="779">779</a>
+<a href="#780" id="780">780</a>
+<a href="#781" id="781">781</a>
+<a href="#782" id="782">782</a>
+<a href="#783" id="783">783</a>
+<a href="#784" id="784">784</a>
+<a href="#785" id="785">785</a>
+<a href="#786" id="786">786</a>
+<a href="#787" id="787">787</a>
+<a href="#788" id="788">788</a>
+<a href="#789" id="789">789</a>
+<a href="#790" id="790">790</a>
+<a href="#791" id="791">791</a>
+<a href="#792" id="792">792</a>
+<a href="#793" id="793">793</a>
+<a href="#794" id="794">794</a>
+<a href="#795" id="795">795</a>
+<a href="#796" id="796">796</a>
+<a href="#797" id="797">797</a>
+<a href="#798" id="798">798</a>
+<a href="#799" id="799">799</a>
+<a href="#800" id="800">800</a>
+<a href="#801" id="801">801</a>
+<a href="#802" id="802">802</a>
+<a href="#803" id="803">803</a>
+<a href="#804" id="804">804</a>
+<a href="#805" id="805">805</a>
+<a href="#806" id="806">806</a>
+<a href="#807" id="807">807</a>
+<a href="#808" id="808">808</a>
+<a href="#809" id="809">809</a>
+<a href="#810" id="810">810</a>
+<a href="#811" id="811">811</a>
+<a href="#812" id="812">812</a>
+<a href="#813" id="813">813</a>
+<a href="#814" id="814">814</a>
+<a href="#815" id="815">815</a>
+<a href="#816" id="816">816</a>
+<a href="#817" id="817">817</a>
+<a href="#818" id="818">818</a>
+<a href="#819" id="819">819</a>
+<a href="#820" id="820">820</a>
+<a href="#821" id="821">821</a>
+<a href="#822" id="822">822</a>
+<a href="#823" id="823">823</a>
+<a href="#824" id="824">824</a>
+<a href="#825" id="825">825</a>
+<a href="#826" id="826">826</a>
+<a href="#827" id="827">827</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(result_option_inspect)]
-#![feature(hash_drain_filter)]
+#![feature(hash_extract_if)]
 #![feature(let_chains)]
 #![feature(type_alias_impl_trait)]
 #![feature(tcp_quickack)]
@@ -760,10 +842,6 @@
 };
 
 <span class="kw">use </span>actix_codec::Framed;
-<span class="kw">use </span>cli::parse_args;
-<span class="kw">use </span>dns::DnsApi;
-<span class="kw">use </span>error::{AgentError, <span class="prelude-ty">Result</span>};
-<span class="kw">use </span>file::FileManager;
 <span class="kw">use </span>futures::{
     stream::{FuturesUnordered, StreamExt},
     SinkExt, TryFutureExt,
@@ -772,9 +850,6 @@
     pause::DaemonPauseTarget, ClientMessage, DaemonCodec, DaemonMessage, GetEnvVarsRequest,
     LogMessage,
 };
-<span class="kw">use </span>outgoing::{udp::UdpOutgoingApi, TcpOutgoingApi};
-<span class="kw">use </span>sniffer::{SnifferCommand, TcpConnectionSniffer, TcpSnifferApi};
-<span class="kw">use </span>steal::api::TcpStealerApi;
 <span class="kw">use </span>tokio::{
     net::{TcpListener, TcpStream},
     select,
@@ -789,11 +864,17 @@
 <span class="kw">use crate</span>::{
     cli::Args,
     container_handle::ContainerHandle,
+    dns::DnsApi,
+    error::{AgentError, <span class="prelude-ty">Result</span>},
+    file::FileManager,
+    outgoing::{udp::UdpOutgoingApi, TcpOutgoingApi},
     runtime::get_container,
+    sniffer::{SnifferCommand, TcpConnectionSniffer, TcpSnifferApi},
     steal::{
+        api::TcpStealerApi,
         connection::TcpConnectionStealer,
         ip_tables::{
-            SafeIpTables, IPTABLE_MESH, IPTABLE_MESH_ENV, IPTABLE_PREROUTING,
+            IPTablesWrapper, SafeIpTables, IPTABLE_MESH, IPTABLE_MESH_ENV, IPTABLE_PREROUTING,
             IPTABLE_PREROUTING_ENV, IPTABLE_STANDARD, IPTABLE_STANDARD_ENV,
         },
         StealerCommand,
@@ -802,12 +883,14 @@
     watched_task::{TaskStatus, WatchedTask},
 };
 
+<span class="kw">mod </span>cgroup;
 <span class="kw">mod </span>cli;
 <span class="kw">mod </span>container_handle;
 <span class="kw">mod </span>dns;
 <span class="kw">mod </span>env;
 <span class="kw">mod </span>error;
 <span class="kw">mod </span>file;
+<span class="kw">mod </span>namespace;
 <span class="kw">mod </span>outgoing;
 <span class="kw">mod </span>runtime;
 <span class="kw">mod </span>sniffer;
@@ -827,46 +910,47 @@
     /// pausing. When those args are not passed, container is [`None`].
     </span>container: <span class="prelude-ty">Option</span>&lt;ContainerHandle&gt;,
     env: HashMap&lt;String, String&gt;,
-    <span class="doccomment">/// Whether this agent is run in an ephemeral container.
-    </span>ephemeral: bool,
+    ephemeral: bool,
 }
 
 <span class="kw">impl </span>State {
     <span class="doccomment">/// Return [`Err`] if container runtime operations failed.
-    </span><span class="kw">pub async fn </span>new(args: <span class="kw-2">&amp;</span>Args) -&gt; <span class="prelude-ty">Result</span>&lt;State&gt; {
-        <span class="kw">let </span>container =
-            get_container(args.container_id.as_ref(), args.container_runtime.as_ref()).<span class="kw">await</span><span class="question-mark">?</span>;
-
-        <span class="kw">let </span>container = <span class="kw">match </span>container {
-            <span class="prelude-val">Some</span>(container) =&gt; <span class="prelude-val">Some</span>(ContainerHandle::new(container).<span class="kw">await</span><span class="question-mark">?</span>),
-            <span class="prelude-val">None </span>=&gt; <span class="prelude-val">None</span>,
-        };
-
-        <span class="comment">// If we are in an ephemeral container, we use pid 1.
-        // if not, we use the pid of the target container or fallback to self
-        </span><span class="kw">let </span>pid = {
-            <span class="kw">if </span>args.ephemeral_container {
-                <span class="string">&quot;1&quot;</span>.to_string()
-            } <span class="kw">else </span>{
-                container
-                    .as_ref()
-                    .map(|h| h.pid().to_string())
-                    .unwrap_or_else(|| <span class="string">&quot;self&quot;</span>.to_string())
-            }
-        };
-
+    </span><span class="kw">pub async fn </span>new(args: <span class="kw-2">&amp;</span>Args, watch: drain::Watch) -&gt; <span class="prelude-ty">Result</span>&lt;State&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>env: HashMap&lt;String, String&gt; = HashMap::new();
 
+        <span class="kw">let </span>(ephemeral, container, pid) = <span class="kw">match </span><span class="kw-2">&amp;</span>args.mode {
+            cli::Mode::Targeted {
+                container_id,
+                container_runtime,
+            } =&gt; {
+                <span class="kw">let </span>container =
+                    get_container(container_id.clone(), <span class="prelude-val">Some</span>(container_runtime)).<span class="kw">await</span><span class="question-mark">?</span>;
+
+                <span class="kw">let </span>container_handle = ContainerHandle::new(container, watch).<span class="kw">await</span><span class="question-mark">?</span>;
+                <span class="kw">let </span>pid = container_handle.pid().to_string();
+
+                env.extend(container_handle.raw_env().clone());
+
+                (<span class="bool-val">false</span>, <span class="prelude-val">Some</span>(container_handle), pid)
+            }
+            cli::Mode::Ephemeral =&gt; {
+                <span class="kw">let </span>container_handle = ContainerHandle::new(
+                    runtime::Container::Ephemeral(runtime::EphemeralContainer {}),
+                    watch,
+                )
+                .<span class="kw">await</span><span class="question-mark">?</span>;
+
+                <span class="kw">let </span>pid = container_handle.pid().to_string();
+                env.extend(container_handle.raw_env().clone());
+
+                <span class="comment">// If we are in an ephemeral container, we use pid 1.
+                </span>(<span class="bool-val">true</span>, <span class="prelude-val">Some</span>(container_handle), pid)
+            }
+            <span class="comment">// if not, we use the pid of the target container or fallback to self
+            </span>cli::Mode::Targetless | cli::Mode::BlackboxTest =&gt; (<span class="bool-val">false</span>, <span class="prelude-val">None</span>, <span class="string">&quot;self&quot;</span>.to_string()),
+        };
+
         <span class="kw">let </span>environ_path = PathBuf::from(<span class="string">&quot;/proc&quot;</span>).join(pid).join(<span class="string">&quot;environ&quot;</span>);
-
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(container) = container.as_ref() {
-            env.extend(container.raw_env().clone());
-        }
-
-        <span class="comment">// in ephemeral container, we get same env as the target container, so copy our env.
-        </span><span class="kw">if </span>args.ephemeral_container {
-            env.extend(std::env::vars())
-        }
 
         <span class="kw">match </span>env::get_proc_environ(environ_path).<span class="kw">await </span>{
             <span class="prelude-val">Ok</span>(environ) =&gt; env.extend(environ.into_iter()),
@@ -880,7 +964,7 @@
             index_allocator: Default::default(),
             container,
             env,
-            ephemeral: args.ephemeral_container,
+            ephemeral,
         })
     }
 
@@ -970,13 +1054,27 @@
     }
 }
 
+<span class="kw">enum </span>BackgroundTask&lt;Command&gt; {
+    Running(TaskStatus, Sender&lt;Command&gt;),
+    Disabled,
+}
+
+<span class="kw">impl</span>&lt;Command&gt; Clone <span class="kw">for </span>BackgroundTask&lt;Command&gt; {
+    <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
+        <span class="kw">match </span><span class="self">self </span>{
+            BackgroundTask::Disabled =&gt; BackgroundTask::Disabled,
+            BackgroundTask::Running(status, sender) =&gt; {
+                BackgroundTask::Running(status.clone(), sender.clone())
+            }
+        }
+    }
+}
+
 <span class="doccomment">/// Handles to background tasks used by [`ClientConnectionHandler`].
 </span><span class="attr">#[derive(Clone)]
 </span><span class="kw">struct </span>BackgroundTasks {
-    sniffer_status: TaskStatus,
-    sniffer_sender: Sender&lt;SnifferCommand&gt;,
-    stealer_status: TaskStatus,
-    stealer_sender: Sender&lt;StealerCommand&gt;,
+    sniffer: BackgroundTask&lt;SnifferCommand&gt;,
+    stealer: BackgroundTask&lt;StealerCommand&gt;,
     dns_api: DnsApi,
 }
 
@@ -986,7 +1084,7 @@
     </span>file_manager: FileManager,
     stream: Framed&lt;TcpStream, DaemonCodec&gt;,
     tcp_sniffer_api: <span class="prelude-ty">Option</span>&lt;TcpSnifferApi&gt;,
-    tcp_stealer_api: TcpStealerApi,
+    tcp_stealer_api: <span class="prelude-ty">Option</span>&lt;TcpStealerApi&gt;,
     tcp_outgoing_api: TcpOutgoingApi,
     udp_outgoing_api: UdpOutgoingApi,
     dns_api: DnsApi,
@@ -994,10 +1092,6 @@
     <span class="doccomment">/// Handle to the target container if there is one.
     /// Used for pausing the container.
     </span>container_handle: <span class="prelude-ty">Option</span>&lt;ContainerHandle&gt;,
-    <span class="doccomment">/// Whether this agent is run in an ephemeral container.
-    /// TODO this is used only to prevent pausing from an ephemeral container and should be removed
-    /// once this feature is supported
-    </span>ephemeral: bool,
 }
 
 <span class="kw">impl </span>ClientConnectionHandler {
@@ -1015,48 +1109,9 @@
 
         <span class="kw">let </span>file_manager = FileManager::new(pid.or_else(|| ephemeral.then_some(<span class="number">1</span>)));
 
-        <span class="kw">let </span>tcp_sniffer_api = <span class="kw">match </span>TcpSnifferApi::new(
-            id,
-            bg_tasks.sniffer_sender,
-            bg_tasks.sniffer_status,
-            CHANNEL_SIZE,
-        )
-        .<span class="kw">await
-        </span>{
-            <span class="prelude-val">Ok</span>(api) =&gt; <span class="prelude-val">Some</span>(api),
-            <span class="prelude-val">Err</span>(e) =&gt; {
-                <span class="kw">let </span>message = <span class="macro">format!</span>(
-                    <span class="string">&quot;Failed to create TcpSnifferApi: {e}, this could be due to kernel version.&quot;
-                </span>);
-                <span class="macro">warn!</span>(message);
-                <span class="kw">let _ </span>= stream
-                    .send(DaemonMessage::LogMessage(LogMessage::warn(message)))
-                    .<span class="kw">await</span>; <span class="comment">// Ignore message send error.
-
-                </span><span class="prelude-val">None
-            </span>}
-        };
-
-        <span class="kw">let </span>tcp_stealer_api = <span class="kw">match </span>TcpStealerApi::new(
-            id,
-            bg_tasks.stealer_sender,
-            bg_tasks.stealer_status,
-            CHANNEL_SIZE,
-            protocol_version,
-        )
-        .<span class="kw">await
-        </span>{
-            <span class="prelude-val">Ok</span>(api) =&gt; api,
-            <span class="prelude-val">Err</span>(e) =&gt; {
-                <span class="kw">let _ </span>= stream
-                    .send(DaemonMessage::Close(<span class="macro">format!</span>(
-                        <span class="string">&quot;Failed to create TcpStealerApi: {e}.&quot;
-                    </span>)))
-                    .<span class="kw">await</span>; <span class="comment">// Ignore message send error.
-
-                </span><span class="prelude-val">Err</span>(e)<span class="question-mark">?
-            </span>}
-        };
+        <span class="kw">let </span>tcp_sniffer_api = <span class="self">Self</span>::ceate_sniffer_api(id, bg_tasks.sniffer, <span class="kw-2">&amp;mut </span>stream).<span class="kw">await</span>;
+        <span class="kw">let </span>tcp_stealer_api =
+            <span class="self">Self</span>::ceate_stealer_api(id, bg_tasks.stealer, protocol_version, <span class="kw-2">&amp;mut </span>stream).<span class="kw">await</span><span class="question-mark">?</span>;
 
         <span class="kw">let </span>tcp_outgoing_api = TcpOutgoingApi::new(pid);
         <span class="kw">let </span>udp_outgoing_api = UdpOutgoingApi::new(pid);
@@ -1072,10 +1127,69 @@
             dns_api: bg_tasks.dns_api,
             env,
             container_handle,
-            ephemeral,
         };
 
         <span class="prelude-val">Ok</span>(client_handler)
+    }
+
+    <span class="kw">async fn </span>ceate_sniffer_api(
+        id: ClientId,
+        task: BackgroundTask&lt;SnifferCommand&gt;,
+        stream: <span class="kw-2">&amp;mut </span>Framed&lt;TcpStream, DaemonCodec&gt;,
+    ) -&gt; <span class="prelude-ty">Option</span>&lt;TcpSnifferApi&gt; {
+        <span class="kw">if let </span>BackgroundTask::Running(sniffer_status, sniffer_sender) = task {
+            <span class="kw">match </span>TcpSnifferApi::new(id, sniffer_sender, sniffer_status, CHANNEL_SIZE).<span class="kw">await </span>{
+                <span class="prelude-val">Ok</span>(api) =&gt; <span class="prelude-val">Some</span>(api),
+                <span class="prelude-val">Err</span>(e) =&gt; {
+                    <span class="kw">let </span>message = <span class="macro">format!</span>(
+                        <span class="string">&quot;Failed to create TcpSnifferApi: {e}, this could be due to kernel version.&quot;
+                    </span>);
+
+                    <span class="macro">warn!</span>(message);
+
+                    <span class="comment">// Ignore message send error.
+                    </span><span class="kw">let _ </span>= stream
+                        .send(DaemonMessage::LogMessage(LogMessage::warn(message)))
+                        .<span class="kw">await</span>;
+
+                    <span class="prelude-val">None
+                </span>}
+            }
+        } <span class="kw">else </span>{
+            <span class="prelude-val">None
+        </span>}
+    }
+
+    <span class="kw">async fn </span>ceate_stealer_api(
+        id: ClientId,
+        task: BackgroundTask&lt;StealerCommand&gt;,
+        protocol_version: semver::Version,
+        stream: <span class="kw-2">&amp;mut </span>Framed&lt;TcpStream, DaemonCodec&gt;,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;TcpStealerApi&gt;&gt; {
+        <span class="kw">if let </span>BackgroundTask::Running(stealer_status, stealer_sender) = task {
+            <span class="kw">match </span>TcpStealerApi::new(
+                id,
+                stealer_sender,
+                stealer_status,
+                CHANNEL_SIZE,
+                protocol_version,
+            )
+            .<span class="kw">await
+            </span>{
+                <span class="prelude-val">Ok</span>(api) =&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(api)),
+                <span class="prelude-val">Err</span>(e) =&gt; {
+                    <span class="kw">let _ </span>= stream
+                        .send(DaemonMessage::Close(<span class="macro">format!</span>(
+                            <span class="string">&quot;Failed to create TcpStealerApi: {e}.&quot;
+                        </span>)))
+                        .<span class="kw">await</span>; <span class="comment">// Ignore message send error.
+
+                    </span><span class="prelude-val">Err</span>(e)<span class="question-mark">?
+                </span>}
+            }
+        } <span class="kw">else </span>{
+            <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
+        }
     }
 
     <span class="doccomment">/// Starts a loop that handles client connection and state.
@@ -1113,7 +1227,13 @@
                     <span class="prelude-val">Ok</span>(message) =&gt; <span class="self">self</span>.respond(DaemonMessage::Tcp(message)).<span class="kw">await</span><span class="question-mark">?</span>,
                     <span class="prelude-val">Err</span>(e) =&gt; <span class="kw">break </span>e,
                 },
-                message = <span class="self">self</span>.tcp_stealer_api.recv() =&gt; <span class="kw">match </span>message {
+                message = <span class="kw">async </span>{
+                    <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref mut </span>stealer_api) = <span class="self">self</span>.tcp_stealer_api {
+                        stealer_api.recv().<span class="kw">await
+                    </span>} <span class="kw">else </span>{
+                        <span class="macro">unreachable!</span>()
+                    }
+                }, <span class="kw">if </span><span class="self">self</span>.tcp_stealer_api.is_some() =&gt; <span class="kw">match </span>message {
                     <span class="prelude-val">Ok</span>(message) =&gt; <span class="self">self</span>.respond(DaemonMessage::TcpSteal(message)).<span class="kw">await</span><span class="question-mark">?</span>,
                     <span class="prelude-val">Err</span>(e) =&gt; <span class="kw">break </span>e,
                 },
@@ -1198,35 +1318,47 @@
                 </span>}
             }
             ClientMessage::TcpSteal(message) =&gt; {
-                <span class="self">self</span>.tcp_stealer_api.handle_client_message(message).<span class="kw">await</span><span class="question-mark">?
-            </span>}
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(tcp_stealer_api) = <span class="self">self</span>.tcp_stealer_api.as_mut() {
+                    tcp_stealer_api.handle_client_message(message).<span class="kw">await</span><span class="question-mark">?
+                </span>} <span class="kw">else </span>{
+                    <span class="macro">warn!</span>(<span class="string">&quot;received tcp steal request while not available&quot;</span>);
+                    <span class="prelude-val">Err</span>(AgentError::SnifferApiError)<span class="question-mark">?
+                </span>}
+            }
             ClientMessage::Close =&gt; {
                 <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="bool-val">false</span>);
             }
             ClientMessage::PauseTargetRequest(pause) =&gt; {
-                <span class="kw">if </span><span class="self">self</span>.ephemeral {
-                    <span class="prelude-val">Err</span>(AgentError::PauseEphemeralAgent)<span class="question-mark">?</span>;
-                }
-
-                <span class="kw">let </span>changed = <span class="self">self
+                <span class="kw">match </span><span class="self">self
                     </span>.container_handle
                     .as_ref()
                     .ok_or(AgentError::PauseAbsentTarget)<span class="question-mark">?
                     </span>.set_paused(pause)
-                    .<span class="kw">await</span><span class="question-mark">?</span>;
-
-                <span class="self">self</span>.respond(DaemonMessage::PauseTarget(
-                    DaemonPauseTarget::PauseResponse {
-                        changed,
-                        container_paused: pause,
-                    },
-                ))
-                .<span class="kw">await</span><span class="question-mark">?</span>;
+                    .<span class="kw">await
+                </span>{
+                    <span class="prelude-val">Ok</span>(changed) =&gt; {
+                        <span class="self">self</span>.respond(DaemonMessage::PauseTarget(
+                            DaemonPauseTarget::PauseResponse {
+                                changed,
+                                container_paused: pause,
+                            },
+                        ))
+                        .<span class="kw">await</span><span class="question-mark">?</span>;
+                    }
+                    <span class="prelude-val">Err</span>(e) =&gt; {
+                        <span class="self">self</span>.respond(DaemonMessage::LogMessage(LogMessage::error(<span class="macro">format!</span>(
+                            <span class="string">&quot;Failed to pause target container: {e:?}&quot;
+                        </span>))))
+                        .<span class="kw">await</span><span class="question-mark">?</span>;
+                    }
+                }
             }
             ClientMessage::SwitchProtocolVersion(version) =&gt; {
-                <span class="self">self</span>.tcp_stealer_api
-                    .switch_protocol_version(version.clone())
-                    .<span class="kw">await</span><span class="question-mark">?</span>;
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(tcp_stealer_api) = <span class="self">self</span>.tcp_stealer_api.as_mut() {
+                    tcp_stealer_api
+                        .switch_protocol_version(version.clone())
+                        .<span class="kw">await</span><span class="question-mark">?</span>;
+                }
 
                 <span class="self">self</span>.respond(DaemonMessage::SwitchProtocolVersionResponse(version))
                     .<span class="kw">await</span><span class="question-mark">?</span>;
@@ -1240,8 +1372,7 @@
 
 <span class="doccomment">/// Initializes the agent&#39;s [`State`], channels, threads, and runs [`ClientConnectionHandler`]s.
 </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>)]
-</span><span class="kw">async fn </span>start_agent() -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-    <span class="kw">let </span>args = parse_args();
+</span><span class="kw">async fn </span>start_agent(args: Args, watch: drain::Watch) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="macro">trace!</span>(<span class="string">&quot;Starting agent with args: {args:?}&quot;</span>);
 
     <span class="kw">let </span>listener = TcpListener::bind(SocketAddrV4::new(
@@ -1250,7 +1381,7 @@
     ))
     .<span class="kw">await</span><span class="question-mark">?</span>;
 
-    <span class="kw">let </span><span class="kw-2">mut </span>state = State::new(<span class="kw-2">&amp;</span>args).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>state = State::new(<span class="kw-2">&amp;</span>args, watch).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="kw">let </span>cancellation_token = CancellationToken::new();
     <span class="comment">// Cancel all other tasks on exit
@@ -1261,7 +1392,9 @@
 
     <span class="kw">let </span>dns_api = DnsApi::new(state.container_pid(), <span class="number">1000</span>);
 
-    <span class="kw">let </span>(sniffer_task, sniffer_status) = {
+    <span class="kw">let </span>(sniffer_task, sniffer_status) = <span class="kw">if </span>args.mode.is_targetless() {
+        (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>)
+    } <span class="kw">else </span>{
         <span class="kw">let </span>cancellation_token = cancellation_token.clone();
         <span class="kw">let </span>watched_task = WatchedTask::new(
             TcpConnectionSniffer::TASK_NAME,
@@ -1283,10 +1416,12 @@
             <span class="string">&quot;net&quot;</span>,
         );
 
-        (task, status)
+        (<span class="prelude-val">Some</span>(task), <span class="prelude-val">Some</span>(status))
     };
 
-    <span class="kw">let </span>(stealer_task, stealer_status) = {
+    <span class="kw">let </span>(stealer_task, stealer_status) = <span class="kw">if </span>args.mode.is_targetless() {
+        (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>)
+    } <span class="kw">else </span>{
         <span class="kw">let </span>cancellation_token = cancellation_token.clone();
         <span class="kw">let </span>watched_task = WatchedTask::new(
             TcpConnectionStealer::TASK_NAME,
@@ -1306,14 +1441,16 @@
             <span class="string">&quot;net&quot;</span>,
         );
 
-        (task, status)
+        (<span class="prelude-val">Some</span>(task), <span class="prelude-val">Some</span>(status))
     };
 
-    <span class="kw">let </span><span class="kw-2">mut </span>bg_tasks = BackgroundTasks {
-        sniffer_status,
-        sniffer_sender: sniffer_command_tx,
-        stealer_status,
-        stealer_sender: stealer_command_tx,
+    <span class="kw">let </span>bg_tasks = BackgroundTasks {
+        sniffer: sniffer_status
+            .map(|status| BackgroundTask::Running(status, sniffer_command_tx))
+            .unwrap_or(BackgroundTask::Disabled),
+        stealer: stealer_status
+            .map(|status| BackgroundTask::Running(status, stealer_command_tx))
+            .unwrap_or(BackgroundTask::Disabled),
         dns_api,
     };
 
@@ -1389,14 +1526,26 @@
     <span class="macro">trace!</span>(<span class="string">&quot;Agent shutting down.&quot;</span>);
     drop(cancel_guard);
 
-    sniffer_task.join().map_err(|<span class="kw">_</span>| AgentError::JoinTask)<span class="question-mark">?</span>;
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(err) = bg_tasks.sniffer_status.err().<span class="kw">await </span>{
-        <span class="macro">error!</span>(<span class="string">&quot;start_agent -&gt; sniffer task failed with error: {}&quot;</span>, err);
+    <span class="kw">let </span>BackgroundTasks {
+        sniffer, stealer, ..
+    } = bg_tasks;
+
+    <span class="kw">if let </span>(<span class="prelude-val">Some</span>(sniffer_task), BackgroundTask::Running(<span class="kw-2">mut </span>sniffer_status, <span class="kw">_</span>)) =
+        (sniffer_task, sniffer)
+    {
+        sniffer_task.join().map_err(|<span class="kw">_</span>| AgentError::JoinTask)<span class="question-mark">?</span>;
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(err) = sniffer_status.err().<span class="kw">await </span>{
+            <span class="macro">error!</span>(<span class="string">&quot;start_agent -&gt; sniffer task failed with error: {}&quot;</span>, err);
+        }
     }
 
-    stealer_task.join().map_err(|<span class="kw">_</span>| AgentError::JoinTask)<span class="question-mark">?</span>;
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(err) = bg_tasks.stealer_status.err().<span class="kw">await </span>{
-        <span class="macro">error!</span>(<span class="string">&quot;start_agent -&gt; stealer task failed with error: {}&quot;</span>, err);
+    <span class="kw">if let </span>(<span class="prelude-val">Some</span>(stealer_task), BackgroundTask::Running(<span class="kw-2">mut </span>stealer_status, <span class="kw">_</span>)) =
+        (stealer_task, stealer)
+    {
+        stealer_task.join().map_err(|<span class="kw">_</span>| AgentError::JoinTask)<span class="question-mark">?</span>;
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(err) = stealer_status.err().<span class="kw">await </span>{
+            <span class="macro">error!</span>(<span class="string">&quot;start_agent -&gt; stealer task failed with error: {}&quot;</span>, err);
+        }
     }
 
     <span class="macro">trace!</span>(<span class="string">&quot;Agent shutdown.&quot;</span>);
@@ -1406,7 +1555,10 @@
 <span class="kw">async fn </span>clear_iptable_chain() -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="kw">let </span>ipt = iptables::new(<span class="bool-val">false</span>).unwrap();
 
-    SafeIpTables::load(ipt, <span class="bool-val">false</span>).<span class="kw">await</span><span class="question-mark">?</span>.cleanup().<span class="kw">await</span><span class="question-mark">?</span>;
+    SafeIpTables::load(IPTablesWrapper::from(ipt), <span class="bool-val">false</span>)
+        .<span class="kw">await</span><span class="question-mark">?
+        </span>.cleanup()
+        .<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>(())
 }
@@ -1424,11 +1576,10 @@
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">async fn </span>start_iptable_guard() -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+<span class="kw">async fn </span>start_iptable_guard(args: Args, watch: drain::Watch) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="macro">debug!</span>(<span class="string">&quot;start_iptable_guard -&gt; Initializing iptable-guard.&quot;</span>);
 
-    <span class="kw">let </span>args = parse_args();
-    <span class="kw">let </span>state = State::new(<span class="kw-2">&amp;</span>args).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span>state = State::new(<span class="kw-2">&amp;</span>args, watch).<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="kw">let </span>pid = state.container_pid();
 
     std::env::set_var(IPTABLE_PREROUTING_ENV, IPTABLE_PREROUTING.as_str());
@@ -1449,7 +1600,7 @@
     result
 }
 
-<span class="attr">#[tokio::main]
+<span class="attr">#[tokio::main(flavor = <span class="string">&quot;current_thread&quot;</span>)]
 </span><span class="kw">async fn </span>main() -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     tracing_subscriber::registry()
         .with(
@@ -1466,13 +1617,26 @@
         <span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_VERSION&quot;</span>)
     );
 
-    <span class="kw">let </span>agent_result = <span class="kw">if </span>std::env::var(IPTABLE_PREROUTING_ENV).is_ok()
-        &amp;&amp; std::env::var(IPTABLE_MESH_ENV).is_ok()
+    <span class="kw">let </span>args = cli::parse_args();
+
+    <span class="kw">let </span>(signal, watch) = drain::channel();
+
+    <span class="kw">let </span>agent_result = <span class="kw">if </span>args.mode.is_targetless()
+        || (std::env::var(IPTABLE_PREROUTING_ENV).is_ok()
+            &amp;&amp; std::env::var(IPTABLE_MESH_ENV).is_ok())
     {
-        start_agent().<span class="kw">await
+        start_agent(args, watch).<span class="kw">await
     </span>} <span class="kw">else </span>{
-        start_iptable_guard().<span class="kw">await
+        start_iptable_guard(args, watch).<span class="kw">await
     </span>};
+
+    <span class="comment">// wait for background tasks/drop impl
+    </span>tokio::time::timeout(std::time::Duration::from_secs(<span class="number">10</span>), signal.drain())
+        .<span class="kw">await
+        </span>.is_err()
+        .then(|| {
+            <span class="macro">warn!</span>(<span class="string">&quot;main -&gt; mirrord-agent waiting for drain timed out&quot;</span>);
+        });
 
     <span class="kw">match </span>agent_result {
         <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; {

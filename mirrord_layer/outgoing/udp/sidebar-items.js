@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["BRANCHES"],"enum":["UdpOutgoing"],"static":["CALLSITE"],"struct":["ConnectionMirror","UdpOutgoingHandler"]};
+window.SIDEBAR_ITEMS = {"enum":["UdpOutgoing"],"struct":["ConnectionMirror","UdpOutgoingHandler"]};

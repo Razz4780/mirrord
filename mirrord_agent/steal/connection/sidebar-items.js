@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["BRANCHES"],"enum":["StealSubscription"],"static":["CALLSITE"],"struct":["TcpConnectionStealer"]};
+window.SIDEBAR_ITEMS = {"enum":["StealSubscription"],"struct":["TcpConnectionStealer"]};

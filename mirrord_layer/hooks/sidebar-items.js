@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["get_export_by_name","get_modules"],"static":["CALLSITE","GUM"],"struct":["HookManager"]};
+window.SIDEBAR_ITEMS = {"fn":["get_export_by_name","get_modules"],"static":["GUM"],"struct":["HookManager"]};

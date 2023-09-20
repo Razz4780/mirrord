@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `mirrord/agent/src/sniffer.rs`."><title>sniffer.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="mirrord_agent" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0-nightly (c609da59d 2023-04-18)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../static.files/source-script-905937fbbdc8e9ea.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-1a524efa7bd4ab32.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../mirrord_agent/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `mirrord/agent/src/sniffer.rs`."><title>sniffer.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="mirrord_agent" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (e3abbd499 2023-09-06)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../mirrord_agent/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -586,6 +586,28 @@
 <a href="#586" id="586">586</a>
 <a href="#587" id="587">587</a>
 <a href="#588" id="588">588</a>
+<a href="#589" id="589">589</a>
+<a href="#590" id="590">590</a>
+<a href="#591" id="591">591</a>
+<a href="#592" id="592">592</a>
+<a href="#593" id="593">593</a>
+<a href="#594" id="594">594</a>
+<a href="#595" id="595">595</a>
+<a href="#596" id="596">596</a>
+<a href="#597" id="597">597</a>
+<a href="#598" id="598">598</a>
+<a href="#599" id="599">599</a>
+<a href="#600" id="600">600</a>
+<a href="#601" id="601">601</a>
+<a href="#602" id="602">602</a>
+<a href="#603" id="603">603</a>
+<a href="#604" id="604">604</a>
+<a href="#605" id="605">605</a>
+<a href="#606" id="606">606</a>
+<a href="#607" id="607">607</a>
+<a href="#608" id="608">608</a>
+<a href="#609" id="609">609</a>
+<a href="#610" id="610">610</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     collections::{HashMap, HashSet},
     hash::{Hash, Hasher},
@@ -615,12 +637,13 @@
 
 <span class="kw">use crate</span>::{
     error::AgentError,
+    steal::http::HttpVersion,
     util::{ClientId, IndexAllocator, Subscriptions},
     watched_task::TaskStatus,
 };
 
 <span class="attr">#[derive(Debug, Eq, Copy, Clone)]
-</span><span class="kw">pub struct </span>TcpSessionIdentifier {
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>TcpSessionIdentifier {
     <span class="doccomment">/// The remote address that is sending a packet to the impersonated pod.
     ///
     /// ## Details
@@ -686,7 +709,7 @@
 
 <span class="kw">type </span>TCPSessionMap = HashMap&lt;TcpSessionIdentifier, TCPSession&gt;;
 
-<span class="kw">fn </span>is_new_connection(flags: u16) -&gt; bool {
+<span class="kw">const fn </span>is_new_connection(flags: u16) -&gt; bool {
     <span class="number">0 </span>!= (flags &amp; TcpFlags::SYN) &amp;&amp; <span class="number">0 </span>== (flags &amp; (TcpFlags::ACK | TcpFlags::RST | TcpFlags::FIN))
 }
 
@@ -808,14 +831,14 @@
 }
 
 <span class="attr">#[derive(Debug)]
-</span><span class="kw">pub struct </span>SnifferCommand {
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>SnifferCommand {
     client_id: ClientId,
     command: SnifferCommands,
 }
 
 <span class="doccomment">/// Interface used by clients to interact with the [`TcpConnectionSniffer`].
 /// Multiple instances of this struct operate on a single sniffer instance.
-</span><span class="kw">pub struct </span>TcpSnifferApi {
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>TcpSnifferApi {
     <span class="doccomment">/// Id of the client using this struct.
     </span>client_id: ClientId,
     <span class="doccomment">/// Channel used to send commands to the [`TcpConnectionSniffer`].
@@ -896,7 +919,7 @@
     }
 }
 
-<span class="kw">pub struct </span>TcpConnectionSniffer {
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>TcpConnectionSniffer {
     port_subscriptions: Subscriptions&lt;Port, ClientId&gt;,
     receiver: Receiver&lt;SnifferCommand&gt;,
     client_senders: HashMap&lt;ClientId, Sender&lt;DaemonTcp&gt;&gt;,
@@ -957,12 +980,15 @@
         })
     }
 
-    <span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(<span class="self">self</span>, sender))]
+    <span class="doccomment">/// New layer is connecting to this agent sniffer.
+    </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, ret, skip(<span class="self">self</span>, sender))]
     </span><span class="kw">fn </span>handle_new_client(<span class="kw-2">&amp;mut </span><span class="self">self</span>, client_id: ClientId, sender: Sender&lt;DaemonTcp&gt;) {
         <span class="self">self</span>.client_senders.insert(client_id, sender);
     }
 
-    <span class="kw">async fn </span>handle_subscribe(
+    <span class="doccomment">/// layer with `client_id` wants to sniff on `port`.
+    </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, ret, skip(<span class="self">self</span>))]
+    </span><span class="kw">async fn </span>handle_subscribe(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         client_id: ClientId,
         port: Port,
@@ -981,7 +1007,10 @@
         <span class="self">self</span>.update_sniffer()
     }
 
-    <span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(<span class="self">self</span>))]
+    <span class="doccomment">/// Updates the sniffer&#39;s internal state.
+    ///
+    /// Called when the sniffer receives a new command.
+    </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, ret, skip(<span class="self">self</span>))]
     </span><span class="kw">fn </span>update_sniffer(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), AgentError&gt; {
         <span class="kw">let </span>ports = <span class="self">self</span>.port_subscriptions.get_subscribed_topics();
 
@@ -1002,7 +1031,8 @@
             .contains(<span class="kw-2">&amp;</span>port)
     }
 
-    <span class="kw">async fn </span>handle_command(<span class="kw-2">&amp;mut </span><span class="self">self</span>, command: SnifferCommand) -&gt; <span class="prelude-ty">Result</span>&lt;(), AgentError&gt; {
+    <span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, ret, skip(<span class="self">self</span>))]
+    </span><span class="kw">async fn </span>handle_command(<span class="kw-2">&amp;mut </span><span class="self">self</span>, command: SnifferCommand) -&gt; <span class="prelude-ty">Result</span>&lt;(), AgentError&gt; {
         <span class="kw">match </span>command {
             SnifferCommand {
                 client_id,
@@ -1060,7 +1090,7 @@
     }
 
     <span class="doccomment">/// Sends a [`DaemonTcp`] message back to the client with `client_id`.
-    </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(<span class="self">self</span>, message))]
+    </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, ret, skip(<span class="self">self</span>, message))]
     </span><span class="kw">async fn </span>send_message_to_client(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         client_id: <span class="kw-2">&amp;</span>ClientId,
@@ -1079,7 +1109,19 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(<span class="self">self</span>, eth_packet), fields(bytes = %eth_packet.len()))]
+    <span class="doccomment">/// First it checks the `tcp_flags` with [`is_new_connection`], if that&#39;s not the case, meaning
+    /// we have traffic from some existing connection from before mirrord started, then it tries to
+    /// see if `bytes` contains an HTTP request (HTTP/1) of some sort. When an HTTP request is
+    /// detected, then the agent should start mirroring as if it was a new connection.
+    ///
+    /// tl;dr: checks packet flags, or if it&#39;s an HTTP packet, then begins a new sniffing session.
+    </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, ret, skip(bytes))]
+    </span><span class="kw">fn </span>treat_as_new_session(tcp_flags: u16, bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; bool {
+        is_new_connection(tcp_flags)
+            || <span class="macro">matches!</span>(HttpVersion::new(bytes), HttpVersion::V1 | HttpVersion::V2)
+    }
+
+    <span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, ret, skip(<span class="self">self</span>, eth_packet), fields(bytes = %eth_packet.len()))]
     </span><span class="kw">async fn </span>handle_packet(<span class="kw-2">&amp;mut </span><span class="self">self</span>, eth_packet: Vec&lt;u8&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;(), AgentError&gt; {
         <span class="kw">let </span>(identifier, tcp_packet) = <span class="kw">match </span>get_tcp_packet(eth_packet) {
             <span class="prelude-val">Some</span>(res) =&gt; res,
@@ -1101,9 +1143,12 @@
         <span class="kw">let </span>session = <span class="kw">match </span><span class="self">self</span>.sessions.remove(<span class="kw-2">&amp;</span>identifier) {
             <span class="prelude-val">Some</span>(session) =&gt; session,
             <span class="prelude-val">None </span>=&gt; {
-                <span class="kw">if </span>!is_new_connection(tcp_flags) {
-                    <span class="macro">debug!</span>(<span class="string">&quot;not new connection {tcp_flags:?}&quot;</span>);
-                    <span class="kw">return </span><span class="prelude-val">Ok</span>(());
+                <span class="comment">// Performs a check on the `tcp_flags` and on the packet contents to see if this
+                // should be treated as a new connection.
+                </span><span class="kw">if </span>!<span class="self">Self</span>::treat_as_new_session(tcp_flags, <span class="kw-2">&amp;</span>tcp_packet.bytes) {
+                    <span class="comment">// Either it&#39;s an existing session, or some sort of existing traffic we don&#39;t
+                    // care to start mirroring.
+                    </span><span class="kw">return </span><span class="prelude-val">Ok</span>(());
                 }
 
                 <span class="kw">if </span>!is_client_packet {
@@ -1170,7 +1215,6 @@
             <span class="self">self</span>.sessions.insert(identifier, session);
         }
 
-        <span class="macro">trace!</span>(<span class="string">&quot;TcpConnectionSniffer::handle_packet -&gt; finished&quot;</span>);
         <span class="prelude-val">Ok</span>(())
     }
 }

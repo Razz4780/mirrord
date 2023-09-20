@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["choose_container","get_agent_name","get_capabilities","is_ephemeral_container_running","wait_for_agent_startup"],"static":["AGENT_READY_REGEX","CALLSITE","DEFAULT_TOLERATIONS","SKIP_NAMES"],"struct":["EphemeralContainer","JobContainer"],"trait":["ContainerApi"]};
+window.SIDEBAR_ITEMS = {"fn":["choose_container"],"mod":["ephemeral","job","targeted","targetless","util"],"static":["SKIP_NAMES"],"struct":["ContainerParams"],"trait":["ContainerApi","ContainerVariant"]};

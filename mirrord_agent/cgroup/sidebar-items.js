@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["CGROUP_MOUNT_PATH","CGROUP_SUBGROUP_MOUNT_PATH"],"enum":["Cgroup","CgroupError","CgroupSharedError","CgroupV1Error","CgroupV2Error"],"fn":["freeze_cgroupv2","move_pids_to_cgroupv2","read_pids_cgroupv2"],"struct":["CgroupV1","CgroupV2"]};

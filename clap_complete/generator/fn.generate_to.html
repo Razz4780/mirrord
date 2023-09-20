@@ -1,0 +1,110 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Generate a completions file for a specified shell at compile-time."><title>generate_to in clap_complete::generator - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="clap_complete" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (e3abbd499 2023-09-06)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../../clap_complete/index.html"><img src="https://raw.githubusercontent.com/clap-rs/clap/master/assets/clap.png" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../../clap_complete/index.html"><img src="https://raw.githubusercontent.com/clap-rs/clap/master/assets/clap.png" alt="logo"></a><div class="sidebar-elems"><h2><a href="index.html">In clap_complete::generator</a></h2></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Function <a href="../index.html">clap_complete</a>::<wbr><a href="index.html">generator</a>::<wbr><a class="fn" href="#">generate_to</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../../src/clap_complete/generator/mod.rs.html#191-212">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><pre class="rust item-decl"><code>pub fn generate_to&lt;G, S, T&gt;(
+    gen: G,
+    cmd: &amp;mut <a class="struct" href="../../clap_builder/builder/command/struct.Command.html" title="struct clap_builder::builder::command::Command">Command</a>,
+    bin_name: S,
+    out_dir: T
+) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/std/path/struct.PathBuf.html" title="struct std::path::PathBuf">PathBuf</a>, <a class="struct" href="https://doc.rust-lang.org/nightly/std/io/error/struct.Error.html" title="struct std::io::error::Error">Error</a>&gt;<span class="where fmt-newline">where
+    G: <a class="trait" href="trait.Generator.html" title="trait clap_complete::generator::Generator">Generator</a>,
+    S: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>&gt;,
+    T: <a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/std/ffi/os_str/struct.OsString.html" title="struct std::ffi::os_str::OsString">OsString</a>&gt;,</span></code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Generate a completions file for a specified shell at compile-time.</p>
+<p><strong>NOTE:</strong> to generate the file at compile time you must use a <code>build.rs</code> “Build Script” or a
+<a href="https://github.com/matklad/cargo-xtask"><code>cargo-xtask</code></a></p>
+<h2 id="examples"><a href="#examples">Examples</a></h2>
+<p>The following example generates a bash completion script via a <code>build.rs</code> script. In this
+simple example, we’ll demo a very small application with only a single subcommand and two
+args. Real applications could be many multiple levels deep in subcommands, and have tens or
+potentially hundreds of arguments.</p>
+<p>First, it helps if we separate out our <code>Command</code> definition into a separate file. Whether you
+do this as a function, or bare Command definition is a matter of personal preference.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// src/cli.rs
+</span><span class="kw">pub fn </span>build_cli() -&gt; Command {
+    Command::new(<span class="string">&quot;compl&quot;</span>)
+        .about(<span class="string">&quot;Tests completions&quot;</span>)
+        .arg(Arg::new(<span class="string">&quot;file&quot;</span>)
+            .help(<span class="string">&quot;some input file&quot;</span>))
+        .subcommand(Command::new(<span class="string">&quot;test&quot;</span>)
+            .about(<span class="string">&quot;tests things&quot;</span>)
+            .arg(Arg::new(<span class="string">&quot;case&quot;</span>)
+                .long(<span class="string">&quot;case&quot;</span>)
+                .action(ArgAction::Set)
+                .help(<span class="string">&quot;the case to test&quot;</span>)))
+}</code></pre></div>
+<p>In our regular code, we can simply call this <code>build_cli()</code> function, then call
+<code>get_matches()</code>, or any of the other normal methods directly after. For example:</p>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="comment">// src/main.rs
+
+</span><span class="kw">mod </span>cli;
+
+<span class="kw">fn </span>main() {
+    <span class="kw">let </span>_m = cli::build_cli().get_matches();
+
+    <span class="comment">// normal logic continues...
+</span>}</code></pre></div>
+<p>Next, we set up our <code>Cargo.toml</code> to use a <code>build.rs</code> build script.</p>
+<div class="example-wrap"><pre class="language-toml"><code># Cargo.toml
+build = &quot;build.rs&quot;
+
+[dependencies]
+clap = &quot;*&quot;
+
+[build-dependencies]
+clap = &quot;*&quot;
+clap_complete = &quot;*&quot;
+</code></pre></div>
+<p>Next, we place a <code>build.rs</code> in our project root.</p>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>clap_complete::{generate_to, shells::Bash};
+<span class="kw">use </span>std::env;
+<span class="kw">use </span>std::io::Error;
+
+<span class="macro">include!</span>(<span class="string">&quot;src/cli.rs&quot;</span>);
+
+<span class="kw">fn </span>main() -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
+    <span class="kw">let </span>outdir = <span class="kw">match </span>env::var_os(<span class="string">&quot;OUT_DIR&quot;</span>) {
+        <span class="prelude-val">None </span>=&gt; <span class="kw">return </span><span class="prelude-val">Ok</span>(()),
+        <span class="prelude-val">Some</span>(outdir) =&gt; outdir,
+    };
+
+    <span class="kw">let </span><span class="kw-2">mut </span>cmd = build_cli();
+    <span class="kw">let </span>path = generate_to(
+        Bash,
+        <span class="kw-2">&amp;mut </span>cmd, <span class="comment">// We need to specify what generator to use
+        </span><span class="string">&quot;myapp&quot;</span>,  <span class="comment">// We need to specify the bin name manually
+        </span>outdir,   <span class="comment">// We need to specify where to write to
+    </span>)<span class="question-mark">?</span>;
+
+    <span class="macro">println!</span>(<span class="string">&quot;cargo:warning=completion file is generated: {path:?}&quot;</span>);
+
+    <span class="prelude-val">Ok</span>(())
+}</code></pre></div>
+<p>Now, once we compile there will be a <code>{bin_name}.bash</code> file in the directory.
+Assuming we compiled with debug mode, it would be somewhere similar to
+<code>&lt;project&gt;/target/debug/build/myapp-&lt;hash&gt;/out/myapp.bash</code>.</p>
+<p><strong>NOTE:</strong> Please look at the individual <a href="../shells/index.html" title="mod clap_complete::shells">shells</a>
+to see the name of the files generated.</p>
+<p>Using <a href="../../clap_builder/derive/trait.ValueEnum.html#tymethod.value_variants" title="associated function clap_builder::derive::ValueEnum::value_variants"><code>ValueEnum::value_variants()</code></a> you can easily loop over
+all the supported shell variants to generate all the completions at once too.</p>
+
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>clap::ValueEnum;
+<span class="kw">use </span>clap_complete::{generate_to, Shell};
+<span class="kw">use </span>std::env;
+<span class="kw">use </span>std::io::Error;
+
+<span class="macro">include!</span>(<span class="string">&quot;src/cli.rs&quot;</span>);
+
+<span class="kw">fn </span>main() -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
+    <span class="kw">let </span>outdir = <span class="kw">match </span>env::var_os(<span class="string">&quot;OUT_DIR&quot;</span>) {
+        <span class="prelude-val">None </span>=&gt; <span class="kw">return </span><span class="prelude-val">Ok</span>(()),
+        <span class="prelude-val">Some</span>(outdir) =&gt; outdir,
+    };
+
+    <span class="kw">let </span><span class="kw-2">mut </span>cmd = build_cli();
+    <span class="kw">for </span><span class="kw-2">&amp;</span>shell <span class="kw">in </span>Shell::value_variants() {
+        generate_to(shell, <span class="kw-2">&amp;mut </span>cmd, <span class="string">&quot;myapp&quot;</span>, outdir)<span class="question-mark">?</span>;
+    }
+
+    <span class="prelude-val">Ok</span>(())
+}</code></pre></div>
+</div></details></section></div></main></body></html>

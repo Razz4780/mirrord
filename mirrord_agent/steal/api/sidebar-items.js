@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"static":["CALLSITE"],"struct":["TcpStealerApi"]};
+window.SIDEBAR_ITEMS = {"struct":["TcpStealerApi"]};

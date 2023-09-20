@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"static":["CALLSITE"],"struct":["DetourGuardExecutor","HttpV2"]};
+window.SIDEBAR_ITEMS = {"struct":["DetourGuardExecutor","HttpV2"]};
