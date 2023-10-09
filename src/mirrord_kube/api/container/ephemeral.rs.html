@@ -216,6 +216,9 @@
 <a href="#216" id="216">216</a>
 <a href="#217" id="217">217</a>
 <a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>futures::StreamExt;
 <span class="kw">use </span>k8s_openapi::api::core::v1::{EphemeralContainer <span class="kw">as </span>KubeEphemeralContainer, Pod};
 <span class="kw">use </span>kube::{
@@ -385,6 +388,9 @@
         <span class="kw">let </span><span class="kw-2">mut </span>command_line = base_command_line(agent, params);
 
         command_line.extend([<span class="string">&quot;ephemeral&quot;</span>.to_string()]);
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(mesh) = runtime_data.mesh {
+            command_line.extend([<span class="string">&quot;--mesh&quot;</span>.to_string(), mesh.to_string()]);
+        }
 
         EphemeralTargetedVariant {
             agent,

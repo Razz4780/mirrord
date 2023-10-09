@@ -526,6 +526,15 @@
 <a href="#526" id="526">526</a>
 <a href="#527" id="527">527</a>
 <a href="#528" id="528">528</a>
+<a href="#529" id="529">529</a>
+<a href="#530" id="530">530</a>
+<a href="#531" id="531">531</a>
+<a href="#532" id="532">532</a>
+<a href="#533" id="533">533</a>
+<a href="#534" id="534">534</a>
+<a href="#535" id="535">535</a>
+<a href="#536" id="536">536</a>
+<a href="#537" id="537">537</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>futures::StreamExt;
 <span class="kw">use </span>k8s_openapi::{
     api::{batch::v1::Job, core::v1::Pod},
@@ -681,6 +690,22 @@
 
         <span class="kw">let </span>tolerations = agent.tolerations.as_ref().unwrap_or(<span class="kw-2">&amp;</span>DEFAULT_TOLERATIONS);
 
+        <span class="kw">let </span>resources = agent.resources.clone().unwrap_or_else(|| {
+            serde_json::from_value(<span class="macro">serde_json::json!</span>({
+                <span class="string">&quot;requests&quot;</span>:
+                {
+                    <span class="string">&quot;cpu&quot;</span>: <span class="string">&quot;1m&quot;</span>,
+                    <span class="string">&quot;memory&quot;</span>: <span class="string">&quot;1Mi&quot;
+                </span>},
+                <span class="string">&quot;limits&quot;</span>:
+                {
+                    <span class="string">&quot;cpu&quot;</span>: <span class="string">&quot;100m&quot;</span>,
+                    <span class="string">&quot;memory&quot;</span>: <span class="string">&quot;100Mi&quot;
+                </span>},
+            }))
+            .expect(<span class="string">&quot;Should be valid ResourceRequirements json&quot;</span>)
+        });
+
         serde_json::from_value(<span class="macro">json!</span>({
             <span class="string">&quot;metadata&quot;</span>: {
                 <span class="string">&quot;name&quot;</span>: params.name,
@@ -720,19 +745,8 @@
                                     { <span class="string">&quot;name&quot;</span>: <span class="string">&quot;RUST_LOG&quot;</span>, <span class="string">&quot;value&quot;</span>: agent.log_level },
                                     { <span class="string">&quot;name&quot;</span>: <span class="string">&quot;MIRRORD_AGENT_STEALER_FLUSH_CONNECTIONS&quot;</span>, <span class="string">&quot;value&quot;</span>: agent.flush_connections.to_string() }
                                 ],
-                                <span class="string">&quot;resources&quot;</span>: <span class="comment">// Add requests to avoid getting defaulted https://github.com/metalbear-co/mirrord/issues/579
-                                </span>{
-                                    <span class="string">&quot;requests&quot;</span>:
-                                    {
-                                        <span class="string">&quot;cpu&quot;</span>: <span class="string">&quot;1m&quot;</span>,
-                                        <span class="string">&quot;memory&quot;</span>: <span class="string">&quot;1Mi&quot;
-                                    </span>},
-                                    <span class="string">&quot;limits&quot;</span>:
-                                    {
-                                        <span class="string">&quot;cpu&quot;</span>: <span class="string">&quot;100m&quot;</span>,
-                                        <span class="string">&quot;memory&quot;</span>: <span class="string">&quot;100Mi&quot;
-                                    </span>},
-                                }
+                                <span class="comment">// Add requests to avoid getting defaulted https://github.com/metalbear-co/mirrord/issues/579
+                                </span><span class="string">&quot;resources&quot;</span>: resources
                             }
                         ]
                     }
@@ -762,6 +776,10 @@
             <span class="string">&quot;--container-runtime&quot;</span>.to_owned(),
             runtime_data.container_runtime.to_string(),
         ]);
+
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(mesh) = runtime_data.mesh {
+            command_line.extend([<span class="string">&quot;--mesh&quot;</span>.to_string(), mesh.to_string()]);
+        }
 
         <span class="kw">let </span>inner = JobVariant::with_command_line(agent, params, command_line);
 
@@ -946,7 +964,7 @@
             <span class="kw-2">&amp;</span>agent,
             <span class="kw-2">&amp;</span>params,
             <span class="kw-2">&amp;</span>RuntimeData {
-                is_mesh: <span class="bool-val">false</span>,
+                mesh: <span class="prelude-val">None</span>,
                 pod_name: <span class="string">&quot;pod&quot;</span>.to_string(),
                 pod_namespace: <span class="prelude-val">None</span>,
                 node_name: <span class="string">&quot;foobaz&quot;</span>.to_string(),

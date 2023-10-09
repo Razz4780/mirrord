@@ -1894,7 +1894,7 @@
         |_bypass| {
             <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
             </span><span class="kw">let </span>raw_path = update_ptr_from_bypass(raw_path, _bypass);
-            FN_LSTAT(raw_path, out_stat)
+            FN_STAT(raw_path, out_stat)
         },
     )
 }

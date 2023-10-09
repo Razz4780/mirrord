@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["PKG_DESCRIPTION","PKG_NAME","PKG_VERSION","UNICODE_VERSION"],"mod":["grapheme_cluster_break","sentence_break","word_break"]};

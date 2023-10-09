@@ -106,11 +106,21 @@
 <a href="#106" id="106">106</a>
 <a href="#107" id="107">107</a>
 <a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{collections::HashSet, sync::LazyLock};
 
 <span class="kw">use </span>k8s_openapi::api::core::v1::ContainerStatus;
 <span class="kw">use </span>mirrord_config::agent::AgentConfig;
 <span class="kw">use </span>mirrord_progress::Progress;
+<span class="kw">use </span>mirrord_protocol::MeshVendor;
 <span class="kw">use </span>rand::{
     distributions::{Alphanumeric, DistString},
     Rng,
@@ -178,7 +188,7 @@
 <span class="kw">where
     </span>V: ContainerVariant,
 {
-    <span class="kw">async fn </span>create_agent&lt;P&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, progress: <span class="kw-2">&amp;</span>P) -&gt; <span class="prelude-ty">Result</span>&lt;AgentKubernetesConnectInfo&gt;
+    <span class="kw">async fn </span>create_agent&lt;P&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, progress: <span class="kw-2">&amp;mut </span>P) -&gt; <span class="prelude-ty">Result</span>&lt;AgentKubernetesConnectInfo&gt;
     <span class="kw">where
         </span>P: Progress + Send + Sync;
 }
@@ -194,11 +204,19 @@
 </span><span class="kw">pub fn </span>choose_container&lt;<span class="lifetime">&#39;a</span>&gt;(
     container_name: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
     container_statuses: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[ContainerStatus],
-) -&gt; (<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>ContainerStatus&gt;, bool) {
-    <span class="kw">const </span>MESH_LIST: [<span class="kw-2">&amp;</span>str; <span class="number">4</span>] = [<span class="string">&quot;istio-proxy&quot;</span>, <span class="string">&quot;istio-init&quot;</span>, <span class="string">&quot;linkerd-proxy&quot;</span>, <span class="string">&quot;linkerd-init&quot;</span>];
-    <span class="kw">let </span>is_mesh = container_statuses
-        .iter()
-        .any(|status| MESH_LIST.contains(<span class="kw-2">&amp;</span>status.name.as_str()));
+) -&gt; (<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>ContainerStatus&gt;, <span class="prelude-ty">Option</span>&lt;MeshVendor&gt;) {
+    <span class="kw">const </span>ISTIO: [<span class="kw-2">&amp;</span>str; <span class="number">2</span>] = [<span class="string">&quot;istio-proxy&quot;</span>, <span class="string">&quot;istio-init&quot;</span>];
+    <span class="kw">const </span>LINKERD: [<span class="kw-2">&amp;</span>str; <span class="number">2</span>] = [<span class="string">&quot;linkerd-proxy&quot;</span>, <span class="string">&quot;linkerd-init&quot;</span>];
+
+    <span class="kw">let </span>mesh = container_statuses.iter().find_map(|status| {
+        <span class="kw">if </span>ISTIO.contains(<span class="kw-2">&amp;</span>status.name.as_str()) {
+            <span class="prelude-val">Some</span>(MeshVendor::Istio)
+        } <span class="kw">else if </span>LINKERD.contains(<span class="kw-2">&amp;</span>status.name.as_str()) {
+            <span class="prelude-val">Some</span>(MeshVendor::Linkerd)
+        } <span class="kw">else </span>{
+            <span class="prelude-val">None
+        </span>}
+    });
 
     <span class="kw">let </span>container = <span class="kw">if let </span><span class="prelude-val">Some</span>(name) = container_name {
         container_statuses
@@ -212,6 +230,6 @@
             .or_else(|| container_statuses.first())
     };
 
-    (container, is_mesh)
+    (container, mesh)
 }
 </code></pre></div></section></main></body></html>

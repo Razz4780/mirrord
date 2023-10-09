@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["PKG_DESCRIPTION","PKG_NAME","PKG_VERSION","UNICODE_VERSION"],"enum":["GraphemeIncomplete"],"struct":["GraphemeCursor","GraphemeIndices","Graphemes","WordBoundIndices","WordBounds","Words"]};

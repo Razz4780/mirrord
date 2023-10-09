@@ -67,13 +67,33 @@
 <a href="#67" id="67">67</a>
 <a href="#68" id="68">68</a>
 <a href="#69" id="69">69</a>
+<a href="#70" id="70">70</a>
+<a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
 </pre></div><pre class="rust"><code><span class="attr">#![deny(missing_docs)]
 
 </span><span class="kw">use </span>clap::{Parser, Subcommand};
+<span class="kw">use </span>mirrord_protocol::MeshVendor;
 
 <span class="kw">const </span>DEFAULT_RUNTIME: <span class="kw-2">&amp;</span>str = <span class="string">&quot;containerd&quot;</span>;
 
-<span class="attr">#[derive(Parser, Debug)]
+<span class="doccomment">/// **Heads-up**: Order of arguments passed to this matter, so if you add a new arg after something
+/// like `Targeted`, it won&#39;t work, as `Mode` is a `subcomand`. You would need to add the arg in
+/// `Mode::Targeted` for it to work (that&#39;s why `--mesh` is there and not here).
+</span><span class="attr">#[derive(Parser, Debug)]
 #[command(author, version, about, long_about = <span class="prelude-val">None</span>)]
 </span><span class="kw">pub struct </span>Args {
     <span class="attr">#[clap(subcommand)]
@@ -118,6 +138,10 @@
         <span class="doccomment">/// Container runtime to use
         </span><span class="attr">#[arg(short = <span class="string">&#39;r&#39;</span>, long, default_value = DEFAULT_RUNTIME)]
         </span>container_runtime: String,
+
+        <span class="doccomment">/// Which kind of mesh the remote pod is in, see [`MeshVendor`].
+        </span><span class="attr">#[arg(long)]
+        </span>mesh: <span class="prelude-ty">Option</span>&lt;MeshVendor&gt;,
     },
     <span class="doccomment">/// Inform the agent to use `proc/1/root` as the root directory.
     </span>Ephemeral,
@@ -130,6 +154,14 @@
 <span class="kw">impl </span>Mode {
     <span class="kw">pub fn </span>is_targetless(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="macro">matches!</span>(<span class="self">self</span>, Mode::Targetless)
+    }
+
+    <span class="doccomment">/// Digs into `Mode::Targeted` to get the `MeshVendor`.
+    </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>mesh(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;MeshVendor&gt; {
+        <span class="kw">match </span><span class="kw-2">*</span><span class="self">self </span>{
+            Mode::Targeted { mesh, .. } =&gt; mesh,
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+        }
     }
 }
 

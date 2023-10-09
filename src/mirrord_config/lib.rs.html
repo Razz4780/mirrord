@@ -755,6 +755,45 @@
 <a href="#755" id="755">755</a>
 <a href="#756" id="756">756</a>
 <a href="#757" id="757">757</a>
+<a href="#758" id="758">758</a>
+<a href="#759" id="759">759</a>
+<a href="#760" id="760">760</a>
+<a href="#761" id="761">761</a>
+<a href="#762" id="762">762</a>
+<a href="#763" id="763">763</a>
+<a href="#764" id="764">764</a>
+<a href="#765" id="765">765</a>
+<a href="#766" id="766">766</a>
+<a href="#767" id="767">767</a>
+<a href="#768" id="768">768</a>
+<a href="#769" id="769">769</a>
+<a href="#770" id="770">770</a>
+<a href="#771" id="771">771</a>
+<a href="#772" id="772">772</a>
+<a href="#773" id="773">773</a>
+<a href="#774" id="774">774</a>
+<a href="#775" id="775">775</a>
+<a href="#776" id="776">776</a>
+<a href="#777" id="777">777</a>
+<a href="#778" id="778">778</a>
+<a href="#779" id="779">779</a>
+<a href="#780" id="780">780</a>
+<a href="#781" id="781">781</a>
+<a href="#782" id="782">782</a>
+<a href="#783" id="783">783</a>
+<a href="#784" id="784">784</a>
+<a href="#785" id="785">785</a>
+<a href="#786" id="786">786</a>
+<a href="#787" id="787">787</a>
+<a href="#788" id="788">788</a>
+<a href="#789" id="789">789</a>
+<a href="#790" id="790">790</a>
+<a href="#791" id="791">791</a>
+<a href="#792" id="792">792</a>
+<a href="#793" id="793">793</a>
+<a href="#794" id="794">794</a>
+<a href="#795" id="795">795</a>
+<a href="#796" id="796">796</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(slice_concat_trait)]
 #![feature(lazy_cell)]
 #![feature(result_option_inspect)]
@@ -778,6 +817,7 @@
 <span class="kw">use </span>mirrord_analytics::CollectAnalytics;
 <span class="kw">use </span>mirrord_config_derive::MirrordConfig;
 <span class="kw">use </span>schemars::JsonSchema;
+<span class="kw">use </span>tera::Tera;
 <span class="kw">use </span>tracing::warn;
 
 <span class="kw">use crate</span>::{
@@ -804,6 +844,10 @@
 /// All of the configuration fields have a default value, so a minimal configuration would be no
 /// configuration at all.
 ///
+/// The configuration supports templating using the [Tera](https://keats.github.io/tera/docs/) template engine.
+/// Currently we don&#39;t provide additional values to the context, if you have anything you want us to
+/// provide please let us know.
+///
 /// To help you get started, here are examples of a basic configuration file, and a complete
 /// configuration file containing all fields.
 ///
@@ -820,10 +864,23 @@
 /// }
 /// ```
 ///
+/// ### Basic `config.json` with templating {#root-basic-templating}
+///
+/// ```json
+/// {
+///   &quot;target&quot;: &quot;{{ get_env(name=&quot;TARGET&quot;, default=&quot;pod/fallback&quot;) }}&quot;,
+///   &quot;feature&quot;: {
+///     &quot;env&quot;: true,
+///     &quot;fs&quot;: &quot;read&quot;,
+///     &quot;network&quot;: true
+///   }
+/// }
+/// ```
+///
 /// ### Complete `config.json` {#root-complete}
 ///
 ///  Don&#39;t use this example as a starting point, it&#39;s just here to show you all the available
-/// options.
+///  options.
 /// ```json
 /// {
 ///   &quot;accept_invalid_certificates&quot;: false,
@@ -1058,8 +1115,14 @@
     }
 
     <span class="doccomment">/// Verify that there are no conflicting settings.
+    ///
     /// We don&#39;t call it from `from_env` since we want to verify it only once (from cli)
-    /// Returns vec of warnings
+    ///
+    /// Fills `context` with the warnings.
+    ///
+    /// - `ide`: Identifies if this is being called from an IDE context, when using
+    /// `mirrord verify-config`. Turns some _target missing_ errors into warnings, as the target can
+    /// be selected after `verify-config` is run.
     </span><span class="kw">pub fn </span>verify(<span class="kw-2">&amp;</span><span class="self">self</span>, context: <span class="kw-2">&amp;mut </span>ConfigContext) -&gt; <span class="prelude-ty">Result</span>&lt;(), ConfigError&gt; {
         <span class="kw">if </span><span class="self">self</span>.pause {
             <span class="kw">if </span><span class="self">self</span>.agent.ephemeral &amp;&amp; !<span class="self">self</span>.agent.privileged {
@@ -1094,8 +1157,9 @@
         {
             <span class="prelude-val">Err</span>(ConfigError::Conflict(
                 <span class="string">&quot;Cannot use both HTTP header filter and path filter at the same time&quot;</span>.to_string(),
-            ))<span class="question-mark">?</span>;
-        }
+            ))<span class="question-mark">?
+        </span>}
+
         <span class="kw">if </span><span class="self">self
             </span>.feature
             .network
@@ -1118,25 +1182,37 @@
                     .header_filter
                     .is_some())
         {
-            <span class="prelude-val">Err</span>(ConfigError::Conflict(<span class="string">&quot;Cannot use old http filter and new http filter at the same time. Use only `http_filter` instead of `http_header_filter`&quot;</span>.to_string()))<span class="question-mark">?</span>;
-        }
-        <span class="kw">if </span><span class="self">self</span>.target.path.is_none() {
-            <span class="kw">if </span><span class="self">self</span>.target.namespace.is_some() {
-                <span class="prelude-val">Err</span>(ConfigError::TargetNamespaceWithoutTarget)<span class="question-mark">?</span>;
-            }
+            <span class="prelude-val">Err</span>(ConfigError::Conflict(<span class="string">&quot;Cannot use old http filter and new http filter at the same time. Use only `http_filter` instead of `http_header_filter`&quot;</span>.to_string()))<span class="question-mark">?
+        </span>}
+
+        <span class="kw">if </span><span class="self">self</span>.target.path.is_none() &amp;&amp; !context.ide {
+            <span class="comment">// In the IDE, a target may be selected after `mirrord verify-config` is run, so we
+            // for this case we treat these as warnings. They&#39;ll become errors once mirrord proper
+            // tries to start (if the user somehow managed to not select a target by then).
+            </span><span class="kw">if </span><span class="self">self</span>.target.namespace.is_some() {
+                <span class="prelude-val">Err</span>(ConfigError::TargetNamespaceWithoutTarget)<span class="question-mark">?
+            </span>}
+
             <span class="kw">if </span><span class="self">self</span>.feature.network.incoming.is_steal() {
-                <span class="prelude-val">Err</span>(ConfigError::Conflict(<span class="string">&quot;Steal mode is not compatible with a targetless agent, please either disable this option or specify a target.&quot;</span>.into()))<span class="question-mark">?</span>;
-            }
+                <span class="prelude-val">Err</span>(ConfigError::Conflict(<span class="string">&quot;Steal mode is not compatible with a targetless agent, please either disable this option or specify a target.&quot;</span>.into()))<span class="question-mark">?
+            </span>}
+
             <span class="kw">if </span><span class="self">self</span>.agent.ephemeral {
                 <span class="prelude-val">Err</span>(ConfigError::Conflict(
-                    <span class="string">&quot;Using an ephemeral container for the agent is not compatible with a targetless agent, please either disable this option or specify a target.&quot;</span>.into(),
-                ))<span class="question-mark">?</span>;
-            }
+                    <span class="string">&quot;Using an ephemeral container for the agent is not \
+                         compatible with a targetless agent, please either disable this option or \
+                        specify a target.&quot;
+                        </span>.into(),
+                ))<span class="question-mark">?
+            </span>}
+
             <span class="kw">if </span><span class="self">self</span>.pause {
                 <span class="prelude-val">Err</span>(ConfigError::Conflict(
-                    <span class="string">&quot;The target pause feature is not compatible with a targetless agent, please either disable this option or specify a target.&quot;</span>.into(),
-                ))<span class="question-mark">?</span>;
-            }
+                    <span class="string">&quot;The target pause feature is not compatible with a \
+                        targetless agent, please either disable this option or specify a target.&quot;
+                        </span>.into(),
+                ))<span class="question-mark">?
+            </span>}
         }
         <span class="prelude-val">Ok</span>(())
     }
@@ -1161,13 +1237,14 @@
     <span class="kw">where
         </span>P: AsRef&lt;Path&gt;,
     {
-        <span class="kw">let </span>path = path.as_ref();
-        <span class="kw">let </span>file = std::fs::read(path)<span class="question-mark">?</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>template_engine = Tera::default();
+        template_engine.add_template_file(path.as_ref(), <span class="prelude-val">Some</span>(<span class="string">&quot;main&quot;</span>))<span class="question-mark">?</span>;
+        <span class="kw">let </span>rendered = template_engine.render(<span class="string">&quot;main&quot;</span>, <span class="kw-2">&amp;</span>tera::Context::new())<span class="question-mark">?</span>;
 
-        <span class="kw">match </span>path.extension().and_then(|os_val| os_val.to_str()) {
-            <span class="prelude-val">Some</span>(<span class="string">&quot;json&quot;</span>) =&gt; <span class="prelude-val">Ok</span>(serde_json::from_slice::&lt;<span class="self">Self</span>&gt;(<span class="kw-2">&amp;</span>file[..])<span class="question-mark">?</span>),
-            <span class="prelude-val">Some</span>(<span class="string">&quot;toml&quot;</span>) =&gt; <span class="prelude-val">Ok</span>(toml::from_str::&lt;<span class="self">Self</span>&gt;(<span class="kw-2">&amp;</span>String::from_utf8_lossy(<span class="kw-2">&amp;</span>file))<span class="question-mark">?</span>),
-            <span class="prelude-val">Some</span>(<span class="string">&quot;yaml&quot;</span>) =&gt; <span class="prelude-val">Ok</span>(serde_yaml::from_slice::&lt;<span class="self">Self</span>&gt;(<span class="kw-2">&amp;</span>file[..])<span class="question-mark">?</span>),
+        <span class="kw">match </span>path.as_ref().extension().and_then(|os_val| os_val.to_str()) {
+            <span class="prelude-val">Some</span>(<span class="string">&quot;json&quot;</span>) =&gt; <span class="prelude-val">Ok</span>(serde_json::from_str::&lt;<span class="self">Self</span>&gt;(<span class="kw-2">&amp;</span>rendered)<span class="question-mark">?</span>),
+            <span class="prelude-val">Some</span>(<span class="string">&quot;toml&quot;</span>) =&gt; <span class="prelude-val">Ok</span>(toml::from_str::&lt;<span class="self">Self</span>&gt;(<span class="kw-2">&amp;</span>rendered)<span class="question-mark">?</span>),
+            <span class="prelude-val">Some</span>(<span class="string">&quot;yaml&quot;</span>) =&gt; <span class="prelude-val">Ok</span>(serde_yaml::from_str::&lt;<span class="self">Self</span>&gt;(<span class="kw-2">&amp;</span>rendered)<span class="question-mark">?</span>),
             <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(ConfigError::UnsupportedFormat),
         }
     }
@@ -1388,6 +1465,7 @@
                 disabled_capabilities: <span class="prelude-val">None</span>,
                 tolerations: <span class="prelude-val">None</span>,
                 check_out_of_pods: <span class="prelude-val">None</span>,
+                resources: <span class="prelude-val">None</span>,
             }),
             feature: <span class="prelude-val">Some</span>(FeatureFileConfig {
                 env: ToggleableConfig::Enabled(<span class="bool-val">true</span>).into(),

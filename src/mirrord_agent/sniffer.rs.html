@@ -608,6 +608,14 @@
 <a href="#608" id="608">608</a>
 <a href="#609" id="609">609</a>
 <a href="#610" id="610">610</a>
+<a href="#611" id="611">611</a>
+<a href="#612" id="612">612</a>
+<a href="#613" id="613">613</a>
+<a href="#614" id="614">614</a>
+<a href="#615" id="615">615</a>
+<a href="#616" id="616">616</a>
+<a href="#617" id="617">617</a>
+<a href="#618" id="618">618</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     collections::{HashMap, HashSet},
     hash::{Hash, Hasher},
@@ -616,7 +624,7 @@
 
 <span class="kw">use </span>mirrord_protocol::{
     tcp::{DaemonTcp, LayerTcp, NewTcpConnection, TcpClose, TcpData},
-    ConnectionId, Port,
+    ConnectionId, MeshVendor, Port,
 };
 <span class="kw">use </span>nix::sys::socket::SockaddrStorage;
 <span class="kw">use </span>pnet::packet::{
@@ -747,15 +755,22 @@
 // And to make matters worse, the error reported back to the user is the very generic:
 // &quot;mirrord-layer received an unexpected response from the agent pod!&quot;
 </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>)]
-</span><span class="kw">async fn </span>prepare_sniffer(network_interface: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;RawCapture, AgentError&gt; {
-    <span class="comment">// Priority is whatever the user set as an option to mirrord, otherwise we try to get the
-    // appropriate interface.
-    </span><span class="kw">let </span>interface = <span class="kw">if let </span><span class="prelude-val">Some</span>(network_interface) = network_interface {
-        network_interface
-    } <span class="kw">else </span>{
-        resolve_interface()
+</span><span class="kw">async fn </span>prepare_sniffer(
+    network_interface: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    mesh: <span class="prelude-ty">Option</span>&lt;MeshVendor&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;RawCapture, AgentError&gt; {
+    <span class="comment">// Priority is whatever the user set as an option to mirrord, then we check if we&#39;re in an istio
+    // mesh, otherwise we try to get the appropriate interface.
+    </span><span class="kw">let </span>interface = <span class="kw">match </span>network_interface.or_else(|| {
+        mesh.and_then(|mesh_vendor| <span class="kw">match </span>mesh_vendor {
+            MeshVendor::Linkerd =&gt; <span class="prelude-val">None</span>,
+            MeshVendor::Istio =&gt; <span class="prelude-val">Some</span>(<span class="string">&quot;lo&quot;</span>.to_string()),
+        })
+    }) {
+        <span class="prelude-val">Some</span>(interface) =&gt; interface,
+        <span class="prelude-val">None </span>=&gt; resolve_interface()
             .<span class="kw">await</span><span class="question-mark">?
-            </span>.unwrap_or_else(|| <span class="string">&quot;eth0&quot;</span>.to_string())
+            </span>.unwrap_or_else(|| <span class="string">&quot;eth0&quot;</span>.to_string()),
     };
 
     <span class="macro">trace!</span>(<span class="string">&quot;Using {interface:#?} interface.&quot;</span>);
@@ -965,8 +980,9 @@
     </span><span class="kw">pub async fn </span>new(
         receiver: Receiver&lt;SnifferCommand&gt;,
         network_interface: <span class="prelude-ty">Option</span>&lt;String&gt;,
+        mesh: <span class="prelude-ty">Option</span>&lt;MeshVendor&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, AgentError&gt; {
-        <span class="kw">let </span>raw_capture = prepare_sniffer(network_interface).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>raw_capture = prepare_sniffer(network_interface, mesh).<span class="kw">await</span><span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
             receiver,

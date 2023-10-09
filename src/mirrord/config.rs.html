@@ -299,6 +299,11 @@
 <a href="#299" id="299">299</a>
 <a href="#300" id="300">300</a>
 <a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
 </pre></div><pre class="rust"><code><span class="attr">#![deny(missing_docs)]
 
 </span><span class="kw">use </span>std::path::PathBuf;
@@ -591,7 +596,12 @@ Join our Discord server at https://discord.gg/metalbear, create a GitHub issue a
 
 <span class="doccomment">/// Args for the [`super::verify_config`] mirrord-cli command.
 </span><span class="attr">#[derive(Args, Debug)]
+#[command(group(ArgGroup::new(<span class="string">&quot;verify-config&quot;</span>)))]
 </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">struct </span>VerifyConfigArgs {
+    <span class="doccomment">/// Config file path.
+    </span><span class="attr">#[arg(long)]
+    </span><span class="kw">pub</span>(<span class="kw">super</span>) ide: bool,
+
     <span class="doccomment">/// Config file path.
     </span><span class="kw">pub</span>(<span class="kw">super</span>) path: PathBuf,
 }

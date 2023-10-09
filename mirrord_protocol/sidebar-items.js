@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["codec","dns","error","file","outgoing","pause","tcp"],"static":["VERSION"],"struct":["EnvVars"],"type":["ConnectionId","Port","RequestId"]};
+window.SIDEBAR_ITEMS = {"enum":["MeshVendor"],"mod":["codec","dns","error","file","outgoing","pause","tcp"],"static":["VERSION"],"struct":["EnvVars"],"type":["ConnectionId","Port","RequestId"]};

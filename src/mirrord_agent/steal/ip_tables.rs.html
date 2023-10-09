@@ -555,7 +555,7 @@
 };
 
 <span class="kw">use </span>enum_dispatch::enum_dispatch;
-<span class="kw">use </span>mirrord_protocol::Port;
+<span class="kw">use </span>mirrord_protocol::{MeshVendor, Port};
 <span class="kw">use </span>rand::distributions::{Alphanumeric, DistString};
 <span class="kw">use </span>tracing::warn;
 
@@ -563,7 +563,7 @@
     error::{AgentError, <span class="prelude-ty">Result</span>},
     steal::ip_tables::{
         flush_connections::FlushConnections,
-        mesh::{MeshRedirect, MeshVendor},
+        mesh::{MeshRedirect, MeshVendorExt},
         redirect::{PreroutingRedirect, Redirect},
         standard::StandardRedirect,
     },

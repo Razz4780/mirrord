@@ -825,6 +825,9 @@
 <a href="#825" id="825">825</a>
 <a href="#826" id="826">826</a>
 <a href="#827" id="827">827</a>
+<a href="#828" id="828">828</a>
+<a href="#829" id="829">829</a>
+<a href="#830" id="830">830</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(result_option_inspect)]
 #![feature(hash_extract_if)]
 #![feature(let_chains)]
@@ -922,6 +925,7 @@
             cli::Mode::Targeted {
                 container_id,
                 container_runtime,
+                ..
             } =&gt; {
                 <span class="kw">let </span>container =
                     get_container(container_id.clone(), <span class="prelude-val">Some</span>(container_runtime)).<span class="kw">await</span><span class="question-mark">?</span>;
@@ -1371,7 +1375,7 @@
 }
 
 <span class="doccomment">/// Initializes the agent&#39;s [`State`], channels, threads, and runs [`ClientConnectionHandler`]s.
-</span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>)]
+</span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, ret)]
 </span><span class="kw">async fn </span>start_agent(args: Args, watch: drain::Watch) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="macro">trace!</span>(<span class="string">&quot;Starting agent with args: {args:?}&quot;</span>);
 
@@ -1396,9 +1400,11 @@
         (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>)
     } <span class="kw">else </span>{
         <span class="kw">let </span>cancellation_token = cancellation_token.clone();
+        <span class="kw">let </span>mesh = args.mode.mesh();
+
         <span class="kw">let </span>watched_task = WatchedTask::new(
             TcpConnectionSniffer::TASK_NAME,
-            TcpConnectionSniffer::new(sniffer_command_rx, args.network_interface).and_then(
+            TcpConnectionSniffer::new(sniffer_command_rx, args.network_interface, mesh).and_then(
                 |sniffer| <span class="kw">async move </span>{
                     <span class="kw">let </span>res = sniffer.start(cancellation_token).<span class="kw">await</span>;
                     <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = res.as_ref() {

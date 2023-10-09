@@ -152,7 +152,6 @@
 <a href="#152" id="152">152</a>
 <a href="#153" id="153">153</a>
 <a href="#154" id="154">154</a>
-<a href="#155" id="155">155</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::time::Duration;
 
 <span class="kw">use </span>mirrord_analytics::AnalyticsReporter;
@@ -166,7 +165,7 @@
 <span class="kw">use </span>mirrord_protocol::{ClientMessage, DaemonMessage};
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>tokio::sync::mpsc;
-<span class="kw">use </span>tracing::trace;
+<span class="kw">use </span>tracing::{debug, trace};
 
 <span class="kw">use crate</span>::{CliError, <span class="prelude-ty">Result</span>};
 
@@ -284,10 +283,9 @@
             .<span class="kw">await
             </span>.map_err(CliError::KubernetesApiFailed)<span class="question-mark">?</span>;
 
-        <span class="kw">let </span><span class="kw-2">mut </span>detect_openshift_task = progress.subtask(<span class="string">&quot;detecting OpenShift...&quot;</span>);
-        <span class="kw">if </span>(k8s_api.detect_openshift(<span class="kw-2">&amp;mut </span>detect_openshift_task).<span class="kw">await</span>).is_err() {
-            detect_openshift_task.warning(<span class="string">&quot;couldn&#39;t determine OpenShift&quot;</span>);
-        };
+        <span class="kw">let _ </span>= k8s_api.detect_openshift(progress).<span class="kw">await</span>.map_err(|err| {
+            <span class="macro">debug!</span>(<span class="string">&quot;couldn&#39;t determine OpenShift: {err}&quot;</span>);
+        });
 
         <span class="kw">let </span>agent_connect_info = tokio::time::timeout(
             Duration::from_secs(config.agent.startup_timeout),

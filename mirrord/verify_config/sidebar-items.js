@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["VerifiedConfig"],"fn":["verify_config"]};

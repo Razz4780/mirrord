@@ -355,6 +355,10 @@
 <a href="#355" id="355">355</a>
 <a href="#356" id="356">356</a>
 <a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     collections::BTreeMap,
     convert::Infallible,
@@ -371,6 +375,7 @@
 };
 <span class="kw">use </span>kube::{api::ListParams, Api, Client};
 <span class="kw">use </span>mirrord_config::target::{DeploymentTarget, PodTarget, RolloutTarget, Target};
+<span class="kw">use </span>mirrord_protocol::MeshVendor;
 
 <span class="kw">use crate</span>::{
     api::{
@@ -407,7 +412,7 @@
     <span class="kw">pub </span>container_name: String,
 
     <span class="doccomment">/// Used to check if we&#39;re running with a mesh/sidecar in `detect_mesh_mirror_mode`.
-    </span><span class="kw">pub </span>is_mesh: bool,
+    </span><span class="kw">pub </span>mesh: <span class="prelude-ty">Option</span>&lt;MeshVendor&gt;,
 }
 
 <span class="kw">impl </span>RuntimeData {
@@ -433,7 +438,7 @@
             </span>.container_statuses
             .clone()
             .ok_or(KubeApiError::ContainerStatusNotFound)<span class="question-mark">?</span>;
-        <span class="kw">let </span>(chosen_container, is_mesh) =
+        <span class="kw">let </span>(chosen_container, mesh) =
             choose_container(container_name, container_statuses.as_ref());
 
         <span class="kw">let </span>chosen_status = chosen_container.ok_or_else(|| {
@@ -474,7 +479,7 @@
             container_id,
             container_runtime,
             container_name,
-            is_mesh,
+            mesh,
         })
     }
 
@@ -601,6 +606,9 @@
             Target::Deployment(deployment) =&gt; deployment.runtime_data(client, namespace).<span class="kw">await</span>,
             Target::Pod(pod) =&gt; pod.runtime_data(client, namespace).<span class="kw">await</span>,
             Target::Rollout(rollout) =&gt; rollout.runtime_data(client, namespace).<span class="kw">await</span>,
+            Target::Targetless =&gt; {
+                <span class="macro">unreachable!</span>(<span class="string">&quot;runtime_data can&#39;t be called on Targetless&quot;</span>)
+            }
         }
     }
 }

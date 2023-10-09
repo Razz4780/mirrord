@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["MeshVendor"],"static":["ISTIO_SKIP_PORTS_LOOKUP_REGEX","LINKERD_SKIP_PORTS_LOOKUP_REGEX","UID_LOOKUP_REGEX"],"struct":["MeshRedirect"]};
+window.SIDEBAR_ITEMS = {"static":["ISTIO_SKIP_PORTS_LOOKUP_REGEX","LINKERD_SKIP_PORTS_LOOKUP_REGEX","UID_LOOKUP_REGEX"],"struct":["MeshRedirect"],"trait":["MeshVendorExt"]};

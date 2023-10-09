@@ -302,11 +302,14 @@
 <a href="#302" id="302">302</a>
 <a href="#303" id="303">303</a>
 <a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::sync::{Arc, LazyLock};
 
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>fancy_regex::Regex;
-<span class="kw">use </span>mirrord_protocol::Port;
+<span class="kw">use </span>mirrord_protocol::{MeshVendor, Port};
 <span class="kw">use </span>nix::unistd::getgid;
 <span class="kw">use </span>tracing::warn;
 
@@ -470,13 +473,16 @@
     }
 }
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum </span>MeshVendor {
-    Linkerd,
-    Istio,
+<span class="doccomment">/// Extends the [`MeshVendor`] type with methods that are only relevant for the agent.
+</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">trait </span>MeshVendorExt: Sized {
+    <span class="kw">fn </span>detect&lt;IPT: IPTables&gt;(ipt: <span class="kw-2">&amp;</span>IPT) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt;&gt;;
+    <span class="kw">fn </span>input_chain(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str;
+    <span class="kw">fn </span>output_chain(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str;
+    <span class="kw">fn </span>skip_ports_regex(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Regex;
 }
 
-<span class="kw">impl </span>MeshVendor {
-    <span class="kw">pub fn </span>detect&lt;IPT: IPTables&gt;(ipt: <span class="kw-2">&amp;</span>IPT) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt;&gt; {
+<span class="kw">impl </span>MeshVendorExt <span class="kw">for </span>MeshVendor {
+    <span class="kw">fn </span>detect&lt;IPT: IPTables&gt;(ipt: <span class="kw-2">&amp;</span>IPT) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt;&gt; {
         <span class="kw">let </span>output = ipt.list_rules(<span class="string">&quot;OUTPUT&quot;</span>)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(output.iter().find_map(|rule| {

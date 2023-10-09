@@ -1,4 +1,4 @@
 (function() {var implementors = {
-"rasn":[["impl <a class=\"trait\" href=\"snafu/trait.ErrorCompat.html\" title=\"trait snafu::ErrorCompat\">ErrorCompat</a> for <a class=\"enum\" href=\"rasn/ber/de/enum.Error.html\" title=\"enum rasn::ber::de::Error\">Error</a>"],["impl <a class=\"trait\" href=\"snafu/trait.ErrorCompat.html\" title=\"trait snafu::ErrorCompat\">ErrorCompat</a> for <a class=\"enum\" href=\"rasn/ber/enc/enum.Error.html\" title=\"enum rasn::ber::enc::Error\">Error</a>"]],
+"rasn":[["impl <a class=\"trait\" href=\"snafu/trait.ErrorCompat.html\" title=\"trait snafu::ErrorCompat\">ErrorCompat</a> for <a class=\"enum\" href=\"rasn/ber/enc/enum.Error.html\" title=\"enum rasn::ber::enc::Error\">Error</a>"],["impl <a class=\"trait\" href=\"snafu/trait.ErrorCompat.html\" title=\"trait snafu::ErrorCompat\">ErrorCompat</a> for <a class=\"enum\" href=\"rasn/ber/de/enum.Error.html\" title=\"enum rasn::ber::de::Error\">Error</a>"]],
 "snafu":[]
 };if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

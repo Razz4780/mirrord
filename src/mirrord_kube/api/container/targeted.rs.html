@@ -80,8 +80,6 @@
 <a href="#80" id="80">80</a>
 <a href="#81" id="81">81</a>
 <a href="#82" id="82">82</a>
-<a href="#83" id="83">83</a>
-<a href="#84" id="84">84</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>kube::Client;
 <span class="kw">use </span>mirrord_progress::Progress;
 <span class="kw">use </span>tracing::debug;
@@ -116,7 +114,7 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; ContainerApi&lt;JobTargetedVariant&lt;<span class="lifetime">&#39;c</span>&gt;&gt; <span class="kw">for </span>Targeted&lt;<span class="lifetime">&#39;c</span>, JobTargetedVariant&lt;<span class="lifetime">&#39;c</span>&gt;&gt; {
-    <span class="kw">async fn </span>create_agent&lt;P&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, progress: <span class="kw-2">&amp;</span>P) -&gt; <span class="prelude-ty">Result</span>&lt;AgentKubernetesConnectInfo&gt;
+    <span class="kw">async fn </span>create_agent&lt;P&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, progress: <span class="kw-2">&amp;mut </span>P) -&gt; <span class="prelude-ty">Result</span>&lt;AgentKubernetesConnectInfo&gt;
     <span class="kw">where
         </span>P: Progress + Send + Sync,
     {
@@ -127,15 +125,13 @@
         } = <span class="self">self</span>;
 
         <span class="kw">if </span>variant.agent_config().check_out_of_pods {
-            <span class="kw">let </span><span class="kw-2">mut </span>check_node = progress.subtask(<span class="string">&quot;checking if node is allocatable...&quot;</span>);
             <span class="kw">match </span>runtime_data.check_node(client).<span class="kw">await </span>{
-                NodeCheck::Success =&gt; check_node.success(<span class="prelude-val">Some</span>(<span class="string">&quot;node is allocatable&quot;</span>)),
+                NodeCheck::Success =&gt; <span class="macro">debug!</span>(<span class="string">&quot;node is allocatable&quot;</span>),
                 NodeCheck::Error(err) =&gt; {
-                    <span class="macro">debug!</span>(<span class="string">&quot;{err}&quot;</span>);
-                    check_node.warning(<span class="string">&quot;unable to check if node is allocatable&quot;</span>);
+                    <span class="macro">debug!</span>(<span class="string">&quot;unable to check if node is allocatable, {err}&quot;</span>);
                 }
                 NodeCheck::Failed(node_name, pods) =&gt; {
-                    check_node.failure(<span class="prelude-val">Some</span>(<span class="string">&quot;node is not allocatable&quot;</span>));
+                    progress.failure(<span class="prelude-val">Some</span>(<span class="string">&quot;node is not allocatable&quot;</span>));
 
                     <span class="kw">return </span><span class="prelude-val">Err</span>(KubeApiError::NodePodLimitExceeded(node_name, pods));
                 }
@@ -147,7 +143,7 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;c</span>&gt; ContainerApi&lt;EphemeralTargetedVariant&lt;<span class="lifetime">&#39;c</span>&gt;&gt; <span class="kw">for </span>Targeted&lt;<span class="lifetime">&#39;c</span>, EphemeralTargetedVariant&lt;<span class="lifetime">&#39;c</span>&gt;&gt; {
-    <span class="kw">async fn </span>create_agent&lt;P&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, progress: <span class="kw-2">&amp;</span>P) -&gt; <span class="prelude-ty">Result</span>&lt;AgentKubernetesConnectInfo&gt;
+    <span class="kw">async fn </span>create_agent&lt;P&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, progress: <span class="kw-2">&amp;mut </span>P) -&gt; <span class="prelude-ty">Result</span>&lt;AgentKubernetesConnectInfo&gt;
     <span class="kw">where
         </span>P: Progress + Send + Sync,
     {
