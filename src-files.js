@@ -231,6 +231,7 @@ var srcIndex = JSON.parse('{\
 "issue1776":["",[],["main.rs"]],\
 "issue1776portnot53":["",[],["main.rs"]],\
 "issue1899":["",[],["main.rs"]],\
+"issue2001":["",[],["main.rs"]],\
 "itertools":["",[["adaptors",[],["coalesce.rs","map.rs","mod.rs","multi_product.rs"]]],["combinations.rs","combinations_with_replacement.rs","concat_impl.rs","cons_tuples_impl.rs","diff.rs","duplicates_impl.rs","either_or_both.rs","exactly_one_err.rs","extrema_set.rs","flatten_ok.rs","format.rs","free.rs","group_map.rs","groupbylazy.rs","grouping_map.rs","impl_macros.rs","intersperse.rs","k_smallest.rs","kmerge_impl.rs","lazy_buffer.rs","lib.rs","merge_join.rs","minmax.rs","multipeek_impl.rs","pad_tail.rs","peek_nth.rs","peeking_take_while.rs","permutations.rs","powerset.rs","process_results_impl.rs","put_back_n_impl.rs","rciter_impl.rs","repeatn.rs","size_hint.rs","sources.rs","tee.rs","tuple_impl.rs","unique_impl.rs","unziptuple.rs","with_position.rs","zip_eq_impl.rs","zip_longest.rs","ziptuple.rs"]],\
 "itoa":["",[],["lib.rs","udiv128.rs"]],\
 "json_patch":["",[],["diff.rs","lib.rs"]],\
@@ -282,7 +283,7 @@ var srcIndex = JSON.parse('{\
 "mirrord_config_derive":["",[["config",[],["field.rs","flag.rs"]]],["config.rs","lib.rs"]],\
 "mirrord_console":["",[],["error.rs","lib.rs","logger.rs","protocol.rs"]],\
 "mirrord_kube":["",[["api",[["container",[],["ephemeral.rs","job.rs","targeted.rs","targetless.rs","util.rs"]],["kubernetes",[],["rollout.rs"]]],["container.rs","kubernetes.rs","runtime.rs"]]],["api.rs","error.rs","lib.rs"]],\
-"mirrord_layer":["",[["file",[],["filter.rs","hooks.rs","ops.rs"]],["go",[],["linux_x64.rs","mod.rs"]],["outgoing",[],["tcp.rs","udp.rs"]],["socket",[],["hooks.rs","id.rs","ops.rs"]],["tcp_steal",[["http",[],["v1.rs","v2.rs"]]],["http.rs","http_forwarding.rs"]]],["common.rs","connection.rs","debugger_ports.rs","detour.rs","dns.rs","error.rs","file.rs","hooks.rs","lib.rs","load.rs","macros.rs","outgoing.rs","socket.rs","tcp.rs","tcp_mirror.rs","tcp_steal.rs"]],\
+"mirrord_layer":["",[["file",[],["filter.rs","hooks.rs","open_dirs.rs","ops.rs"]],["go",[],["linux_x64.rs","mod.rs"]],["outgoing",[],["tcp.rs","udp.rs"]],["socket",[],["hooks.rs","id.rs","ops.rs"]],["tcp_steal",[["http",[],["v1.rs","v2.rs"]]],["http.rs","http_forwarding.rs"]]],["common.rs","connection.rs","debugger_ports.rs","detour.rs","dns.rs","error.rs","file.rs","hooks.rs","lib.rs","load.rs","macros.rs","outgoing.rs","socket.rs","tcp.rs","tcp_mirror.rs","tcp_steal.rs"]],\
 "mirrord_layer_macro":["",[],["lib.rs"]],\
 "mirrord_macros":["",[],["lib.rs"]],\
 "mirrord_operator":["",[],["client.rs","crd.rs","lib.rs","setup.rs"]],\

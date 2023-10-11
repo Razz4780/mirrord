@@ -1139,6 +1139,8 @@
 <a href="#1139" id="1139">1139</a>
 <a href="#1140" id="1140">1140</a>
 <a href="#1141" id="1141">1141</a>
+<a href="#1142" id="1142">1142</a>
+<a href="#1143" id="1143">1143</a>
 </pre></div><pre class="rust"><code><span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
 </span><span class="kw">use </span>core::ffi::{c_size_t, c_ssize_t};
 <span class="doccomment">/// FFI functions that override the `libc` calls (see `file` module documentation on how to
@@ -1146,21 +1148,20 @@
 ///
 /// NOTICE: If a file operation fails, it might be because it depends on some `libc` function
 /// that is not being hooked (`strace` the program to check).
-</span><span class="kw">use </span>std::{ffi::CString, os::unix::io::RawFd, ptr, slice, time::Duration};
+</span><span class="kw">use </span>std::{os::unix::io::RawFd, ptr, slice, time::Duration};
 
-<span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
-</span><span class="kw">use </span>errno::{set_errno, Errno};
+<span class="kw">use </span>errno::{set_errno, Errno};
 <span class="kw">use </span>libc::{
     <span class="self">self</span>, c_char, c_int, c_void, dirent, off_t, size_t, ssize_t, stat, statfs, AT_EACCESS,
-    AT_FDCWD, DIR,
+    AT_FDCWD, DIR, EINVAL,
 };
 <span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
-</span><span class="kw">use </span>libc::{dirent64, stat64, EBADF, EINVAL, ENOENT, ENOTDIR};
+</span><span class="kw">use </span>libc::{dirent64, stat64, EBADF, ENOENT, ENOTDIR};
 <span class="attr">#[cfg(not(all(target_os = <span class="string">&quot;macos&quot;</span>, target_arch = <span class="string">&quot;aarch64&quot;</span>)))]
 </span><span class="kw">use </span>libc::{O_DIRECTORY, O_RDONLY};
 <span class="kw">use </span>mirrord_layer_macro::{hook_fn, hook_guard_fn};
 <span class="kw">use </span>mirrord_protocol::file::{
-    DirEntryInternal, FsMetadataInternal, MetadataInternal, ReadFileResponse, WriteFileResponse,
+    FsMetadataInternal, MetadataInternal, ReadFileResponse, WriteFileResponse,
 };
 <span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
 </span><span class="kw">use </span>mirrord_protocol::ResponseError::{NotDirectory, NotFound};
@@ -1169,7 +1170,7 @@
 <span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
 </span><span class="kw">use </span>tracing::{error, info, warn};
 
-<span class="kw">use super</span>::{ops::<span class="kw-2">*</span>, OpenOptionsInternalExt};
+<span class="kw">use super</span>::{open_dirs, ops::<span class="kw-2">*</span>, OpenOptionsInternalExt};
 <span class="attr">#[cfg(not(all(target_os = <span class="string">&quot;macos&quot;</span>, target_arch = <span class="string">&quot;aarch64&quot;</span>)))]
 </span><span class="kw">use </span><span class="kw">crate</span>::close_layer_fd;
 <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
@@ -1180,7 +1181,10 @@
     common::CheckedInto,
     detour::{Detour, DetourGuard},
     error::HookError,
-    file::ops::{access, lseek, open, read, write},
+    file::{
+        open_dirs::OPEN_DIRS,
+        ops::{access, lseek, open, read, write},
+    },
     hooks::HookManager,
     replace,
 };
@@ -1306,81 +1310,21 @@
     fdopendir(fd).unwrap_or_bypass_with(|<span class="kw">_</span>| FN_FDOPENDIR(fd))
 }
 
-<span class="doccomment">/// Assign DirEntryInternal to dirent
-</span><span class="kw">unsafe fn </span>assign_direntry(
-    in_entry: DirEntryInternal,
-    out_entry: <span class="kw-2">*mut </span>dirent,
-    getdents: bool,
-) -&gt; <span class="prelude-ty">Result</span>&lt;(), HookError&gt; {
-    (<span class="kw-2">*</span>out_entry).d_ino = in_entry.inode;
-    (<span class="kw-2">*</span>out_entry).d_reclen = <span class="kw">if </span>getdents {
-        <span class="comment">// The structs written by the kernel for the getdents syscall do not have a fixed size.
-        </span>in_entry.get_d_reclen64()
-    } <span class="kw">else </span>{
-        std::mem::size_of::&lt;dirent&gt;() <span class="kw">as </span>u16
-    };
-    (<span class="kw-2">*</span>out_entry).d_type = in_entry.file_type;
-
-    <span class="kw">let </span>dir_name = CString::new(in_entry.name)<span class="question-mark">?</span>;
-    <span class="kw">let </span>dir_name_bytes = dir_name.as_bytes_with_nul();
-    (<span class="kw-2">*</span>out_entry)
-        .d_name
-        .get_mut(..dir_name_bytes.len())
-        .expect(<span class="string">&quot;directory name length exceeds limit&quot;</span>)
-        .copy_from_slice(bytemuck::cast_slice(dir_name_bytes));
-
-    <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
-    </span>{
-        (<span class="kw-2">*</span>out_entry).d_seekoff = in_entry.position;
-        <span class="comment">// name length should be without null
-        </span>(<span class="kw-2">*</span>out_entry).d_namlen = dir_name.to_bytes().len() <span class="kw">as </span>u16;
-    }
-
-    <span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
-    </span>{
-        (<span class="kw-2">*</span>out_entry).d_off = in_entry.position <span class="kw">as </span>i64;
-    }
-    <span class="prelude-val">Ok</span>(())
-}
-
-<span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
-</span><span class="kw">unsafe fn </span>assign_direntry64(
-    in_entry: DirEntryInternal,
-    out_entry: <span class="kw-2">*mut </span>dirent64,
-    getdents: bool,
-) -&gt; <span class="prelude-ty">Result</span>&lt;(), HookError&gt; {
-    (<span class="kw-2">*</span>out_entry).d_ino = in_entry.inode;
-    (<span class="kw-2">*</span>out_entry).d_reclen = <span class="kw">if </span>getdents {
-        <span class="comment">// The structs written by the kernel for the getdents syscall do not have a fixed size.
-        </span>in_entry.get_d_reclen64()
-    } <span class="kw">else </span>{
-        std::mem::size_of::&lt;dirent64&gt;() <span class="kw">as </span>u16
-    };
-    (<span class="kw-2">*</span>out_entry).d_type = in_entry.file_type;
-
-    <span class="kw">let </span>dir_name = CString::new(in_entry.name)<span class="question-mark">?</span>;
-    <span class="kw">let </span>dir_name_bytes = dir_name.as_bytes_with_nul();
-    (<span class="kw-2">*</span>out_entry)
-        .d_name
-        .get_mut(..dir_name_bytes.len())
-        .expect(<span class="string">&quot;directory name length exceeds limit&quot;</span>)
-        .copy_from_slice(bytemuck::cast_slice(dir_name_bytes));
-
-    (<span class="kw-2">*</span>out_entry).d_off = in_entry.position <span class="kw">as </span>i64;
-
-    <span class="prelude-val">Ok</span>(())
-}
-
 <span class="attr">#[hook_guard_fn]
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>readdir_r_detour(
     dirp: <span class="kw-2">*mut </span>DIR,
     entry: <span class="kw-2">*mut </span>dirent,
     result: <span class="kw-2">*mut *mut </span>dirent,
 ) -&gt; c_int {
-    readdir_r(dirp <span class="kw">as </span>usize)
+    <span class="kw">let </span><span class="prelude-val">Some</span>(entry_ref) = entry.as_mut() <span class="kw">else </span>{
+        <span class="kw">return </span>EINVAL;
+    };
+
+    OPEN_DIRS
+        .read_r(dirp <span class="kw">as </span>usize)
         .map(|resp| {
             <span class="kw">if let </span><span class="prelude-val">Some</span>(direntry) = resp {
-                <span class="kw">match </span>assign_direntry(direntry, entry, <span class="bool-val">false</span>) {
+                <span class="kw">match </span>open_dirs::assign_direntry(direntry, entry_ref, <span class="bool-val">false</span>) {
                     <span class="prelude-val">Err</span>(e) =&gt; <span class="kw">return </span>c_int::from(e),
                     <span class="prelude-val">Ok</span>(()) =&gt; {
                         <span class="kw-2">*</span>result = entry;
@@ -1403,10 +1347,15 @@
     entry: <span class="kw-2">*mut </span>dirent64,
     result: <span class="kw-2">*mut *mut </span>dirent64,
 ) -&gt; c_int {
-    readdir_r(dirp <span class="kw">as </span>usize)
+    <span class="kw">let </span><span class="prelude-val">Some</span>(entry_ref) = entry.as_mut() <span class="kw">else </span>{
+        <span class="kw">return </span>EINVAL;
+    };
+
+    OPEN_DIRS
+        .read_r(dirp <span class="kw">as </span>usize)
         .map(|resp| {
             <span class="kw">if let </span><span class="prelude-val">Some</span>(direntry) = resp {
-                <span class="kw">match </span>assign_direntry64(direntry, entry, <span class="bool-val">false</span>) {
+                <span class="kw">match </span>open_dirs::assign_direntry64(direntry, entry_ref, <span class="bool-val">false</span>) {
                     <span class="prelude-val">Err</span>(e) =&gt; <span class="kw">return </span>c_int::from(e),
                     <span class="prelude-val">Ok</span>(()) =&gt; {
                         <span class="kw-2">*</span>result = entry;
@@ -1422,9 +1371,36 @@
         .unwrap_or_bypass_with(|<span class="kw">_</span>| FN_READDIR64_R(dirp, entry, result))
 }
 
+<span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
+#[hook_guard_fn]
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>readdir64_detour(dirp: <span class="kw-2">*mut </span>DIR) -&gt; usize {
+    <span class="kw">match </span>OPEN_DIRS.read64(dirp <span class="kw">as </span>usize) {
+        Detour::Success(entry) =&gt; entry <span class="kw">as </span>usize,
+        Detour::Bypass(..) =&gt; FN_READDIR64(dirp),
+        Detour::Error(e) =&gt; {
+            set_errno(Errno(e.into()));
+            std::ptr::null::&lt;dirent64&gt;() <span class="kw">as </span>usize
+        }
+    }
+}
+
+<span class="attr">#[hook_guard_fn]
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>readdir_detour(dirp: <span class="kw-2">*mut </span>DIR) -&gt; usize {
+    <span class="kw">match </span>OPEN_DIRS.read(dirp <span class="kw">as </span>usize) {
+        Detour::Success(entry) =&gt; entry <span class="kw">as </span>usize,
+        Detour::Bypass(..) =&gt; FN_READDIR(dirp),
+        Detour::Error(e) =&gt; {
+            set_errno(Errno(e.into()));
+            std::ptr::null::&lt;dirent&gt;() <span class="kw">as </span>usize
+        }
+    }
+}
+
 <span class="attr">#[hook_guard_fn]
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>closedir_detour(dirp: <span class="kw-2">*mut </span>DIR) -&gt; c_int {
-    closedir(dirp <span class="kw">as </span>usize).unwrap_or_bypass_with(|<span class="kw">_</span>| FN_CLOSEDIR(dirp))
+    OPEN_DIRS
+        .close(dirp <span class="kw">as </span>usize)
+        .unwrap_or_bypass_with(|<span class="kw">_</span>| FN_CLOSEDIR(dirp))
 }
 
 <span class="doccomment">/// Equivalent to `open_detour`, **except** when `raw_path` specifies a relative path.
@@ -1500,7 +1476,13 @@
                     set_errno(Errno(EINVAL));
                     <span class="kw">return </span>-<span class="number">1</span>;
                 }
-                <span class="kw">match </span>assign_direntry(dent, next, <span class="bool-val">true</span>) {
+
+                <span class="kw">let </span><span class="prelude-val">Some</span>(next_ref) = next.as_mut() <span class="kw">else </span>{
+                    set_errno(Errno(EINVAL));
+                    <span class="kw">return </span>-<span class="number">1</span>;
+                };
+
+                <span class="kw">match </span>open_dirs::assign_direntry(dent, next_ref, <span class="bool-val">true</span>) {
                     <span class="prelude-val">Err</span>(e) =&gt; {
                         <span class="macro">error!</span>(
                             <span class="string">&quot;Error while trying to write remote dir entry to local buffer: {e:?}&quot;
@@ -2211,6 +2193,21 @@
             FnReaddir64_r,
             FN_READDIR64_R
         );
+        <span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
+        </span><span class="macro">replace!</span>(
+            hook_manager,
+            <span class="string">&quot;readdir64&quot;</span>,
+            readdir64_detour,
+            FnReaddir64,
+            FN_READDIR64
+        );
+        <span class="macro">replace!</span>(
+            hook_manager,
+            <span class="string">&quot;readdir&quot;</span>,
+            readdir_detour,
+            FnReaddir,
+            FN_READDIR
+        );
         <span class="comment">// aarch + macOS hooks fail
         // because macOs internally calls this with pointer authentication
         // and we don&#39;t compile to arm64e yet, so it breaks.
@@ -2270,6 +2267,13 @@
             readdir_r_detour,
             FnReaddir_r,
             FN_READDIR_R
+        );
+        <span class="macro">replace!</span>(
+            hook_manager,
+            <span class="string">&quot;readdir$INODE64&quot;</span>,
+            readdir_detour,
+            FnReaddir,
+            FN_READDIR
         );
         <span class="macro">replace!</span>(
             hook_manager,

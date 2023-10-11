@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["assign_direntry","assign_direntry64"],"static":["OPEN_DIRS"],"struct":["OpenDir","OpenDirs"]};
