@@ -1076,6 +1076,22 @@
 <a href="#1076" id="1076">1076</a>
 <a href="#1077" id="1077">1077</a>
 <a href="#1078" id="1078">1078</a>
+<a href="#1079" id="1079">1079</a>
+<a href="#1080" id="1080">1080</a>
+<a href="#1081" id="1081">1081</a>
+<a href="#1082" id="1082">1082</a>
+<a href="#1083" id="1083">1083</a>
+<a href="#1084" id="1084">1084</a>
+<a href="#1085" id="1085">1085</a>
+<a href="#1086" id="1086">1086</a>
+<a href="#1087" id="1087">1087</a>
+<a href="#1088" id="1088">1088</a>
+<a href="#1089" id="1089">1089</a>
+<a href="#1090" id="1090">1090</a>
+<a href="#1091" id="1091">1091</a>
+<a href="#1092" id="1092">1092</a>
+<a href="#1093" id="1093">1093</a>
+<a href="#1094" id="1094">1094</a>
 </pre></div><pre class="rust"><code><span class="attr">#![allow(clippy::unused_io_amount)]
 #![allow(clippy::indexing_slicing)]
 
@@ -1584,6 +1600,22 @@
     }
     <span class="kw">if let </span><span class="prelude-val">Some</span>(namespace) = namespace {
         mirrord_args.extend(<span class="macro">vec!</span>[<span class="string">&quot;--namespace&quot;</span>, namespace]);
+    }
+
+    run_mirrord(mirrord_args, Default::default()).<span class="kw">await
+</span>}
+
+<span class="doccomment">/// Runs `mirrord verify-config [--ide] &quot;/path/config.json&quot;`.
+///
+/// ## Attention
+///
+/// The `verify-config` tests are here to guarantee that your changes do not break backwards
+/// compatability, so you should not modify them, only add new tests (unless breakage is
+/// wanted/required).
+</span><span class="kw">pub async fn </span>run_verify_config(args: <span class="prelude-ty">Option</span>&lt;Vec&lt;<span class="kw-2">&amp;</span>str&gt;&gt;) -&gt; TestProcess {
+    <span class="kw">let </span><span class="kw-2">mut </span>mirrord_args = <span class="macro">vec!</span>[<span class="string">&quot;verify-config&quot;</span>];
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(args) = args {
+        mirrord_args.extend(args);
     }
 
     run_mirrord(mirrord_args, Default::default()).<span class="kw">await

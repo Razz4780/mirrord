@@ -450,7 +450,7 @@ var srcIndex = JSON.parse('{\
 "term":["",[["terminfo",[["parser",[],["compiled.rs","names.rs"]]],["mod.rs","parm.rs","searcher.rs"]]],["lib.rs"]],\
 "termcolor":["",[],["lib.rs"]],\
 "terminal_size":["",[],["lib.rs","unix.rs"]],\
-"tests":["",[["traffic",[],["steal.rs"]]],["env.rs","file_ops.rs","http.rs","issue1317.rs","lib.rs","operator.rs","pause.rs","target.rs","targetless.rs","traffic.rs","utils.rs"]],\
+"tests":["",[["traffic",[],["steal.rs"]]],["env.rs","file_ops.rs","http.rs","issue1317.rs","lib.rs","operator.rs","pause.rs","target.rs","targetless.rs","traffic.rs","utils.rs","verify_config.rs"]],\
 "textwrap":["",[["wrap_algorithms",[],["optimal_fit.rs"]]],["core.rs","indentation.rs","lib.rs","word_separators.rs","word_splitters.rs","wrap_algorithms.rs"]],\
 "thiserror":["",[],["aserror.rs","display.rs","lib.rs","provide.rs"]],\
 "thiserror_impl":["",[],["ast.rs","attr.rs","expand.rs","fmt.rs","generics.rs","lib.rs","prop.rs","valid.rs"]],\
