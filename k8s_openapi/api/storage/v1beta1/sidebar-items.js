@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["ReadCSIStorageCapacityResponse"],"struct":["CSIStorageCapacity"]};
+window.SIDEBAR_ITEMS = {"struct":["CSIStorageCapacity"]};

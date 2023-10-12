@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tungstenite-0.19.0/src/protocol/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="tungstenite" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (e3abbd499 2023-09-06)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../tungstenite/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tungstenite-0.20.1/src/protocol/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="tungstenite" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (e3abbd499 2023-09-06)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../tungstenite/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -787,6 +787,69 @@
 <a href="#787" id="787">787</a>
 <a href="#788" id="788">788</a>
 <a href="#789" id="789">789</a>
+<a href="#790" id="790">790</a>
+<a href="#791" id="791">791</a>
+<a href="#792" id="792">792</a>
+<a href="#793" id="793">793</a>
+<a href="#794" id="794">794</a>
+<a href="#795" id="795">795</a>
+<a href="#796" id="796">796</a>
+<a href="#797" id="797">797</a>
+<a href="#798" id="798">798</a>
+<a href="#799" id="799">799</a>
+<a href="#800" id="800">800</a>
+<a href="#801" id="801">801</a>
+<a href="#802" id="802">802</a>
+<a href="#803" id="803">803</a>
+<a href="#804" id="804">804</a>
+<a href="#805" id="805">805</a>
+<a href="#806" id="806">806</a>
+<a href="#807" id="807">807</a>
+<a href="#808" id="808">808</a>
+<a href="#809" id="809">809</a>
+<a href="#810" id="810">810</a>
+<a href="#811" id="811">811</a>
+<a href="#812" id="812">812</a>
+<a href="#813" id="813">813</a>
+<a href="#814" id="814">814</a>
+<a href="#815" id="815">815</a>
+<a href="#816" id="816">816</a>
+<a href="#817" id="817">817</a>
+<a href="#818" id="818">818</a>
+<a href="#819" id="819">819</a>
+<a href="#820" id="820">820</a>
+<a href="#821" id="821">821</a>
+<a href="#822" id="822">822</a>
+<a href="#823" id="823">823</a>
+<a href="#824" id="824">824</a>
+<a href="#825" id="825">825</a>
+<a href="#826" id="826">826</a>
+<a href="#827" id="827">827</a>
+<a href="#828" id="828">828</a>
+<a href="#829" id="829">829</a>
+<a href="#830" id="830">830</a>
+<a href="#831" id="831">831</a>
+<a href="#832" id="832">832</a>
+<a href="#833" id="833">833</a>
+<a href="#834" id="834">834</a>
+<a href="#835" id="835">835</a>
+<a href="#836" id="836">836</a>
+<a href="#837" id="837">837</a>
+<a href="#838" id="838">838</a>
+<a href="#839" id="839">839</a>
+<a href="#840" id="840">840</a>
+<a href="#841" id="841">841</a>
+<a href="#842" id="842">842</a>
+<a href="#843" id="843">843</a>
+<a href="#844" id="844">844</a>
+<a href="#845" id="845">845</a>
+<a href="#846" id="846">846</a>
+<a href="#847" id="847">847</a>
+<a href="#848" id="848">848</a>
+<a href="#849" id="849">849</a>
+<a href="#850" id="850">850</a>
+<a href="#851" id="851">851</a>
+<a href="#852" id="852">852</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Generic WebSocket message stream.
 
 </span><span class="kw">pub mod </span>frame;
@@ -794,13 +857,6 @@
 <span class="kw">mod </span>message;
 
 <span class="kw">pub use </span><span class="self">self</span>::{frame::CloseFrame, message::Message};
-
-<span class="kw">use </span>log::<span class="kw-2">*</span>;
-<span class="kw">use </span>std::{
-    collections::VecDeque,
-    io::{ErrorKind <span class="kw">as </span>IoErrorKind, Read, Write},
-    mem::replace,
-};
 
 <span class="kw">use </span><span class="self">self</span>::{
     frame::{
@@ -812,6 +868,11 @@
 <span class="kw">use crate</span>::{
     error::{Error, ProtocolError, <span class="prelude-ty">Result</span>},
     util::NonBlockingResult,
+};
+<span class="kw">use </span>log::<span class="kw-2">*</span>;
+<span class="kw">use </span>std::{
+    io::{ErrorKind <span class="kw">as </span>IoErrorKind, Read, Write},
+    mem::replace,
 };
 
 <span class="doccomment">/// Indicates a Client or Server role of the websocket
@@ -826,10 +887,29 @@
 <span class="doccomment">/// The configuration for WebSocket connection.
 </span><span class="attr">#[derive(Debug, Clone, Copy)]
 </span><span class="kw">pub struct </span>WebSocketConfig {
-    <span class="doccomment">/// The size of the send queue. You can use it to turn on/off the backpressure features. `None`
-    /// means here that the size of the queue is unlimited. The default value is the unlimited
-    /// queue.
+    <span class="doccomment">/// Does nothing, instead use `max_write_buffer_size`.
+    </span><span class="attr">#[deprecated]
     </span><span class="kw">pub </span>max_send_queue: <span class="prelude-ty">Option</span>&lt;usize&gt;,
+    <span class="doccomment">/// The target minimum size of the write buffer to reach before writing the data
+    /// to the underlying stream.
+    /// The default value is 128 KiB.
+    ///
+    /// If set to `0` each message will be eagerly written to the underlying stream.
+    /// It is often more optimal to allow them to buffer a little, hence the default value.
+    ///
+    /// Note: [`flush`](WebSocket::flush) will always fully write the buffer regardless.
+    </span><span class="kw">pub </span>write_buffer_size: usize,
+    <span class="doccomment">/// The max size of the write buffer in bytes. Setting this can provide backpressure
+    /// in the case the write buffer is filling up due to write errors.
+    /// The default value is unlimited.
+    ///
+    /// Note: The write buffer only builds up past [`write_buffer_size`](Self::write_buffer_size)
+    /// when writes to the underlying stream are failing. So the **write buffer can not
+    /// fill up if you are not observing write errors even if not flushing**.
+    ///
+    /// Note: Should always be at least [`write_buffer_size + 1 message`](Self::write_buffer_size)
+    /// and probably a little more depending on error handling strategy.
+    </span><span class="kw">pub </span>max_write_buffer_size: usize,
     <span class="doccomment">/// The maximum size of a message. `None` means no size limit. The default value is 64 MiB
     /// which should be reasonably big for all normal use-cases but small enough to prevent
     /// memory eating by a malicious user.
@@ -849,8 +929,11 @@
 
 <span class="kw">impl </span>Default <span class="kw">for </span>WebSocketConfig {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
-        WebSocketConfig {
+        <span class="attr">#[allow(deprecated)]
+        </span>WebSocketConfig {
             max_send_queue: <span class="prelude-val">None</span>,
+            write_buffer_size: <span class="number">128 </span>* <span class="number">1024</span>,
+            max_write_buffer_size: usize::MAX,
             max_message_size: <span class="prelude-val">Some</span>(<span class="number">64 </span>&lt;&lt; <span class="number">20</span>),
             max_frame_size: <span class="prelude-val">Some</span>(<span class="number">16 </span>&lt;&lt; <span class="number">20</span>),
             accept_unmasked_frames: <span class="bool-val">false</span>,
@@ -858,10 +941,23 @@
     }
 }
 
+<span class="kw">impl </span>WebSocketConfig {
+    <span class="doccomment">/// Panic if values are invalid.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>assert_valid(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+        <span class="macro">assert!</span>(
+            <span class="self">self</span>.max_write_buffer_size &gt; <span class="self">self</span>.write_buffer_size,
+            <span class="string">&quot;WebSocketConfig::max_write_buffer_size must be greater than write_buffer_size, \
+            see WebSocketConfig docs`&quot;
+        </span>);
+    }
+}
+
 <span class="doccomment">/// WebSocket input-output stream.
 ///
 /// This is THE structure you want to create to be able to speak the WebSocket protocol.
 /// It may be created by calling `connect`, `accept` or `client` functions.
+///
+/// Use [`WebSocket::read`], [`WebSocket::send`] to received and send messages.
 </span><span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span>WebSocket&lt;Stream&gt; {
     <span class="doccomment">/// The underlying socket.
@@ -876,6 +972,9 @@
     /// Call this function if you&#39;re using Tungstenite as a part of a web framework
     /// or together with an existing one. If you need an initial handshake, use
     /// `connect()` or `accept()` functions of the crate to construct a websocket.
+    ///
+    /// # Panics
+    /// Panics if config is invalid e.g. `max_write_buffer_size &lt;= write_buffer_size`.
     </span><span class="kw">pub fn </span>from_raw_socket(stream: Stream, role: Role, config: <span class="prelude-ty">Option</span>&lt;WebSocketConfig&gt;) -&gt; <span class="self">Self </span>{
         WebSocket { socket: stream, context: WebSocketContext::new(role, config) }
     }
@@ -885,6 +984,9 @@
     /// Call this function if you&#39;re using Tungstenite as a part of a web framework
     /// or together with an existing one. If you need an initial handshake, use
     /// `connect()` or `accept()` functions of the crate to construct a websocket.
+    ///
+    /// # Panics
+    /// Panics if config is invalid e.g. `max_write_buffer_size &lt;= write_buffer_size`.
     </span><span class="kw">pub fn </span>from_partially_read(
         stream: Stream,
         part: Vec&lt;u8&gt;,
@@ -907,6 +1009,9 @@
     }
 
     <span class="doccomment">/// Change the configuration.
+    ///
+    /// # Panics
+    /// Panics if config is invalid e.g. `max_write_buffer_size &lt;= write_buffer_size`.
     </span><span class="kw">pub fn </span>set_config(<span class="kw-2">&amp;mut </span><span class="self">self</span>, set_func: <span class="kw">impl </span>FnOnce(<span class="kw-2">&amp;mut </span>WebSocketConfig)) {
         <span class="self">self</span>.context.set_config(set_func)
     }
@@ -935,81 +1040,115 @@
 <span class="kw">impl</span>&lt;Stream: Read + Write&gt; WebSocket&lt;Stream&gt; {
     <span class="doccomment">/// Read a message from stream, if possible.
     ///
-    /// This will queue responses to ping and close messages to be sent. It will call
-    /// `write_pending` before trying to read in order to make sure that those responses
-    /// make progress even if you never call `write_pending`. That does mean that they
-    /// get sent out earliest on the next call to `read_message`, `write_message` or `write_pending`.
+    /// This will also queue responses to ping and close messages. These responses
+    /// will be written and flushed on the next call to [`read`](Self::read),
+    /// [`write`](Self::write) or [`flush`](Self::flush).
     ///
-    /// ## Closing the connection
+    /// # Closing the connection
     /// When the remote endpoint decides to close the connection this will return
     /// the close message with an optional close frame.
     ///
-    /// You should continue calling `read_message`, `write_message` or `write_pending` to drive
-    /// the reply to the close frame until [Error::ConnectionClosed] is returned. Once that happens
-    /// it is safe to drop the underlying connection.
-    </span><span class="kw">pub fn </span>read_message(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Message&gt; {
-        <span class="self">self</span>.context.read_message(<span class="kw-2">&amp;mut </span><span class="self">self</span>.socket)
+    /// You should continue calling [`read`](Self::read), [`write`](Self::write) or
+    /// [`flush`](Self::flush) to drive the reply to the close frame until [`Error::ConnectionClosed`]
+    /// is returned. Once that happens it is safe to drop the underlying connection.
+    </span><span class="kw">pub fn </span>read(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Message&gt; {
+        <span class="self">self</span>.context.read(<span class="kw-2">&amp;mut </span><span class="self">self</span>.socket)
     }
 
-    <span class="doccomment">/// Send a message to stream, if possible.
+    <span class="doccomment">/// Writes and immediately flushes a message.
+    /// Equivalent to calling [`write`](Self::write) then [`flush`](Self::flush).
+    </span><span class="kw">pub fn </span>send(<span class="kw-2">&amp;mut </span><span class="self">self</span>, message: Message) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="self">self</span>.write(message)<span class="question-mark">?</span>;
+        <span class="self">self</span>.flush()
+    }
+
+    <span class="doccomment">/// Write a message to the provided stream, if possible.
     ///
-    /// WebSocket will buffer a configurable number of messages at a time, except to reply to Ping
-    /// requests. A Pong reply will jump the queue because the
-    /// [websocket RFC](https://tools.ietf.org/html/rfc6455#section-5.5.2) specifies it should be sent
-    /// as soon as is practical.
+    /// A subsequent call should be made to [`flush`](Self::flush) to flush writes.
     ///
-    /// Note that upon receiving a ping message, tungstenite cues a pong reply automatically.
-    /// When you call either `read_message`, `write_message` or `write_pending` next it will try to send
-    /// that pong out if the underlying connection can take more data. This means you should not
-    /// respond to ping frames manually.
+    /// In the event of stream write failure the message frame will be stored
+    /// in the write buffer and will try again on the next call to [`write`](Self::write)
+    /// or [`flush`](Self::flush).
+    ///
+    /// If the write buffer would exceed the configured [`WebSocketConfig::max_write_buffer_size`]
+    /// [`Err(WriteBufferFull(msg_frame))`](Error::WriteBufferFull) is returned.
+    ///
+    /// This call will generally not flush. However, if there are queued automatic messages
+    /// they will be written and eagerly flushed.
+    ///
+    /// For example, upon receiving ping messages tungstenite queues pong replies automatically.
+    /// The next call to [`read`](Self::read), [`write`](Self::write) or [`flush`](Self::flush)
+    /// will write &amp; flush the pong reply. This means you should not respond to ping frames manually.
     ///
     /// You can however send pong frames manually in order to indicate a unidirectional heartbeat
     /// as described in [RFC 6455](https://tools.ietf.org/html/rfc6455#section-5.5.3). Note that
-    /// if `read_message` returns a ping, you should call `write_pending` until it doesn&#39;t return
-    /// WouldBlock before passing a pong to `write_message`, otherwise the response to the
-    /// ping will not be sent, but rather replaced by your custom pong message.
+    /// if [`read`](Self::read) returns a ping, you should [`flush`](Self::flush) before passing
+    /// a custom pong to [`write`](Self::write), otherwise the automatic queued response to the
+    /// ping will not be sent as it will be replaced by your custom pong message.
     ///
-    /// ## Errors
-    /// - If the WebSocket&#39;s send queue is full, `SendQueueFull` will be returned
-    /// along with the passed message. Otherwise, the message is queued and Ok(()) is returned.
-    /// - If the connection is closed and should be dropped, this will return [Error::ConnectionClosed].
-    /// - If you try again after [Error::ConnectionClosed] was returned either from here or from `read_message`,
-    ///   [Error::AlreadyClosed] will be returned. This indicates a program error on your part.
-    /// - [Error::Io] is returned if the underlying connection returns an error
+    /// # Errors
+    /// - If the WebSocket&#39;s write buffer is full, [`Error::WriteBufferFull`] will be returned
+    ///   along with the equivalent passed message frame.
+    /// - If the connection is closed and should be dropped, this will return [`Error::ConnectionClosed`].
+    /// - If you try again after [`Error::ConnectionClosed`] was returned either from here or from
+    ///   [`read`](Self::read), [`Error::AlreadyClosed`] will be returned. This indicates a program
+    ///   error on your part.
+    /// - [`Error::Io`] is returned if the underlying connection returns an error
     ///   (consider these fatal except for WouldBlock).
-    /// - [Error::Capacity] if your message size is bigger than the configured max message size.
-    </span><span class="kw">pub fn </span>write_message(<span class="kw-2">&amp;mut </span><span class="self">self</span>, message: Message) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="self">self</span>.context.write_message(<span class="kw-2">&amp;mut </span><span class="self">self</span>.socket, message)
+    /// - [`Error::Capacity`] if your message size is bigger than the configured max message size.
+    </span><span class="kw">pub fn </span>write(<span class="kw-2">&amp;mut </span><span class="self">self</span>, message: Message) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="self">self</span>.context.write(<span class="kw-2">&amp;mut </span><span class="self">self</span>.socket, message)
     }
 
-    <span class="doccomment">/// Flush the pending send queue.
-    </span><span class="kw">pub fn </span>write_pending(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="self">self</span>.context.write_pending(<span class="kw-2">&amp;mut </span><span class="self">self</span>.socket)
+    <span class="doccomment">/// Flush writes.
+    ///
+    /// Ensures all messages previously passed to [`write`](Self::write) and automatic
+    /// queued pong responses are written &amp; flushed into the underlying stream.
+    </span><span class="kw">pub fn </span>flush(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="self">self</span>.context.flush(<span class="kw-2">&amp;mut </span><span class="self">self</span>.socket)
     }
 
     <span class="doccomment">/// Close the connection.
     ///
     /// This function guarantees that the close frame will be queued.
     /// There is no need to call it again. Calling this function is
-    /// the same as calling `write_message(Message::Close(..))`.
+    /// the same as calling `write(Message::Close(..))`.
     ///
-    /// After queuing the close frame you should continue calling `read_message` or
-    /// `write_pending` to drive the close handshake to completion.
+    /// After queuing the close frame you should continue calling [`read`](Self::read) or
+    /// [`flush`](Self::flush) to drive the close handshake to completion.
     ///
     /// The websocket RFC defines that the underlying connection should be closed
     /// by the server. Tungstenite takes care of this asymmetry for you.
     ///
     /// When the close handshake is finished (we have both sent and received
-    /// a close message), `read_message` or `write_pending` will return
+    /// a close message), [`read`](Self::read) or [`flush`](Self::flush) will return
     /// [Error::ConnectionClosed] if this endpoint is the server.
     ///
     /// If this endpoint is a client, [Error::ConnectionClosed] will only be
     /// returned after the server has closed the underlying connection.
     ///
     /// It is thus safe to drop the underlying connection as soon as [Error::ConnectionClosed]
-    /// is returned from `read_message` or `write_pending`.
+    /// is returned from [`read`](Self::read) or [`flush`](Self::flush).
     </span><span class="kw">pub fn </span>close(<span class="kw-2">&amp;mut </span><span class="self">self</span>, code: <span class="prelude-ty">Option</span>&lt;CloseFrame&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.context.close(<span class="kw-2">&amp;mut </span><span class="self">self</span>.socket, code)
+    }
+
+    <span class="doccomment">/// Old name for [`read`](Self::read).
+    </span><span class="attr">#[deprecated(note = <span class="string">&quot;Use `read`&quot;</span>)]
+    </span><span class="kw">pub fn </span>read_message(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Message&gt; {
+        <span class="self">self</span>.read()
+    }
+
+    <span class="doccomment">/// Old name for [`send`](Self::send).
+    </span><span class="attr">#[deprecated(note = <span class="string">&quot;Use `send`&quot;</span>)]
+    </span><span class="kw">pub fn </span>write_message(<span class="kw-2">&amp;mut </span><span class="self">self</span>, message: Message) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="self">self</span>.send(message)
+    }
+
+    <span class="doccomment">/// Old name for [`flush`](Self::flush).
+    </span><span class="attr">#[deprecated(note = <span class="string">&quot;Use `flush`&quot;</span>)]
+    </span><span class="kw">pub fn </span>write_pending(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="self">self</span>.flush()
     }
 }
 
@@ -1024,39 +1163,52 @@
     </span>state: WebSocketState,
     <span class="doccomment">/// Receive: an incomplete message being processed.
     </span>incomplete: <span class="prelude-ty">Option</span>&lt;IncompleteMessage&gt;,
-    <span class="doccomment">/// Send: a data send queue.
-    </span>send_queue: VecDeque&lt;Frame&gt;,
-    <span class="doccomment">/// Send: an OOB pong message.
-    </span>pong: <span class="prelude-ty">Option</span>&lt;Frame&gt;,
+    <span class="doccomment">/// Send in addition to regular messages E.g. &quot;pong&quot; or &quot;close&quot;.
+    </span>additional_send: <span class="prelude-ty">Option</span>&lt;Frame&gt;,
     <span class="doccomment">/// The configuration for the websocket session.
     </span>config: WebSocketConfig,
 }
 
 <span class="kw">impl </span>WebSocketContext {
     <span class="doccomment">/// Create a WebSocket context that manages a post-handshake stream.
+    ///
+    /// # Panics
+    /// Panics if config is invalid e.g. `max_write_buffer_size &lt;= write_buffer_size`.
     </span><span class="kw">pub fn </span>new(role: Role, config: <span class="prelude-ty">Option</span>&lt;WebSocketConfig&gt;) -&gt; <span class="self">Self </span>{
-        WebSocketContext {
-            role,
-            frame: FrameCodec::new(),
-            state: WebSocketState::Active,
-            incomplete: <span class="prelude-val">None</span>,
-            send_queue: VecDeque::new(),
-            pong: <span class="prelude-val">None</span>,
-            config: config.unwrap_or_default(),
-        }
+        <span class="self">Self</span>::_new(role, FrameCodec::new(), config.unwrap_or_default())
     }
 
     <span class="doccomment">/// Create a WebSocket context that manages an post-handshake stream.
+    ///
+    /// # Panics
+    /// Panics if config is invalid e.g. `max_write_buffer_size &lt;= write_buffer_size`.
     </span><span class="kw">pub fn </span>from_partially_read(part: Vec&lt;u8&gt;, role: Role, config: <span class="prelude-ty">Option</span>&lt;WebSocketConfig&gt;) -&gt; <span class="self">Self </span>{
-        WebSocketContext {
-            frame: FrameCodec::from_partially_read(part),
-            ..WebSocketContext::new(role, config)
+        <span class="self">Self</span>::_new(role, FrameCodec::from_partially_read(part), config.unwrap_or_default())
+    }
+
+    <span class="kw">fn </span>_new(role: Role, <span class="kw-2">mut </span>frame: FrameCodec, config: WebSocketConfig) -&gt; <span class="self">Self </span>{
+        config.assert_valid();
+        frame.set_max_out_buffer_len(config.max_write_buffer_size);
+        frame.set_out_buffer_write_len(config.write_buffer_size);
+        <span class="self">Self </span>{
+            role,
+            frame,
+            state: WebSocketState::Active,
+            incomplete: <span class="prelude-val">None</span>,
+            additional_send: <span class="prelude-val">None</span>,
+            config,
         }
     }
 
     <span class="doccomment">/// Change the configuration.
+    ///
+    /// # Panics
+    /// Panics if config is invalid e.g. `max_write_buffer_size &lt;= write_buffer_size`.
     </span><span class="kw">pub fn </span>set_config(<span class="kw-2">&amp;mut </span><span class="self">self</span>, set_func: <span class="kw">impl </span>FnOnce(<span class="kw-2">&amp;mut </span>WebSocketConfig)) {
-        set_func(<span class="kw-2">&amp;mut </span><span class="self">self</span>.config)
+        set_func(<span class="kw-2">&amp;mut </span><span class="self">self</span>.config);
+        <span class="self">self</span>.config.assert_valid();
+        <span class="self">self</span>.frame.set_max_out_buffer_len(<span class="self">self</span>.config.max_write_buffer_size);
+        <span class="self">self</span>.frame.set_out_buffer_write_len(<span class="self">self</span>.config.write_buffer_size);
     }
 
     <span class="doccomment">/// Read the configuration.
@@ -1083,17 +1235,23 @@
     ///
     /// This function sends pong and close responses automatically.
     /// However, it never blocks on write.
-    </span><span class="kw">pub fn </span>read_message&lt;Stream&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, stream: <span class="kw-2">&amp;mut </span>Stream) -&gt; <span class="prelude-ty">Result</span>&lt;Message&gt;
+    </span><span class="kw">pub fn </span>read&lt;Stream&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, stream: <span class="kw-2">&amp;mut </span>Stream) -&gt; <span class="prelude-ty">Result</span>&lt;Message&gt;
     <span class="kw">where
         </span>Stream: Read + Write,
     {
         <span class="comment">// Do not read from already closed connections.
-        </span><span class="self">self</span>.state.check_active()<span class="question-mark">?</span>;
+        </span><span class="self">self</span>.state.check_not_terminated()<span class="question-mark">?</span>;
 
         <span class="kw">loop </span>{
-            <span class="comment">// Since we may get ping or close, we need to reply to the messages even during read.
-            // Thus we call write_pending() but ignore its blocking.
-            </span><span class="self">self</span>.write_pending(stream).no_block()<span class="question-mark">?</span>;
+            <span class="kw">if </span><span class="self">self</span>.additional_send.is_some() {
+                <span class="comment">// Since we may get ping or close, we need to reply to the messages even during read.
+                // Thus we flush but ignore its blocking.
+                </span><span class="self">self</span>.flush(stream).no_block()<span class="question-mark">?</span>;
+            } <span class="kw">else if </span><span class="self">self</span>.role == Role::Server &amp;&amp; !<span class="self">self</span>.state.can_read() {
+                <span class="self">self</span>.state = WebSocketState::Terminated;
+                <span class="kw">return </span><span class="prelude-val">Err</span>(Error::ConnectionClosed);
+            }
+
             <span class="comment">// If we get here, either write blocks or we have nothing to write.
             // Thus if read blocks, just let it return WouldBlock.
             </span><span class="kw">if let </span><span class="prelude-val">Some</span>(message) = <span class="self">self</span>.read_message_frame(stream)<span class="question-mark">? </span>{
@@ -1103,37 +1261,26 @@
         }
     }
 
-    <span class="doccomment">/// Send a message to the provided stream, if possible.
+    <span class="doccomment">/// Write a message to the provided stream.
     ///
-    /// WebSocket will buffer a configurable number of messages at a time, except to reply to Ping
-    /// and Close requests. If the WebSocket&#39;s send queue is full, `SendQueueFull` will be returned
-    /// along with the passed message. Otherwise, the message is queued and Ok(()) is returned.
+    /// A subsequent call should be made to [`flush`](Self::flush) to flush writes.
     ///
-    /// Note that only the last pong frame is stored to be sent, and only the
-    /// most recent pong frame is sent if multiple pong frames are queued.
-    </span><span class="kw">pub fn </span>write_message&lt;Stream&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, stream: <span class="kw-2">&amp;mut </span>Stream, message: Message) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
+    /// In the event of stream write failure the message frame will be stored
+    /// in the write buffer and will try again on the next call to [`write`](Self::write)
+    /// or [`flush`](Self::flush).
+    ///
+    /// If the write buffer would exceed the configured [`WebSocketConfig::max_write_buffer_size`]
+    /// [`Err(WriteBufferFull(msg_frame))`](Error::WriteBufferFull) is returned.
+    </span><span class="kw">pub fn </span>write&lt;Stream&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, stream: <span class="kw-2">&amp;mut </span>Stream, message: Message) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
     <span class="kw">where
         </span>Stream: Read + Write,
     {
         <span class="comment">// When terminated, return AlreadyClosed.
-        </span><span class="self">self</span>.state.check_active()<span class="question-mark">?</span>;
+        </span><span class="self">self</span>.state.check_not_terminated()<span class="question-mark">?</span>;
 
         <span class="comment">// Do not write after sending a close frame.
         </span><span class="kw">if </span>!<span class="self">self</span>.state.is_active() {
             <span class="kw">return </span><span class="prelude-val">Err</span>(Error::Protocol(ProtocolError::SendAfterClosing));
-        }
-
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(max_send_queue) = <span class="self">self</span>.config.max_send_queue {
-            <span class="kw">if </span><span class="self">self</span>.send_queue.len() &gt;= max_send_queue {
-                <span class="comment">// Try to make some room for the new message.
-                // Do not return here if write would block, ignore WouldBlock silently
-                // since we must queue the message anyway.
-                </span><span class="self">self</span>.write_pending(stream).no_block()<span class="question-mark">?</span>;
-            }
-
-            <span class="kw">if </span><span class="self">self</span>.send_queue.len() &gt;= max_send_queue {
-                <span class="kw">return </span><span class="prelude-val">Err</span>(Error::SendQueueFull(message));
-            }
         }
 
         <span class="kw">let </span>frame = <span class="kw">match </span>message {
@@ -1141,42 +1288,69 @@
             Message::Binary(data) =&gt; Frame::message(data, OpCode::Data(OpData::Binary), <span class="bool-val">true</span>),
             Message::Ping(data) =&gt; Frame::ping(data),
             Message::Pong(data) =&gt; {
-                <span class="self">self</span>.pong = <span class="prelude-val">Some</span>(Frame::pong(data));
-                <span class="kw">return </span><span class="self">self</span>.write_pending(stream);
+                <span class="self">self</span>.set_additional(Frame::pong(data));
+                <span class="comment">// Note: user pongs can be user flushed so no need to flush here
+                </span><span class="kw">return </span><span class="self">self</span>._write(stream, <span class="prelude-val">None</span>).map(|<span class="kw">_</span>| ());
             }
             Message::Close(code) =&gt; <span class="kw">return </span><span class="self">self</span>.close(stream, code),
             Message::Frame(f) =&gt; f,
         };
 
-        <span class="self">self</span>.send_queue.push_back(frame);
-        <span class="self">self</span>.write_pending(stream)
+        <span class="kw">let </span>should_flush = <span class="self">self</span>._write(stream, <span class="prelude-val">Some</span>(frame))<span class="question-mark">?</span>;
+        <span class="kw">if </span>should_flush {
+            <span class="self">self</span>.flush(stream)<span class="question-mark">?</span>;
+        }
+        <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="doccomment">/// Flush the pending send queue.
-    </span><span class="kw">pub fn </span>write_pending&lt;Stream&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, stream: <span class="kw-2">&amp;mut </span>Stream) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
+    <span class="doccomment">/// Flush writes.
+    ///
+    /// Ensures all messages previously passed to [`write`](Self::write) and automatically
+    /// queued pong responses are written &amp; flushed into the `stream`.
+    </span><span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>flush&lt;Stream&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, stream: <span class="kw-2">&amp;mut </span>Stream) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
     <span class="kw">where
         </span>Stream: Read + Write,
     {
-        <span class="comment">// First, make sure we have no pending frame sending.
-        </span><span class="self">self</span>.frame.write_pending(stream)<span class="question-mark">?</span>;
+        <span class="self">self</span>._write(stream, <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
+        <span class="self">self</span>.frame.write_out_buffer(stream)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(stream.flush()<span class="question-mark">?</span>)
+    }
+
+    <span class="doccomment">/// Writes any data in the out_buffer, `additional_send` and given `data`.
+    ///
+    /// Does **not** flush.
+    ///
+    /// Returns true if the write contents indicate we should flush immediately.
+    </span><span class="kw">fn </span>_write&lt;Stream&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, stream: <span class="kw-2">&amp;mut </span>Stream, data: <span class="prelude-ty">Option</span>&lt;Frame&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;bool&gt;
+    <span class="kw">where
+        </span>Stream: Read + Write,
+    {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(data) = data {
+            <span class="self">self</span>.buffer_frame(stream, data)<span class="question-mark">?</span>;
+        }
 
         <span class="comment">// Upon receipt of a Ping frame, an endpoint MUST send a Pong frame in
         // response, unless it already received a Close frame. It SHOULD
         // respond with Pong frame as soon as is practical. (RFC 6455)
-        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(pong) = <span class="self">self</span>.pong.take() {
-            <span class="macro">trace!</span>(<span class="string">&quot;Sending pong reply&quot;</span>);
-            <span class="self">self</span>.send_one_frame(stream, pong)<span class="question-mark">?</span>;
-        }
-        <span class="comment">// If we have any unsent frames, send them.
-        </span><span class="macro">trace!</span>(<span class="string">&quot;Frames still in queue: {}&quot;</span>, <span class="self">self</span>.send_queue.len());
-        <span class="kw">while let </span><span class="prelude-val">Some</span>(data) = <span class="self">self</span>.send_queue.pop_front() {
-            <span class="self">self</span>.send_one_frame(stream, data)<span class="question-mark">?</span>;
-        }
+        </span><span class="kw">let </span>should_flush = <span class="kw">if let </span><span class="prelude-val">Some</span>(msg) = <span class="self">self</span>.additional_send.take() {
+            <span class="macro">trace!</span>(<span class="string">&quot;Sending pong/close&quot;</span>);
+            <span class="kw">match </span><span class="self">self</span>.buffer_frame(stream, msg) {
+                <span class="prelude-val">Err</span>(Error::WriteBufferFull(Message::Frame(msg))) =&gt; {
+                    <span class="comment">// if an system message would exceed the buffer put it back in
+                    // `additional_send` for retry. Otherwise returning this error
+                    // may not make sense to the user, e.g. calling `flush`.
+                    </span><span class="self">self</span>.set_additional(msg);
+                    <span class="bool-val">false
+                </span>}
+                <span class="prelude-val">Err</span>(err) =&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(err),
+                <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; <span class="bool-val">true</span>,
+            }
+        } <span class="kw">else </span>{
+            <span class="bool-val">false
+        </span>};
 
-        <span class="comment">// If we get to this point, the send queue is empty and the underlying socket is still
-        // willing to take more data.
-
-        // If we&#39;re closing and there is nothing to send anymore, we should close the connection.
+        <span class="comment">// If we&#39;re closing and there is nothing to send anymore, we should close the connection.
         </span><span class="kw">if </span><span class="self">self</span>.role == Role::Server &amp;&amp; !<span class="self">self</span>.state.can_read() {
             <span class="comment">// The underlying TCP connection, in most normal cases, SHOULD be closed
             // first by the server, so that it holds the TIME_WAIT state and not the
@@ -1184,10 +1358,11 @@
             // maximum segment lifetimes (2MSL), while there is no corresponding
             // server impact as a TIME_WAIT connection is immediately reopened upon
             // a new SYN with a higher seq number). (RFC 6455)
-            </span><span class="self">self</span>.state = WebSocketState::Terminated;
+            </span><span class="self">self</span>.frame.write_out_buffer(stream)<span class="question-mark">?</span>;
+            <span class="self">self</span>.state = WebSocketState::Terminated;
             <span class="prelude-val">Err</span>(Error::ConnectionClosed)
         } <span class="kw">else </span>{
-            <span class="prelude-val">Ok</span>(())
+            <span class="prelude-val">Ok</span>(should_flush)
         }
     }
 
@@ -1195,7 +1370,7 @@
     ///
     /// This function guarantees that the close frame will be queued.
     /// There is no need to call it again. Calling this function is
-    /// the same as calling `write(Message::Close(..))`.
+    /// the same as calling `send(Message::Close(..))`.
     </span><span class="kw">pub fn </span>close&lt;Stream&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, stream: <span class="kw-2">&amp;mut </span>Stream, code: <span class="prelude-ty">Option</span>&lt;CloseFrame&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
     <span class="kw">where
         </span>Stream: Read + Write,
@@ -1203,11 +1378,9 @@
         <span class="kw">if let </span>WebSocketState::Active = <span class="self">self</span>.state {
             <span class="self">self</span>.state = WebSocketState::ClosedByUs;
             <span class="kw">let </span>frame = Frame::close(code);
-            <span class="self">self</span>.send_queue.push_back(frame);
-        } <span class="kw">else </span>{
-            <span class="comment">// Already closed, nothing to do.
-        </span>}
-        <span class="self">self</span>.write_pending(stream)
+            <span class="self">self</span>._write(stream, <span class="prelude-val">Some</span>(frame))<span class="question-mark">?</span>;
+        }
+        <span class="self">self</span>.flush(stream)
     }
 
     <span class="doccomment">/// Try to decode one message frame. May return None.
@@ -1276,7 +1449,7 @@
                             <span class="kw">let </span>data = frame.into_data();
                             <span class="comment">// No ping processing after we sent a close frame.
                             </span><span class="kw">if </span><span class="self">self</span>.state.is_active() {
-                                <span class="self">self</span>.pong = <span class="prelude-val">Some</span>(Frame::pong(data.clone()));
+                                <span class="self">self</span>.set_additional(Frame::pong(data.clone()));
                             }
                             <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(Message::Ping(data)))
                         }
@@ -1360,7 +1533,7 @@
 
                 <span class="kw">let </span>reply = Frame::close(close.clone());
                 <span class="macro">debug!</span>(<span class="string">&quot;Replying to close with {:?}&quot;</span>, reply);
-                <span class="self">self</span>.send_queue.push_back(reply);
+                <span class="self">self</span>.set_additional(reply);
 
                 <span class="prelude-val">Some</span>(close)
             }
@@ -1377,8 +1550,8 @@
         }
     }
 
-    <span class="doccomment">/// Send a single pending frame.
-    </span><span class="kw">fn </span>send_one_frame&lt;Stream&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, stream: <span class="kw-2">&amp;mut </span>Stream, <span class="kw-2">mut </span>frame: Frame) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
+    <span class="doccomment">/// Write a single frame into the write-buffer.
+    </span><span class="kw">fn </span>buffer_frame&lt;Stream&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, stream: <span class="kw-2">&amp;mut </span>Stream, <span class="kw-2">mut </span>frame: Frame) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
     <span class="kw">where
         </span>Stream: Read + Write,
     {
@@ -1392,7 +1565,18 @@
         }
 
         <span class="macro">trace!</span>(<span class="string">&quot;Sending frame: {:?}&quot;</span>, frame);
-        <span class="self">self</span>.frame.write_frame(stream, frame).check_connection_reset(<span class="self">self</span>.state)
+        <span class="self">self</span>.frame.buffer_frame(stream, frame).check_connection_reset(<span class="self">self</span>.state)
+    }
+
+    <span class="doccomment">/// Replace `additional_send` if it is currently a `Pong` message.
+    </span><span class="kw">fn </span>set_additional(<span class="kw-2">&amp;mut </span><span class="self">self</span>, add: Frame) {
+        <span class="kw">let </span>empty_or_pong = <span class="self">self
+            </span>.additional_send
+            .as_ref()
+            .map_or(<span class="bool-val">true</span>, |f| f.header().opcode == OpCode::Control(OpCtl::Pong));
+        <span class="kw">if </span>empty_or_pong {
+            <span class="self">self</span>.additional_send.replace(add);
+        }
     }
 }
 
@@ -1425,7 +1609,7 @@
     }
 
     <span class="doccomment">/// Check if the state is active, return error if not.
-    </span><span class="kw">fn </span>check_active(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    </span><span class="kw">fn </span>check_not_terminated(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             WebSocketState::Terminated =&gt; <span class="prelude-val">Err</span>(Error::AlreadyClosed),
             <span class="kw">_ </span>=&gt; <span class="prelude-val">Ok</span>(()),
@@ -1477,64 +1661,6 @@
         }
     }
 
-    <span class="kw">struct </span>WouldBlockStreamMoc;
-
-    <span class="kw">impl </span>io::Write <span class="kw">for </span>WouldBlockStreamMoc {
-        <span class="kw">fn </span>write(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw">_</span>: <span class="kw-2">&amp;</span>[u8]) -&gt; io::Result&lt;usize&gt; {
-            <span class="prelude-val">Err</span>(io::Error::new(io::ErrorKind::WouldBlock, <span class="string">&quot;would block&quot;</span>))
-        }
-        <span class="kw">fn </span>flush(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; io::Result&lt;()&gt; {
-            <span class="prelude-val">Err</span>(io::Error::new(io::ErrorKind::WouldBlock, <span class="string">&quot;would block&quot;</span>))
-        }
-    }
-
-    <span class="kw">impl </span>io::Read <span class="kw">for </span>WouldBlockStreamMoc {
-        <span class="kw">fn </span>read(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw">_</span>: <span class="kw-2">&amp;mut </span>[u8]) -&gt; io::Result&lt;usize&gt; {
-            <span class="prelude-val">Err</span>(io::Error::new(io::ErrorKind::WouldBlock, <span class="string">&quot;would block&quot;</span>))
-        }
-    }
-
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>queue_logic() {
-        <span class="comment">// Create a socket with the queue size of 1.
-        </span><span class="kw">let </span><span class="kw-2">mut </span>socket = WebSocket::from_raw_socket(
-            WouldBlockStreamMoc,
-            Role::Client,
-            <span class="prelude-val">Some</span>(WebSocketConfig { max_send_queue: <span class="prelude-val">Some</span>(<span class="number">1</span>), ..Default::default() }),
-        );
-
-        <span class="comment">// Test message that we&#39;re going to send.
-        </span><span class="kw">let </span>message = Message::Binary(<span class="macro">vec!</span>[<span class="number">0xFF</span>; <span class="number">1024</span>]);
-
-        <span class="comment">// Helper to check the error.
-        </span><span class="kw">let </span>assert_would_block = |error| {
-            <span class="kw">if let </span>Error::Io(io_error) = error {
-                <span class="macro">assert_eq!</span>(io_error.kind(), io::ErrorKind::WouldBlock);
-            } <span class="kw">else </span>{
-                <span class="macro">panic!</span>(<span class="string">&quot;Expected WouldBlock error&quot;</span>);
-            }
-        };
-
-        <span class="comment">// The first attempt of writing must not fail, since the queue is empty at start.
-        // But since the underlying mock object always returns `WouldBlock`, so is the result.
-        </span>assert_would_block(<span class="macro">dbg!</span>(socket.write_message(message.clone()).unwrap_err()));
-
-        <span class="comment">// Any subsequent attempts must return an error telling that the queue is full.
-        </span><span class="kw">for </span>_i <span class="kw">in </span><span class="number">0</span>..<span class="number">100 </span>{
-            <span class="macro">assert!</span>(<span class="macro">matches!</span>(
-                socket.write_message(message.clone()).unwrap_err(),
-                Error::SendQueueFull(..)
-            ));
-        }
-
-        <span class="comment">// The size of the output buffer must not be bigger than the size of that message
-        // that we managed to write to the output buffer at first. Since we could not make
-        // any progress (because of the logic of the moc buffer), the size remains unchanged.
-        </span><span class="kw">if </span>socket.context.frame.output_buffer_len() &gt; message.len() {
-            <span class="macro">panic!</span>(<span class="string">&quot;Too many frames in the queue&quot;</span>);
-        }
-    }
-
     <span class="attr">#[test]
     </span><span class="kw">fn </span>receive_messages() {
         <span class="kw">let </span>incoming = Cursor::new(<span class="macro">vec!</span>[
@@ -1543,10 +1669,10 @@
             <span class="number">0x03</span>,
         ]);
         <span class="kw">let </span><span class="kw-2">mut </span>socket = WebSocket::from_raw_socket(WriteMoc(incoming), Role::Client, <span class="prelude-val">None</span>);
-        <span class="macro">assert_eq!</span>(socket.read_message().unwrap(), Message::Ping(<span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>]));
-        <span class="macro">assert_eq!</span>(socket.read_message().unwrap(), Message::Pong(<span class="macro">vec!</span>[<span class="number">3</span>]));
-        <span class="macro">assert_eq!</span>(socket.read_message().unwrap(), Message::Text(<span class="string">&quot;Hello, World!&quot;</span>.into()));
-        <span class="macro">assert_eq!</span>(socket.read_message().unwrap(), Message::Binary(<span class="macro">vec!</span>[<span class="number">0x01</span>, <span class="number">0x02</span>, <span class="number">0x03</span>]));
+        <span class="macro">assert_eq!</span>(socket.read().unwrap(), Message::Ping(<span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>]));
+        <span class="macro">assert_eq!</span>(socket.read().unwrap(), Message::Pong(<span class="macro">vec!</span>[<span class="number">3</span>]));
+        <span class="macro">assert_eq!</span>(socket.read().unwrap(), Message::Text(<span class="string">&quot;Hello, World!&quot;</span>.into()));
+        <span class="macro">assert_eq!</span>(socket.read().unwrap(), Message::Binary(<span class="macro">vec!</span>[<span class="number">0x01</span>, <span class="number">0x02</span>, <span class="number">0x03</span>]));
     }
 
     <span class="attr">#[test]
@@ -1559,7 +1685,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>socket = WebSocket::from_raw_socket(WriteMoc(incoming), Role::Client, <span class="prelude-val">Some</span>(limit));
 
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(
-            socket.read_message(),
+            socket.read(),
             <span class="prelude-val">Err</span>(Error::Capacity(CapacityError::MessageTooLong { size: <span class="number">13</span>, max_size: <span class="number">10 </span>}))
         ));
     }
@@ -1571,7 +1697,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>socket = WebSocket::from_raw_socket(WriteMoc(incoming), Role::Client, <span class="prelude-val">Some</span>(limit));
 
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(
-            socket.read_message(),
+            socket.read(),
             <span class="prelude-val">Err</span>(Error::Capacity(CapacityError::MessageTooLong { size: <span class="number">3</span>, max_size: <span class="number">2 </span>}))
         ));
     }

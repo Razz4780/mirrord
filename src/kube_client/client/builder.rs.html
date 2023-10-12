@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/kube-client-0.84.0/src/client/builder.rs`."><title>builder.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="kube_client" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (e3abbd499 2023-09-06)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../kube_client/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/git/checkouts/kube-26c6657b93f4f767/c752007/kube-client/src/client/builder.rs`."><title>builder.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="kube_client" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (e3abbd499 2023-09-06)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../kube_client/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -169,15 +169,53 @@
 <a href="#169" id="169">169</a>
 <a href="#170" id="170">170</a>
 <a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>bytes::Bytes;
-<span class="kw">use </span>http::{Request, Response};
-<span class="kw">use </span>hyper::{<span class="self">self</span>, client::HttpConnector};
+<span class="kw">use </span>http::{header::HeaderMap, Request, Response};
+<span class="kw">use </span>hyper::{
+    <span class="self">self</span>,
+    client::{connect::Connection, HttpConnector},
+};
 <span class="kw">use </span>hyper_timeout::TimeoutConnector;
 <span class="kw">pub use </span>kube_core::response::Status;
+<span class="kw">use </span>std::time::Duration;
+<span class="kw">use </span>tokio::io::{AsyncRead, AsyncWrite};
 <span class="kw">use </span>tower::{util::BoxService, BoxError, Layer, Service, ServiceBuilder};
 <span class="kw">use </span>tower_http::{
     classify::ServerErrorsFailureClass, map_response_body::MapResponseBodyLayer, trace::TraceLayer,
 };
+<span class="kw">use </span>tracing::Span;
 
 <span class="kw">use crate</span>::{client::ConfigExt, Client, Config, Error, <span class="prelude-ty">Result</span>};
 
@@ -232,112 +270,138 @@
     }
 }
 
-<span class="kw">impl </span>TryFrom&lt;Config&gt; <span class="kw">for </span>ClientBuilder&lt;BoxService&lt;Request&lt;hyper::Body&gt;, Response&lt;Box&lt;DynBody&gt;&gt;, BoxError&gt;&gt; {
+<span class="kw">pub type </span>GenericService = BoxService&lt;Request&lt;hyper::Body&gt;, Response&lt;Box&lt;DynBody&gt;&gt;, BoxError&gt;;
+
+<span class="kw">impl </span>TryFrom&lt;Config&gt; <span class="kw">for </span>ClientBuilder&lt;GenericService&gt; {
     <span class="kw">type </span>Error = Error;
 
     <span class="doccomment">/// Builds a default [`ClientBuilder`] stack from a given configuration
     </span><span class="kw">fn </span>try_from(config: Config) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">use </span>std::time::Duration;
+        <span class="kw">let </span><span class="kw-2">mut </span>connector = HttpConnector::new();
+        connector.enforce_http(<span class="bool-val">false</span>);
 
-        <span class="kw">use </span>http::header::HeaderMap;
-        <span class="kw">use </span>tracing::Span;
+        <span class="attr">#[cfg(feature = <span class="string">&quot;socks5&quot;</span>)]
+        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(proxy_addr) = config.proxy_url.clone() {
+            <span class="kw">let </span>connector = hyper_socks2::SocksConnector {
+                proxy_addr,
+                auth: <span class="prelude-val">None</span>,
+                connector,
+            };
 
-        <span class="kw">let </span>default_ns = config.default_namespace.clone();
+            <span class="kw">return </span>make_generic_builder(connector, config);
+        }
 
-        <span class="kw">let </span>client: hyper::Client&lt;<span class="kw">_</span>, hyper::Body&gt; = {
-            <span class="kw">let </span><span class="kw-2">mut </span>connector = HttpConnector::new();
-            connector.enforce_http(<span class="bool-val">false</span>);
-
-            <span class="comment">// Current TLS feature precedence when more than one are set:
-            // 1. openssl-tls
-            // 2. rustls-tls
-            // Create a custom client to use something else.
-            // If TLS features are not enabled, http connector will be used.
-            </span><span class="attr">#[cfg(feature = <span class="string">&quot;openssl-tls&quot;</span>)]
-            </span><span class="kw">let </span>connector = config.openssl_https_connector_with_connector(connector)<span class="question-mark">?</span>;
-            <span class="attr">#[cfg(all(not(feature = <span class="string">&quot;openssl-tls&quot;</span>), feature = <span class="string">&quot;rustls-tls&quot;</span>))]
-            </span><span class="kw">let </span>connector = config.rustls_https_connector_with_connector(connector)<span class="question-mark">?</span>;
-
-            <span class="kw">let </span><span class="kw-2">mut </span>connector = TimeoutConnector::new(connector);
-
-            <span class="comment">// Set the timeouts for the client
-            </span>connector.set_connect_timeout(config.connect_timeout);
-            connector.set_read_timeout(config.read_timeout);
-            connector.set_write_timeout(config.write_timeout);
-
-            hyper::Client::builder().build(connector)
-        };
-
-        <span class="kw">let </span>stack = ServiceBuilder::new().layer(config.base_uri_layer()).into_inner();
-        <span class="attr">#[cfg(feature = <span class="string">&quot;gzip&quot;</span>)]
-        </span><span class="kw">let </span>stack = ServiceBuilder::new()
-            .layer(stack)
-            .layer(tower_http::decompression::DecompressionLayer::new())
-            .into_inner();
-
-        <span class="kw">let </span>service = ServiceBuilder::new()
-            .layer(stack)
-            .option_layer(config.auth_layer()<span class="question-mark">?</span>)
-            .layer(config.extra_headers_layer()<span class="question-mark">?</span>)
-            .layer(
-                <span class="comment">// Attribute names follow [Semantic Conventions].
-                // [Semantic Conventions]: https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/http.md
-                </span>TraceLayer::new_for_http()
-                    .make_span_with(|req: <span class="kw-2">&amp;</span>Request&lt;hyper::Body&gt;| {
-                        <span class="macro">tracing::debug_span!</span>(
-                            <span class="string">&quot;HTTP&quot;</span>,
-                             http.method = %req.method(),
-                             http.url = %req.uri(),
-                             http.status_code = tracing::field::Empty,
-                             otel.name = req.extensions().get::&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str&gt;().unwrap_or(<span class="kw-2">&amp;</span><span class="string">&quot;HTTP&quot;</span>),
-                             otel.kind = <span class="string">&quot;client&quot;</span>,
-                             otel.status_code = tracing::field::Empty,
-                        )
-                    })
-                    .on_request(|_req: <span class="kw-2">&amp;</span>Request&lt;hyper::Body&gt;, _span: <span class="kw-2">&amp;</span>Span| {
-                        <span class="macro">tracing::debug!</span>(<span class="string">&quot;requesting&quot;</span>);
-                    })
-                    .on_response(|res: <span class="kw-2">&amp;</span>Response&lt;hyper::Body&gt;, _latency: Duration, span: <span class="kw-2">&amp;</span>Span| {
-                        <span class="kw">let </span>status = res.status();
-                        span.record(<span class="string">&quot;http.status_code&quot;</span>, status.as_u16());
-                        <span class="kw">if </span>status.is_client_error() || status.is_server_error() {
-                            span.record(<span class="string">&quot;otel.status_code&quot;</span>, <span class="string">&quot;ERROR&quot;</span>);
-                        }
-                    })
-                    <span class="comment">// Explicitly disable `on_body_chunk`. The default does nothing.
-                    </span>.on_body_chunk(())
-                    .on_eos(|<span class="kw">_</span>: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>HeaderMap&gt;, _duration: Duration, _span: <span class="kw-2">&amp;</span>Span| {
-                        <span class="macro">tracing::debug!</span>(<span class="string">&quot;stream closed&quot;</span>);
-                    })
-                    .on_failure(|ec: ServerErrorsFailureClass, _latency: Duration, span: <span class="kw-2">&amp;</span>Span| {
-                        <span class="comment">// Called when
-                        // - Calling the inner service errored
-                        // - Polling `Body` errored
-                        // - the response was classified as failure (5xx)
-                        // - End of stream was classified as failure
-                        </span>span.record(<span class="string">&quot;otel.status_code&quot;</span>, <span class="string">&quot;ERROR&quot;</span>);
-                        <span class="kw">match </span>ec {
-                            ServerErrorsFailureClass::StatusCode(status) =&gt; {
-                                span.record(<span class="string">&quot;http.status_code&quot;</span>, status.as_u16());
-                                <span class="macro">tracing::error!</span>(<span class="string">&quot;failed with status {}&quot;</span>, status)
-                            }
-                            ServerErrorsFailureClass::Error(err) =&gt; {
-                                <span class="macro">tracing::error!</span>(<span class="string">&quot;failed with error {}&quot;</span>, err)
-                            }
-                        }
-                    }),
-            )
-            .service(client);
-
-        <span class="prelude-val">Ok</span>(<span class="self">Self</span>::new(
-            BoxService::new(
-                MapResponseBodyLayer::new(|body| {
-                    Box::new(http_body::Body::map_err(body, BoxError::from)) <span class="kw">as </span>Box&lt;DynBody&gt;
-                })
-                .layer(service),
-            ),
-            default_ns,
-        ))
+        make_generic_builder(connector, config)
     }
+}
+
+<span class="doccomment">/// Helper function for implementation of [`TryFrom&lt;Config&gt;`] for [`ClientBuilder`].
+/// Ignores [`Config::proxy_url`], which at this point is already handled.
+</span><span class="kw">fn </span>make_generic_builder&lt;H&gt;(base_connector: H, config: Config) -&gt; <span class="prelude-ty">Result</span>&lt;ClientBuilder&lt;GenericService&gt;, Error&gt;
+<span class="kw">where
+    </span>H: <span class="lifetime">&#39;static </span>+ Clone + Send + Sync + Service&lt;http::Uri&gt;,
+    H::Response: <span class="lifetime">&#39;static </span>+ Connection + AsyncRead + AsyncWrite + Send + Unpin,
+    H::Future: <span class="lifetime">&#39;static </span>+ Send,
+    H::Error: <span class="lifetime">&#39;static </span>+ Send + Sync + std::error::Error,
+{
+    <span class="kw">let </span>default_ns = config.default_namespace.clone();
+    <span class="kw">let </span>auth_layer = config.auth_layer()<span class="question-mark">?</span>;
+
+    <span class="kw">let </span>client: hyper::Client&lt;<span class="kw">_</span>, hyper::Body&gt; = {
+        <span class="comment">// Current TLS feature precedence when more than one are set:
+        // 1. rustls-tls
+        // 2. openssl-tls
+        // Create a custom client to use something else.
+        // If TLS features are not enabled, http connector will be used.
+        </span><span class="attr">#[cfg(feature = <span class="string">&quot;rustls-tls&quot;</span>)]
+        </span><span class="kw">let </span>connector = config.rustls_https_connector_with_connector(base_connector)<span class="question-mark">?</span>;
+        <span class="attr">#[cfg(all(not(feature = <span class="string">&quot;rustls-tls&quot;</span>), feature = <span class="string">&quot;openssl-tls&quot;</span>))]
+        </span><span class="kw">let </span>connector = config.openssl_https_connector_with_connector(base_connector)<span class="question-mark">?</span>;
+        <span class="attr">#[cfg(all(not(feature = <span class="string">&quot;rustls-tls&quot;</span>), not(feature = <span class="string">&quot;openssl-tls&quot;</span>)))]
+        </span><span class="kw">if </span>auth_layer.is_none() || config.cluster_url.scheme() == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>http::uri::Scheme::HTTPS) {
+            <span class="comment">// no tls stack situation only works on anonymous auth with http scheme
+            </span><span class="kw">return </span><span class="prelude-val">Err</span>(Error::TlsRequired);
+        }
+
+        <span class="kw">let </span><span class="kw-2">mut </span>connector = TimeoutConnector::new(connector);
+
+        <span class="comment">// Set the timeouts for the client
+        </span>connector.set_connect_timeout(config.connect_timeout);
+        connector.set_read_timeout(config.read_timeout);
+        connector.set_write_timeout(config.write_timeout);
+
+        hyper::Client::builder().build(connector)
+    };
+
+    <span class="kw">let </span>stack = ServiceBuilder::new().layer(config.base_uri_layer()).into_inner();
+    <span class="attr">#[cfg(feature = <span class="string">&quot;gzip&quot;</span>)]
+    </span><span class="kw">let </span>stack = ServiceBuilder::new()
+        .layer(stack)
+        .layer(tower_http::decompression::DecompressionLayer::new())
+        .into_inner();
+
+    <span class="kw">let </span>service = ServiceBuilder::new()
+        .layer(stack)
+        .option_layer(auth_layer)
+        .layer(config.extra_headers_layer()<span class="question-mark">?</span>)
+        .layer(
+            <span class="comment">// Attribute names follow [Semantic Conventions].
+            // [Semantic Conventions]: https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/trace/semantic_conventions/http.md
+            </span>TraceLayer::new_for_http()
+                .make_span_with(|req: <span class="kw-2">&amp;</span>Request&lt;hyper::Body&gt;| {
+                    <span class="macro">tracing::debug_span!</span>(
+                        <span class="string">&quot;HTTP&quot;</span>,
+                         http.method = %req.method(),
+                         http.url = %req.uri(),
+                         http.status_code = tracing::field::Empty,
+                         otel.name = req.extensions().get::&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str&gt;().unwrap_or(<span class="kw-2">&amp;</span><span class="string">&quot;HTTP&quot;</span>),
+                         otel.kind = <span class="string">&quot;client&quot;</span>,
+                         otel.status_code = tracing::field::Empty,
+                    )
+                })
+                .on_request(|_req: <span class="kw-2">&amp;</span>Request&lt;hyper::Body&gt;, _span: <span class="kw-2">&amp;</span>Span| {
+                    <span class="macro">tracing::debug!</span>(<span class="string">&quot;requesting&quot;</span>);
+                })
+                .on_response(|res: <span class="kw-2">&amp;</span>Response&lt;hyper::Body&gt;, _latency: Duration, span: <span class="kw-2">&amp;</span>Span| {
+                    <span class="kw">let </span>status = res.status();
+                    span.record(<span class="string">&quot;http.status_code&quot;</span>, status.as_u16());
+                    <span class="kw">if </span>status.is_client_error() || status.is_server_error() {
+                        span.record(<span class="string">&quot;otel.status_code&quot;</span>, <span class="string">&quot;ERROR&quot;</span>);
+                    }
+                })
+                <span class="comment">// Explicitly disable `on_body_chunk`. The default does nothing.
+                </span>.on_body_chunk(())
+                .on_eos(|<span class="kw">_</span>: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>HeaderMap&gt;, _duration: Duration, _span: <span class="kw-2">&amp;</span>Span| {
+                    <span class="macro">tracing::debug!</span>(<span class="string">&quot;stream closed&quot;</span>);
+                })
+                .on_failure(|ec: ServerErrorsFailureClass, _latency: Duration, span: <span class="kw-2">&amp;</span>Span| {
+                    <span class="comment">// Called when
+                    // - Calling the inner service errored
+                    // - Polling `Body` errored
+                    // - the response was classified as failure (5xx)
+                    // - End of stream was classified as failure
+                    </span>span.record(<span class="string">&quot;otel.status_code&quot;</span>, <span class="string">&quot;ERROR&quot;</span>);
+                    <span class="kw">match </span>ec {
+                        ServerErrorsFailureClass::StatusCode(status) =&gt; {
+                            span.record(<span class="string">&quot;http.status_code&quot;</span>, status.as_u16());
+                            <span class="macro">tracing::error!</span>(<span class="string">&quot;failed with status {}&quot;</span>, status)
+                        }
+                        ServerErrorsFailureClass::Error(err) =&gt; {
+                            <span class="macro">tracing::error!</span>(<span class="string">&quot;failed with error {}&quot;</span>, err)
+                        }
+                    }
+                }),
+        )
+        .service(client);
+
+    <span class="prelude-val">Ok</span>(ClientBuilder::new(
+        BoxService::new(
+            MapResponseBodyLayer::new(|body| {
+                Box::new(http_body::Body::map_err(body, BoxError::from)) <span class="kw">as </span>Box&lt;DynBody&gt;
+            })
+            .layer(service),
+        ),
+        default_ns,
+    ))
 }
 </code></pre></div></section></main></body></html>

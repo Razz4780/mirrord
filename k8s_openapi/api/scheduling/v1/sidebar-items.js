@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["ReadPriorityClassResponse"],"struct":["PriorityClass"]};
+window.SIDEBAR_ITEMS = {"struct":["PriorityClass"]};

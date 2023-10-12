@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/kube-runtime-0.84.0/src/watcher.rs`."><title>watcher.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="kube_runtime" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (e3abbd499 2023-09-06)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../kube_runtime/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/git/checkouts/kube-26c6657b93f4f767/c752007/kube-runtime/src/watcher.rs`."><title>watcher.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="kube_runtime" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (e3abbd499 2023-09-06)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../kube_runtime/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -734,6 +734,139 @@
 <a href="#734" id="734">734</a>
 <a href="#735" id="735">735</a>
 <a href="#736" id="736">736</a>
+<a href="#737" id="737">737</a>
+<a href="#738" id="738">738</a>
+<a href="#739" id="739">739</a>
+<a href="#740" id="740">740</a>
+<a href="#741" id="741">741</a>
+<a href="#742" id="742">742</a>
+<a href="#743" id="743">743</a>
+<a href="#744" id="744">744</a>
+<a href="#745" id="745">745</a>
+<a href="#746" id="746">746</a>
+<a href="#747" id="747">747</a>
+<a href="#748" id="748">748</a>
+<a href="#749" id="749">749</a>
+<a href="#750" id="750">750</a>
+<a href="#751" id="751">751</a>
+<a href="#752" id="752">752</a>
+<a href="#753" id="753">753</a>
+<a href="#754" id="754">754</a>
+<a href="#755" id="755">755</a>
+<a href="#756" id="756">756</a>
+<a href="#757" id="757">757</a>
+<a href="#758" id="758">758</a>
+<a href="#759" id="759">759</a>
+<a href="#760" id="760">760</a>
+<a href="#761" id="761">761</a>
+<a href="#762" id="762">762</a>
+<a href="#763" id="763">763</a>
+<a href="#764" id="764">764</a>
+<a href="#765" id="765">765</a>
+<a href="#766" id="766">766</a>
+<a href="#767" id="767">767</a>
+<a href="#768" id="768">768</a>
+<a href="#769" id="769">769</a>
+<a href="#770" id="770">770</a>
+<a href="#771" id="771">771</a>
+<a href="#772" id="772">772</a>
+<a href="#773" id="773">773</a>
+<a href="#774" id="774">774</a>
+<a href="#775" id="775">775</a>
+<a href="#776" id="776">776</a>
+<a href="#777" id="777">777</a>
+<a href="#778" id="778">778</a>
+<a href="#779" id="779">779</a>
+<a href="#780" id="780">780</a>
+<a href="#781" id="781">781</a>
+<a href="#782" id="782">782</a>
+<a href="#783" id="783">783</a>
+<a href="#784" id="784">784</a>
+<a href="#785" id="785">785</a>
+<a href="#786" id="786">786</a>
+<a href="#787" id="787">787</a>
+<a href="#788" id="788">788</a>
+<a href="#789" id="789">789</a>
+<a href="#790" id="790">790</a>
+<a href="#791" id="791">791</a>
+<a href="#792" id="792">792</a>
+<a href="#793" id="793">793</a>
+<a href="#794" id="794">794</a>
+<a href="#795" id="795">795</a>
+<a href="#796" id="796">796</a>
+<a href="#797" id="797">797</a>
+<a href="#798" id="798">798</a>
+<a href="#799" id="799">799</a>
+<a href="#800" id="800">800</a>
+<a href="#801" id="801">801</a>
+<a href="#802" id="802">802</a>
+<a href="#803" id="803">803</a>
+<a href="#804" id="804">804</a>
+<a href="#805" id="805">805</a>
+<a href="#806" id="806">806</a>
+<a href="#807" id="807">807</a>
+<a href="#808" id="808">808</a>
+<a href="#809" id="809">809</a>
+<a href="#810" id="810">810</a>
+<a href="#811" id="811">811</a>
+<a href="#812" id="812">812</a>
+<a href="#813" id="813">813</a>
+<a href="#814" id="814">814</a>
+<a href="#815" id="815">815</a>
+<a href="#816" id="816">816</a>
+<a href="#817" id="817">817</a>
+<a href="#818" id="818">818</a>
+<a href="#819" id="819">819</a>
+<a href="#820" id="820">820</a>
+<a href="#821" id="821">821</a>
+<a href="#822" id="822">822</a>
+<a href="#823" id="823">823</a>
+<a href="#824" id="824">824</a>
+<a href="#825" id="825">825</a>
+<a href="#826" id="826">826</a>
+<a href="#827" id="827">827</a>
+<a href="#828" id="828">828</a>
+<a href="#829" id="829">829</a>
+<a href="#830" id="830">830</a>
+<a href="#831" id="831">831</a>
+<a href="#832" id="832">832</a>
+<a href="#833" id="833">833</a>
+<a href="#834" id="834">834</a>
+<a href="#835" id="835">835</a>
+<a href="#836" id="836">836</a>
+<a href="#837" id="837">837</a>
+<a href="#838" id="838">838</a>
+<a href="#839" id="839">839</a>
+<a href="#840" id="840">840</a>
+<a href="#841" id="841">841</a>
+<a href="#842" id="842">842</a>
+<a href="#843" id="843">843</a>
+<a href="#844" id="844">844</a>
+<a href="#845" id="845">845</a>
+<a href="#846" id="846">846</a>
+<a href="#847" id="847">847</a>
+<a href="#848" id="848">848</a>
+<a href="#849" id="849">849</a>
+<a href="#850" id="850">850</a>
+<a href="#851" id="851">851</a>
+<a href="#852" id="852">852</a>
+<a href="#853" id="853">853</a>
+<a href="#854" id="854">854</a>
+<a href="#855" id="855">855</a>
+<a href="#856" id="856">856</a>
+<a href="#857" id="857">857</a>
+<a href="#858" id="858">858</a>
+<a href="#859" id="859">859</a>
+<a href="#860" id="860">860</a>
+<a href="#861" id="861">861</a>
+<a href="#862" id="862">862</a>
+<a href="#863" id="863">863</a>
+<a href="#864" id="864">864</a>
+<a href="#865" id="865">865</a>
+<a href="#866" id="866">866</a>
+<a href="#867" id="867">867</a>
+<a href="#868" id="868">868</a>
+<a href="#869" id="869">869</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Watches a Kubernetes Resource for changes, with error recovery
 //!
 //! See [`watcher`] for the primary entry point.
@@ -858,6 +991,13 @@
         continue_token: <span class="prelude-ty">Option</span>&lt;String&gt;,
         objects: Vec&lt;K&gt;,
     },
+    <span class="doccomment">/// Kubernetes 1.27 Streaming Lists
+    /// The initial watch is in progress
+    </span>IntialWatch {
+        objects: Vec&lt;K&gt;,
+        <span class="attr">#[derivative(Debug = <span class="string">&quot;ignore&quot;</span>)]
+        </span>stream: BoxStream&lt;<span class="lifetime">&#39;static</span>, kube_client::Result&lt;WatchEvent&lt;K&gt;&gt;&gt;,
+    },
     <span class="doccomment">/// The initial LIST was successful, so we should move on to starting the actual watch.
     </span>InitListed { resource_version: String },
     <span class="doccomment">/// The watch is in progress, from this point we just return events from the server.
@@ -928,6 +1068,23 @@
     </span>Any,
 }
 
+<span class="doccomment">/// Configurable watcher listwatch semantics
+
+</span><span class="attr">#[derive(Clone, Default, Debug, PartialEq)]
+</span><span class="kw">pub enum </span>InitialListStrategy {
+    <span class="doccomment">/// List first, then watch from given resouce version
+    ///
+    /// This is the old and default way of watching. The watcher will do a paginated list call first before watching.
+    /// When using this mode, you can configure the page_size on the watcher.
+    </span><span class="attr">#[default]
+    </span>ListWatch,
+    <span class="doccomment">/// Kubernetes 1.27 Streaming Lists
+    ///
+    /// See [upstream documentation on streaming lists](https://kubernetes.io/docs/reference/using-api/api-concepts/#streaming-lists),
+    /// and the [KEP](https://github.com/kubernetes/enhancements/tree/master/keps/sig-api-machinery/3157-watch-list#design-details).
+    </span>StreamingList,
+}
+
 <span class="doccomment">/// Accumulates all options that can be used on the watcher invocation.
 </span><span class="attr">#[derive(Clone, Debug, PartialEq)]
 </span><span class="kw">pub struct </span>Config {
@@ -951,7 +1108,21 @@
     <span class="doccomment">/// Semantics for list calls.
     ///
     /// Configures re-list for performance vs. consistency.
+    ///
+    /// NB: This option only has an effect for [`InitialListStrategy::ListWatch`].
     </span><span class="kw">pub </span>list_semantic: ListSemantic,
+
+    <span class="doccomment">/// Control how the watcher fetches the initial list of objects.
+    ///
+    /// ListWatch: The watcher will fetch the initial list of objects using a list call.
+    /// StreamingList: The watcher will fetch the initial list of objects using a watch call.
+    ///
+    /// StreamingList is more efficient than ListWatch, but it requires the server to support
+    /// streaming list bookmarks (opt-in feature gate in Kubernetes 1.27).
+    ///
+    /// See [upstream documentation on streaming lists](https://kubernetes.io/docs/reference/using-api/api-concepts/#streaming-lists),
+    /// and the [KEP](https://github.com/kubernetes/enhancements/tree/master/keps/sig-api-machinery/3157-watch-list#design-details).
+    </span><span class="kw">pub </span>initial_list_strategy: InitialListStrategy,
 
     <span class="doccomment">/// Maximum number of objects retrieved per list operation resyncs.
     ///
@@ -959,6 +1130,8 @@
     /// API roundtrips to complete.
     ///
     /// Defaults to 500. Note that `None` represents unbounded.
+    ///
+    /// NB: This option only has an effect for [`InitialListStrategy::ListWatch`].
     </span><span class="kw">pub </span>page_size: <span class="prelude-ty">Option</span>&lt;u32&gt;,
 
     <span class="doccomment">/// Enables watch events with type &quot;BOOKMARK&quot;.
@@ -979,6 +1152,7 @@
             <span class="comment">// same default page size limit as client-go
             // https://github.com/kubernetes/client-go/blob/aed71fa5cf054e1c196d67b2e21f66fd967b8ab1/tools/pager/pager.go#L31
             </span>page_size: <span class="prelude-val">Some</span>(<span class="number">500</span>),
+            initial_list_strategy: InitialListStrategy::ListWatch,
         }
     }
 }
@@ -1025,6 +1199,8 @@
     </span>}
 
     <span class="doccomment">/// Sets list semantic to configure re-list performance and consistency
+    ///
+    /// NB: This option only has an effect for [`InitialListStrategy::ListWatch`].
     </span><span class="attr">#[must_use]
     </span><span class="kw">pub fn </span>list_semantic(<span class="kw-2">mut </span><span class="self">self</span>, semantic: ListSemantic) -&gt; <span class="self">Self </span>{
         <span class="self">self</span>.list_semantic = semantic;
@@ -1032,6 +1208,8 @@
     </span>}
 
     <span class="doccomment">/// Sets list semantic to `Any` to improve list performance
+    ///
+    /// NB: This option only has an effect for [`InitialListStrategy::ListWatch`].
     </span><span class="attr">#[must_use]
     </span><span class="kw">pub fn </span>any_semantic(<span class="self">self</span>) -&gt; <span class="self">Self </span>{
         <span class="self">self</span>.list_semantic(ListSemantic::Any)
@@ -1051,9 +1229,19 @@
     ///
     /// This can reduce the memory consumption during resyncs, at the cost of requiring more
     /// API roundtrips to complete.
+    ///
+    /// NB: This option only has an effect for [`InitialListStrategy::ListWatch`].
     </span><span class="attr">#[must_use]
     </span><span class="kw">pub fn </span>page_size(<span class="kw-2">mut </span><span class="self">self</span>, page_size: u32) -&gt; <span class="self">Self </span>{
         <span class="self">self</span>.page_size = <span class="prelude-val">Some</span>(page_size);
+        <span class="self">self
+    </span>}
+
+    <span class="doccomment">/// Kubernetes 1.27 Streaming Lists
+    /// Sets list semantic to `Stream` to make use of watch bookmarks
+    </span><span class="attr">#[must_use]
+    </span><span class="kw">pub fn </span>streaming_lists(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.initial_list_strategy = InitialListStrategy::StreamingList;
         <span class="self">self
     </span>}
 
@@ -1082,6 +1270,7 @@
             field_selector: <span class="self">self</span>.field_selector.clone(),
             timeout: <span class="self">self</span>.timeout,
             bookmarks: <span class="self">self</span>.bookmarks,
+            send_initial_events: <span class="self">self</span>.initial_list_strategy == InitialListStrategy::StreamingList,
         }
     }
 }
@@ -1150,33 +1339,103 @@
         State::Empty {
             continue_token,
             <span class="kw-2">mut </span>objects,
-        } =&gt; {
-            <span class="kw">let </span><span class="kw-2">mut </span>lp = wc.to_list_params();
-            lp.continue_token = continue_token;
-            <span class="kw">match </span>api.list(<span class="kw-2">&amp;</span>lp).<span class="kw">await </span>{
-                <span class="prelude-val">Ok</span>(list) =&gt; {
-                    objects.extend(list.items);
-                    <span class="kw">if let </span><span class="prelude-val">Some</span>(continue_token) = list.metadata.continue_.filter(|s| !s.is_empty()) {
-                        (<span class="prelude-val">None</span>, State::Empty {
-                            continue_token: <span class="prelude-val">Some</span>(continue_token),
-                            objects,
-                        })
-                    } <span class="kw">else if let </span><span class="prelude-val">Some</span>(resource_version) = list.metadata.resource_version {
-                        (<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(Event::Restarted(objects))), State::InitListed {
-                            resource_version,
-                        })
-                    } <span class="kw">else </span>{
-                        (<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(Error::NoResourceVersion)), State::default())
+        } =&gt; <span class="kw">match </span>wc.initial_list_strategy {
+            InitialListStrategy::ListWatch =&gt; {
+                <span class="kw">let </span><span class="kw-2">mut </span>lp = wc.to_list_params();
+                lp.continue_token = continue_token;
+                <span class="kw">match </span>api.list(<span class="kw-2">&amp;</span>lp).<span class="kw">await </span>{
+                    <span class="prelude-val">Ok</span>(list) =&gt; {
+                        objects.extend(list.items);
+                        <span class="kw">if let </span><span class="prelude-val">Some</span>(continue_token) = list.metadata.continue_.filter(|s| !s.is_empty()) {
+                            (<span class="prelude-val">None</span>, State::Empty {
+                                continue_token: <span class="prelude-val">Some</span>(continue_token),
+                                objects,
+                            })
+                        } <span class="kw">else if let </span><span class="prelude-val">Some</span>(resource_version) =
+                            list.metadata.resource_version.filter(|s| !s.is_empty())
+                        {
+                            (<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(Event::Restarted(objects))), State::InitListed {
+                                resource_version,
+                            })
+                        } <span class="kw">else </span>{
+                            (<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(Error::NoResourceVersion)), State::default())
+                        }
+                    }
+                    <span class="prelude-val">Err</span>(err) =&gt; {
+                        <span class="kw">if </span><span class="macro">std::matches!</span>(err, ClientErr::Api(ErrorResponse { code: <span class="number">403</span>, .. })) {
+                            <span class="macro">warn!</span>(<span class="string">&quot;watch list error with 403: {err:?}&quot;</span>);
+                        } <span class="kw">else </span>{
+                            <span class="macro">debug!</span>(<span class="string">&quot;watch list error: {err:?}&quot;</span>);
+                        }
+                        (<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(Error::InitialListFailed(err))), State::default())
                     }
                 }
+            }
+            InitialListStrategy::StreamingList =&gt; <span class="kw">match </span>api.watch(<span class="kw-2">&amp;</span>wc.to_watch_params(), <span class="string">&quot;0&quot;</span>).<span class="kw">await </span>{
+                <span class="prelude-val">Ok</span>(stream) =&gt; (<span class="prelude-val">None</span>, State::IntialWatch { stream, objects }),
                 <span class="prelude-val">Err</span>(err) =&gt; {
                     <span class="kw">if </span><span class="macro">std::matches!</span>(err, ClientErr::Api(ErrorResponse { code: <span class="number">403</span>, .. })) {
-                        <span class="macro">warn!</span>(<span class="string">&quot;watch list error with 403: {err:?}&quot;</span>);
+                        <span class="macro">warn!</span>(<span class="string">&quot;watch initlist error with 403: {err:?}&quot;</span>);
                     } <span class="kw">else </span>{
-                        <span class="macro">debug!</span>(<span class="string">&quot;watch list error: {err:?}&quot;</span>);
+                        <span class="macro">debug!</span>(<span class="string">&quot;watch initlist error: {err:?}&quot;</span>);
                     }
-                    (<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(err).map_err(Error::InitialListFailed)), State::default())
+                    (<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(Error::WatchStartFailed(err))), State::default())
                 }
+            },
+        },
+        State::IntialWatch {
+            <span class="kw-2">mut </span>objects,
+            <span class="kw-2">mut </span>stream,
+        } =&gt; {
+            <span class="kw">match </span>stream.next().<span class="kw">await </span>{
+                <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(WatchEvent::Added(obj) | WatchEvent::Modified(obj))) =&gt; {
+                    objects.push(obj);
+                    (<span class="prelude-val">None</span>, State::IntialWatch { objects, stream })
+                }
+                <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(WatchEvent::Deleted(obj))) =&gt; {
+                    objects.retain(|o| o.name_any() != obj.name_any() &amp;&amp; o.namespace() != obj.namespace());
+                    (<span class="prelude-val">None</span>, State::IntialWatch { objects, stream })
+                }
+                <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(WatchEvent::Bookmark(bm))) =&gt; {
+                    <span class="kw">let </span>marks_initial_end = bm.metadata.annotations.contains_key(<span class="string">&quot;k8s.io/initial-events-end&quot;</span>);
+                    <span class="kw">if </span>marks_initial_end {
+                        (<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(Event::Restarted(objects))), State::Watching {
+                            resource_version: bm.metadata.resource_version,
+                            stream,
+                        })
+                    } <span class="kw">else </span>{
+                        (<span class="prelude-val">None</span>, State::Watching {
+                            resource_version: bm.metadata.resource_version,
+                            stream,
+                        })
+                    }
+                }
+                <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(WatchEvent::Error(err))) =&gt; {
+                    <span class="comment">// HTTP GONE, means we have desynced and need to start over and re-list :(
+                    </span><span class="kw">let </span>new_state = <span class="kw">if </span>err.code == <span class="number">410 </span>{
+                        State::default()
+                    } <span class="kw">else </span>{
+                        State::IntialWatch { objects, stream }
+                    };
+                    <span class="kw">if </span>err.code == <span class="number">403 </span>{
+                        <span class="macro">warn!</span>(<span class="string">&quot;watcher watchevent error 403: {err:?}&quot;</span>);
+                    } <span class="kw">else </span>{
+                        <span class="macro">debug!</span>(<span class="string">&quot;error watchevent error: {err:?}&quot;</span>);
+                    }
+                    (<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(Error::WatchError(err))), new_state)
+                }
+                <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(err)) =&gt; {
+                    <span class="kw">if </span><span class="macro">std::matches!</span>(err, ClientErr::Api(ErrorResponse { code: <span class="number">403</span>, .. })) {
+                        <span class="macro">warn!</span>(<span class="string">&quot;watcher error 403: {err:?}&quot;</span>);
+                    } <span class="kw">else </span>{
+                        <span class="macro">debug!</span>(<span class="string">&quot;watcher error: {err:?}&quot;</span>);
+                    }
+                    (<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(Error::WatchFailed(err))), State::IntialWatch {
+                        objects,
+                        stream,
+                    })
+                }
+                <span class="prelude-val">None </span>=&gt; (<span class="prelude-val">None</span>, State::default()),
             }
         }
         State::InitListed { resource_version } =&gt; {
@@ -1191,10 +1450,9 @@
                     } <span class="kw">else </span>{
                         <span class="macro">debug!</span>(<span class="string">&quot;watch initlist error: {err:?}&quot;</span>);
                     }
-                    (
-                        <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(err).map_err(Error::WatchStartFailed)),
-                        State::InitListed { resource_version },
-                    )
+                    (<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(Error::WatchStartFailed(err))), State::InitListed {
+                        resource_version,
+                    })
                 }
             }
         }
@@ -1203,18 +1461,26 @@
             <span class="kw-2">mut </span>stream,
         } =&gt; <span class="kw">match </span>stream.next().<span class="kw">await </span>{
             <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(WatchEvent::Added(obj) | WatchEvent::Modified(obj))) =&gt; {
-                <span class="kw">let </span>resource_version = obj.resource_version().unwrap();
-                (<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(Event::Applied(obj))), State::Watching {
-                    resource_version,
-                    stream,
-                })
+                <span class="kw">let </span>resource_version = obj.resource_version().unwrap_or_default();
+                <span class="kw">if </span>resource_version.is_empty() {
+                    (<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(Error::NoResourceVersion)), State::default())
+                } <span class="kw">else </span>{
+                    (<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(Event::Applied(obj))), State::Watching {
+                        resource_version,
+                        stream,
+                    })
+                }
             }
             <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(WatchEvent::Deleted(obj))) =&gt; {
-                <span class="kw">let </span>resource_version = obj.resource_version().unwrap();
-                (<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(Event::Deleted(obj))), State::Watching {
-                    resource_version,
-                    stream,
-                })
+                <span class="kw">let </span>resource_version = obj.resource_version().unwrap_or_default();
+                <span class="kw">if </span>resource_version.is_empty() {
+                    (<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(Error::NoResourceVersion)), State::default())
+                } <span class="kw">else </span>{
+                    (<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(Event::Deleted(obj))), State::Watching {
+                        resource_version,
+                        stream,
+                    })
+                }
             }
             <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(WatchEvent::Bookmark(bm))) =&gt; (<span class="prelude-val">None</span>, State::Watching {
                 resource_version: bm.metadata.resource_version,
@@ -1235,7 +1501,7 @@
                 } <span class="kw">else </span>{
                     <span class="macro">debug!</span>(<span class="string">&quot;error watchevent error: {err:?}&quot;</span>);
                 }
-                (<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(err).map_err(Error::WatchError)), new_state)
+                (<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(Error::WatchError(err))), new_state)
             }
             <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(err)) =&gt; {
                 <span class="kw">if </span><span class="macro">std::matches!</span>(err, ClientErr::Api(ErrorResponse { code: <span class="number">403</span>, .. })) {
@@ -1243,7 +1509,7 @@
                 } <span class="kw">else </span>{
                     <span class="macro">debug!</span>(<span class="string">&quot;watcher error: {err:?}&quot;</span>);
                 }
-                (<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(err).map_err(Error::WatchFailed)), State::Watching {
+                (<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(Error::WatchFailed(err))), State::Watching {
                     resource_version,
                     stream,
                 })

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tokio-tungstenite-0.19.0/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="tokio_tungstenite" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (e3abbd499 2023-09-06)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../tokio_tungstenite/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tokio-tungstenite-0.20.1/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="tokio_tungstenite" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (e3abbd499 2023-09-06)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../tokio_tungstenite/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -419,6 +419,26 @@
 <a href="#419" id="419">419</a>
 <a href="#420" id="420">420</a>
 <a href="#421" id="421">421</a>
+<a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
+<a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Async WebSocket usage.
 //!
 //! This library is an implementation of WebSocket handshakes and streams. It
@@ -614,6 +634,11 @@
     inner: WebSocket&lt;AllowStd&lt;S&gt;&gt;,
     closing: bool,
     ended: bool,
+    <span class="doccomment">/// Tungstenite is probably ready to receive more data.
+    ///
+    /// `false` once start_send hits `WouldBlock` errors.
+    /// `true` initially and after `flush`ing.
+    </span>ready: bool,
 }
 
 <span class="kw">impl</span>&lt;S&gt; WebSocketStream&lt;S&gt; {
@@ -647,7 +672,7 @@
     </span>}
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(ws: WebSocket&lt;AllowStd&lt;S&gt;&gt;) -&gt; <span class="self">Self </span>{
-        WebSocketStream { inner: ws, closing: <span class="bool-val">false</span>, ended: <span class="bool-val">false </span>}
+        <span class="self">Self </span>{ inner: ws, closing: <span class="bool-val">false</span>, ended: <span class="bool-val">false</span>, ready: <span class="bool-val">true </span>}
     }
 
     <span class="kw">fn </span>with_context&lt;F, R&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, ctx: <span class="prelude-ty">Option</span>&lt;(ContextWaker, <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;)&gt;, f: F) -&gt; R
@@ -711,8 +736,8 @@
         }
 
         <span class="kw">match </span><span class="macro">futures_util::ready!</span>(<span class="self">self</span>.with_context(<span class="prelude-val">Some</span>((ContextWaker::Read, cx)), |s| {
-            <span class="macro">trace!</span>(<span class="string">&quot;{}:{} Stream.with_context poll_next -&gt; read_message()&quot;</span>, <span class="macro">file!</span>(), <span class="macro">line!</span>());
-            cvt(s.read_message())
+            <span class="macro">trace!</span>(<span class="string">&quot;{}:{} Stream.with_context poll_next -&gt; read()&quot;</span>, <span class="macro">file!</span>(), <span class="macro">line!</span>());
+            cvt(s.read())
         })) {
             <span class="prelude-val">Ok</span>(v) =&gt; Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(v))),
             <span class="prelude-val">Err</span>(e) =&gt; {
@@ -743,18 +768,31 @@
     <span class="kw">type </span>Error = WsError;
 
     <span class="kw">fn </span>poll_ready(<span class="kw-2">mut </span><span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Result</span>&lt;(), <span class="self">Self</span>::Error&gt;&gt; {
-        (<span class="kw-2">*</span><span class="self">self</span>).with_context(<span class="prelude-val">Some</span>((ContextWaker::Write, cx)), |s| cvt(s.write_pending()))
+        <span class="kw">if </span><span class="self">self</span>.ready {
+            Poll::Ready(<span class="prelude-val">Ok</span>(()))
+        } <span class="kw">else </span>{
+            <span class="comment">// Currently blocked so try to flush the blockage away
+            </span>(<span class="kw-2">*</span><span class="self">self</span>).with_context(<span class="prelude-val">Some</span>((ContextWaker::Write, cx)), |s| cvt(s.flush())).map(|r| {
+                <span class="self">self</span>.ready = <span class="bool-val">true</span>;
+                r
+            })
+        }
     }
 
     <span class="kw">fn </span>start_send(<span class="kw-2">mut </span><span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, item: Message) -&gt; <span class="prelude-ty">Result</span>&lt;(), <span class="self">Self</span>::Error&gt; {
-        <span class="kw">match </span>(<span class="kw-2">*</span><span class="self">self</span>).with_context(<span class="prelude-val">None</span>, |s| s.write_message(item)) {
-            <span class="prelude-val">Ok</span>(()) =&gt; <span class="prelude-val">Ok</span>(()),
+        <span class="kw">match </span>(<span class="kw-2">*</span><span class="self">self</span>).with_context(<span class="prelude-val">None</span>, |s| s.write(item)) {
+            <span class="prelude-val">Ok</span>(()) =&gt; {
+                <span class="self">self</span>.ready = <span class="bool-val">true</span>;
+                <span class="prelude-val">Ok</span>(())
+            }
             <span class="prelude-val">Err</span>(WsError::Io(err)) <span class="kw">if </span>err.kind() == std::io::ErrorKind::WouldBlock =&gt; {
-                <span class="comment">// the message was accepted and queued
-                // isn&#39;t an error.
-                </span><span class="prelude-val">Ok</span>(())
+                <span class="comment">// the message was accepted and queued so not an error
+                // but `poll_ready` will now start trying to flush the block
+                </span><span class="self">self</span>.ready = <span class="bool-val">false</span>;
+                <span class="prelude-val">Ok</span>(())
             }
             <span class="prelude-val">Err</span>(e) =&gt; {
+                <span class="self">self</span>.ready = <span class="bool-val">true</span>;
                 <span class="macro">debug!</span>(<span class="string">&quot;websocket start_send error: {}&quot;</span>, e);
                 <span class="prelude-val">Err</span>(e)
             }
@@ -762,19 +800,21 @@
     }
 
     <span class="kw">fn </span>poll_flush(<span class="kw-2">mut </span><span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Result</span>&lt;(), <span class="self">Self</span>::Error&gt;&gt; {
-        (<span class="kw-2">*</span><span class="self">self</span>).with_context(<span class="prelude-val">Some</span>((ContextWaker::Write, cx)), |s| cvt(s.write_pending())).map(|r| {
-            <span class="comment">// WebSocket connection has just been closed. Flushing completed, not an error.
-            </span><span class="kw">match </span>r {
-                <span class="prelude-val">Err</span>(WsError::ConnectionClosed) =&gt; <span class="prelude-val">Ok</span>(()),
+        (<span class="kw-2">*</span><span class="self">self</span>).with_context(<span class="prelude-val">Some</span>((ContextWaker::Write, cx)), |s| cvt(s.flush())).map(|r| {
+            <span class="self">self</span>.ready = <span class="bool-val">true</span>;
+            <span class="kw">match </span>r {
+                <span class="comment">// WebSocket connection has just been closed. Flushing completed, not an error.
+                </span><span class="prelude-val">Err</span>(WsError::ConnectionClosed) =&gt; <span class="prelude-val">Ok</span>(()),
                 other =&gt; other,
             }
         })
     }
 
     <span class="kw">fn </span>poll_close(<span class="kw-2">mut </span><span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Result</span>&lt;(), <span class="self">Self</span>::Error&gt;&gt; {
+        <span class="self">self</span>.ready = <span class="bool-val">true</span>;
         <span class="kw">let </span>res = <span class="kw">if </span><span class="self">self</span>.closing {
-            <span class="comment">// After queueing it, we call `write_pending` to drive the close handshake to completion.
-            </span>(<span class="kw-2">*</span><span class="self">self</span>).with_context(<span class="prelude-val">Some</span>((ContextWaker::Write, cx)), |s| s.write_pending())
+            <span class="comment">// After queueing it, we call `flush` to drive the close handshake to completion.
+            </span>(<span class="kw-2">*</span><span class="self">self</span>).with_context(<span class="prelude-val">Some</span>((ContextWaker::Write, cx)), |s| s.flush())
         } <span class="kw">else </span>{
             (<span class="kw-2">*</span><span class="self">self</span>).with_context(<span class="prelude-val">Some</span>((ContextWaker::Write, cx)), |s| s.close(<span class="prelude-val">None</span>))
         };

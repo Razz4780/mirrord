@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["AddrKind","AuthMethod","Error","StringKind","UnsuccessfulReply"],"fn":["connect"],"struct":["Auth","SocksDatagram","SocksListener"],"type":["Result"]};

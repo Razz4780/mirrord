@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["ReadAPIServiceResponse","ReadAPIServiceStatusResponse"],"struct":["APIService","APIServiceCondition","APIServiceSpec","APIServiceStatus","ServiceReference"]};
+window.SIDEBAR_ITEMS = {"struct":["APIService","APIServiceCondition","APIServiceSpec","APIServiceStatus","ServiceReference"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["ReadEndpointSliceResponse"],"struct":["Endpoint","EndpointConditions","EndpointHints","EndpointPort","EndpointSlice","ForZone"]};
+window.SIDEBAR_ITEMS = {"struct":["Endpoint","EndpointConditions","EndpointHints","EndpointPort","EndpointSlice","ForZone"]};

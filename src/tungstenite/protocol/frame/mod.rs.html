@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tungstenite-0.19.0/src/protocol/frame/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="tungstenite" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (e3abbd499 2023-09-06)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../tungstenite/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tungstenite-0.20.1/src/protocol/frame/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="tungstenite" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (e3abbd499 2023-09-06)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../tungstenite/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -277,6 +277,52 @@
 <a href="#277" id="277">277</a>
 <a href="#278" id="278">278</a>
 <a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Utilities to work with raw WebSocket frames.
 
 </span><span class="kw">pub mod </span>coding;
@@ -285,15 +331,14 @@
 </span><span class="kw">mod </span>frame;
 <span class="kw">mod </span>mask;
 
-<span class="kw">use </span>std::io::{Error <span class="kw">as </span>IoError, ErrorKind <span class="kw">as </span>IoErrorKind, Read, Write};
-
-<span class="kw">use </span>log::<span class="kw-2">*</span>;
-
-<span class="kw">pub use </span><span class="self">self</span>::frame::{CloseFrame, Frame, FrameHeader};
 <span class="kw">use crate</span>::{
     error::{CapacityError, Error, <span class="prelude-ty">Result</span>},
-    ReadBuffer,
+    Message, ReadBuffer,
 };
+<span class="kw">use </span>log::<span class="kw-2">*</span>;
+<span class="kw">use </span>std::io::{Error <span class="kw">as </span>IoError, ErrorKind <span class="kw">as </span>IoErrorKind, Read, Write};
+
+<span class="kw">pub use </span><span class="self">self</span>::frame::{CloseFrame, Frame, FrameHeader};
 
 <span class="doccomment">/// A reader and writer for WebSocket frames.
 </span><span class="attr">#[derive(Debug)]
@@ -336,7 +381,7 @@
     </span>Stream: Read,
 {
     <span class="doccomment">/// Read a frame from stream.
-    </span><span class="kw">pub fn </span>read_frame(<span class="kw-2">&amp;mut </span><span class="self">self</span>, max_size: <span class="prelude-ty">Option</span>&lt;usize&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;Frame&gt;&gt; {
+    </span><span class="kw">pub fn </span>read(<span class="kw-2">&amp;mut </span><span class="self">self</span>, max_size: <span class="prelude-ty">Option</span>&lt;usize&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;Frame&gt;&gt; {
         <span class="self">self</span>.codec.read_frame(<span class="kw-2">&amp;mut </span><span class="self">self</span>.stream, max_size)
     }
 }
@@ -345,18 +390,28 @@
 <span class="kw">where
     </span>Stream: Write,
 {
-    <span class="doccomment">/// Write a frame to stream.
-    ///
-    /// This function guarantees that the frame is queued regardless of any errors.
-    /// There is no need to resend the frame. In order to handle WouldBlock or Incomplete,
-    /// call write_pending() afterwards.
-    </span><span class="kw">pub fn </span>write_frame(<span class="kw-2">&amp;mut </span><span class="self">self</span>, frame: Frame) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="self">self</span>.codec.write_frame(<span class="kw-2">&amp;mut </span><span class="self">self</span>.stream, frame)
+    <span class="doccomment">/// Writes and immediately flushes a frame.
+    /// Equivalent to calling [`write`](Self::write) then [`flush`](Self::flush).
+    </span><span class="kw">pub fn </span>send(<span class="kw-2">&amp;mut </span><span class="self">self</span>, frame: Frame) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="self">self</span>.write(frame)<span class="question-mark">?</span>;
+        <span class="self">self</span>.flush()
     }
 
-    <span class="doccomment">/// Complete pending write, if any.
-    </span><span class="kw">pub fn </span>write_pending(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="self">self</span>.codec.write_pending(<span class="kw-2">&amp;mut </span><span class="self">self</span>.stream)
+    <span class="doccomment">/// Write a frame to stream.
+    ///
+    /// A subsequent call should be made to [`flush`](Self::flush) to flush writes.
+    ///
+    /// This function guarantees that the frame is queued unless [`Error::WriteBufferFull`]
+    /// is returned.
+    /// In order to handle WouldBlock or Incomplete, call [`flush`](Self::flush) afterwards.
+    </span><span class="kw">pub fn </span>write(<span class="kw-2">&amp;mut </span><span class="self">self</span>, frame: Frame) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="self">self</span>.codec.buffer_frame(<span class="kw-2">&amp;mut </span><span class="self">self</span>.stream, frame)
+    }
+
+    <span class="doccomment">/// Flush writes.
+    </span><span class="kw">pub fn </span>flush(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="self">self</span>.codec.write_out_buffer(<span class="kw-2">&amp;mut </span><span class="self">self</span>.stream)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(<span class="self">self</span>.stream.flush()<span class="question-mark">?</span>)
     }
 }
 
@@ -367,6 +422,14 @@
     </span>in_buffer: ReadBuffer,
     <span class="doccomment">/// Buffer to send packets to the network.
     </span>out_buffer: Vec&lt;u8&gt;,
+    <span class="doccomment">/// Capacity limit for `out_buffer`.
+    </span>max_out_buffer_len: usize,
+    <span class="doccomment">/// Buffer target length to reach before writing to the stream
+    /// on calls to `buffer_frame`.
+    ///
+    /// Setting this to non-zero will buffer small writes from hitting
+    /// the stream.
+    </span>out_buffer_write_len: usize,
     <span class="doccomment">/// Header and remaining size of the incoming packet being processed.
     </span>header: <span class="prelude-ty">Option</span>&lt;(FrameHeader, u64)&gt;,
 }
@@ -374,7 +437,13 @@
 <span class="kw">impl </span>FrameCodec {
     <span class="doccomment">/// Create a new frame codec.
     </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>new() -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{ in_buffer: ReadBuffer::new(), out_buffer: Vec::new(), header: <span class="prelude-val">None </span>}
+        <span class="self">Self </span>{
+            in_buffer: ReadBuffer::new(),
+            out_buffer: Vec::new(),
+            max_out_buffer_len: usize::MAX,
+            out_buffer_write_len: <span class="number">0</span>,
+            header: <span class="prelude-val">None</span>,
+        }
     }
 
     <span class="doccomment">/// Create a new frame codec from partially read data.
@@ -382,8 +451,21 @@
         <span class="self">Self </span>{
             in_buffer: ReadBuffer::from_partially_read(part),
             out_buffer: Vec::new(),
+            max_out_buffer_len: usize::MAX,
+            out_buffer_write_len: <span class="number">0</span>,
             header: <span class="prelude-val">None</span>,
         }
+    }
+
+    <span class="doccomment">/// Sets a maximum size for the out buffer.
+    </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>set_max_out_buffer_len(<span class="kw-2">&amp;mut </span><span class="self">self</span>, max: usize) {
+        <span class="self">self</span>.max_out_buffer_len = max;
+    }
+
+    <span class="doccomment">/// Sets [`Self::buffer_frame`] buffer target length to reach before
+    /// writing to the stream.
+    </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>set_out_buffer_write_len(<span class="kw-2">&amp;mut </span><span class="self">self</span>, len: usize) {
+        <span class="self">self</span>.out_buffer_write_len = len;
     }
 
     <span class="doccomment">/// Read a frame from the provided stream.
@@ -444,19 +526,37 @@
         <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(frame))
     }
 
-    <span class="doccomment">/// Write a frame to the provided stream.
-    </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>write_frame&lt;Stream&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, stream: <span class="kw-2">&amp;mut </span>Stream, frame: Frame) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
+    <span class="doccomment">/// Writes a frame into the `out_buffer`.
+    /// If the out buffer size is over the `out_buffer_write_len` will also write
+    /// the out buffer into the provided `stream`.
+    ///
+    /// To ensure buffered frames are written call [`Self::write_out_buffer`].
+    ///
+    /// May write to the stream, will **not** flush.
+    </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>buffer_frame&lt;Stream&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, stream: <span class="kw-2">&amp;mut </span>Stream, frame: Frame) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
     <span class="kw">where
         </span>Stream: Write,
     {
+        <span class="kw">if </span>frame.len() + <span class="self">self</span>.out_buffer.len() &gt; <span class="self">self</span>.max_out_buffer_len {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::WriteBufferFull(Message::Frame(frame)));
+        }
+
         <span class="macro">trace!</span>(<span class="string">&quot;writing frame {}&quot;</span>, frame);
+
         <span class="self">self</span>.out_buffer.reserve(frame.len());
         frame.format(<span class="kw-2">&amp;mut </span><span class="self">self</span>.out_buffer).expect(<span class="string">&quot;Bug: can&#39;t write to vector&quot;</span>);
-        <span class="self">self</span>.write_pending(stream)
+
+        <span class="kw">if </span><span class="self">self</span>.out_buffer.len() &gt; <span class="self">self</span>.out_buffer_write_len {
+            <span class="self">self</span>.write_out_buffer(stream)
+        } <span class="kw">else </span>{
+            <span class="prelude-val">Ok</span>(())
+        }
     }
 
-    <span class="doccomment">/// Complete pending write, if any.
-    </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>write_pending&lt;Stream&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, stream: <span class="kw-2">&amp;mut </span>Stream) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
+    <span class="doccomment">/// Writes the out_buffer to the provided stream.
+    ///
+    /// Does **not** flush.
+    </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>write_out_buffer&lt;Stream&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, stream: <span class="kw-2">&amp;mut </span>Stream) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
     <span class="kw">where
         </span>Stream: Write,
     {
@@ -472,16 +572,8 @@
             }
             <span class="self">self</span>.out_buffer.drain(<span class="number">0</span>..len);
         }
-        stream.flush()<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(())
-    }
-}
 
-<span class="attr">#[cfg(test)]
-</span><span class="kw">impl </span>FrameCodec {
-    <span class="doccomment">/// Returns the size of the output buffer.
-    </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>output_buffer_len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-        <span class="self">self</span>.out_buffer.len()
+        <span class="prelude-val">Ok</span>(())
     }
 }
 
@@ -503,11 +595,11 @@
         <span class="kw">let </span><span class="kw-2">mut </span>sock = FrameSocket::new(raw);
 
         <span class="macro">assert_eq!</span>(
-            sock.read_frame(<span class="prelude-val">None</span>).unwrap().unwrap().into_data(),
+            sock.read(<span class="prelude-val">None</span>).unwrap().unwrap().into_data(),
             <span class="macro">vec!</span>[<span class="number">0x01</span>, <span class="number">0x02</span>, <span class="number">0x03</span>, <span class="number">0x04</span>, <span class="number">0x05</span>, <span class="number">0x06</span>, <span class="number">0x07</span>]
         );
-        <span class="macro">assert_eq!</span>(sock.read_frame(<span class="prelude-val">None</span>).unwrap().unwrap().into_data(), <span class="macro">vec!</span>[<span class="number">0x03</span>, <span class="number">0x02</span>, <span class="number">0x01</span>]);
-        <span class="macro">assert!</span>(sock.read_frame(<span class="prelude-val">None</span>).unwrap().is_none());
+        <span class="macro">assert_eq!</span>(sock.read(<span class="prelude-val">None</span>).unwrap().unwrap().into_data(), <span class="macro">vec!</span>[<span class="number">0x03</span>, <span class="number">0x02</span>, <span class="number">0x01</span>]);
+        <span class="macro">assert!</span>(sock.read(<span class="prelude-val">None</span>).unwrap().is_none());
 
         <span class="kw">let </span>(<span class="kw">_</span>, rest) = sock.into_inner();
         <span class="macro">assert_eq!</span>(rest, <span class="macro">vec!</span>[<span class="number">0x99</span>]);
@@ -518,7 +610,7 @@
         <span class="kw">let </span>raw = Cursor::new(<span class="macro">vec!</span>[<span class="number">0x02</span>, <span class="number">0x03</span>, <span class="number">0x04</span>, <span class="number">0x05</span>, <span class="number">0x06</span>, <span class="number">0x07</span>]);
         <span class="kw">let </span><span class="kw-2">mut </span>sock = FrameSocket::from_partially_read(raw, <span class="macro">vec!</span>[<span class="number">0x82</span>, <span class="number">0x07</span>, <span class="number">0x01</span>]);
         <span class="macro">assert_eq!</span>(
-            sock.read_frame(<span class="prelude-val">None</span>).unwrap().unwrap().into_data(),
+            sock.read(<span class="prelude-val">None</span>).unwrap().unwrap().into_data(),
             <span class="macro">vec!</span>[<span class="number">0x01</span>, <span class="number">0x02</span>, <span class="number">0x03</span>, <span class="number">0x04</span>, <span class="number">0x05</span>, <span class="number">0x06</span>, <span class="number">0x07</span>]
         );
     }
@@ -528,10 +620,10 @@
         <span class="kw">let </span><span class="kw-2">mut </span>sock = FrameSocket::new(Vec::new());
 
         <span class="kw">let </span>frame = Frame::ping(<span class="macro">vec!</span>[<span class="number">0x04</span>, <span class="number">0x05</span>]);
-        sock.write_frame(frame).unwrap();
+        sock.send(frame).unwrap();
 
         <span class="kw">let </span>frame = Frame::pong(<span class="macro">vec!</span>[<span class="number">0x01</span>]);
-        sock.write_frame(frame).unwrap();
+        sock.send(frame).unwrap();
 
         <span class="kw">let </span>(buf, <span class="kw">_</span>) = sock.into_inner();
         <span class="macro">assert_eq!</span>(buf, <span class="macro">vec!</span>[<span class="number">0x89</span>, <span class="number">0x02</span>, <span class="number">0x04</span>, <span class="number">0x05</span>, <span class="number">0x8a</span>, <span class="number">0x01</span>, <span class="number">0x01</span>]);
@@ -543,7 +635,7 @@
             <span class="number">0x83</span>, <span class="number">0xff</span>, <span class="number">0xff</span>, <span class="number">0xff</span>, <span class="number">0xff</span>, <span class="number">0xff</span>, <span class="number">0xff</span>, <span class="number">0xff</span>, <span class="number">0xff</span>, <span class="number">0xff</span>, <span class="number">0x00</span>, <span class="number">0x00</span>, <span class="number">0x00</span>, <span class="number">0x00</span>,
         ]);
         <span class="kw">let </span><span class="kw-2">mut </span>sock = FrameSocket::new(raw);
-        <span class="kw">let _ </span>= sock.read_frame(<span class="prelude-val">None</span>); <span class="comment">// should not crash
+        <span class="kw">let _ </span>= sock.read(<span class="prelude-val">None</span>); <span class="comment">// should not crash
     </span>}
 
     <span class="attr">#[test]
@@ -551,7 +643,7 @@
         <span class="kw">let </span>raw = Cursor::new(<span class="macro">vec!</span>[<span class="number">0x82</span>, <span class="number">0x07</span>, <span class="number">0x01</span>, <span class="number">0x02</span>, <span class="number">0x03</span>, <span class="number">0x04</span>, <span class="number">0x05</span>, <span class="number">0x06</span>, <span class="number">0x07</span>]);
         <span class="kw">let </span><span class="kw-2">mut </span>sock = FrameSocket::new(raw);
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(
-            sock.read_frame(<span class="prelude-val">Some</span>(<span class="number">5</span>)),
+            sock.read(<span class="prelude-val">Some</span>(<span class="number">5</span>)),
             <span class="prelude-val">Err</span>(Error::Capacity(CapacityError::MessageTooLong { size: <span class="number">7</span>, max_size: <span class="number">5 </span>}))
         ));
     }

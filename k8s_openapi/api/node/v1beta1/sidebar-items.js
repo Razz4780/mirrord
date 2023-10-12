@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["ReadRuntimeClassResponse"],"struct":["Overhead","RuntimeClass","Scheduling"]};
+window.SIDEBAR_ITEMS = {"struct":["Overhead","RuntimeClass","Scheduling"]};

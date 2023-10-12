@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["ReadPodDisruptionBudgetResponse","ReadPodDisruptionBudgetStatusResponse"],"struct":["Eviction","PodDisruptionBudget","PodDisruptionBudgetSpec","PodDisruptionBudgetStatus"]};
+window.SIDEBAR_ITEMS = {"struct":["Eviction","PodDisruptionBudget","PodDisruptionBudgetSpec","PodDisruptionBudgetStatus"]};

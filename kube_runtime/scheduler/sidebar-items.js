@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["scheduler"],"struct":["HoldUnless","ScheduleRequest","Scheduler"]};
+window.SIDEBAR_ITEMS = {"fn":["debounced_scheduler","scheduler"],"struct":["Hold","HoldUnless","ScheduleRequest","Scheduler"]};

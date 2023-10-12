@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tungstenite-0.19.0/src/handshake/machine.rs`."><title>machine.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="tungstenite" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (e3abbd499 2023-09-06)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../tungstenite/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tungstenite-0.20.1/src/handshake/machine.rs`."><title>machine.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="tungstenite" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (e3abbd499 2023-09-06)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../tungstenite/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -123,6 +123,59 @@
 <a href="#123" id="123">123</a>
 <a href="#124" id="124">124</a>
 <a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! WebSocket handshake machine.
 
 </span><span class="kw">use </span>bytes::Buf;
@@ -145,7 +198,7 @@
 <span class="kw">impl</span>&lt;Stream&gt; HandshakeMachine&lt;Stream&gt; {
     <span class="doccomment">/// Start reading data from the peer.
     </span><span class="kw">pub fn </span>start_read(stream: Stream) -&gt; <span class="self">Self </span>{
-        HandshakeMachine { stream, state: HandshakeState::Reading(ReadBuffer::new()) }
+        <span class="self">Self </span>{ stream, state: HandshakeState::Reading(ReadBuffer::new(), AttackCheck::new()) }
     }
     <span class="doccomment">/// Start writing data to the peer.
     </span><span class="kw">pub fn </span>start_write&lt;D: Into&lt;Vec&lt;u8&gt;&gt;&gt;(stream: Stream, data: D) -&gt; <span class="self">Self </span>{
@@ -166,25 +219,31 @@
     </span><span class="kw">pub fn </span>single_round&lt;Obj: TryParse&gt;(<span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;RoundResult&lt;Obj, Stream&gt;&gt; {
         <span class="macro">trace!</span>(<span class="string">&quot;Doing handshake round.&quot;</span>);
         <span class="kw">match </span><span class="self">self</span>.state {
-            HandshakeState::Reading(<span class="kw-2">mut </span>buf) =&gt; {
+            HandshakeState::Reading(<span class="kw-2">mut </span>buf, <span class="kw-2">mut </span>attack_check) =&gt; {
                 <span class="kw">let </span>read = buf.read_from(<span class="kw-2">&amp;mut </span><span class="self">self</span>.stream).no_block()<span class="question-mark">?</span>;
                 <span class="kw">match </span>read {
                     <span class="prelude-val">Some</span>(<span class="number">0</span>) =&gt; <span class="prelude-val">Err</span>(Error::Protocol(ProtocolError::HandshakeIncomplete)),
-                    <span class="prelude-val">Some</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw">if let </span><span class="prelude-val">Some</span>((size, obj)) = Obj::try_parse(Buf::chunk(<span class="kw-2">&amp;</span>buf))<span class="question-mark">? </span>{
-                        buf.advance(size);
-                        RoundResult::StageFinished(StageResult::DoneReading {
-                            result: obj,
-                            stream: <span class="self">self</span>.stream,
-                            tail: buf.into_vec(),
+                    <span class="prelude-val">Some</span>(count) =&gt; {
+                        attack_check.check_incoming_packet_size(count)<span class="question-mark">?</span>;
+                        <span class="comment">// TODO: this is slow for big headers with too many small packets.
+                        // The parser has to be reworked in order to work on streams instead
+                        // of buffers.
+                        </span><span class="prelude-val">Ok</span>(<span class="kw">if let </span><span class="prelude-val">Some</span>((size, obj)) = Obj::try_parse(Buf::chunk(<span class="kw-2">&amp;</span>buf))<span class="question-mark">? </span>{
+                            buf.advance(size);
+                            RoundResult::StageFinished(StageResult::DoneReading {
+                                result: obj,
+                                stream: <span class="self">self</span>.stream,
+                                tail: buf.into_vec(),
+                            })
+                        } <span class="kw">else </span>{
+                            RoundResult::Incomplete(HandshakeMachine {
+                                state: HandshakeState::Reading(buf, attack_check),
+                                ..<span class="self">self
+                            </span>})
                         })
-                    } <span class="kw">else </span>{
-                        RoundResult::Incomplete(HandshakeMachine {
-                            state: HandshakeState::Reading(buf),
-                            ..<span class="self">self
-                        </span>})
-                    }),
+                    }
                     <span class="prelude-val">None </span>=&gt; <span class="prelude-val">Ok</span>(RoundResult::WouldBlock(HandshakeMachine {
-                        state: HandshakeState::Reading(buf),
+                        state: HandshakeState::Reading(buf, attack_check),
                         ..<span class="self">self
                     </span>})),
                 }
@@ -244,8 +303,55 @@
 </span><span class="attr">#[derive(Debug)]
 </span><span class="kw">enum </span>HandshakeState {
     <span class="doccomment">/// Reading data from the peer.
-    </span>Reading(ReadBuffer),
+    </span>Reading(ReadBuffer, AttackCheck),
     <span class="doccomment">/// Sending data to the peer.
     </span>Writing(Cursor&lt;Vec&lt;u8&gt;&gt;),
+}
+
+<span class="doccomment">/// Attack mitigation. Contains counters needed to prevent DoS attacks
+/// and reject valid but useless headers.
+</span><span class="attr">#[derive(Debug)]
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>AttackCheck {
+    <span class="doccomment">/// Number of HTTP header successful reads (TCP packets).
+    </span>number_of_packets: usize,
+    <span class="doccomment">/// Total number of bytes in HTTP header.
+    </span>number_of_bytes: usize,
+}
+
+<span class="kw">impl </span>AttackCheck {
+    <span class="doccomment">/// Initialize attack checking for incoming buffer.
+    </span><span class="kw">fn </span>new() -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ number_of_packets: <span class="number">0</span>, number_of_bytes: <span class="number">0 </span>}
+    }
+
+    <span class="doccomment">/// Check the size of an incoming packet. To be called immediately after `read()`
+    /// passing its returned bytes count as `size`.
+    </span><span class="kw">fn </span>check_incoming_packet_size(<span class="kw-2">&amp;mut </span><span class="self">self</span>, size: usize) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="self">self</span>.number_of_packets += <span class="number">1</span>;
+        <span class="self">self</span>.number_of_bytes += size;
+
+        <span class="comment">// TODO: these values are hardcoded. Instead of making them configurable,
+        // rework the way HTTP header is parsed to remove this check at all.
+        </span><span class="kw">const </span>MAX_BYTES: usize = <span class="number">65536</span>;
+        <span class="kw">const </span>MAX_PACKETS: usize = <span class="number">512</span>;
+        <span class="kw">const </span>MIN_PACKET_SIZE: usize = <span class="number">128</span>;
+        <span class="kw">const </span>MIN_PACKET_CHECK_THRESHOLD: usize = <span class="number">64</span>;
+
+        <span class="kw">if </span><span class="self">self</span>.number_of_bytes &gt; MAX_BYTES {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::AttackAttempt);
+        }
+
+        <span class="kw">if </span><span class="self">self</span>.number_of_packets &gt; MAX_PACKETS {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::AttackAttempt);
+        }
+
+        <span class="kw">if </span><span class="self">self</span>.number_of_packets &gt; MIN_PACKET_CHECK_THRESHOLD {
+            <span class="kw">if </span><span class="self">self</span>.number_of_packets * MIN_PACKET_SIZE &gt; <span class="self">self</span>.number_of_bytes {
+                <span class="kw">return </span><span class="prelude-val">Err</span>(Error::AttackAttempt);
+            }
+        }
+
+        <span class="prelude-val">Ok</span>(())
+    }
 }
 </code></pre></div></section></main></body></html>

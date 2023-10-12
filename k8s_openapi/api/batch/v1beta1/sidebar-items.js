@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["ReadCronJobResponse","ReadCronJobStatusResponse"],"struct":["CronJob","CronJobSpec","CronJobStatus","JobTemplateSpec"]};
+window.SIDEBAR_ITEMS = {"struct":["CronJob","CronJobSpec","CronJobStatus","JobTemplateSpec"]};

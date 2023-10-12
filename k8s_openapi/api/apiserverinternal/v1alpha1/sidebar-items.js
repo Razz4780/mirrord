@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["ReadStorageVersionResponse","ReadStorageVersionStatusResponse"],"struct":["ServerStorageVersion","StorageVersion","StorageVersionCondition","StorageVersionSpec","StorageVersionStatus"]};
+window.SIDEBAR_ITEMS = {"struct":["ServerStorageVersion","StorageVersion","StorageVersionCondition","StorageVersionSpec","StorageVersionStatus"]};

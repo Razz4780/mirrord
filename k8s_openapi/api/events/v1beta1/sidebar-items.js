@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["ReadEventResponse"],"struct":["Event","EventSeries"]};
+window.SIDEBAR_ITEMS = {"struct":["Event","EventSeries"]};
