@@ -296,6 +296,8 @@
 <a href="#296" id="296">296</a>
 <a href="#297" id="297">297</a>
 <a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::collections::HashMap;
 
 <span class="kw">use </span>bollard::{container::InspectContainerOptions, Docker, API_DEFAULT_VERSION};
@@ -326,13 +328,15 @@
 <span class="kw">const </span>CONTAINERD_ALTERNATIVE_SOCK_PATH: <span class="kw-2">&amp;</span>str = <span class="string">&quot;/host/run/dockershim.sock&quot;</span>;
 <span class="kw">const </span>CONTAINERD_K3S_SOCK_PATH: <span class="kw-2">&amp;</span>str = <span class="string">&quot;/host/run/k3s/containerd/containerd.sock&quot;</span>;
 <span class="kw">const </span>CONTAINERD_MICROK8S_SOCK_PATH: <span class="kw-2">&amp;</span>str = <span class="string">&quot;/host/var/snap/microk8s/common/run/containerd.sock&quot;</span>;
+<span class="kw">const </span>CONTAINERD_K0S_SOCK_PATH: <span class="kw-2">&amp;</span>str = <span class="string">&quot;/host/run/k0s/containerd.sock&quot;</span>;
 
 <span class="doccomment">/// Possible containerd socket paths, evaluated from left to right.
-</span><span class="kw">const </span>CONTAINERD_SOCK_PATHS: [<span class="kw-2">&amp;</span>str; <span class="number">4</span>] = [
+</span><span class="kw">const </span>CONTAINERD_SOCK_PATHS: [<span class="kw-2">&amp;</span>str; <span class="number">5</span>] = [
     CONTAINERD_DEFAULT_SOCK_PATH,
     CONTAINERD_ALTERNATIVE_SOCK_PATH,
     CONTAINERD_K3S_SOCK_PATH,
     CONTAINERD_MICROK8S_SOCK_PATH,
+    CONTAINERD_K0S_SOCK_PATH,
 ];
 
 <span class="kw">const </span>DEFAULT_CONTAINERD_NAMESPACE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;k8s.io&quot;</span>;

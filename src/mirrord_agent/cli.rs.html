@@ -83,6 +83,18 @@
 <a href="#83" id="83">83</a>
 <a href="#84" id="84">84</a>
 <a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
 </pre></div><pre class="rust"><code><span class="attr">#![deny(missing_docs)]
 
 </span><span class="kw">use </span>clap::{Parser, Subcommand};
@@ -139,12 +151,22 @@
         </span><span class="attr">#[arg(short = <span class="string">&#39;r&#39;</span>, long, default_value = DEFAULT_RUNTIME)]
         </span>container_runtime: String,
 
-        <span class="doccomment">/// Which kind of mesh the remote pod is in, see [`MeshVendor`].
+        <span class="comment">// TODO(alex): We should remove this arg from here and put into the general `Args`, but
+        // this would be a breaking change, as the agent would be started as:
+        // `agent --mesh targeted` becomes incompatible when a new layer version tries to
+        // initialize an old agent version.
+        </span><span class="doccomment">/// Which kind of mesh the remote pod is in, see [`MeshVendor`].
         </span><span class="attr">#[arg(long)]
         </span>mesh: <span class="prelude-ty">Option</span>&lt;MeshVendor&gt;,
     },
     <span class="doccomment">/// Inform the agent to use `proc/1/root` as the root directory.
-    </span>Ephemeral,
+    </span>Ephemeral {
+        <span class="comment">// TODO(alex): Same issue here, we want to remove this at some point, and move it to
+        // `Args`.
+        </span><span class="doccomment">/// Which kind of mesh the remote pod is in, see [`MeshVendor`].
+        </span><span class="attr">#[arg(long)]
+        </span>mesh: <span class="prelude-ty">Option</span>&lt;MeshVendor&gt;,
+    },
     <span class="attr">#[default]
     </span>Targetless,
     <span class="attr">#[clap(hide = <span class="bool-val">true</span>)]
@@ -156,10 +178,12 @@
         <span class="macro">matches!</span>(<span class="self">self</span>, Mode::Targetless)
     }
 
-    <span class="doccomment">/// Digs into `Mode::Targeted` to get the `MeshVendor`.
+    <span class="comment">// TODO(alex): Remove this when `mesh` option is removed from `cli::Mode`, and put into
+    // `cli::Args`.
+    </span><span class="doccomment">/// Digs into `Mode` subcomand to get the `MeshVendor`.
     </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>mesh(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;MeshVendor&gt; {
         <span class="kw">match </span><span class="kw-2">*</span><span class="self">self </span>{
-            Mode::Targeted { mesh, .. } =&gt; mesh,
+            Mode::Targeted { mesh, .. } | Mode::Ephemeral { mesh, .. } =&gt; mesh,
             <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
         }
     }

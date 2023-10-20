@@ -828,6 +828,7 @@
 <a href="#828" id="828">828</a>
 <a href="#829" id="829">829</a>
 <a href="#830" id="830">830</a>
+<a href="#831" id="831">831</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(result_option_inspect)]
 #![feature(hash_extract_if)]
 #![feature(let_chains)]
@@ -937,7 +938,7 @@
 
                 (<span class="bool-val">false</span>, <span class="prelude-val">Some</span>(container_handle), pid)
             }
-            cli::Mode::Ephemeral =&gt; {
+            cli::Mode::Ephemeral { .. } =&gt; {
                 <span class="kw">let </span>container_handle = ContainerHandle::new(
                     runtime::Container::Ephemeral(runtime::EphemeralContainer {}),
                     watch,
@@ -1400,6 +1401,7 @@
         (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>)
     } <span class="kw">else </span>{
         <span class="kw">let </span>cancellation_token = cancellation_token.clone();
+
         <span class="kw">let </span>mesh = args.mode.mesh();
 
         <span class="kw">let </span>watched_task = WatchedTask::new(
