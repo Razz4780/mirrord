@@ -473,73 +473,6 @@
 <a href="#473" id="473">473</a>
 <a href="#474" id="474">474</a>
 <a href="#475" id="475">475</a>
-<a href="#476" id="476">476</a>
-<a href="#477" id="477">477</a>
-<a href="#478" id="478">478</a>
-<a href="#479" id="479">479</a>
-<a href="#480" id="480">480</a>
-<a href="#481" id="481">481</a>
-<a href="#482" id="482">482</a>
-<a href="#483" id="483">483</a>
-<a href="#484" id="484">484</a>
-<a href="#485" id="485">485</a>
-<a href="#486" id="486">486</a>
-<a href="#487" id="487">487</a>
-<a href="#488" id="488">488</a>
-<a href="#489" id="489">489</a>
-<a href="#490" id="490">490</a>
-<a href="#491" id="491">491</a>
-<a href="#492" id="492">492</a>
-<a href="#493" id="493">493</a>
-<a href="#494" id="494">494</a>
-<a href="#495" id="495">495</a>
-<a href="#496" id="496">496</a>
-<a href="#497" id="497">497</a>
-<a href="#498" id="498">498</a>
-<a href="#499" id="499">499</a>
-<a href="#500" id="500">500</a>
-<a href="#501" id="501">501</a>
-<a href="#502" id="502">502</a>
-<a href="#503" id="503">503</a>
-<a href="#504" id="504">504</a>
-<a href="#505" id="505">505</a>
-<a href="#506" id="506">506</a>
-<a href="#507" id="507">507</a>
-<a href="#508" id="508">508</a>
-<a href="#509" id="509">509</a>
-<a href="#510" id="510">510</a>
-<a href="#511" id="511">511</a>
-<a href="#512" id="512">512</a>
-<a href="#513" id="513">513</a>
-<a href="#514" id="514">514</a>
-<a href="#515" id="515">515</a>
-<a href="#516" id="516">516</a>
-<a href="#517" id="517">517</a>
-<a href="#518" id="518">518</a>
-<a href="#519" id="519">519</a>
-<a href="#520" id="520">520</a>
-<a href="#521" id="521">521</a>
-<a href="#522" id="522">522</a>
-<a href="#523" id="523">523</a>
-<a href="#524" id="524">524</a>
-<a href="#525" id="525">525</a>
-<a href="#526" id="526">526</a>
-<a href="#527" id="527">527</a>
-<a href="#528" id="528">528</a>
-<a href="#529" id="529">529</a>
-<a href="#530" id="530">530</a>
-<a href="#531" id="531">531</a>
-<a href="#532" id="532">532</a>
-<a href="#533" id="533">533</a>
-<a href="#534" id="534">534</a>
-<a href="#535" id="535">535</a>
-<a href="#536" id="536">536</a>
-<a href="#537" id="537">537</a>
-<a href="#538" id="538">538</a>
-<a href="#539" id="539">539</a>
-<a href="#540" id="540">540</a>
-<a href="#541" id="541">541</a>
-<a href="#542" id="542">542</a>
 </pre></div><pre class="rust"><code><span class="doccomment">/// Controls which files are ignored (open local) by mirrord file operations.
 ///
 /// There are 3 ways of setting this up:
@@ -555,12 +488,15 @@
     util::VecOrSingle,
 };
 <span class="kw">use </span>regex::{RegexSet, RegexSetBuilder};
-<span class="kw">use </span>tracing::warn;
 
 <span class="kw">use crate</span>::{
     detour::{Bypass, Detour},
     error::HookError,
 };
+
+<span class="kw">mod </span>not_found_by_default;
+<span class="kw">mod </span>read_local_by_default;
+<span class="kw">mod </span>read_remote_by_default;
 
 <span class="doccomment">/// List of files that mirrord should use locally, as they probably exist only in the local user
 /// machine, or are system configuration files (that could break the process if we used the remote
@@ -571,72 +507,7 @@
 </span><span class="kw">fn </span>generate_local_set() -&gt; RegexSet {
     <span class="comment">// To handle the problem of injecting `open` and friends into project runners (like in a call to
     // `node app.js`, or `cargo run app`), we&#39;re ignoring files from the current working directory.
-    </span><span class="kw">let </span>current_dir = env::current_dir().unwrap();
-    <span class="kw">let </span>current_binary = env::current_exe().unwrap();
-    <span class="kw">let </span>temp_dir = env::temp_dir();
-    <span class="kw">let </span>patterns = [
-        <span class="string">r&quot;^.+\.so$&quot;</span>,
-        <span class="string">r&quot;^.+\.d$&quot;</span>,
-        <span class="string">r&quot;^.+\.pyc$&quot;</span>,
-        <span class="string">r&quot;^.+\.py$&quot;</span>,
-        <span class="string">r&quot;^.+\.jar$&quot;</span>,
-        <span class="string">r&quot;^.+\.js$&quot;</span>,
-        <span class="string">r&quot;^.+\.pth$&quot;</span>,
-        <span class="string">r&quot;^.+\.plist$&quot;</span>,
-        <span class="string">r&quot;^.*venv\.cfg$&quot;</span>,
-        <span class="string">r&quot;^/proc/.*$&quot;</span>,
-        <span class="string">r&quot;^/sys/.*$&quot;</span>,
-        <span class="string">r&quot;^/lib/.*$&quot;</span>,
-        <span class="string">r&quot;^/etc/.*$&quot;</span>,
-        <span class="string">r&quot;^/usr(/|$).*$&quot;</span>,
-        <span class="string">r&quot;^/home(/|$).*$&quot;</span>,
-        <span class="string">r&quot;^/bin/.*$&quot;</span>,
-        <span class="string">r&quot;^/sbin/.*$&quot;</span>,
-        <span class="string">r&quot;^/dev/.*$&quot;</span>,
-        <span class="string">r&quot;^/opt(/|$)&quot;</span>,
-        <span class="string">r&quot;^/tmp(/|$)&quot;</span>,
-        <span class="string">r&quot;^/snap/.*$&quot;</span>,
-        <span class="comment">// support for nixOS.
-        </span><span class="string">r&quot;^/nix/.*$&quot;</span>,
-        <span class="string">r&quot;.+\.asdf/.+&quot;</span>,
-        <span class="string">r&quot;^/home/iojs/.*$&quot;</span>,
-        <span class="string">r&quot;^/home/runner/.*$&quot;</span>,
-        <span class="comment">// dotnet: `/tmp/clr-debug-pipe-1`
-        </span><span class="string">r&quot;^.*clr-.*-pipe-.*$&quot;</span>,
-        <span class="comment">// dotnet: `/home/{username}/{project}.pdb`
-        </span><span class="string">r&quot;^.*\.pdb$&quot;</span>,
-        <span class="comment">// dotnet: `/home/{username}/{project}.dll`
-        </span><span class="string">r&quot;^.*\.dll$&quot;</span>,
-        <span class="comment">// jvm.cfg or ANYTHING/jvm.cfg
-        </span><span class="string">r&quot;.*(^|/)jvm\.cfg$&quot;</span>,
-        <span class="comment">// TODO: `node` searches for this file in multiple directories, bypassing some of our
-        // ignore regexes, maybe other &quot;project runners&quot; will do the same.
-        </span><span class="string">r&quot;^.*/package.json$&quot;</span>,
-        <span class="comment">// asdf
-        </span><span class="string">r&quot;.*/\.tool-versions$&quot;</span>,
-        <span class="comment">// macOS
-        </span><span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
-        </span><span class="string">&quot;^/Volumes(/|$)&quot;</span>,
-        <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
-        </span><span class="string">r&quot;^/private(/|$)&quot;</span>,
-        <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
-        </span><span class="string">r&quot;^/var/folders(/|$)&quot;</span>,
-        <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
-        </span><span class="string">r&quot;^/Users&quot;</span>,
-        <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
-        </span><span class="string">r&quot;^/Library&quot;</span>,
-        <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
-        </span><span class="string">r&quot;^/Applications&quot;</span>,
-        <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
-        </span><span class="string">r&quot;^/System&quot;</span>,
-        <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
-        </span><span class="string">r&quot;^/var/run/com.apple&quot;</span>,
-        <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;^{}&quot;</span>, temp_dir.to_string_lossy()),
-        <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;^.*{}.*$&quot;</span>, current_dir.to_string_lossy()),
-        <span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;^.*{}.*$&quot;</span>, current_binary.to_string_lossy()),
-        <span class="string">&quot;^/$&quot;</span>, <span class="comment">// root
-    </span>];
-    RegexSetBuilder::new(patterns)
+    </span>read_local_by_default::regex_set_builder()
         .case_insensitive(<span class="bool-val">true</span>)
         .build()
         .expect(<span class="string">&quot;Building local path regex set failed&quot;</span>)
@@ -644,12 +515,7 @@
 
 <span class="doccomment">/// List of files that mirrord should use remotely read only
 </span><span class="kw">fn </span>generate_remote_ro_set() -&gt; RegexSet {
-    <span class="kw">let </span>patterns = [
-        <span class="comment">// for dns resolving
-        </span><span class="string">r&quot;^/etc/resolv.conf$&quot;</span>,
-        <span class="string">r&quot;^/etc/hosts$&quot;</span>,
-        <span class="string">r&quot;^/etc/hostname$&quot;</span>,
-    ];
+    <span class="kw">let </span>patterns = read_remote_by_default::PATHS;
     RegexSetBuilder::new(patterns)
         .case_insensitive(<span class="bool-val">true</span>)
         .build()
@@ -664,7 +530,7 @@
 
     <span class="kw">let </span>home_clean = regex::escape(home.trim_end_matches(<span class="string">&#39;/&#39;</span>));
 
-    <span class="kw">let </span>patterns = [<span class="string">r&quot;\.aws&quot;</span>, <span class="string">r&quot;\.config/gcloud&quot;</span>, <span class="string">r&quot;\.kube&quot;</span>, <span class="string">r&quot;\.azure&quot;</span>]
+    <span class="kw">let </span>patterns = not_found_by_default::PATHS
         .into_iter()
         .map(|cloud_dir| <span class="macro">format!</span>(<span class="string">&quot;^{home_clean}/{cloud_dir}&quot;</span>));
 

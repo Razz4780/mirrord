@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["generate_local_set","generate_not_found_set","generate_remote_ro_set"],"static":["FILE_FILTER"],"struct":["FileFilter"]};
+window.SIDEBAR_ITEMS = {"fn":["generate_local_set","generate_not_found_set","generate_remote_ro_set"],"mod":["not_found_by_default","read_local_by_default","read_remote_by_default"],"static":["FILE_FILTER"],"struct":["FileFilter"]};
