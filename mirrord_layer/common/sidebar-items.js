@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["HookMessage"],"fn":["blocking_send_hook_message"],"trait":["CheckedInto"],"type":["ResponseChannel","ResponseDeque"]};
+window.SIDEBAR_ITEMS = {"fn":["make_proxy_request_no_response","make_proxy_request_with_response"],"trait":["CheckedInto"]};

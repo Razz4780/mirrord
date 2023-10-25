@@ -113,141 +113,53 @@
 <a href="#113" id="113">113</a>
 <a href="#114" id="114">114</a>
 <a href="#115" id="115">115</a>
-<a href="#116" id="116">116</a>
-<a href="#117" id="117">117</a>
-<a href="#118" id="118">118</a>
-<a href="#119" id="119">119</a>
-<a href="#120" id="120">120</a>
-<a href="#121" id="121">121</a>
-<a href="#122" id="122">122</a>
-<a href="#123" id="123">123</a>
-<a href="#124" id="124">124</a>
-<a href="#125" id="125">125</a>
-<a href="#126" id="126">126</a>
-<a href="#127" id="127">127</a>
-<a href="#128" id="128">128</a>
-<a href="#129" id="129">129</a>
-<a href="#130" id="130">130</a>
-<a href="#131" id="131">131</a>
-<a href="#132" id="132">132</a>
-<a href="#133" id="133">133</a>
-<a href="#134" id="134">134</a>
-<a href="#135" id="135">135</a>
-<a href="#136" id="136">136</a>
-<a href="#137" id="137">137</a>
-<a href="#138" id="138">138</a>
-<a href="#139" id="139">139</a>
-<a href="#140" id="140">140</a>
-<a href="#141" id="141">141</a>
-<a href="#142" id="142">142</a>
-<a href="#143" id="143">143</a>
-<a href="#144" id="144">144</a>
-<a href="#145" id="145">145</a>
-<a href="#146" id="146">146</a>
-<a href="#147" id="147">147</a>
-<a href="#148" id="148">148</a>
-<a href="#149" id="149">149</a>
-<a href="#150" id="150">150</a>
-<a href="#151" id="151">151</a>
-<a href="#152" id="152">152</a>
-<a href="#153" id="153">153</a>
-<a href="#154" id="154">154</a>
-<a href="#155" id="155">155</a>
-<a href="#156" id="156">156</a>
-<a href="#157" id="157">157</a>
-<a href="#158" id="158">158</a>
-<a href="#159" id="159">159</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Shared place for a few types and functions that are used everywhere by the layer.
-</span><span class="kw">use </span>std::{collections::VecDeque, ffi::CStr, path::PathBuf};
+</span><span class="kw">use </span>std::{ffi::CStr, fmt::Debug, path::PathBuf};
 
 <span class="kw">use </span>libc::c_char;
-<span class="kw">use </span>mirrord_protocol::{file::OpenOptionsInternal, RemoteResult};
+<span class="kw">use </span>mirrord_intproxy::protocol::{IsLayerRequest, IsLayerRequestWithResponse, MessageId};
+<span class="kw">use </span>mirrord_protocol::file::OpenOptionsInternal;
 <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
 </span><span class="kw">use </span>mirrord_sip::{MIRRORD_TEMP_BIN_DIR_CANONIC_STRING, MIRRORD_TEMP_BIN_DIR_STRING};
-<span class="kw">use </span>tokio::sync::oneshot;
 <span class="kw">use </span>tracing::warn;
 
 <span class="kw">use crate</span>::{
     detour::{Bypass, Detour},
-    dns::GetAddrInfo,
     error::{HookError, HookResult},
-    file::{FileOperation, OpenOptionsInternalExt},
-    outgoing::{tcp::TcpOutgoing, udp::UdpOutgoing},
-    tcp::TcpIncoming,
-    HOOK_SENDER,
+    file::OpenOptionsInternalExt,
+    PROXY_CONNECTION,
 };
 
-<span class="doccomment">/// Type alias for a queue of responses from the agent, where these responses are [`RemoteResult`]s.
-///
-/// ## Usage
-///
-/// We have no identifiers for the hook requests, so if hook responses were sent asynchronously we
-/// would have no way to match them back to their requests. However, requests are sent out
-/// synchronously, and responses are sent back synchronously, so keeping them in order is how we
-/// maintain our way to match them.
-///
-/// - The usual flow is:
-///
-/// 1. `push_back` the [`oneshot::Sender`] that will be used to produce the [`RemoteResult`];
-///
-/// 2. When the operation gets a response from the agent:
-///     1. `pop_front` to get the [`oneshot::Sender`], then;
-///     2. `Sender::send` the result back to the operation that initiated the request.
-</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">type </span>ResponseDeque&lt;T&gt; = VecDeque&lt;ResponseChannel&lt;T&gt;&gt;;
-
-<span class="doccomment">/// Type alias for the channel that sends a response from the agent.
-///
-/// See [`ResponseDeque`] for usage details.
-</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">type </span>ResponseChannel&lt;T&gt; = oneshot::Sender&lt;RemoteResult&lt;T&gt;&gt;;
-
-<span class="doccomment">/// Sends a [`HookMessage`] through the global [`HOOK_SENDER`] channel.
-///
-/// ## Flow
-///
-/// hook function -&gt; [`HookMessage`] -&gt; [`blocking_send_hook_message`] -&gt; [`ClientMessage`]
-///
-/// ## Usage
-///
-/// - [`file::ops`](crate::file::ops): most of the file operations are blocking, and thus this
-///   function is extensively used there;
-///
-/// - [`socket::ops`](crate::socket::ops): used by some functions that are _blocking-ish_.
-///
-/// [`ClientMessage`]: mirrord_protocol::codec::ClientMessage
-</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>blocking_send_hook_message(message: HookMessage) -&gt; HookResult&lt;()&gt; {
+<span class="doccomment">/// Makes a request to the internal proxy using global [`PROXY_CONNECTION`].
+/// Blocks until the proxy responds.
+</span><span class="kw">pub fn </span>make_proxy_request_with_response&lt;T&gt;(request: T) -&gt; HookResult&lt;T::Response&gt;
+<span class="kw">where
+    </span>T: IsLayerRequestWithResponse + Debug,
+    T::Response: Debug,
+{
     <span class="comment">// SAFETY: mutation happens only on initialization.
     </span><span class="kw">unsafe </span>{
-        HOOK_SENDER
+        PROXY_CONNECTION
             .get()
-            .ok_or(HookError::CannotGetHookSender)<span class="question-mark">?
-            </span>.blocking_send(message)
+            .ok_or(HookError::CannotGetProxyConnection)<span class="question-mark">?
+            </span>.make_request_with_response(request)
             .map_err(Into::into)
     }
 }
 
-<span class="doccomment">/// These messages are handled internally by the layer, and become `ClientMessage`s sent to
-/// the agent.
-///
-/// Most hook detours will send a [`HookMessage`] that will be converted to an equivalent
-/// `ClientMessage` after some internal handling is done. Usually this means taking a sender
-/// channel from this message, and pushing it into a [`ResponseDeque`], while taking the other
-/// fields of the message to become a `ClientMessage`.
-</span><span class="attr">#[derive(Debug)]
-</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum </span>HookMessage {
-    <span class="doccomment">/// TCP incoming messages originating from a hook, see [`TcpIncoming`].
-    </span>Tcp(TcpIncoming),
-
-    <span class="doccomment">/// TCP outgoing messages originating from a hook, see [`TcpOutgoing`].
-    </span>TcpOutgoing(TcpOutgoing),
-
-    <span class="doccomment">/// UDP outgoing messages originating from a hook, see [`UdpOutgoing`].
-    </span>UdpOutgoing(UdpOutgoing),
-
-    <span class="doccomment">/// File messages originating from a hook, see [`FileOperation`].
-    </span>File(FileOperation),
-
-    <span class="doccomment">/// Message originating from `getaddrinfo`, see [`GetAddrInfo`].
-    </span>GetAddrinfo(GetAddrInfo),
+<span class="doccomment">/// Makes a request to the internal proxy using global [`PROXY_CONNECTION`].
+/// Blocks until the request is sent.
+</span><span class="kw">pub fn </span>make_proxy_request_no_response&lt;T: IsLayerRequest + Debug&gt;(
+    request: T,
+) -&gt; HookResult&lt;MessageId&gt; {
+    <span class="comment">// SAFETY: mutation happens only on initialization.
+    </span><span class="kw">unsafe </span>{
+        PROXY_CONNECTION
+            .get()
+            .ok_or(HookError::CannotGetProxyConnection)<span class="question-mark">?
+            </span>.make_request_no_response(request)
+            .map_err(Into::into)
+    }
 }
 
 <span class="doccomment">/// Converts raw pointer values `P` to some other type.

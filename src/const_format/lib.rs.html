@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/const_format-0.2.31/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="const_format" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (e3abbd499 2023-09-06)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../const_format/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/const_format-0.2.32/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="const_format" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (e3abbd499 2023-09-06)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../const_format/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -499,25 +499,6 @@
 <a href="#499" id="499">499</a>
 <a href="#500" id="500">500</a>
 <a href="#501" id="501">501</a>
-<a href="#502" id="502">502</a>
-<a href="#503" id="503">503</a>
-<a href="#504" id="504">504</a>
-<a href="#505" id="505">505</a>
-<a href="#506" id="506">506</a>
-<a href="#507" id="507">507</a>
-<a href="#508" id="508">508</a>
-<a href="#509" id="509">509</a>
-<a href="#510" id="510">510</a>
-<a href="#511" id="511">511</a>
-<a href="#512" id="512">512</a>
-<a href="#513" id="513">513</a>
-<a href="#514" id="514">514</a>
-<a href="#515" id="515">515</a>
-<a href="#516" id="516">516</a>
-<a href="#517" id="517">517</a>
-<a href="#518" id="518">518</a>
-<a href="#519" id="519">519</a>
-<a href="#520" id="520">520</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Compile-time string formatting.
 //!
 //! This crate provides types and macros for formatting strings at compile-time.
@@ -525,12 +506,12 @@
 //! # Rust versions
 //!
 //! There are some features that require a variety of stable Rust versions and
-//! others that Rust nightly,
+//! others that require Rust nightly,
 //! the sections below describe the features that are available for each version.
 //!
-//! ### Rust 1.46.0
+//! ### Rust 1.57.0
 //!
-//! These macros are the only things available in Rust 1.46.0:
+//! These macros are available in Rust 1.57.0:
 //!
 //! - [`concatcp`]:
 //! Concatenates `integers`, `bool`, `char`, and `&amp;str` constants into a `&amp;&#39;static str` constant.
@@ -551,11 +532,6 @@
 //! - [`str_splice`]:
 //! Replaces a substring in a `&amp;&#39;static str` constant.
 //!
-//!
-//! ### Rust 1.51.0
-//!
-//! By enabling the &quot;rust_1_51&quot; feature, you can use these macros:
-//!
 //! - [`map_ascii_case`]:
 //! Converts a `&amp;&#39;static str` constant to a different casing style,
 //! determined by a [`Case`] argument.
@@ -564,9 +540,8 @@
 //! Replaces all the instances of a pattern in a `&amp;&#39;static str` constant with
 //! another `&amp;&#39;static str` constant.
 //!
-//! ### Rust 1.57.0
 //!
-//! The &quot;assertcp&quot; feature enables the [`assertcp`], [`assertcp_eq`],
+//! The `&quot;assertcp&quot;` feature enables the [`assertcp`], [`assertcp_eq`],
 //! and [`assertcp_ne`] macros.
 //! These macros are like the standard library assert macros,
 //! but evaluated at compile-time,
@@ -583,7 +558,7 @@
 //!
 //! By enabling the &quot;fmt&quot; feature, you can use a [`std::fmt`]-like API.
 //!
-//! This requires the nightly compiler because it uses mutable references in const fn,
+//! This requires the nightly compiler, because it uses mutable references in const fn,
 //! which have not been stabilized as of writing these docs.
 //!
 //! All the other features of this crate are implemented on top of the [`const_format::fmt`] API:
@@ -599,19 +574,18 @@
 //! [`write`]-like macro that can format many standard library and user defined types
 //! into a type that implements [`WriteMarker`].
 //!
-//! The &quot;derive&quot; feature enables the [`ConstDebug`] macro,
-//! and the &quot;fmt&quot; feature.&lt;br&gt;
+//! The `&quot;derive&quot;` feature enables the [`ConstDebug`] macro,
+//! and the `&quot;fmt&quot;` feature.&lt;br&gt;
 //! [`ConstDebug`] derives the [`FormatMarker`] trait,
 //! and implements an inherent `const_debug_fmt` method for compile-time debug formatting.
 //!
-//! The &quot;assertc&quot; feature enables the [`assertc`], [`assertc_eq`], [`assertc_ne`] macros,
-//! and the &quot;fmt&quot; feature.&lt;br&gt;
+//! The `&quot;assertc&quot;` feature enables the [`assertc`], [`assertc_eq`], [`assertc_ne`] macros,
+//! and the `&quot;fmt&quot;` feature.&lt;br&gt;
 //! These macros are like the standard library assert macros, but evaluated at compile-time.
+//!
 //! # Examples
 //!
 //! ### Concatenation of primitive types
-//!
-//! This example works in Rust 1.46.0.
 //!
 //! ```rust
 //! use const_format::concatcp;
@@ -623,8 +597,6 @@
 //! ```
 //!
 //! ### Formatting primitive types
-//!
-//! This example works in Rust 1.46.0.
 //!
 //! ```rust
 //! use const_format::formatcp;
@@ -644,7 +616,7 @@
 //! This example demonstrates how you can use the [`ConstDebug`] derive macro,
 //! and then format the type into a `&amp;&#39;static str` constant.
 //!
-//! This example requires Rust nightly, and the &quot;derive&quot; feature.
+//! This example requires Rust nightly, and the `&quot;derive&quot;` feature.
 //!
 </span><span class="attr">#![cfg_attr(feature = <span class="string">&quot;derive&quot;</span>, doc = <span class="string">&quot;```rust&quot;</span>)]
 #![cfg_attr(not(feature = <span class="string">&quot;derive&quot;</span>), doc = <span class="string">&quot;```ignore&quot;</span>)]
@@ -680,8 +652,7 @@
 //! This example demonstrates how you can use the [`assertcp_ne`] macro to
 //! do compile-time inequality assertions with formatted error messages.
 //!
-//! This requires the &quot;assertcp&quot; feature,
-//! because using the `panic` macro at compile-time requires Rust 1.57.0.
+//! This requires the `&quot;assertcp&quot;` feature.
 //!
 </span><span class="attr">#![cfg_attr(feature = <span class="string">&quot;assertcp&quot;</span>, doc = <span class="string">&quot;```compile_fail&quot;</span>)]
 #![cfg_attr(not(feature = <span class="string">&quot;assertcp&quot;</span>), doc = <span class="string">&quot;```ignore&quot;</span>)]
@@ -769,35 +740,31 @@
 //!
 //! Example of renaming the `const_format` crate in the Cargo.toml file:
 //! ```toml
+//! [dependencies]
 //! cfmt = {version = &quot;0.*&quot;, package = &quot;const_format&quot;}
 //! ```
 //!
 //! # Cargo features
 //!
-//! - &quot;fmt&quot;: Enables the [`std::fmt`]-like API,
+//! - `&quot;fmt&quot;`: Enables the [`std::fmt`]-like API,
 //! requires Rust nightly because it uses mutable references in const fn.&lt;br&gt;
 //! This feature includes the [`formatc`]/[`writec`] formatting macros.
 //!
-//! - &quot;derive&quot;: implies the &quot;fmt&quot; feature,
+//! - `&quot;derive&quot;`: requires Rust nightly, implies the `&quot;fmt&quot;` feature,
 //! provides the [`ConstDebug`] derive macro to format user-defined types at compile-time.&lt;br&gt;
 //! This implicitly uses the `syn` crate, so clean compiles take a bit longer than without the feature.
 //!
-//! - &quot;assertc&quot;: implies the &quot;fmt&quot; feature,
+//! - `&quot;assertc&quot;`: requires Rust nightly, implies the `&quot;fmt&quot;` feature,
 //! enables the [`assertc`], [`assertc_eq`], and [`assertc_ne`] assertion macros.&lt;br&gt;
-//! This feature was previously named &quot;assert&quot;,
-//! but it was renamed to avoid confusion with the &quot;assertcp&quot; feature.
+//! This feature was previously named `&quot;assert&quot;`,
+//! but it was renamed to avoid confusion with the `&quot;assertcp&quot;` feature.
 //!
-//! - &quot;assertcp&quot;: Requires Rust 1.57.0, implies the &quot;rust_1_51&quot; feature.
+//! - `&quot;assertcp&quot;`:
 //! Enables the [`assertcp`], [`assertcp_eq`], and [`assertcp_ne`] assertion macros.
 //!
-//! - &quot;rust_1_51&quot;:
-//! Enables the macros listed in the [Rust 1.51.0](#rust-1510) section.
-//! Also changes the the implementation of the [`concatcp`] and [`formatcp`]
-//! macros to use const generics.
-//!
-//! - &quot;rust_1_64&quot;: Enables the [`str_split`] macro.
+//! - `&quot;rust_1_64&quot;`: Enables the [`str_split`] macro.
 //! Allows the `as_bytes_alt` methods and `slice_up_to_len_alt` methods to run
-//! in constant time, rather than linear time proportional to the truncated part of the slice.
+//! in constant time, rather than linear time (proportional to the truncated part of the slice).
 //!
 //! # No-std support
 //!
@@ -805,7 +772,7 @@
 //!
 //! # Minimum Supported Rust Version
 //!
-//! `const_format` requires Rust 1.46.0, because it uses looping an branching in const contexts.
+//! `const_format` requires Rust 1.57.0.
 //!
 //! Features that require newer versions of Rust, or the nightly compiler,
 //! need to be explicitly enabled with cargo features.
@@ -905,8 +872,7 @@
 
 <span class="kw">mod </span>pargument;
 
-<span class="attr">#[cfg(feature = <span class="string">&quot;rust_1_51&quot;</span>)]
-</span><span class="kw">mod </span>const_generic_concatcp;
+<span class="kw">mod </span>const_generic_concatcp;
 
 <span class="attr">#[cfg_attr(feature = <span class="string">&quot;__docsrs&quot;</span>, doc(cfg(feature = <span class="string">&quot;fmt&quot;</span>)))]
 #[cfg(feature = <span class="string">&quot;fmt&quot;</span>)]
@@ -947,7 +913,6 @@
 </span><span class="kw">pub mod </span>wrapper_types;
 
 <span class="attr">#[doc(hidden)]
-#[cfg(feature = <span class="string">&quot;rust_1_51&quot;</span>)]
 </span><span class="kw">pub mod </span>__ascii_case_conv;
 
 <span class="attr">#[doc(hidden)]
@@ -955,9 +920,7 @@
 
 <span class="kw">pub use </span>__str_methods::SplicedStr;
 
-<span class="attr">#[cfg_attr(feature = <span class="string">&quot;__docsrs&quot;</span>, doc(cfg(feature = <span class="string">&quot;rust_1_51&quot;</span>)))]
-#[cfg(feature = <span class="string">&quot;rust_1_51&quot;</span>)]
-</span><span class="kw">pub use </span>__ascii_case_conv::Case;
+<span class="kw">pub use </span>__ascii_case_conv::Case;
 
 <span class="attr">#[cfg(feature = <span class="string">&quot;fmt&quot;</span>)]
 #[doc(no_inline)]
@@ -1000,8 +963,7 @@
         result::Result::{<span class="self">self</span>, <span class="prelude-val">Err</span>, <span class="prelude-val">Ok</span>},
     };
 
-    <span class="attr">#[cfg(feature = <span class="string">&quot;rust_1_51&quot;</span>)]
-    </span><span class="kw">pub use </span><span class="kw">crate</span>::const_generic_concatcp::__priv_concatenate;
+    <span class="kw">pub use </span><span class="kw">crate</span>::const_generic_concatcp::__priv_concatenate;
 
     <span class="attr">#[cfg(feature = <span class="string">&quot;assertcp&quot;</span>)]
     </span><span class="kw">pub use </span><span class="kw">crate</span>::for_assert_macros::{assert_, ConcatArgsIf};
@@ -1037,5 +999,5 @@
 }
 
 <span class="attr">#[cfg(all(test, not(feature = <span class="string">&quot;__test&quot;</span>)))]
-</span><span class="macro">compile_error! </span>{ <span class="string">&quot;tests must be run with the \&quot;testing\&quot; feature&quot; </span>}
+</span><span class="macro">compile_error! </span>{ <span class="string">&quot;tests must be run with the \&quot;__test\&quot; feature&quot; </span>}
 </code></pre></div></section></main></body></html>

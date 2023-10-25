@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/oci-spec-0.6.2/src/image/config.rs`."><title>config.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="oci_spec" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (e3abbd499 2023-09-06)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../oci_spec/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/oci-spec-0.6.3/src/image/config.rs`."><title>config.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="oci_spec" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (e3abbd499 2023-09-06)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../oci_spec/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -612,6 +612,49 @@
 <a href="#612" id="612">612</a>
 <a href="#613" id="613">613</a>
 <a href="#614" id="614">614</a>
+<a href="#615" id="615">615</a>
+<a href="#616" id="616">616</a>
+<a href="#617" id="617">617</a>
+<a href="#618" id="618">618</a>
+<a href="#619" id="619">619</a>
+<a href="#620" id="620">620</a>
+<a href="#621" id="621">621</a>
+<a href="#622" id="622">622</a>
+<a href="#623" id="623">623</a>
+<a href="#624" id="624">624</a>
+<a href="#625" id="625">625</a>
+<a href="#626" id="626">626</a>
+<a href="#627" id="627">627</a>
+<a href="#628" id="628">628</a>
+<a href="#629" id="629">629</a>
+<a href="#630" id="630">630</a>
+<a href="#631" id="631">631</a>
+<a href="#632" id="632">632</a>
+<a href="#633" id="633">633</a>
+<a href="#634" id="634">634</a>
+<a href="#635" id="635">635</a>
+<a href="#636" id="636">636</a>
+<a href="#637" id="637">637</a>
+<a href="#638" id="638">638</a>
+<a href="#639" id="639">639</a>
+<a href="#640" id="640">640</a>
+<a href="#641" id="641">641</a>
+<a href="#642" id="642">642</a>
+<a href="#643" id="643">643</a>
+<a href="#644" id="644">644</a>
+<a href="#645" id="645">645</a>
+<a href="#646" id="646">646</a>
+<a href="#647" id="647">647</a>
+<a href="#648" id="648">648</a>
+<a href="#649" id="649">649</a>
+<a href="#650" id="650">650</a>
+<a href="#651" id="651">651</a>
+<a href="#652" id="652">652</a>
+<a href="#653" id="653">653</a>
+<a href="#654" id="654">654</a>
+<a href="#655" id="655">655</a>
+<a href="#656" id="656">656</a>
+<a href="#657" id="657">657</a>
 </pre></div><pre class="rust"><code><span class="kw">use super</span>::{Arch, Os};
 <span class="kw">use crate</span>::{
     error::{OciSpecError, <span class="prelude-ty">Result</span>},
@@ -838,10 +881,15 @@
         to_string(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="bool-val">true</span>)
     }
 
+    <span class="doccomment">/// Extract the labels of the configuration, if present.
+    </span><span class="kw">pub fn </span>labels_of_config(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>HashMap&lt;String, String&gt;&gt; {
+        <span class="self">self</span>.config().as_ref().and_then(|c| c.labels().as_ref())
+    }
+
     <span class="doccomment">/// Retrieve the version number associated with this configuration.  This will try
     /// to use several well-known label keys.
     </span><span class="kw">pub fn </span>version(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt; {
-        <span class="kw">let </span>labels = <span class="self">self</span>.config().as_ref().and_then(|c| c.labels().as_ref());
+        <span class="kw">let </span>labels = <span class="self">self</span>.labels_of_config();
         <span class="kw">if let </span><span class="prelude-val">Some</span>(labels) = labels {
             <span class="kw">for </span>k <span class="kw">in </span>[<span class="kw">super</span>::ANNOTATION_VERSION, LABEL_VERSION] {
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = labels.get(k) {
@@ -851,6 +899,12 @@
         }
         <span class="prelude-val">None
     </span>}
+
+    <span class="doccomment">/// Extract the value of a given annotation on the configuration, if present.
+    </span><span class="kw">pub fn </span>get_config_annotation(<span class="kw-2">&amp;</span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt; {
+        <span class="self">self</span>.labels_of_config()
+            .and_then(|v| v.get(key).map(|s| s.as_str()))
+    }
 }
 
 <span class="doccomment">/// Implement `ToString` directly since we cannot avoid twice memory allocation
@@ -1093,35 +1147,37 @@
     <span class="kw">use </span>std::{fs, path::PathBuf};
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use </span><span class="kw">crate</span>::image::Os;
+    <span class="kw">use </span><span class="kw">crate</span>::image::{Os, ANNOTATION_CREATED, ANNOTATION_VERSION};
 
-    <span class="kw">fn </span>create_config() -&gt; ImageConfiguration {
+    <span class="kw">fn </span>create_base_config() -&gt; ConfigBuilder {
+        ConfigBuilder::default()
+            .user(<span class="string">&quot;alice&quot;</span>.to_owned())
+            .exposed_ports(<span class="macro">vec!</span>[<span class="string">&quot;8080/tcp&quot;</span>.to_owned()])
+            .env(<span class="macro">vec!</span>[
+                <span class="string">&quot;PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin&quot;</span>.to_owned(),
+                <span class="string">&quot;FOO=oci_is_a&quot;</span>.to_owned(),
+                <span class="string">&quot;BAR=well_written_spec&quot;</span>.to_owned(),
+            ])
+            .entrypoint(<span class="macro">vec!</span>[<span class="string">&quot;/bin/my-app-binary&quot;</span>.to_owned()])
+            .cmd(<span class="macro">vec!</span>[
+                <span class="string">&quot;--foreground&quot;</span>.to_owned(),
+                <span class="string">&quot;--config&quot;</span>.to_owned(),
+                <span class="string">&quot;/etc/my-app.d/default.cfg&quot;</span>.to_owned(),
+            ])
+            .volumes(<span class="macro">vec!</span>[
+                <span class="string">&quot;/var/job-result-data&quot;</span>.to_owned(),
+                <span class="string">&quot;/var/log/my-app-logs&quot;</span>.to_owned(),
+            ])
+            .working_dir(<span class="string">&quot;/home/alice&quot;</span>.to_owned())
+    }
+
+    <span class="kw">fn </span>create_base_imgconfig(conf: Config) -&gt; ImageConfigurationBuilder {
         ImageConfigurationBuilder::default()
             .created(<span class="string">&quot;2015-10-31T22:22:56.015925234Z&quot;</span>.to_owned())
             .author(<span class="string">&quot;Alyssa P. Hacker &lt;alyspdev@example.com&gt;&quot;</span>.to_owned())
             .architecture(Arch::Amd64)
             .os(Os::Linux)
-            .config(
-                ConfigBuilder::default()
-                    .user(<span class="string">&quot;alice&quot;</span>.to_owned())
-                    .exposed_ports(<span class="macro">vec!</span>[<span class="string">&quot;8080/tcp&quot;</span>.to_owned()])
-                    .env(<span class="macro">vec!</span>[
-                        <span class="string">&quot;PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin&quot;</span>.to_owned(),
-                        <span class="string">&quot;FOO=oci_is_a&quot;</span>.to_owned(),
-                        <span class="string">&quot;BAR=well_written_spec&quot;</span>.to_owned(),
-                    ])
-                    .entrypoint(<span class="macro">vec!</span>[<span class="string">&quot;/bin/my-app-binary&quot;</span>.to_owned()])
-                    .cmd(<span class="macro">vec!</span>[
-                        <span class="string">&quot;--foreground&quot;</span>.to_owned(),
-                        <span class="string">&quot;--config&quot;</span>.to_owned(),
-                        <span class="string">&quot;/etc/my-app.d/default.cfg&quot;</span>.to_owned(),
-                    ])
-                    .volumes(<span class="macro">vec!</span>[
-                        <span class="string">&quot;/var/job-result-data&quot;</span>.to_owned(),
-                        <span class="string">&quot;/var/log/my-app-logs&quot;</span>.to_owned(),
-                    ])
-                    .working_dir(<span class="string">&quot;/home/alice&quot;</span>.to_owned())
-                    .build().expect(<span class="string">&quot;build config&quot;</span>),
+            .config(conf
             )
             .rootfs(RootFsBuilder::default()
             .diff_ids(<span class="macro">vec!</span>[
@@ -1143,8 +1199,27 @@
                 .build()
                 .expect(<span class="string">&quot;build history&quot;</span>),
             ])
+    }
+
+    <span class="kw">fn </span>create_config() -&gt; ImageConfiguration {
+        create_base_imgconfig(create_base_config().build().expect(<span class="string">&quot;config&quot;</span>))
             .build()
             .expect(<span class="string">&quot;build configuration&quot;</span>)
+    }
+
+    <span class="doccomment">/// A config with some additions (labels)
+    </span><span class="kw">fn </span>create_imgconfig_v1() -&gt; ImageConfiguration {
+        <span class="kw">let </span>labels = [
+            (ANNOTATION_CREATED, <span class="string">&quot;2023-09-16T19:22:18.014Z&quot;</span>),
+            (ANNOTATION_VERSION, <span class="string">&quot;42.27&quot;</span>),
+        ]
+        .into_iter()
+        .map(|(k, v)| (k.to_owned(), v.to_owned()));
+        <span class="kw">let </span>config = create_base_config()
+            .labels(labels.collect::&lt;HashMap&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt;&gt;())
+            .build()
+            .unwrap();
+        create_base_imgconfig(config).build().unwrap()
     }
 
     <span class="kw">fn </span>get_config_path() -&gt; PathBuf {
@@ -1162,6 +1237,16 @@
 
         <span class="comment">// assert
         </span><span class="macro">assert_eq!</span>(actual, expected);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_helpers() {
+        <span class="kw">let </span>config = create_imgconfig_v1();
+        <span class="macro">assert_eq!</span>(config.labels_of_config().unwrap().len(), <span class="number">2</span>);
+        <span class="macro">assert_eq!</span>(
+            config.get_config_annotation(ANNOTATION_CREATED).unwrap(),
+            <span class="string">&quot;2023-09-16T19:22:18.014Z&quot;
+        </span>);
     }
 
     <span class="attr">#[test]
@@ -1207,9 +1292,10 @@
 
         <span class="comment">// act
         </span>config.to_writer_pretty(<span class="kw-2">&amp;mut </span>actual).expect(<span class="string">&quot;to writer&quot;</span>);
+        <span class="kw">let </span>actual = String::from_utf8(actual).unwrap();
 
         <span class="comment">// assert
-        </span><span class="kw">let </span>expected = fs::read(get_config_path()).expect(<span class="string">&quot;read expected&quot;</span>);
+        </span><span class="kw">let </span>expected = fs::read_to_string(get_config_path()).expect(<span class="string">&quot;read expected&quot;</span>);
         <span class="macro">assert_eq!</span>(actual, expected);
     }
 

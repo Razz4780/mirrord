@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["init_async_logger","send_hello"],"struct":["AsyncConsoleLogger","LoggerTask"]};

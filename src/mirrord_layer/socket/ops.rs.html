@@ -1144,19 +1144,15 @@
 <a href="#1144" id="1144">1144</a>
 <a href="#1145" id="1145">1145</a>
 <a href="#1146" id="1146">1146</a>
-<a href="#1147" id="1147">1147</a>
-<a href="#1148" id="1148">1148</a>
-<a href="#1149" id="1149">1149</a>
-<a href="#1150" id="1150">1150</a>
-<a href="#1151" id="1151">1151</a>
-<a href="#1152" id="1152">1152</a>
-<a href="#1153" id="1153">1153</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>alloc::ffi::CString;
 <span class="kw">use </span>core::{ffi::CStr, mem};
 <span class="kw">use </span>std::{
     io,
-    net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr},
-    os::unix::io::RawFd,
+    net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr, TcpStream},
+    os::{
+        fd::{FromRawFd, IntoRawFd},
+        unix::io::RawFd,
+    },
     path::PathBuf,
     ptr,
     sync::{Arc, OnceLock},
@@ -1164,34 +1160,30 @@
 
 <span class="kw">use </span>libc::{c_int, c_void, sockaddr, socklen_t};
 <span class="kw">use </span>mirrord_config::feature::network::incoming::IncomingMode;
+<span class="kw">use </span>mirrord_intproxy::protocol::{
+    ConnMetadataRequest, ConnMetadataResponse, NetProtocol, OutgoingConnectRequest,
+    OutgoingConnectResponse, PortSubscribe,
+};
 <span class="kw">use </span>mirrord_protocol::{
-    dns::LookupRecord,
+    dns::{GetAddrInfoRequest, LookupRecord},
     file::{OpenFileResponse, OpenOptionsInternal, ReadFileResponse},
 };
 <span class="kw">use </span>socket2::SockAddr;
-<span class="kw">use </span>tokio::sync::oneshot;
 <span class="kw">use </span>tracing::{error, info, trace};
 
 <span class="kw">use super</span>::{hooks::<span class="kw-2">*</span>, <span class="kw-2">*</span>};
 <span class="kw">use crate</span>::{
-    common::{blocking_send_hook_message, HookMessage},
     detour::{Detour, OnceLockExt, OptionDetourExt, OptionExt},
-    dns::GetAddrInfo,
     error::HookError,
     file::{<span class="self">self</span>, OPEN_FILES},
-    is_debugger_port,
-    outgoing::{tcp::TcpOutgoing, udp::UdpOutgoing, Connect, RemoteConnection},
-    tcp::{Listen, TcpIncoming},
-    ENABLED_TCP_OUTGOING, ENABLED_UDP_OUTGOING, INCOMING_CONFIG, LISTEN_PORTS,
-    OUTGOING_IGNORE_LOCALHOST, OUTGOING_SELECTOR, REMOTE_UNIX_STREAMS, TARGETLESS,
 };
 
-<span class="doccomment">/// Holds the pair of [`SocketAddr`] with their hostnames, resolved remotely through
+<span class="doccomment">/// Holds the pair of [`IpAddr`] with their hostnames, resolved remotely through
 /// [`getaddrinfo`].
 ///
 /// Used by [`connect_outgoing`] to retrieve the hostname from the address that the user called
 /// [`connect`] with, so we can resolve it locally when neccessary.
-</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">static </span>REMOTE_DNS_REVERSE_MAPPING: LazyLock&lt;DashMap&lt;SocketAddr, String&gt;&gt; =
+</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">static </span>REMOTE_DNS_REVERSE_MAPPING: LazyLock&lt;DashMap&lt;IpAddr, String&gt;&gt; =
     LazyLock::new(|| DashMap::with_capacity(<span class="number">8</span>));
 
 <span class="doccomment">/// Hostname initialized from the agent with [`gethostname`].
@@ -1302,9 +1294,7 @@
 ) -&gt; Detour&lt;i32&gt; {
     <span class="kw">let </span>requested_address = SocketAddr::try_from_raw(raw_address, address_length)<span class="question-mark">?</span>;
     <span class="kw">let </span>requested_port = requested_address.port();
-    <span class="kw">let </span>incoming_config = INCOMING_CONFIG
-        .get()
-        .expect(<span class="string">&quot;`INCOMING_CONFIG` not set. Please report a bug&quot;</span>);
+    <span class="kw">let </span>incoming_config = <span class="kw">crate</span>::setup().incoming_config();
 
     <span class="kw">let </span>ignore_localhost = incoming_config.ignore_localhost;
 
@@ -1329,7 +1319,7 @@
 
     <span class="comment">// To handle #1458, we don&#39;t ignore port `0` for UDP.
     </span><span class="kw">if </span>(is_ignored_port(<span class="kw-2">&amp;</span>requested_address) &amp;&amp; <span class="macro">matches!</span>(socket.kind, SocketKind::Tcp(<span class="kw">_</span>)))
-        || is_debugger_port(<span class="kw-2">&amp;</span>requested_address)
+        || <span class="kw">crate</span>::setup().is_debugger_port(<span class="kw-2">&amp;</span>requested_address)
         || incoming_config.ignore_ports.contains(<span class="kw-2">&amp;</span>requested_port)
     {
         <span class="prelude-val">Err</span>(Bypass::Port(requested_address.port()))<span class="question-mark">?</span>;
@@ -1351,9 +1341,9 @@
     // try to bind the requested port, if not available get a random port
     // if there&#39;s configuration and binding fails with the requested port
     // we return address not available and not fallback to a random port.
-    </span><span class="kw">let </span>listen_port = LISTEN_PORTS
-        .get()
-        .expect(<span class="string">&quot;`LISTEN_PORTS` not set. Please report a bug&quot;</span>)
+    </span><span class="kw">let </span>listen_port = <span class="kw">crate</span>::setup()
+        .incoming_config()
+        .listen_ports
         .get_by_left(<span class="kw-2">&amp;</span>requested_address.port())
         .cloned();
 
@@ -1409,19 +1399,12 @@
             .map(|(<span class="kw">_</span>, socket)| socket)
             .bypass(Bypass::LocalFdNotFound(sockfd))<span class="question-mark">?
     </span>};
-    <span class="kw">let </span>incoming = INCOMING_CONFIG
-        .get()
-        .expect(<span class="string">&quot;`INCOMING_CONFIG` not set. Please report a bug&quot;</span>);
 
-    <span class="kw">if </span><span class="macro">matches!</span>(incoming.mode, IncomingMode::Off) {
+    <span class="kw">if </span><span class="macro">matches!</span>(<span class="kw">crate</span>::setup().incoming_config().mode, IncomingMode::Off) {
         <span class="kw">return </span>Detour::Bypass(Bypass::DisabledIncoming);
     }
 
-    <span class="kw">if </span>TARGETLESS
-        .get()
-        .copied()
-        .expect(<span class="string">&quot;Should be set during initialization!&quot;</span>)
-    {
+    <span class="kw">if </span><span class="kw">crate</span>::setup().targetless() {
         <span class="macro">warn!</span>(
             <span class="string">&quot;Listening while running targetless. A targetless agent is not exposed by \
         any service. Therefore, letting this port bind happen locally instead of on the \
@@ -1429,6 +1412,7 @@
         );
         <span class="kw">return </span>Detour::Bypass(Bypass::BindWhenTargetless);
     }
+
     <span class="kw">match </span>socket.state {
         SocketState::Bound(Bound {
             requested_address,
@@ -1436,17 +1420,22 @@
         }) =&gt; {
             <span class="kw">let </span>listen_result = <span class="kw">unsafe </span>{ FN_LISTEN(sockfd, backlog) };
             <span class="kw">if </span>listen_result != <span class="number">0 </span>{
+                <span class="kw">let </span>error = io::Error::last_os_error();
+
                 <span class="macro">error!</span>(<span class="string">&quot;listen -&gt; Failed `listen` sockfd {:#?}&quot;</span>, sockfd);
 
-                <span class="prelude-val">Err</span>(io::Error::last_os_error())<span class="question-mark">?
+                <span class="prelude-val">Err</span>(error)<span class="question-mark">?
             </span>}
 
-            blocking_send_hook_message(HookMessage::Tcp(TcpIncoming::Listen(Listen {
-                mirror_port: address.port(),
-                requested_port: requested_address.port(),
-                ipv6: address.is_ipv6(),
-                id: socket.id,
-            })))<span class="question-mark">?</span>;
+            common::make_proxy_request_with_response(PortSubscribe {
+                listening_on: address,
+                subscription: <span class="kw">crate</span>::setup()
+                    .incoming_mode()
+                    .subscription(requested_address.port()),
+            })<span class="question-mark">??</span>;
+
+            <span class="comment">// this log message is expected by some E2E tests
+            </span><span class="macro">tracing::debug!</span>(<span class="string">&quot;daemon subscribed port {}&quot;</span>, requested_address.port());
 
             Arc::get_mut(<span class="kw-2">&amp;mut </span>socket).unwrap().state = SocketState::Listening(Bound {
                 requested_address,
@@ -1468,40 +1457,32 @@
 /// This returns errno so we can restore the correct errno in case result is -1 (until we get
 /// back to the hook we might call functions that will corrupt errno)
 </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, ret)]
-</span><span class="kw">fn </span>connect_outgoing&lt;<span class="kw">const </span>PROTOCOL: ConnectProtocol, <span class="kw">const </span>CALL_CONNECT: bool&gt;(
+</span><span class="kw">fn </span>connect_outgoing&lt;<span class="kw">const </span>CALL_CONNECT: bool&gt;(
     sockfd: RawFd,
     remote_address: SockAddr,
     <span class="kw-2">mut </span>user_socket_info: Arc&lt;UserSocket&gt;,
+    protocol: NetProtocol,
 ) -&gt; Detour&lt;ConnectResult&gt; {
     <span class="comment">// Closure that performs the connection with mirrord messaging.
     </span><span class="kw">let </span>remote_connection = |remote_address: SockAddr| {
         <span class="comment">// Prepare this socket to be intercepted.
-        </span><span class="kw">let </span>(mirror_tx, mirror_rx) = oneshot::channel();
+        </span><span class="kw">let </span>remote_address = SocketAddress::try_from(remote_address).unwrap();
 
-        <span class="kw">let </span>connect = Connect {
+        <span class="kw">let </span>request = OutgoingConnectRequest {
             remote_address: remote_address.clone(),
-            channel_tx: mirror_tx,
+            protocol,
         };
+        <span class="kw">let </span>response = common::make_proxy_request_with_response(request)<span class="question-mark">??</span>;
 
-        <span class="kw">let </span>hook_message = <span class="kw">match </span>PROTOCOL {
-            TCP =&gt; {
-                <span class="kw">let </span>connect_hook = TcpOutgoing::Connect(connect);
-                HookMessage::TcpOutgoing(connect_hook)
-            }
-            UDP =&gt; {
-                <span class="kw">let </span>connect_hook = UdpOutgoing::Connect(connect);
-                HookMessage::UdpOutgoing(connect_hook)
-            }
-        };
-
-        blocking_send_hook_message(hook_message)<span class="question-mark">?</span>;
-        <span class="kw">let </span>RemoteConnection {
+        <span class="kw">let </span>OutgoingConnectResponse {
             layer_address,
-            user_app_address,
-        } = mirror_rx.blocking_recv()<span class="question-mark">??</span>;
+            in_cluster_address,
+        } = response;
 
         <span class="comment">// Connect to the interceptor socket that is listening.
         </span><span class="kw">let </span>connect_result: ConnectResult = <span class="kw">if </span>CALL_CONNECT {
+            <span class="kw">let </span>layer_address = SockAddr::try_from(layer_address.clone())<span class="question-mark">?</span>;
+
             <span class="kw">unsafe </span>{ FN_CONNECT(sockfd, layer_address.as_ptr(), layer_address.len()) }.into()
         } <span class="kw">else </span>{
             ConnectResult {
@@ -1519,9 +1500,9 @@
         </span>}
 
         <span class="kw">let </span>connected = Connected {
-            remote_address: remote_address.try_into()<span class="question-mark">?</span>,
-            local_address: user_app_address.try_into()<span class="question-mark">?</span>,
-            layer_address: <span class="prelude-val">Some</span>(layer_address.try_into()<span class="question-mark">?</span>),
+            remote_address,
+            local_address: in_cluster_address,
+            layer_address: <span class="prelude-val">Some</span>(layer_address),
         };
 
         <span class="macro">trace!</span>(<span class="string">&quot;we are connected {connected:#?}&quot;</span>);
@@ -1539,9 +1520,9 @@
         <span class="comment">// Can&#39;t just connect to whatever `remote_address` is, as it might be a remotely resolved
         // address, in a local connection context (or vice-versa), so we let `remote_connection`
         // handle this address trickery.
-        </span><span class="kw">match </span>OUTGOING_SELECTOR
-            .get()<span class="question-mark">?
-            </span>.get_connection_through::&lt;PROTOCOL&gt;(remote_address.as_socket()<span class="question-mark">?</span>)<span class="question-mark">?
+        </span><span class="kw">match </span><span class="kw">crate</span>::setup()
+            .outgoing_selector()
+            .get_connection_through(remote_address.as_socket()<span class="question-mark">?</span>, protocol)<span class="question-mark">?
         </span>{
             ConnectionThrough::Remote(addr) =&gt; {
                 <span class="kw">let </span>connect_result = remote_connection(SockAddr::from(addr))<span class="question-mark">?</span>;
@@ -1570,12 +1551,7 @@
     user_socket_info: <span class="kw-2">&amp;</span>UserSocket,
     ip_address: SocketAddr,
 ) -&gt; Detour&lt;<span class="prelude-ty">Option</span>&lt;ConnectResult&gt;&gt; {
-    <span class="kw">let </span>ignore_localhost = OUTGOING_IGNORE_LOCALHOST
-        .get()
-        .copied()
-        .expect(<span class="string">&quot;Should be set during initialization!&quot;</span>);
-
-    <span class="kw">if </span>ignore_localhost {
+    <span class="kw">if </span><span class="kw">crate</span>::setup().outgoing_config().ignore_localhost {
         Detour::Bypass(Bypass::IgnoreLocalhost(ip_address.port()))
     } <span class="kw">else </span>{
         Detour::Success(
@@ -1627,9 +1603,7 @@
     <span class="kw">let </span>remote_address = SockAddr::try_from_raw(raw_address, address_length)<span class="question-mark">?</span>;
     <span class="kw">let </span>optional_ip_address = remote_address.as_socket();
 
-    <span class="kw">let </span>unix_streams = REMOTE_UNIX_STREAMS
-        .get()
-        .expect(<span class="string">&quot;Should be set during initialization!&quot;</span>);
+    <span class="kw">let </span>unix_streams = <span class="kw">crate</span>::setup().remote_unix_streams();
 
     <span class="macro">info!</span>(<span class="string">&quot;in connect {:#?}&quot;</span>, SOCKETS);
 
@@ -1649,7 +1623,7 @@
             }
         }
 
-        <span class="kw">if </span>is_ignored_port(<span class="kw-2">&amp;</span>ip_address) || is_debugger_port(<span class="kw-2">&amp;</span>ip_address) {
+        <span class="kw">if </span>is_ignored_port(<span class="kw-2">&amp;</span>ip_address) || <span class="kw">crate</span>::setup().is_debugger_port(<span class="kw-2">&amp;</span>ip_address) {
             <span class="kw">return </span>Detour::Bypass(Bypass::Port(ip_address.port()));
         }
     } <span class="kw">else if </span>remote_address.is_unix() {
@@ -1661,11 +1635,11 @@
                 .map(String::from_utf8_lossy))
             .map(String::from);
 
-        <span class="kw">if </span>!address.as_ref().is_some_and(|address_name| {
-            unix_streams
-                .as_ref()
-                .is_some_and(|regex_set| regex_set.is_match(address_name))
-        }) {
+        <span class="kw">let </span>handle_remotely = address
+            .as_ref()
+            .map(|addr| unix_streams.is_match(addr))
+            .unwrap_or(<span class="bool-val">false</span>);
+        <span class="kw">if </span>!handle_remotely {
             <span class="kw">return </span>Detour::Bypass(Bypass::UnixSocket(address));
         }
     } <span class="kw">else </span>{
@@ -1673,30 +1647,30 @@
         </span><span class="kw">return </span>Detour::Bypass(Bypass::Domain(remote_address.domain().into()));
     }
 
-    <span class="kw">let </span>enabled_tcp_outgoing = ENABLED_TCP_OUTGOING
-        .get()
-        .copied()
-        .expect(<span class="string">&quot;Should be set during initialization!&quot;</span>);
+    <span class="kw">let </span>enabled_tcp_outgoing = <span class="kw">crate</span>::setup().outgoing_config().tcp;
+    <span class="kw">let </span>enabled_udp_outgoing = <span class="kw">crate</span>::setup().outgoing_config().udp;
 
-    <span class="kw">let </span>enabled_udp_outgoing = ENABLED_UDP_OUTGOING
-        .get()
-        .copied()
-        .expect(<span class="string">&quot;Should be set during initialization!&quot;</span>);
+    <span class="kw">match </span>NetProtocol::from(user_socket_info.kind) {
+        NetProtocol::Datagrams <span class="kw">if </span>enabled_udp_outgoing =&gt; connect_outgoing::&lt;<span class="bool-val">true</span>&gt;(
+            sockfd,
+            remote_address,
+            user_socket_info,
+            NetProtocol::Datagrams,
+        ),
 
-    <span class="kw">match </span>user_socket_info.kind {
-        SocketKind::Udp(<span class="kw">_</span>) <span class="kw">if </span>enabled_udp_outgoing =&gt; {
-            connect_outgoing::&lt;UDP, <span class="bool-val">true</span>&gt;(sockfd, remote_address, user_socket_info)
-        }
-        SocketKind::Tcp(<span class="kw">_</span>) =&gt; <span class="kw">match </span>user_socket_info.state {
+        NetProtocol::Stream =&gt; <span class="kw">match </span>user_socket_info.state {
             SocketState::Initialized
                 <span class="kw">if </span>(optional_ip_address.is_some() &amp;&amp; enabled_tcp_outgoing)
-                    || (remote_address.is_unix()
-                        &amp;&amp; unix_streams
-                            .as_ref()
-                            .is_some_and(|streams| !streams.is_empty())) =&gt;
+                    || (remote_address.is_unix() &amp;&amp; !unix_streams.is_empty()) =&gt;
             {
-                connect_outgoing::&lt;TCP, <span class="bool-val">true</span>&gt;(sockfd, remote_address, user_socket_info)
+                connect_outgoing::&lt;<span class="bool-val">true</span>&gt;(
+                    sockfd,
+                    remote_address,
+                    user_socket_info,
+                    NetProtocol::Stream,
+                )
             }
+
             SocketState::Bound(Bound { address, .. }) =&gt; {
                 <span class="macro">trace!</span>(<span class="string">&quot;connect -&gt; SocketState::Bound {:#?}&quot;</span>, user_socket_info);
 
@@ -1714,8 +1688,10 @@
                     Detour::Bypass(Bypass::MirrorConnect)
                 }
             }
+
             <span class="kw">_ </span>=&gt; Detour::Bypass(Bypass::DisabledOutgoing),
         },
+
         <span class="kw">_ </span>=&gt; Detour::Bypass(Bypass::DisabledOutgoing),
     }
 }
@@ -1798,38 +1774,49 @@
     address_len: <span class="kw-2">*mut </span>socklen_t,
     new_fd: RawFd,
 ) -&gt; Detour&lt;RawFd&gt; {
-    <span class="kw">let </span>(id, domain, protocol, type_) = {
+    <span class="kw">let </span>(domain, protocol, type_, port, listener_address) = {
         SOCKETS
             .get(<span class="kw-2">&amp;</span>sockfd)
             .bypass(Bypass::LocalFdNotFound(sockfd))
             .and_then(|socket| <span class="kw">match </span><span class="kw-2">&amp;</span>socket.state {
-                SocketState::Listening(<span class="kw">_</span>) =&gt; {
-                    Detour::Success((socket.id, socket.domain, socket.protocol, socket.type_))
-                }
+                SocketState::Listening(Bound {
+                    requested_address,
+                    address,
+                }) =&gt; Detour::Success((
+                    socket.domain,
+                    socket.protocol,
+                    socket.type_,
+                    requested_address.port(),
+                    <span class="kw-2">*</span>address,
+                )),
                 <span class="kw">_ </span>=&gt; Detour::Bypass(Bypass::InvalidState(sockfd)),
             })<span class="question-mark">?
     </span>};
 
-    <span class="kw">let </span>(local_address, remote_address) = {
-        CONNECTION_QUEUE
-            .pop_front(id)
-            .bypass(Bypass::LocalFdNotFound(sockfd))
-            .map(|socket| {
-                (
-                    SocketAddress::Ip(socket.local_address),
-                    SocketAddress::Ip(socket.remote_address),
-                )
-            })<span class="question-mark">?
+    <span class="kw">let </span>peer_address = {
+        <span class="kw">let </span>stream = <span class="kw">unsafe </span>{ TcpStream::from_raw_fd(new_fd) };
+        <span class="kw">let </span>peer_address = stream.peer_addr();
+        <span class="kw">let </span>_fd = stream.into_raw_fd();
+        peer_address<span class="question-mark">?
     </span>};
 
-    <span class="kw">let </span>state = SocketState::Connected(Connected {
-        remote_address: remote_address.clone(),
+    <span class="kw">let </span>ConnMetadataResponse {
+        remote_source,
         local_address,
+    } = common::make_proxy_request_with_response(ConnMetadataRequest {
+        listener_address,
+        peer_address,
+    })<span class="question-mark">?</span>;
+
+    <span class="kw">let </span>state = SocketState::Connected(Connected {
+        remote_address: remote_source.into(),
+        local_address: SocketAddr::new(local_address, port).into(),
         layer_address: <span class="prelude-val">None</span>,
     });
+
     <span class="kw">let </span>new_socket = UserSocket::new(domain, type_, protocol, state, type_.try_into()<span class="question-mark">?</span>);
 
-    fill_address(address, address_len, remote_address.try_into()<span class="question-mark">?</span>)<span class="question-mark">?</span>;
+    fill_address(address, address_len, remote_source.into())<span class="question-mark">?</span>;
 
     SOCKETS.insert(new_fd, Arc::new(new_socket));
 
@@ -1879,23 +1866,12 @@
 <span class="doccomment">/// Handles the remote communication part of [`getaddrinfo`], call this if you want to resolve a DNS
 /// through the agent, but don&#39;t need to deal with all the [`libc::getaddrinfo`] stuff.
 </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, ret)]
-</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>remote_getaddrinfo(
-    node: String,
-    service: u16,
-) -&gt; HookResult&lt;Vec&lt;(String, SocketAddr)&gt;&gt; {
-    <span class="kw">let </span>(hook_channel_tx, hook_channel_rx) = oneshot::channel();
-    <span class="kw">let </span>hook = GetAddrInfo {
-        node,
-        hook_channel_tx,
-    };
-
-    blocking_send_hook_message(HookMessage::GetAddrinfo(hook))<span class="question-mark">?</span>;
-
-    <span class="kw">let </span>addr_info_list = hook_channel_rx.blocking_recv()<span class="question-mark">??</span>;
+</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>remote_getaddrinfo(node: String) -&gt; HookResult&lt;Vec&lt;(String, IpAddr)&gt;&gt; {
+    <span class="kw">let </span>addr_info_list = common::make_proxy_request_with_response(GetAddrInfoRequest { node })<span class="question-mark">?</span>.<span class="number">0</span><span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>(addr_info_list
         .into_iter()
-        .map(|LookupRecord { name, ip }| (name, SocketAddr::from((ip, service))))
+        .map(|LookupRecord { name, ip }| (name, ip))
         .collect())
 }
 
@@ -1957,7 +1933,7 @@
     </span><span class="kw">let </span>service = service.map_or(<span class="number">0</span>, |s| s.parse().unwrap_or_default());
 
     <span class="comment">// Only care about: `ai_family`, `ai_socktype`, `ai_protocol`.
-    </span><span class="kw">let </span>result = remote_getaddrinfo(node.clone(), service)<span class="question-mark">?
+    </span><span class="kw">let </span>result = remote_getaddrinfo(node.clone())<span class="question-mark">?
         </span>.into_iter()
         .map(|(name, address)| {
             <span class="comment">// Cache the resolved hosts to use in the outgoing traffic filter.
@@ -1965,7 +1941,7 @@
                 <span class="kw">let _ </span>= REMOTE_DNS_REVERSE_MAPPING.insert(address, node.clone());
             }
 
-            <span class="kw">let </span>rawish_sock_addr = SockAddr::from(address);
+            <span class="kw">let </span>rawish_sock_addr = SockAddr::from(SocketAddr::new(address, service));
             <span class="kw">let </span>ai_addrlen = rawish_sock_addr.len();
             <span class="kw">let </span>ai_family = rawish_sock_addr.family() <span class="kw">as _</span>;
 
@@ -2202,7 +2178,12 @@
             )
         }
     } <span class="kw">else </span>{
-        connect_outgoing::&lt;UDP, <span class="bool-val">false</span>&gt;(sockfd, destination, user_socket_info)<span class="question-mark">?</span>;
+        connect_outgoing::&lt;<span class="bool-val">false</span>&gt;(
+            sockfd,
+            destination,
+            user_socket_info,
+            NetProtocol::Datagrams,
+        )<span class="question-mark">?</span>;
 
         <span class="kw">let </span>layer_address: SockAddr = SOCKETS
             .get(<span class="kw-2">&amp;</span>sockfd)
@@ -2277,7 +2258,12 @@
 
         <span class="kw">unsafe </span>{ FN_SENDMSG(sockfd, true_message_header.as_ref(), flags) }
     } <span class="kw">else </span>{
-        connect_outgoing::&lt;UDP, <span class="bool-val">false</span>&gt;(sockfd, destination, user_socket_info)<span class="question-mark">?</span>;
+        connect_outgoing::&lt;<span class="bool-val">false</span>&gt;(
+            sockfd,
+            destination,
+            user_socket_info,
+            NetProtocol::Datagrams,
+        )<span class="question-mark">?</span>;
 
         <span class="kw">let </span>layer_address: SockAddr = SOCKETS
             .get(<span class="kw-2">&amp;</span>sockfd)

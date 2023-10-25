@@ -568,109 +568,9 @@
 <a href="#568" id="568">568</a>
 <a href="#569" id="569">569</a>
 <a href="#570" id="570">570</a>
-<a href="#571" id="571">571</a>
-<a href="#572" id="572">572</a>
-<a href="#573" id="573">573</a>
-<a href="#574" id="574">574</a>
-<a href="#575" id="575">575</a>
-<a href="#576" id="576">576</a>
-<a href="#577" id="577">577</a>
-<a href="#578" id="578">578</a>
-<a href="#579" id="579">579</a>
-<a href="#580" id="580">580</a>
-<a href="#581" id="581">581</a>
-<a href="#582" id="582">582</a>
-<a href="#583" id="583">583</a>
-<a href="#584" id="584">584</a>
-<a href="#585" id="585">585</a>
-<a href="#586" id="586">586</a>
-<a href="#587" id="587">587</a>
-<a href="#588" id="588">588</a>
-<a href="#589" id="589">589</a>
-<a href="#590" id="590">590</a>
-<a href="#591" id="591">591</a>
-<a href="#592" id="592">592</a>
-<a href="#593" id="593">593</a>
-<a href="#594" id="594">594</a>
-<a href="#595" id="595">595</a>
-<a href="#596" id="596">596</a>
-<a href="#597" id="597">597</a>
-<a href="#598" id="598">598</a>
-<a href="#599" id="599">599</a>
-<a href="#600" id="600">600</a>
-<a href="#601" id="601">601</a>
-<a href="#602" id="602">602</a>
-<a href="#603" id="603">603</a>
-<a href="#604" id="604">604</a>
-<a href="#605" id="605">605</a>
-<a href="#606" id="606">606</a>
-<a href="#607" id="607">607</a>
-<a href="#608" id="608">608</a>
-<a href="#609" id="609">609</a>
-<a href="#610" id="610">610</a>
-<a href="#611" id="611">611</a>
-<a href="#612" id="612">612</a>
-<a href="#613" id="613">613</a>
-<a href="#614" id="614">614</a>
-<a href="#615" id="615">615</a>
-<a href="#616" id="616">616</a>
-<a href="#617" id="617">617</a>
-<a href="#618" id="618">618</a>
-<a href="#619" id="619">619</a>
-<a href="#620" id="620">620</a>
-<a href="#621" id="621">621</a>
-<a href="#622" id="622">622</a>
-<a href="#623" id="623">623</a>
-<a href="#624" id="624">624</a>
-<a href="#625" id="625">625</a>
-<a href="#626" id="626">626</a>
-<a href="#627" id="627">627</a>
-<a href="#628" id="628">628</a>
-<a href="#629" id="629">629</a>
-<a href="#630" id="630">630</a>
-<a href="#631" id="631">631</a>
-<a href="#632" id="632">632</a>
-<a href="#633" id="633">633</a>
-<a href="#634" id="634">634</a>
-<a href="#635" id="635">635</a>
-<a href="#636" id="636">636</a>
-<a href="#637" id="637">637</a>
-<a href="#638" id="638">638</a>
-<a href="#639" id="639">639</a>
-<a href="#640" id="640">640</a>
-<a href="#641" id="641">641</a>
-<a href="#642" id="642">642</a>
-<a href="#643" id="643">643</a>
-<a href="#644" id="644">644</a>
-<a href="#645" id="645">645</a>
-<a href="#646" id="646">646</a>
-<a href="#647" id="647">647</a>
-<a href="#648" id="648">648</a>
-<a href="#649" id="649">649</a>
-<a href="#650" id="650">650</a>
-<a href="#651" id="651">651</a>
-<a href="#652" id="652">652</a>
-<a href="#653" id="653">653</a>
-<a href="#654" id="654">654</a>
-<a href="#655" id="655">655</a>
-<a href="#656" id="656">656</a>
-<a href="#657" id="657">657</a>
-<a href="#658" id="658">658</a>
-<a href="#659" id="659">659</a>
-<a href="#660" id="660">660</a>
-<a href="#661" id="661">661</a>
-<a href="#662" id="662">662</a>
-<a href="#663" id="663">663</a>
-<a href="#664" id="664">664</a>
-<a href="#665" id="665">665</a>
-<a href="#666" id="666">666</a>
-<a href="#667" id="667">667</a>
-<a href="#668" id="668">668</a>
-<a href="#669" id="669">669</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! We implement each hook function in a safe function as much as possible, having the unsafe do the
 //! absolute minimum
 </span><span class="kw">use </span>std::{
-    collections::VecDeque,
     net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr, ToSocketAddrs},
     os::unix::io::RawFd,
     str::FromStr,
@@ -680,12 +580,10 @@
 <span class="kw">use </span>dashmap::DashMap;
 <span class="kw">use </span>hashbrown::hash_set::HashSet;
 <span class="kw">use </span>libc::{c_int, sockaddr, socklen_t};
-<span class="kw">use </span>mirrord_config::{
-    feature::network::outgoing::{
-        AddressFilter, OutgoingFilter, OutgoingFilterConfig, ProtocolFilter,
-    },
-    util::VecOrSingle,
+<span class="kw">use </span>mirrord_config::feature::network::outgoing::{
+    AddressFilter, OutgoingConfig, OutgoingFilter, OutgoingFilterConfig, ProtocolFilter,
 };
+<span class="kw">use </span>mirrord_intproxy::protocol::{NetProtocol, PortUnsubscribe};
 <span class="kw">use </span>mirrord_protocol::outgoing::SocketAddress;
 <span class="kw">use </span>socket2::SockAddr;
 <span class="kw">use </span>tracing::warn;
@@ -693,90 +591,17 @@
 
 <span class="kw">use </span><span class="self">self</span>::id::SocketId;
 <span class="kw">use crate</span>::{
-    common::{blocking_send_hook_message, HookMessage},
+    common,
     detour::{Bypass, Detour, DetourGuard, OptionExt},
-    error::{HookError, HookResult, LayerError},
+    error::{HookError, HookResult},
     socket::ops::{remote_getaddrinfo, REMOTE_DNS_REVERSE_MAPPING},
-    ENABLED_TCP_OUTGOING, ENABLED_UDP_OUTGOING, REMOTE_DNS,
 };
 
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">mod </span>hooks;
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod </span>id;
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod </span>ops;
 
-<span class="comment">// TODO(alex): Should be an enum, but to do so requires the `adt_const_params` feature, which also
-// requires enabling `incomplete_features`.
-</span><span class="kw">type </span>ConnectProtocol = bool;
-<span class="kw">const </span>TCP: ConnectProtocol = <span class="bool-val">false</span>;
-<span class="kw">const </span>UDP: ConnectProtocol = !TCP;
-
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">static </span>SOCKETS: LazyLock&lt;DashMap&lt;RawFd, Arc&lt;UserSocket&gt;&gt;&gt; = LazyLock::new(DashMap::new);
-
-<span class="doccomment">/// Holds the connections that have yet to be [`accept`](ops::accept)ed.
-///
-/// ## Details
-///
-/// The connections here are added by
-/// [`TcpHandler::create_local_stream`](crate::tcp::TcpHandler::create_local_stream) when the agent
-/// sends us a [`NewTcpConnection`](mirrord_protocol::tcp::NewTcpConnection).
-///
-/// And they become part of the [`UserSocket`]&#39;s [`SocketState`] when [`ops::accept`] is called.
-///
-/// Finally, we remove a socket&#39;s queue when the socket&#39;s `fd` is closed in
-/// [`close_layer_fd`](crate::close_layer_fd).
-</span><span class="kw">pub static </span>CONNECTION_QUEUE: LazyLock&lt;ConnectionQueue&gt; = LazyLock::new(ConnectionQueue::default);
-
-<span class="doccomment">/// Struct sent over the socket once created to pass metadata to the hook
-</span><span class="attr">#[derive(Debug)]
-</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">struct </span>SocketInformation {
-    <span class="doccomment">/// Address of the incoming peer
-    </span><span class="kw">pub </span>remote_address: SocketAddr,
-
-    <span class="doccomment">/// Address of the local peer (our IP)
-    </span><span class="kw">pub </span>local_address: SocketAddr,
-}
-
-<span class="doccomment">/// poll_agent loop inserts connection data into this queue, and accept reads it.
-</span><span class="attr">#[derive(Debug, Default)]
-</span><span class="kw">pub struct </span>ConnectionQueue {
-    connections: DashMap&lt;SocketId, VecDeque&lt;SocketInformation&gt;&gt;,
-}
-
-<span class="kw">impl </span>ConnectionQueue {
-    <span class="doccomment">/// Adds a connection.
-    ///
-    /// See [`TcpHandler::create_local_stream`](crate::tcp::TcpHandler::create_local_stream).
-    </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(<span class="self">self</span>))]
-    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>add(<span class="kw-2">&amp;</span><span class="self">self</span>, id: SocketId, info: SocketInformation) {
-        <span class="self">self</span>.connections.entry(id).or_default().push_back(info);
-    }
-
-    <span class="doccomment">/// Pops the next connection to be handled from `Self`.
-    ///
-    /// See [`ops::accept].
-    </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(<span class="self">self</span>))]
-    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>pop_front(<span class="kw-2">&amp;</span><span class="self">self</span>, id: SocketId) -&gt; <span class="prelude-ty">Option</span>&lt;SocketInformation&gt; {
-        <span class="self">self</span>.connections.get_mut(<span class="kw-2">&amp;</span>id)<span class="question-mark">?</span>.pop_front()
-    }
-
-    <span class="doccomment">/// Removes the [`ConnectionQueue`] associated with the [`UserSocket`].
-    ///
-    /// See [`crate::close_layer_fd].
-    </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(<span class="self">self</span>))]
-    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>remove(<span class="kw-2">&amp;</span><span class="self">self</span>, id: SocketId) -&gt; <span class="prelude-ty">Option</span>&lt;VecDeque&lt;SocketInformation&gt;&gt; {
-        <span class="self">self</span>.connections.remove(<span class="kw-2">&amp;</span>id).map(|(<span class="kw">_</span>, v)| v)
-    }
-}
-
-<span class="kw">impl </span>SocketInformation {
-    <span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>)]
-    </span><span class="kw">pub fn </span>new(remote_address: SocketAddr, local_address: SocketAddr) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            remote_address,
-            local_address,
-        }
-    }
-}
 
 <span class="doccomment">/// Contains the addresses of a mirrord connected socket.
 ///
@@ -848,10 +673,16 @@
 }
 
 <span class="kw">impl </span>SocketKind {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const fn </span>is_udp(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="kw">match </span><span class="self">self </span>{
-            SocketKind::Tcp(<span class="kw">_</span>) =&gt; <span class="bool-val">false</span>,
-            SocketKind::Udp(<span class="kw">_</span>) =&gt; <span class="bool-val">true</span>,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const fn </span>is_udp(<span class="self">self</span>) -&gt; bool {
+        <span class="macro">matches!</span>(<span class="self">self</span>, <span class="self">Self</span>::Udp(..))
+    }
+}
+
+<span class="kw">impl </span>From&lt;SocketKind&gt; <span class="kw">for </span>NetProtocol {
+    <span class="kw">fn </span>from(kind: SocketKind) -&gt; <span class="self">Self </span>{
+        <span class="kw">match </span>kind {
+            SocketKind::Tcp(..) =&gt; <span class="self">Self</span>::Stream,
+            SocketKind::Udp(..) =&gt; <span class="self">Self</span>::Datagrams,
         }
     }
 }
@@ -903,42 +734,18 @@
         }
     }
 
-    <span class="doccomment">/// Return the local (requested) port a bound/listening (NOT CONNECTED) user socket is
-    /// conceptually bound to.
-    ///
-    /// So if the app tried to bind port 80, return `Some(80)` (even if we actually mapped it to
-    /// some other port).
-    ///
-    /// `None` if socket is not bound yet, or if this socket is a connection socket.
-    </span><span class="kw">fn </span>get_bound_port(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u16&gt; {
-        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.state {
-            SocketState::Bound(Bound {
-                requested_address, ..
-            })
-            | SocketState::Listening(Bound {
-                requested_address, ..
-            }) =&gt; <span class="prelude-val">Some</span>(requested_address.port()),
-            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
-        }
-    }
-
-    <span class="doccomment">/// Inform TCP handler about closing a bound/listening port.
+    <span class="doccomment">/// Inform internal proxy about closing a listening port.
     </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, ret)]
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>close(<span class="kw-2">&amp;</span><span class="self">self</span>) {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(port) = <span class="self">self</span>.get_bound_port() {
-            <span class="kw">match </span><span class="self">self</span>.kind {
-                SocketKind::Tcp(<span class="kw">_</span>) =&gt; {
-                    <span class="comment">// Ignoring errors here. We continue running, potentially without
-                    // informing the layer&#39;s and agent&#39;s TCP handlers about the socket
-                    // close. The agent might try to continue sending incoming
-                    // connections/data.
-                    </span><span class="kw">let _ </span>= blocking_send_hook_message(HookMessage::Tcp(
-                        <span class="kw">super</span>::tcp::TcpIncoming::Close(port),
-                    ));
-                }
-                <span class="comment">// We don&#39;t do incoming UDP, so no need to notify anyone about this.
-                </span>SocketKind::Udp(<span class="kw">_</span>) =&gt; {}
-            }
+        <span class="kw">if let </span><span class="self">Self </span>{
+            state: SocketState::Listening(bound),
+            kind: SocketKind::Tcp(..),
+            ..
+        } = <span class="self">self
+        </span>{
+            <span class="kw">let _ </span>= common::make_proxy_request_no_response(PortUnsubscribe {
+                port: bound.requested_address.port(),
+            });
         }
     }
 }
@@ -953,8 +760,7 @@
     </span>Remote(SocketAddr),
 }
 
-<span class="doccomment">/// Holds the [`OutgoingFilter`]s set up by the user, after a little bit of checking, see
-/// [`OutgoingSelector::new`].
+<span class="doccomment">/// Holds the [`OutgoingFilter`]s set up by the user.
 </span><span class="attr">#[derive(Debug, Default, Clone, PartialEq, Eq)]
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum </span>OutgoingSelector {
     <span class="attr">#[default]
@@ -966,55 +772,50 @@
     </span>Local(HashSet&lt;OutgoingFilter&gt;),
 }
 
-<span class="kw">impl </span>TryFrom&lt;<span class="prelude-ty">Option</span>&lt;OutgoingFilterConfig&gt;&gt; <span class="kw">for </span>OutgoingSelector {
-    <span class="kw">type </span>Error = LayerError;
+<span class="kw">impl </span>OutgoingSelector {
+    <span class="kw">fn </span>build_selector&lt;<span class="lifetime">&#39;a</span>, I: Iterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;&gt;(
+        filters: I,
+        tcp_enabled: bool,
+        udp_enabled: bool,
+    ) -&gt; HashSet&lt;OutgoingFilter&gt; {
+        filters
+            .map(|filter| OutgoingFilter::from_str(filter).expect(<span class="string">&quot;invalid outgoing filter&quot;</span>))
+            .collect::&lt;HashSet&lt;<span class="kw">_</span>&gt;&gt;()
+            .into_iter()
+            .filter(|OutgoingFilter { protocol, .. }| <span class="kw">match </span>protocol {
+                ProtocolFilter::Any =&gt; tcp_enabled || udp_enabled,
+                ProtocolFilter::Tcp =&gt; tcp_enabled,
+                ProtocolFilter::Udp =&gt; udp_enabled,
+            })
+            .collect::&lt;HashSet&lt;<span class="kw">_</span>&gt;&gt;()
+    }
 
-    <span class="doccomment">/// Builds the [`OutgoingSelector`] from the user config (list of filters), removing filters
+    <span class="doccomment">/// Builds a new instance from the user config, removing filters
     /// that would create inconsitencies, by checking if their protocol is enabled for outgoing
     /// traffic, and thus we avoid making this check on every [`ops::connect`] call.
     ///
     /// It also removes duplicated filters, by putting them into a [`HashSet`].
-    </span><span class="kw">fn </span>try_from(value: <span class="prelude-ty">Option</span>&lt;OutgoingFilterConfig&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
-        <span class="kw">let </span>enabled_tcp = <span class="kw-2">*</span>ENABLED_TCP_OUTGOING
-            .get()
-            .expect(<span class="string">&quot;ENABLED_TCP_OUTGOING should be set before initializing OutgoingSelector!&quot;</span>);
-
-        <span class="kw">let </span>enabled_udp = <span class="kw-2">*</span>ENABLED_UDP_OUTGOING
-            .get()
-            .expect(<span class="string">&quot;ENABLED_TCP_OUTGOING should be set before initializing OutgoingSelector!&quot;</span>);
-
-        <span class="kw">let </span>build_selector = |list: VecOrSingle&lt;String&gt;| {
-            <span class="prelude-val">Ok</span>::&lt;<span class="kw">_</span>, LayerError&gt;(
-                list.to_vec()
-                    .into_iter()
-                    .map(|filter| OutgoingFilter::from_str(<span class="kw-2">&amp;</span>filter))
-                    .collect::&lt;<span class="prelude-ty">Result</span>&lt;HashSet&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?
-                    </span>.into_iter()
-                    .filter(|OutgoingFilter { protocol, .. }| <span class="kw">match </span>protocol {
-                        ProtocolFilter::Any =&gt; enabled_tcp || enabled_udp,
-                        ProtocolFilter::Tcp =&gt; enabled_tcp,
-                        ProtocolFilter::Udp =&gt; enabled_udp,
-                    })
-                    .collect::&lt;HashSet&lt;<span class="kw">_</span>&gt;&gt;(),
-            )
-        };
-
-        <span class="kw">match </span>value {
-            <span class="prelude-val">None </span>=&gt; <span class="prelude-val">Ok</span>(<span class="self">Self</span>::Unfiltered),
+    </span><span class="kw">pub fn </span>new(config: <span class="kw-2">&amp;</span>OutgoingConfig) -&gt; <span class="self">Self </span>{
+        <span class="kw">match </span><span class="kw-2">&amp;</span>config.filter {
+            <span class="prelude-val">None </span>=&gt; <span class="self">Self</span>::Unfiltered,
             <span class="prelude-val">Some</span>(OutgoingFilterConfig::Remote(list)) | <span class="prelude-val">Some</span>(OutgoingFilterConfig::Local(list))
                 <span class="kw">if </span>list.is_empty() =&gt;
             {
-                <span class="prelude-val">Err</span>(LayerError::MissingConfigValue(
-                    <span class="string">&quot;Outgoing traffic filter cannot be empty!&quot;</span>.to_string(),
-                ))
+                <span class="macro">panic!</span>(<span class="string">&quot;outgoing traffic filter cannot be empty&quot;</span>);
             }
-            <span class="prelude-val">Some</span>(OutgoingFilterConfig::Remote(list)) =&gt; <span class="prelude-val">Ok</span>(<span class="self">Self</span>::Remote(build_selector(list)<span class="question-mark">?</span>)),
-            <span class="prelude-val">Some</span>(OutgoingFilterConfig::Local(list)) =&gt; <span class="prelude-val">Ok</span>(<span class="self">Self</span>::Local(build_selector(list)<span class="question-mark">?</span>)),
+            <span class="prelude-val">Some</span>(OutgoingFilterConfig::Remote(list)) =&gt; <span class="self">Self</span>::Remote(<span class="self">Self</span>::build_selector(
+                list.as_slice().iter().map(String::as_str),
+                config.tcp,
+                config.udp,
+            )),
+            <span class="prelude-val">Some</span>(OutgoingFilterConfig::Local(list)) =&gt; <span class="self">Self</span>::Local(<span class="self">Self</span>::build_selector(
+                list.as_slice().iter().map(String::as_str),
+                config.tcp,
+                config.udp,
+            )),
         }
     }
-}
 
-<span class="kw">impl </span>OutgoingSelector {
     <span class="doccomment">/// Checks if the `address` matches the specified outgoing filter.
     ///
     /// Returns either a [`ConnectionThrough::Remote`] or [`ConnectionThroughLocal`], with the
@@ -1042,16 +843,19 @@
     /// So if the user specified a selector with `0.0.0.0:0`, we&#39;re going to be always matching on
     /// it.
     </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, ret)]
-    </span><span class="kw">fn </span>get_connection_through&lt;<span class="kw">const </span>PROTOCOL: ConnectProtocol&gt;(
+    </span><span class="kw">fn </span>get_connection_through(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         address: SocketAddr,
+        protocol: NetProtocol,
     ) -&gt; Detour&lt;ConnectionThrough&gt; {
         <span class="comment">// Closure that checks if the current filter matches the enabled protocols.
-        </span><span class="kw">let </span>filter_protocol = |outgoing: &amp;&amp;OutgoingFilter| <span class="kw">match </span>outgoing.protocol {
-            ProtocolFilter::Any =&gt; <span class="bool-val">true</span>,
-            ProtocolFilter::Tcp <span class="kw">if </span>PROTOCOL == TCP =&gt; <span class="bool-val">true</span>,
-            ProtocolFilter::Udp <span class="kw">if </span>PROTOCOL == UDP =&gt; <span class="bool-val">true</span>,
-            <span class="kw">_ </span>=&gt; <span class="bool-val">false</span>,
+        </span><span class="kw">let </span>filter_protocol = <span class="kw">move </span>|outgoing: &amp;&amp;OutgoingFilter| {
+            <span class="macro">matches!</span>(
+                (outgoing.protocol, protocol),
+                (ProtocolFilter::Any, <span class="kw">_</span>)
+                    | (ProtocolFilter::Tcp, NetProtocol::Stream)
+                    | (ProtocolFilter::Udp, NetProtocol::Datagrams)
+            )
         };
 
         <span class="comment">// Closure to skip hostnames, as these filters will be dealt with after being resolved.
@@ -1150,51 +954,50 @@
             <span class="kw">let </span>amount_of_addresses = unresolved.len() * USUAL_AMOUNT_OF_ADDRESSES;
             <span class="kw">let </span><span class="kw-2">mut </span>unresolved = unresolved.into_iter();
 
-            <span class="kw">let </span>resolved =
-                <span class="kw">if </span><span class="kw-2">*</span>REMOTE_DNS.get().expect(<span class="string">&quot;REMOTE_DNS should be set by now!&quot;</span>) &amp;&amp; REMOTE {
-                    <span class="comment">// Resolve DNS through the agent.
-                    </span>unresolved
-                        .try_fold(
-                            HashSet::with_capacity(amount_of_addresses),
-                            |<span class="kw-2">mut </span>resolved, (protocol, name, port)| {
-                                <span class="kw">let </span>addresses = remote_getaddrinfo(name, port)<span class="question-mark">?</span>.into_iter().map(
-                                    |(<span class="kw">_</span>, address)| OutgoingFilter {
+            <span class="kw">let </span>resolved = <span class="kw">if </span><span class="kw">crate</span>::setup().remote_dns_enabled() &amp;&amp; REMOTE {
+                <span class="comment">// Resolve DNS through the agent.
+                </span>unresolved
+                    .try_fold(
+                        HashSet::with_capacity(amount_of_addresses),
+                        |<span class="kw-2">mut </span>resolved, (protocol, name, port)| {
+                            <span class="kw">let </span>addresses =
+                                remote_getaddrinfo(name)<span class="question-mark">?</span>.into_iter().map(|(<span class="kw">_</span>, address)| {
+                                    OutgoingFilter {
+                                        protocol,
+                                        address: AddressFilter::Socket(SocketAddr::new(
+                                            address, port,
+                                        )),
+                                    }
+                                });
+
+                            resolved.extend(addresses);
+                            <span class="prelude-val">Ok</span>::&lt;<span class="kw">_</span>, HookError&gt;(resolved)
+                        },
+                    )<span class="question-mark">?
+                    </span>.into_iter()
+            } <span class="kw">else </span>{
+                <span class="comment">// Resolve DNS locally.
+                </span>unresolved
+                    .try_fold(
+                        HashSet::with_capacity(amount_of_addresses),
+                        |<span class="kw-2">mut </span>resolved: HashSet&lt;OutgoingFilter&gt;, (protocol, name, port)| {
+                            <span class="kw">let </span>addresses =
+                                <span class="macro">format!</span>(<span class="string">&quot;{name}:{port}&quot;</span>).to_socket_addrs()<span class="question-mark">?</span>.map(|address| {
+                                    OutgoingFilter {
                                         protocol,
                                         address: AddressFilter::Socket(SocketAddr::new(
                                             address.ip(),
                                             port,
                                         )),
-                                    },
-                                );
+                                    }
+                                });
 
-                                resolved.extend(addresses);
-                                <span class="prelude-val">Ok</span>::&lt;<span class="kw">_</span>, HookError&gt;(resolved)
-                            },
-                        )<span class="question-mark">?
-                        </span>.into_iter()
-                } <span class="kw">else </span>{
-                    <span class="comment">// Resolve DNS locally.
-                    </span>unresolved
-                        .try_fold(
-                            HashSet::with_capacity(amount_of_addresses),
-                            |<span class="kw-2">mut </span>resolved: HashSet&lt;OutgoingFilter&gt;, (protocol, name, port)| {
-                                <span class="kw">let </span>addresses =
-                                    <span class="macro">format!</span>(<span class="string">&quot;{name}:{port}&quot;</span>).to_socket_addrs()<span class="question-mark">?</span>.map(|address| {
-                                        OutgoingFilter {
-                                            protocol,
-                                            address: AddressFilter::Socket(SocketAddr::new(
-                                                address.ip(),
-                                                port,
-                                            )),
-                                        }
-                                    });
-
-                                resolved.extend(addresses);
-                                <span class="prelude-val">Ok</span>::&lt;<span class="kw">_</span>, HookError&gt;(resolved)
-                            },
-                        )<span class="question-mark">?
-                        </span>.into_iter()
-                };
+                            resolved.extend(addresses);
+                            <span class="prelude-val">Ok</span>::&lt;<span class="kw">_</span>, HookError&gt;(resolved)
+                        },
+                    )<span class="question-mark">?
+                    </span>.into_iter()
+            };
 
             <span class="prelude-val">Ok</span>::&lt;<span class="kw">_</span>, HookError&gt;(resolved)
         };
@@ -1228,7 +1031,7 @@
     </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, ret)]
     </span><span class="kw">fn </span>get_local_address_to_connect(address: SocketAddr) -&gt; Detour&lt;ConnectionThrough&gt; {
         <span class="kw">if let </span><span class="prelude-val">Some</span>((cached_hostname, port)) = REMOTE_DNS_REVERSE_MAPPING
-            .get(<span class="kw-2">&amp;</span>SocketAddr::from((address.ip(), <span class="number">0</span>)))
+            .get(<span class="kw-2">&amp;</span>address.ip())
             .map(|addr| (addr.value().clone(), address.port()))
         {
             <span class="kw">let </span>_guard = DetourGuard::new();
@@ -1306,8 +1109,7 @@
     }
 }
 
-<span class="doccomment">/// Trait that expands `std` and `socket2` sockets.
-</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">trait </span>SocketAddrExt {
+<span class="kw">pub trait </span>SocketAddrExt {
     <span class="doccomment">/// Converts a raw [`sockaddr`] pointer into a more _Rusty_ type
     </span><span class="kw">fn </span>try_from_raw(raw_address: <span class="kw-2">*const </span>sockaddr, address_length: socklen_t) -&gt; Detour&lt;<span class="self">Self</span>&gt;
     <span class="kw">where

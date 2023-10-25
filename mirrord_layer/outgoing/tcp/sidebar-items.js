@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["UNIX_STREAMS_DIRNAME"],"enum":["TcpOutgoing"],"struct":["TcpOutgoingHandler"]};

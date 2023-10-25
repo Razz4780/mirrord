@@ -40,7 +40,7 @@
 ///
 /// This is mostly to help the [`ConnectionQueue`] tracking the correct socket for [`ops::accept`].
 </span><span class="attr">#[derive(Debug, PartialOrd, PartialEq, Ord, Eq, Clone, Copy, Hash)]
-</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>SocketId(u64);
+</span><span class="kw">pub struct </span>SocketId(u64);
 
 <span class="kw">impl </span>Default <span class="kw">for </span>SocketId {
     <span class="doccomment">/// Increments [`SOCKET_ID_ALLOCATOR`] and uses the latest value as an id for `Self`.

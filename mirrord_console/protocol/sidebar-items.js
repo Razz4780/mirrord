@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Hello","Metadata","ProcessInfo","Record"]};
+window.SIDEBAR_ITEMS = {"enum":["EncodableLevel"],"struct":["Hello","Metadata","ProcessInfo","Record"]};

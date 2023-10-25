@@ -5,11 +5,15 @@
 <a href="#5" id="5">5</a>
 <a href="#6" id="6">6</a>
 <a href="#7" id="7">7</a>
+<a href="#8" id="8">8</a>
+<a href="#9" id="9">9</a>
 </pre></div><pre class="rust"><code><span class="attr">#![warn(clippy::indexing_slicing)]
 
-</span><span class="kw">pub mod </span>error;
+</span><span class="kw">pub mod </span>async_logger;
+<span class="kw">pub mod </span>error;
 <span class="kw">pub mod </span>logger;
 <span class="kw">pub mod </span>protocol;
 
+<span class="kw">pub use </span>async_logger::init_async_logger;
 <span class="kw">pub use </span>logger::init_logger;
 </code></pre></div></section></main></body></html>

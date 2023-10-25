@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["OutgoingProxyError","OutgoingProxyMessage"],"mod":["interceptor","net_protocol_ext"],"struct":["InterceptorId","OutgoingProxy"]};

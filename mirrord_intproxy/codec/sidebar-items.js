@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["BUFFER_SIZE","PREFIX_BYTES"],"enum":["CodecError"],"fn":["make_async_framed","make_sync_framed"],"struct":["AsyncDecoder","AsyncEncoder","SyncDecoder","SyncEncoder"],"type":["Result"]};

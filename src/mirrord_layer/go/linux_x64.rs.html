@@ -585,7 +585,6 @@
 <a href="#585" id="585">585</a>
 <a href="#586" id="586">586</a>
 <a href="#587" id="587">587</a>
-<a href="#588" id="588">588</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::arch::asm;
 
 <span class="kw">use </span>errno::errno;
@@ -593,7 +592,6 @@
 
 <span class="kw">use crate</span>::{
     close_detour, file::hooks::<span class="kw-2">*</span>, hooks::HookManager, macros::hook_symbol, socket::hooks::<span class="kw-2">*</span>,
-    FILE_MODE,
 };
 <span class="comment">/*
  * Reference for which syscalls are managed by the handlers:
@@ -916,7 +914,7 @@
         libc::SYS_accept =&gt; accept_detour(param1 <span class="kw">as _</span>, param2 <span class="kw">as _</span>, param3 <span class="kw">as _</span>) <span class="kw">as </span>i64,
         libc::SYS_close =&gt; close_detour(param1 <span class="kw">as _</span>) <span class="kw">as </span>i64,
 
-        <span class="kw">_ if </span>FILE_MODE.get().unwrap().is_active() =&gt; <span class="kw">match </span>syscall {
+        <span class="kw">_ if </span><span class="kw">crate</span>::setup().fs_config().is_active() =&gt; <span class="kw">match </span>syscall {
             libc::SYS_read =&gt; read_detour(param1 <span class="kw">as _</span>, param2 <span class="kw">as _</span>, param3 <span class="kw">as _</span>) <span class="kw">as </span>i64,
             libc::SYS_write =&gt; write_detour(param1 <span class="kw">as _</span>, param2 <span class="kw">as _</span>, param3 <span class="kw">as _</span>) <span class="kw">as </span>i64,
             libc::SYS_lseek =&gt; lseek_detour(param1 <span class="kw">as _</span>, param2 <span class="kw">as _</span>, param3 <span class="kw">as _</span>),

@@ -1314,7 +1314,7 @@
         exit_status
     }
 
-    <span class="kw">pub async fn </span>from_child(<span class="kw-2">mut </span>child: Child, tempdir: <span class="prelude-ty">Option</span>&lt;TempDir&gt;) -&gt; TestProcess {
+    <span class="kw">pub fn </span>from_child(<span class="kw-2">mut </span>child: Child, tempdir: <span class="prelude-ty">Option</span>&lt;TempDir&gt;) -&gt; TestProcess {
         <span class="kw">let </span>stderr_data = Arc::new(RwLock::new(String::new()));
         <span class="kw">let </span>stdout_data = Arc::new(RwLock::new(String::new()));
         <span class="kw">let </span>child_stderr = child.stderr.take().unwrap();
@@ -1381,8 +1381,8 @@
             .spawn()
             .unwrap();
         <span class="macro">println!</span>(<span class="string">&quot;Started application.&quot;</span>);
-        TestProcess::from_child(child, <span class="prelude-val">None</span>).<span class="kw">await
-    </span>}
+        TestProcess::from_child(child, <span class="prelude-val">None</span>)
+    }
 }
 
 <span class="kw">impl </span>Application {
@@ -1545,8 +1545,8 @@
         server.id().unwrap()
     );
     <span class="comment">// We need to hold temp dir until the process is finished
-    </span>TestProcess::from_child(server, <span class="prelude-val">Some</span>(temp_dir)).<span class="kw">await
-</span>}
+    </span>TestProcess::from_child(server, <span class="prelude-val">Some</span>(temp_dir))
+}
 
 <span class="doccomment">/// Run `mirrord exec` with the given cmd, optional target (`None` for targetless), namespace,
 /// mirrord args, and env vars.

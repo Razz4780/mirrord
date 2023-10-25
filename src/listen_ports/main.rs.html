@@ -16,20 +16,38 @@
 <a href="#16" id="16">16</a>
 <a href="#17" id="17">17</a>
 <a href="#18" id="18">18</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>std::net::{SocketAddr, TcpListener};
+<a href="#19" id="19">19</a>
+<a href="#20" id="20">20</a>
+<a href="#21" id="21">21</a>
+<a href="#22" id="22">22</a>
+<a href="#23" id="23">23</a>
+<a href="#24" id="24">24</a>
+<a href="#25" id="25">25</a>
+<a href="#26" id="26">26</a>
+<a href="#27" id="27">27</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span>std::{
+    io::Read,
+    net::{SocketAddr, TcpListener},
+};
 
 <span class="kw">fn </span>main() {
+    <span class="kw">let </span><span class="kw-2">mut </span>buf = [<span class="number">0_u8</span>; <span class="number">5</span>];
+
     <span class="kw">let </span>addr: SocketAddr = <span class="string">&quot;127.0.0.1:80&quot;</span>.parse().unwrap();
     <span class="comment">// Check `listen_ports` work
     </span><span class="kw">let </span>listener = TcpListener::bind(addr).unwrap();
     <span class="comment">// verify user could connect on port 51222
-    </span>listener.accept().unwrap();
+    </span><span class="kw">let </span>(<span class="kw-2">mut </span>conn, <span class="kw">_</span>) = listener.accept().unwrap();
+    conn.read_exact(buf.as_mut_slice()).unwrap();
+    <span class="macro">assert_eq!</span>(buf.as_slice(), <span class="string">b&quot;HELLO&quot;</span>);
 
     <span class="comment">// Check specific port but not in listen_ports works
     </span><span class="kw">let </span>addr: SocketAddr = <span class="string">&quot;127.0.0.1:40000&quot;</span>.parse().unwrap();
     <span class="kw">let </span>listener = TcpListener::bind(addr).unwrap();
     <span class="comment">// verify user could connect on port 40000
-    </span>listener.accept().unwrap();
+    </span><span class="kw">let </span>(<span class="kw-2">mut </span>conn, <span class="kw">_</span>) = listener.accept().unwrap();
+    conn.read_exact(buf.as_mut_slice()).unwrap();
+    <span class="macro">assert_eq!</span>(buf.as_slice(), <span class="string">b&quot;HELLO&quot;</span>);
 
     <span class="comment">// Checking that random port works is hard because we need to make libc return an error
     // so we miss that for now.

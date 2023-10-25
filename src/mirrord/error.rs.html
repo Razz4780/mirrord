@@ -232,11 +232,11 @@
 <a href="#232" id="232">232</a>
 <a href="#233" id="233">233</a>
 <a href="#234" id="234">234</a>
-<a href="#235" id="235">235</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::path::PathBuf;
 
 <span class="kw">use </span>miette::Diagnostic;
 <span class="kw">use </span>mirrord_console::error::ConsoleError;
+<span class="kw">use </span>mirrord_intproxy::error::IntProxyError;
 <span class="kw">use </span>mirrord_kube::error::KubeApiError;
 <span class="kw">use </span>mirrord_operator::client::OperatorApiError;
 <span class="kw">use </span>thiserror::Error;
@@ -256,15 +256,11 @@
 &quot;#</span>;
 
 <span class="attr">#[derive(Debug, Error, Diagnostic)]
-</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum </span>InternalProxyError {
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum </span>InternalProxySetupError {
     <span class="attr">#[error(<span class="string">&quot;Couldn&#39;t listen for connections {0:#?}&quot;</span>)]
     </span>ListenError(std::io::Error),
-    <span class="attr">#[error(<span class="string">&quot;Couldn&#39;t get local port{0:#?}&quot;</span>)]
+    <span class="attr">#[error(<span class="string">&quot;Couldn&#39;t get local port {0:#?}&quot;</span>)]
     </span>LocalPortError(std::io::Error),
-    <span class="attr">#[error(<span class="string">&quot;Couldn&#39;t accept connection before timeout&quot;</span>)]
-    </span>FirstConnectionTimeout,
-    <span class="attr">#[error(<span class="string">&quot;Couldn&#39;t accept connection {0:#?}&quot;</span>)]
-    </span>AcceptError(std::io::Error),
     <span class="attr">#[error(<span class="string">&quot;Couldn&#39;t connect to agent via TCP {0:#?}&quot;</span>)]
     </span>TcpConnectError(std::io::Error),
     <span class="attr">#[error(<span class="string">&quot;Agent closed connection on ping/pong, image version/arch mismatch?&quot;</span>)]
@@ -441,8 +437,8 @@
     </span>InternalProxyPortReadError,
     <span class="attr">#[error(<span class="string">&quot;Internal proxy read error: {0:#?}&quot;</span>)]
     </span>InternalProxyReadError(std::io::Error),
-    <span class="attr">#[error(<span class="string">&quot;Internal proxy error: {0:#?}&quot;</span>)]
-    </span>InternalProxyError(<span class="attr">#[from] </span>InternalProxyError),
+    <span class="attr">#[error(<span class="string">&quot;Internal proxy setup error: {0:#?}&quot;</span>)]
+    </span>InternalProxySetupError(<span class="attr">#[from] </span>InternalProxySetupError),
     <span class="attr">#[error(<span class="string">&quot;Getting cli path failed {0:#?}&quot;</span>)]
     </span>CliPathError(std::io::Error),
     <span class="attr">#[error(<span class="string">&quot;Executing internal proxy failed {0:#?}&quot;</span>)]
@@ -467,5 +463,7 @@
     <span class="attr">#[error(<span class="string">&quot;Failed to get last operator version err: `{0}`&quot;</span>)]
     #[diagnostic(help(<span class="string">&quot;Please check internet connection.{GENERAL_HELP}&quot;</span>))]
     </span>OperatorVersionCheckError(reqwest::Error),
+    <span class="attr">#[error(<span class="string">&quot;Internal proxy failed: {0:#?}&quot;</span>)]
+    </span>InternalProxyError(<span class="attr">#[from] </span>IntProxyError),
 }
 </code></pre></div></section></main></body></html>

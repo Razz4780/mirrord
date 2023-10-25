@@ -453,68 +453,45 @@
 <a href="#453" id="453">453</a>
 <a href="#454" id="454">454</a>
 <a href="#455" id="455">455</a>
-<a href="#456" id="456">456</a>
-<a href="#457" id="457">457</a>
-<a href="#458" id="458">458</a>
-<a href="#459" id="459">459</a>
-<a href="#460" id="460">460</a>
-<a href="#461" id="461">461</a>
-<a href="#462" id="462">462</a>
-<a href="#463" id="463">463</a>
-<a href="#464" id="464">464</a>
-<a href="#465" id="465">465</a>
-<a href="#466" id="466">466</a>
-<a href="#467" id="467">467</a>
-<a href="#468" id="468">468</a>
-<a href="#469" id="469">469</a>
-<a href="#470" id="470">470</a>
-<a href="#471" id="471">471</a>
-<a href="#472" id="472">472</a>
-<a href="#473" id="473">473</a>
-<a href="#474" id="474">474</a>
-<a href="#475" id="475">475</a>
-<a href="#476" id="476">476</a>
-<a href="#477" id="477">477</a>
-<a href="#478" id="478">478</a>
-<a href="#479" id="479">479</a>
-<a href="#480" id="480">480</a>
-<a href="#481" id="481">481</a>
-<a href="#482" id="482">482</a>
-<a href="#483" id="483">483</a>
-<a href="#484" id="484">484</a>
-<a href="#485" id="485">485</a>
-<a href="#486" id="486">486</a>
-<a href="#487" id="487">487</a>
-<a href="#488" id="488">488</a>
-<a href="#489" id="489">489</a>
-<a href="#490" id="490">490</a>
-<a href="#491" id="491">491</a>
-<a href="#492" id="492">492</a>
-<a href="#493" id="493">493</a>
-<a href="#494" id="494">494</a>
-<a href="#495" id="495">495</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>core::ffi::CStr;
 <span class="kw">use </span>std::{env, ffi::CString, io::SeekFrom, os::unix::io::RawFd, path::PathBuf};
 
 <span class="kw">use </span>libc::{c_int, unlink, AT_FDCWD, FILE};
 <span class="kw">use </span>mirrord_protocol::file::{
-    OpenFileResponse, OpenOptionsInternal, ReadFileResponse, SeekFileResponse, WriteFileResponse,
-    XstatFsResponse, XstatResponse,
+    OpenFileRequest, OpenFileResponse, OpenOptionsInternal, ReadFileResponse, SeekFileResponse,
+    WriteFileResponse, XstatFsResponse, XstatResponse,
 };
 <span class="kw">use </span>rand::distributions::{Alphanumeric, DistString};
-<span class="kw">use </span>tokio::sync::oneshot;
 <span class="kw">use </span>tracing::{error, trace};
 
-<span class="kw">use super</span>::{filter::FILE_FILTER, hooks::FN_OPEN, open_dirs::OPEN_DIRS, <span class="kw-2">*</span>};
+<span class="kw">use super</span>::{hooks::FN_OPEN, open_dirs::OPEN_DIRS, <span class="kw-2">*</span>};
 <span class="kw">use crate</span>::{
-    common::blocking_send_hook_message,
+    common,
     detour::{Bypass, Detour},
     error::{HookError, HookResult <span class="kw">as </span><span class="prelude-ty">Result</span>},
-    HookMessage,
 };
 
 <span class="doccomment">/// 1 Megabyte. Large read requests can lead to timeouts.
 </span><span class="kw">const </span>MAX_READ_SIZE: u64 = <span class="number">1024 </span>* <span class="number">1024</span>;
+
+<span class="doccomment">/// Helper macro for checking if the given path should be handled remotely.
+/// Uses global [`crate::setup`].
+///
+/// Should the file be ignored, this macro exists current context with [`Bypass::IgnoredFile`].
+///
+/// # Arguments
+///
+/// * `path` - [`PathBuf`]
+/// * `write` - [`bool`], stating whether the file is accessed for writing
+</span><span class="macro">macro_rules! </span>ensure_not_ignored {
+    (<span class="macro-nonterminal">$path</span>:expr, <span class="macro-nonterminal">$write</span>:expr) =&gt; {
+        <span class="kw">crate</span>::setup().file_filter().continue_or_bypass_with(
+            <span class="macro-nonterminal">$path</span>.to_str().unwrap_or_default(),
+            <span class="macro-nonterminal">$write</span>,
+            || Bypass::IgnoredFile(<span class="macro-nonterminal">$path</span>.clone()),
+        )<span class="question-mark">?</span>;
+    };
+}
 
 <span class="attr">#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>RemoteFile {
@@ -533,16 +510,11 @@
         path: PathBuf,
         open_options: OpenOptionsInternal,
     ) -&gt; Detour&lt;OpenFileResponse&gt; {
-        <span class="kw">let </span>(file_channel_tx, file_channel_rx) = oneshot::channel();
-        <span class="kw">let </span>requesting_file = Open {
-            path,
-            open_options,
-            file_channel_tx,
-        };
+        <span class="kw">let </span>requesting_file = OpenFileRequest { path, open_options };
 
-        blocking_send_file_message(FileOperation::Open(requesting_file))<span class="question-mark">?</span>;
+        <span class="kw">let </span>response = common::make_proxy_request_with_response(requesting_file)<span class="question-mark">??</span>;
 
-        Detour::Success(file_channel_rx.blocking_recv()<span class="question-mark">??</span>)
+        Detour::Success(response)
     }
 
     <span class="doccomment">/// Sends a [`FileOperation::Read`] message, reading the file in the agent.
@@ -550,27 +522,24 @@
     /// Blocking request and wait on already found remote_fd
     </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>)]
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>remote_read(remote_fd: u64, read_amount: u64) -&gt; Detour&lt;ReadFileResponse&gt; {
-        <span class="kw">let </span>(file_channel_tx, file_channel_rx) = oneshot::channel();
-
         <span class="comment">// Limit read size because if we read too much it can lead to a timeout
         // Seems also that bincode doesn&#39;t do well with large buffers
         </span><span class="kw">let </span>read_amount = std::cmp::min(read_amount, MAX_READ_SIZE);
-        <span class="kw">let </span>reading_file = Read {
+        <span class="kw">let </span>reading_file = ReadFileRequest {
             remote_fd,
             buffer_size: read_amount,
-            start_from: <span class="number">0</span>,
-            file_channel_tx,
         };
 
-        blocking_send_file_message(FileOperation::Read(reading_file))<span class="question-mark">?</span>;
+        <span class="kw">let </span>response = common::make_proxy_request_with_response(reading_file)<span class="question-mark">??</span>;
 
-        Detour::Success(file_channel_rx.blocking_recv()<span class="question-mark">??</span>)
+        Detour::Success(response)
     }
 
     <span class="doccomment">/// Sends a [`FileOperation::Close`] message, closing the file in the agent.
     </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>)]
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>remote_close(fd: u64) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        blocking_send_file_message(FileOperation::Close(Close { fd }))
+        common::make_proxy_request_no_response(CloseFileRequest { fd })<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(())
     }
 }
 
@@ -586,18 +555,6 @@
             <span class="string">&quot;mirrord failed to send close file message to main layer thread. Error: {err:?}&quot;</span>,
         );
     }
-}
-
-<span class="doccomment">/// should_ignore(path: P, write: bool)
-/// Checks if the file should be ignored, and returns a [`Bypass::IgnoredFile`] if it should.
-</span><span class="macro">macro_rules! </span>should_ignore {
-    (<span class="macro-nonterminal">$path</span>:expr, <span class="macro-nonterminal">$write</span>:expr) =&gt; {
-        FILE_FILTER.get()<span class="question-mark">?</span>.continue_or_bypass_with(
-            <span class="macro-nonterminal">$path</span>.to_str().unwrap_or_default(),
-            <span class="macro-nonterminal">$write</span>,
-            || Bypass::IgnoredFile(<span class="macro-nonterminal">$path</span>.clone()),
-        )<span class="question-mark">?</span>;
-    };
 }
 
 <span class="doccomment">/// Helper function that retrieves the `remote_fd` (which is generated by
@@ -639,10 +596,6 @@
     RemoteFile::remote_close(fd)
 }
 
-<span class="kw">fn </span>blocking_send_file_message(message: FileOperation) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-    blocking_send_hook_message(HookMessage::File(message))
-}
-
 <span class="doccomment">/// Blocking wrapper around `libc::open` call.
 ///
 /// **Bypassed** when trying to load system files, and files from the current working directory
@@ -663,7 +616,7 @@
         </span>Detour::Bypass(Bypass::RelativePath(path.clone()))<span class="question-mark">?
     </span>};
 
-    <span class="macro">should_ignore!</span>(path, open_options.is_write());
+    <span class="macro">ensure_not_ignored!</span>(path, open_options.is_write());
 
     <span class="kw">let </span>OpenFileResponse { fd: remote_fd } = RemoteFile::remote_open(path.clone(), open_options)<span class="question-mark">?</span>;
 
@@ -686,7 +639,7 @@
         .map(CStr::to_str)
         .transpose()
         .map_err(|fail| {
-            <span class="macro">warn!</span>(
+            <span class="macro">tracing::warn!</span>(
                 <span class="string">&quot;Failed converting `rawish_mode` from `CStr` with {:#?}&quot;</span>,
                 fail
             );
@@ -717,16 +670,12 @@
 
     </span><span class="kw">let </span>remote_file_fd = OPEN_FILES.get(<span class="kw-2">&amp;</span>fd).ok_or(Bypass::LocalFdNotFound(fd))<span class="question-mark">?</span>.fd;
 
-    <span class="kw">let </span>(dir_channel_tx, dir_channel_rx) = oneshot::channel();
-
-    <span class="kw">let </span>open_dir_request = FdOpenDir {
+    <span class="kw">let </span>open_dir_request = FdOpenDirRequest {
         remote_fd: remote_file_fd,
-        dir_channel_tx,
     };
 
-    blocking_send_file_message(FileOperation::FdOpenDir(open_dir_request))<span class="question-mark">?</span>;
-
-    <span class="kw">let </span>OpenDirResponse { fd: remote_dir_fd } = dir_channel_rx.blocking_recv()<span class="question-mark">??</span>;
+    <span class="kw">let </span>OpenDirResponse { fd: remote_dir_fd } =
+        common::make_proxy_request_with_response(open_dir_request)<span class="question-mark">??</span>;
 
     <span class="kw">let </span>local_dir_fd = create_local_fake_file(remote_dir_fd)<span class="question-mark">?</span>;
     OPEN_DIRS.insert(local_dir_fd <span class="kw">as </span>usize, remote_dir_fd);
@@ -754,18 +703,15 @@
         // what).
         </span><span class="kw">let </span>remote_fd = get_remote_fd(fd)<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>(file_channel_tx, file_channel_rx) = oneshot::channel();
-
-        <span class="kw">let </span>requesting_file = OpenRelative {
+        <span class="kw">let </span>requesting_file = OpenRelativeFileRequest {
             relative_fd: remote_fd,
             path: path.clone(),
             open_options,
-            file_channel_tx,
         };
 
-        blocking_send_file_message(FileOperation::OpenRelative(requesting_file))<span class="question-mark">?</span>;
+        <span class="kw">let </span>OpenFileResponse { fd: remote_fd } =
+            common::make_proxy_request_with_response(requesting_file)<span class="question-mark">??</span>;
 
-        <span class="kw">let </span>OpenFileResponse { fd: remote_fd } = file_channel_rx.blocking_recv()<span class="question-mark">??</span>;
         <span class="kw">let </span>local_file_fd = create_local_fake_file(remote_fd)<span class="question-mark">?</span>;
 
         OPEN_FILES.insert(
@@ -790,35 +736,29 @@
     <span class="comment">// We&#39;re only interested in files that are paired with mirrord-agent.
     </span><span class="kw">let </span>remote_fd = get_remote_fd(local_fd)<span class="question-mark">?</span>;
 
-    <span class="kw">let </span>(file_channel_tx, file_channel_rx) = oneshot::channel();
-
-    <span class="kw">let </span>reading_file = Read {
+    <span class="kw">let </span>reading_file = ReadLimitedFileRequest {
         remote_fd,
-        buffer_size: buffer_size <span class="kw">as _</span>,
+        buffer_size,
         start_from: offset,
-        file_channel_tx,
     };
 
-    blocking_send_file_message(FileOperation::ReadLimited(reading_file))<span class="question-mark">?</span>;
+    <span class="kw">let </span>response = common::make_proxy_request_with_response(reading_file)<span class="question-mark">??</span>;
 
-    Detour::Success(file_channel_rx.blocking_recv()<span class="question-mark">??</span>)
+    Detour::Success(response)
 }
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>pwrite(local_fd: RawFd, buffer: <span class="kw-2">&amp;</span>[u8], offset: u64) -&gt; Detour&lt;WriteFileResponse&gt; {
     <span class="kw">let </span>remote_fd = get_remote_fd(local_fd)<span class="question-mark">?</span>;
 
-    <span class="kw">let </span>(file_channel_tx, file_channel_rx) = oneshot::channel();
-
-    <span class="kw">let </span>writing_file = Write {
+    <span class="kw">let </span>writing_file = WriteLimitedFileRequest {
         remote_fd,
         write_bytes: buffer.to_vec(),
         start_from: offset,
-        file_channel_tx,
     };
 
-    blocking_send_file_message(FileOperation::WriteLimited(writing_file))<span class="question-mark">?</span>;
+    <span class="kw">let </span>response = common::make_proxy_request_with_response(writing_file)<span class="question-mark">??</span>;
 
-    Detour::Success(file_channel_rx.blocking_recv()<span class="question-mark">??</span>)
+    Detour::Success(response)
 }
 
 <span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>)]
@@ -830,43 +770,36 @@
         libc::SEEK_CUR =&gt; SeekFrom::Current(offset),
         libc::SEEK_END =&gt; SeekFrom::End(offset),
         invalid =&gt; {
-            <span class="macro">warn!</span>(
+            <span class="macro">tracing::warn!</span>(
                 <span class="string">&quot;lseek -&gt; potential invalid value {:#?} for whence {:#?}&quot;</span>,
-                invalid, whence
+                invalid,
+                whence
             );
             <span class="kw">return </span>Detour::Bypass(Bypass::CStrConversion);
         }
     };
 
-    <span class="kw">let </span>(file_channel_tx, file_channel_rx) = oneshot::channel();
-
-    <span class="kw">let </span>seeking_file = Seek {
-        remote_fd,
-        seek_from,
-        file_channel_tx,
+    <span class="kw">let </span>seeking_file = SeekFileRequest {
+        fd: remote_fd,
+        seek_from: seek_from.into(),
     };
 
-    blocking_send_file_message(FileOperation::Seek(seeking_file))<span class="question-mark">?</span>;
+    <span class="kw">let </span>SeekFileResponse { result_offset } =
+        common::make_proxy_request_with_response(seeking_file)<span class="question-mark">??</span>;
 
-    <span class="kw">let </span>SeekFileResponse { result_offset } = file_channel_rx.blocking_recv()<span class="question-mark">??</span>;
     Detour::Success(result_offset)
 }
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>write(local_fd: RawFd, write_bytes: <span class="prelude-ty">Option</span>&lt;Vec&lt;u8&gt;&gt;) -&gt; Detour&lt;isize&gt; {
     <span class="kw">let </span>remote_fd = get_remote_fd(local_fd)<span class="question-mark">?</span>;
 
-    <span class="kw">let </span>(file_channel_tx, file_channel_rx) = oneshot::channel();
-
-    <span class="kw">let </span>writing_file = Write {
-        remote_fd,
+    <span class="kw">let </span>writing_file = WriteFileRequest {
+        fd: remote_fd,
         write_bytes: write_bytes.ok_or(Bypass::EmptyBuffer)<span class="question-mark">?</span>,
-        start_from: <span class="number">0</span>,
-        file_channel_tx,
     };
 
-    blocking_send_file_message(FileOperation::Write(writing_file))<span class="question-mark">?</span>;
-
-    <span class="kw">let </span>WriteFileResponse { written_amount } = file_channel_rx.blocking_recv()<span class="question-mark">??</span>;
+    <span class="kw">let </span>WriteFileResponse { written_amount } =
+        common::make_proxy_request_with_response(writing_file)<span class="question-mark">??</span>;
     Detour::Success(written_amount.try_into()<span class="question-mark">?</span>)
 }
 
@@ -874,24 +807,19 @@
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>access(path: Detour&lt;PathBuf&gt;, mode: u8) -&gt; Detour&lt;c_int&gt; {
     <span class="kw">let </span>path = path<span class="question-mark">?</span>;
 
-    <span class="macro">should_ignore!</span>(path, <span class="bool-val">false</span>);
-
     <span class="kw">if </span>path.is_relative() {
         <span class="comment">// Calls with non absolute paths are sent to libc::open.
         </span>Detour::Bypass(Bypass::RelativePath(path.clone()))<span class="question-mark">?
     </span>};
 
-    <span class="kw">let </span>(file_channel_tx, file_channel_rx) = oneshot::channel();
+    <span class="macro">ensure_not_ignored!</span>(path, <span class="bool-val">false</span>);
 
-    <span class="kw">let </span>access = Access {
-        path,
+    <span class="kw">let </span>access = AccessFileRequest {
+        pathname: path,
         mode,
-        file_channel_tx,
     };
 
-    blocking_send_file_message(FileOperation::Access(access))<span class="question-mark">?</span>;
-
-    file_channel_rx.blocking_recv()<span class="question-mark">??</span>;
+    <span class="kw">let _ </span>= common::make_proxy_request_with_response(access)<span class="question-mark">??</span>;
 
     Detour::Success(<span class="number">0</span>)
 }
@@ -918,7 +846,7 @@
                         <span class="comment">// Calls with non absolute paths are sent to libc::fstatat.
                         </span><span class="kw">return </span>Detour::Bypass(Bypass::RelativePath(path));
                     } <span class="kw">else </span>{
-                        <span class="macro">should_ignore!</span>(path, <span class="bool-val">false</span>);
+                        <span class="macro">ensure_not_ignored!</span>(path, <span class="bool-val">false</span>);
                         <span class="prelude-val">None
                     </span>}
                 } <span class="kw">else </span>{
@@ -934,7 +862,7 @@
                 <span class="comment">// Calls with non absolute paths are sent to libc::open.
                 </span><span class="kw">return </span>Detour::Bypass(Bypass::RelativePath(path));
             }
-            <span class="macro">should_ignore!</span>(path, <span class="bool-val">false</span>);
+            <span class="macro">ensure_not_ignored!</span>(path, <span class="bool-val">false</span>);
             (<span class="prelude-val">Some</span>(path), <span class="prelude-val">None</span>)
         }
         <span class="comment">// fstat
@@ -943,31 +871,26 @@
         </span>(<span class="prelude-val">None</span>, <span class="prelude-val">None</span>) =&gt; <span class="kw">return </span>Detour::Error(HookError::NullPointer),
     };
 
-    <span class="kw">let </span>(file_channel_tx, file_channel_rx) = oneshot::channel();
-
-    <span class="kw">let </span>lstat = Xstat {
+    <span class="kw">let </span>lstat = XstatRequest {
         fd,
         path,
         follow_symlink,
-        file_channel_tx,
     };
 
-    blocking_send_file_message(FileOperation::Xstat(lstat))<span class="question-mark">?</span>;
+    <span class="kw">let </span>response = common::make_proxy_request_with_response(lstat)<span class="question-mark">??</span>;
 
-    Detour::Success(file_channel_rx.blocking_recv()<span class="question-mark">??</span>)
+    Detour::Success(response)
 }
 
 <span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>)]
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>xstatfs(fd: RawFd) -&gt; Detour&lt;XstatFsResponse&gt; {
     <span class="kw">let </span>fd = get_remote_fd(fd)<span class="question-mark">?</span>;
 
-    <span class="kw">let </span>(fs_channel_tx, fs_channel_rx) = oneshot::channel();
+    <span class="kw">let </span>lstatfs = XstatFsRequest { fd };
 
-    <span class="kw">let </span>lstatfs = XstatFs { fd, fs_channel_tx };
+    <span class="kw">let </span>response = common::make_proxy_request_with_response(lstatfs)<span class="question-mark">??</span>;
 
-    blocking_send_file_message(FileOperation::XstatFs(lstatfs))<span class="question-mark">?</span>;
-
-    Detour::Success(fs_channel_rx.blocking_recv()<span class="question-mark">??</span>)
+    Detour::Success(response)
 }
 
 <span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
@@ -976,16 +899,13 @@
     <span class="comment">// We&#39;re only interested in files that are paired with mirrord-agent.
     </span><span class="kw">let </span>remote_fd = get_remote_fd(fd)<span class="question-mark">?</span>;
 
-    <span class="kw">let </span>(dents_tx, dents_rx) = oneshot::channel();
-
-    <span class="kw">let </span>getdents64_message = GetDEnts64 {
+    <span class="kw">let </span>getdents64 = GetDEnts64Request {
         remote_fd,
         buffer_size,
-        dents_tx,
     };
 
-    blocking_send_file_message(FileOperation::GetDEnts64(getdents64_message))<span class="question-mark">?</span>;
+    <span class="kw">let </span>response = common::make_proxy_request_with_response(getdents64)<span class="question-mark">??</span>;
 
-    Detour::Success(dents_rx.blocking_recv()<span class="question-mark">??</span>)
+    Detour::Success(response)
 }
 </code></pre></div></section></main></body></html>

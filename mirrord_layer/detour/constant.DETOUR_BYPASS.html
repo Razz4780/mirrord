@@ -2,7 +2,7 @@
 <h3 id="warning"><a href="#warning">Warning</a></h3>
 <p>Do <strong>NOT</strong> use this directly, instead use <code>DetourGuard::new</code> if you need to
 create a bypass inside a function (like we have in
-<a href="../tcp/trait.TcpHandler.html#method.create_local_stream" title="method mirrord_layer::tcp::TcpHandler::create_local_stream"><code>TcpHandler::create_local_stream</code></a>).</p>
+<a href="crate::tcp::TcpHandler::create_local_stream"><code>TcpHandler::create_local_stream</code></a>).</p>
 <p>Or rely on the <a href="../../mirrord_layer_macro/attr.hook_guard_fn.html" title="attr mirrord_layer_macro::hook_guard_fn"><code>hook_guard_fn</code></a> macro.</p>
 <h3 id="details"><a href="#details">Details</a></h3>
 <p>Some of the layer functions will interact with <a href="../../libc/index.html" title="mod libc"><code>libc</code></a> functions that we are hooking into,

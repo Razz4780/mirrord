@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["FileOperation"],"fn":["pop_send"],"mod":["filter","hooks","open_dirs","ops"],"static":["OPEN_FILES"],"struct":["Access","Close","CloseDir","DirStream","FdOpenDir","FileHandler","GetDEnts64","Open","OpenRelative","Read","ReadDir","Seek","Write","Xstat","XstatFs"],"trait":["OpenOptionsInternalExt"],"type":["DirStreamFd","LocalFd","RemoteFd"]};
+window.SIDEBAR_ITEMS = {"mod":["filter","hooks","open_dirs","ops"],"static":["OPEN_FILES"],"struct":["DirStream"],"trait":["OpenOptionsInternalExt"],"type":["DirStreamFd","LocalFd","RemoteFd"]};

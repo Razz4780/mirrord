@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["TaskError","TaskUpdate"],"struct":["BackgroundTasks","MessageBus","TaskSender"],"trait":["BackgroundTask"]};

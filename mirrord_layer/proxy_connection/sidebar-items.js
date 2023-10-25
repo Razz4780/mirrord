@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ProxyError"],"struct":["ProxyConnection","ResponseManager"],"type":["Result"]};

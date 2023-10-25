@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["LayerHttpFilter"],"mod":["v1","v2"],"struct":["ConnectionTask","HttpFilterSettings"],"trait":["HttpV"]};

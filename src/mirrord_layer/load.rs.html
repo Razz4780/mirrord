@@ -316,7 +316,7 @@
             <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
             </span><span class="kw">if </span>sip::is_sip_only(<span class="self">self</span>) {
                 <span class="macro">trace!</span>(<span class="string">&quot;Loading into process: {self}, but only hooking exec/spawn.&quot;</span>);
-                <span class="kw">return </span>LoadType::SIPOnly;
+                <span class="kw">return </span>LoadType::SIPOnly(Box::new(config));
             }
 
             <span class="macro">trace!</span>(<span class="string">&quot;Not loading into process: {self}.&quot;</span>);
@@ -354,7 +354,7 @@
     </span>Full(Box&lt;LayerConfig&gt;),
     <span class="doccomment">/// Only load sip patch required hooks
     </span><span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
-    </span>SIPOnly,
+    </span>SIPOnly(Box&lt;LayerConfig&gt;),
 
     <span class="doccomment">/// Skip on current process
     </span>Skip,

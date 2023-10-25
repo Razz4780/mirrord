@@ -441,6 +441,7 @@
 <a href="#441" id="441">441</a>
 <a href="#442" id="442">442</a>
 <a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! The layer uses features from this module to check if it should bypass one of its hooks, and call
 //! the original [`libc`] function.
 //!
@@ -655,7 +656,8 @@
 /// Conversion from `Option`:
 /// - `Option::Some` -&gt; `Detour::Success`
 /// - `Option::None` -&gt; `Detour::Bypass`
-</span><span class="attr">#[derive(Debug)]
+</span><span class="attr">#[must_use = <span class="string">&quot;this `Detour` may be an `Error` or a `Bypass` variant, which should be handled&quot;</span>]
+#[derive(Debug)]
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum </span>Detour&lt;S = ()&gt; {
     <span class="doccomment">/// Equivalent to `Result::Ok`
     </span>Success(S),
