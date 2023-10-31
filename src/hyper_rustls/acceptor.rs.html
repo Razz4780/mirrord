@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/hyper-rustls-0.24.1/src/acceptor.rs`."><title>acceptor.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="hyper_rustls" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (e3abbd499 2023-09-06)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../hyper_rustls/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/registry/src/index.crates.io-6f17d22bba15001f/hyper-rustls-0.24.2/src/acceptor.rs`."><title>acceptor.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="hyper_rustls" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (e3abbd499 2023-09-06)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../hyper_rustls/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -137,6 +137,38 @@
 <a href="#137" id="137">137</a>
 <a href="#138" id="138">138</a>
 <a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>core::task::{Context, Poll};
 <span class="kw">use </span>std::future::Future;
 <span class="kw">use </span>std::io;
@@ -148,94 +180,17 @@
     accept::Accept,
     conn::{AddrIncoming, AddrStream},
 };
-<span class="kw">use </span>rustls::ServerConfig;
+<span class="kw">use </span>rustls::{ServerConfig, ServerConnection};
 <span class="kw">use </span>tokio::io::{AsyncRead, AsyncWrite, ReadBuf};
 
 <span class="kw">mod </span>builder;
 <span class="kw">pub use </span>builder::AcceptorBuilder;
 <span class="kw">use </span>builder::WantsTlsConfig;
 
-<span class="kw">enum </span>State {
-    Handshaking(tokio_rustls::Accept&lt;AddrStream&gt;),
-    Streaming(tokio_rustls::server::TlsStream&lt;AddrStream&gt;),
-}
-
-<span class="comment">// tokio_rustls::server::TlsStream doesn&#39;t expose constructor methods,
-// so we have to TlsAcceptor::accept and handshake to have access to it
-// TlsStream implements AsyncRead/AsyncWrite by handshaking with tokio_rustls::Accept first
-</span><span class="kw">pub struct </span>TlsStream {
-    state: State,
-}
-
-<span class="kw">impl </span>TlsStream {
-    <span class="kw">fn </span>new(stream: AddrStream, config: Arc&lt;ServerConfig&gt;) -&gt; TlsStream {
-        <span class="kw">let </span>accept = tokio_rustls::TlsAcceptor::from(config).accept(stream);
-        TlsStream {
-            state: State::Handshaking(accept),
-        }
-    }
-}
-
-<span class="kw">impl </span>AsyncRead <span class="kw">for </span>TlsStream {
-    <span class="kw">fn </span>poll_read(
-        <span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;,
-        cx: <span class="kw-2">&amp;mut </span>Context,
-        buf: <span class="kw-2">&amp;mut </span>ReadBuf,
-    ) -&gt; Poll&lt;io::Result&lt;()&gt;&gt; {
-        <span class="kw">let </span>pin = <span class="self">self</span>.get_mut();
-        <span class="kw">match </span>pin.state {
-            State::Handshaking(<span class="kw-2">ref mut </span>accept) =&gt; <span class="kw">match </span><span class="macro">ready!</span>(Pin::new(accept).poll(cx)) {
-                <span class="prelude-val">Ok</span>(<span class="kw-2">mut </span>stream) =&gt; {
-                    <span class="kw">let </span>result = Pin::new(<span class="kw-2">&amp;mut </span>stream).poll_read(cx, buf);
-                    pin.state = State::Streaming(stream);
-                    result
-                }
-                <span class="prelude-val">Err</span>(err) =&gt; Poll::Ready(<span class="prelude-val">Err</span>(err)),
-            },
-            State::Streaming(<span class="kw-2">ref mut </span>stream) =&gt; Pin::new(stream).poll_read(cx, buf),
-        }
-    }
-}
-
-<span class="kw">impl </span>AsyncWrite <span class="kw">for </span>TlsStream {
-    <span class="kw">fn </span>poll_write(
-        <span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;,
-        cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;,
-        buf: <span class="kw-2">&amp;</span>[u8],
-    ) -&gt; Poll&lt;io::Result&lt;usize&gt;&gt; {
-        <span class="kw">let </span>pin = <span class="self">self</span>.get_mut();
-        <span class="kw">match </span>pin.state {
-            State::Handshaking(<span class="kw-2">ref mut </span>accept) =&gt; <span class="kw">match </span><span class="macro">ready!</span>(Pin::new(accept).poll(cx)) {
-                <span class="prelude-val">Ok</span>(<span class="kw-2">mut </span>stream) =&gt; {
-                    <span class="kw">let </span>result = Pin::new(<span class="kw-2">&amp;mut </span>stream).poll_write(cx, buf);
-                    pin.state = State::Streaming(stream);
-                    result
-                }
-                <span class="prelude-val">Err</span>(err) =&gt; Poll::Ready(<span class="prelude-val">Err</span>(err)),
-            },
-            State::Streaming(<span class="kw-2">ref mut </span>stream) =&gt; Pin::new(stream).poll_write(cx, buf),
-        }
-    }
-
-    <span class="kw">fn </span>poll_flush(<span class="kw-2">mut </span><span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;io::Result&lt;()&gt;&gt; {
-        <span class="kw">match </span><span class="self">self</span>.state {
-            State::Handshaking(<span class="kw">_</span>) =&gt; Poll::Ready(<span class="prelude-val">Ok</span>(())),
-            State::Streaming(<span class="kw-2">ref mut </span>stream) =&gt; Pin::new(stream).poll_flush(cx),
-        }
-    }
-
-    <span class="kw">fn </span>poll_shutdown(<span class="kw-2">mut </span><span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;io::Result&lt;()&gt;&gt; {
-        <span class="kw">match </span><span class="self">self</span>.state {
-            State::Handshaking(<span class="kw">_</span>) =&gt; Poll::Ready(<span class="prelude-val">Ok</span>(())),
-            State::Streaming(<span class="kw-2">ref mut </span>stream) =&gt; Pin::new(stream).poll_shutdown(cx),
-        }
-    }
-}
-
 <span class="doccomment">/// A TLS acceptor that can be used with hyper servers.
-</span><span class="kw">pub struct </span>TlsAcceptor {
+</span><span class="kw">pub struct </span>TlsAcceptor&lt;A = AddrIncoming&gt; {
     config: Arc&lt;ServerConfig&gt;,
-    incoming: AddrIncoming,
+    acceptor: A,
 }
 
 <span class="doccomment">/// An Acceptor for the `https` scheme.
@@ -244,9 +199,34 @@
     </span><span class="kw">pub fn </span>builder() -&gt; AcceptorBuilder&lt;WantsTlsConfig&gt; {
         AcceptorBuilder::new()
     }
+
     <span class="doccomment">/// Creates a new `TlsAcceptor` from a `ServerConfig` and an `AddrIncoming`.
-    </span><span class="kw">pub fn </span>new(config: Arc&lt;ServerConfig&gt;, incoming: AddrIncoming) -&gt; TlsAcceptor {
-        TlsAcceptor { config, incoming }
+    </span><span class="kw">pub fn </span>new(config: Arc&lt;ServerConfig&gt;, incoming: AddrIncoming) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            config,
+            acceptor: incoming,
+        }
+    }
+}
+
+<span class="kw">impl</span>&lt;A&gt; Accept <span class="kw">for </span>TlsAcceptor&lt;A&gt;
+<span class="kw">where
+    </span>A: Accept&lt;Error = io::Error&gt; + Unpin,
+    A::Conn: AsyncRead + AsyncWrite + Unpin,
+{
+    <span class="kw">type </span>Conn = TlsStream&lt;A::Conn&gt;;
+    <span class="kw">type </span>Error = io::Error;
+
+    <span class="kw">fn </span>poll_accept(
+        <span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;,
+        cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;,
+    ) -&gt; Poll&lt;<span class="prelude-ty">Option</span>&lt;<span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Conn, <span class="self">Self</span>::Error&gt;&gt;&gt; {
+        <span class="kw">let </span>pin = <span class="self">self</span>.get_mut();
+        Poll::Ready(<span class="kw">match </span><span class="macro">ready!</span>(Pin::new(<span class="kw-2">&amp;mut </span>pin.acceptor).poll_accept(cx)) {
+            <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(sock)) =&gt; <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(TlsStream::new(sock, pin.config.clone()))),
+            <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(e)) =&gt; <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(e)),
+            <span class="prelude-val">None </span>=&gt; <span class="prelude-val">None</span>,
+        })
     }
 }
 
@@ -255,25 +235,109 @@
     </span>C: Into&lt;Arc&lt;ServerConfig&gt;&gt;,
     I: Into&lt;AddrIncoming&gt;,
 {
-    <span class="kw">fn </span>from((config, incoming): (C, I)) -&gt; TlsAcceptor {
-        TlsAcceptor::new(config.into(), incoming.into())
+    <span class="kw">fn </span>from((config, incoming): (C, I)) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::new(config.into(), incoming.into())
     }
 }
 
-<span class="kw">impl </span>Accept <span class="kw">for </span>TlsAcceptor {
-    <span class="kw">type </span>Conn = TlsStream;
-    <span class="kw">type </span>Error = io::Error;
+<span class="doccomment">/// A TLS stream constructed by a [`TlsAcceptor`].
+</span><span class="comment">// tokio_rustls::server::TlsStream doesn&#39;t expose constructor methods,
+// so we have to TlsAcceptor::accept and handshake to have access to it
+// TlsStream implements AsyncRead/AsyncWrite by handshaking with tokio_rustls::Accept first
+</span><span class="kw">pub struct </span>TlsStream&lt;C = AddrStream&gt; {
+    state: State&lt;C&gt;,
+}
 
-    <span class="kw">fn </span>poll_accept(
-        <span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;,
-        cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;,
-    ) -&gt; Poll&lt;<span class="prelude-ty">Option</span>&lt;<span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Conn, <span class="self">Self</span>::Error&gt;&gt;&gt; {
-        <span class="kw">let </span>pin = <span class="self">self</span>.get_mut();
-        <span class="kw">match </span><span class="macro">ready!</span>(Pin::new(<span class="kw-2">&amp;mut </span>pin.incoming).poll_accept(cx)) {
-            <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(sock)) =&gt; Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(TlsStream::new(sock, pin.config.clone())))),
-            <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(e)) =&gt; Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(e))),
-            <span class="prelude-val">None </span>=&gt; Poll::Ready(<span class="prelude-val">None</span>),
+<span class="kw">impl</span>&lt;C: AsyncRead + AsyncWrite + Unpin&gt; TlsStream&lt;C&gt; {
+    <span class="kw">fn </span>new(stream: C, config: Arc&lt;ServerConfig&gt;) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>accept = tokio_rustls::TlsAcceptor::from(config).accept(stream);
+        <span class="self">Self </span>{
+            state: State::Handshaking(accept),
         }
     }
+    <span class="doccomment">/// Returns a reference to the underlying IO stream.
+    ///
+    /// This should always return `Some`, except if an error has already been yielded.
+    </span><span class="kw">pub fn </span>io(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>C&gt; {
+        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.state {
+            State::Handshaking(accept) =&gt; accept.get_ref(),
+            State::Streaming(stream) =&gt; <span class="prelude-val">Some</span>(stream.get_ref().<span class="number">0</span>),
+        }
+    }
+
+    <span class="doccomment">/// Returns a reference to the underlying [`rustls::ServerConnection&#39;].
+    ///
+    /// This will start yielding `Some` only after the handshake has completed.
+    </span><span class="kw">pub fn </span>connection(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>ServerConnection&gt; {
+        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.state {
+            State::Handshaking(<span class="kw">_</span>) =&gt; <span class="prelude-val">None</span>,
+            State::Streaming(stream) =&gt; <span class="prelude-val">Some</span>(stream.get_ref().<span class="number">1</span>),
+        }
+    }
+}
+
+<span class="kw">impl</span>&lt;C: AsyncRead + AsyncWrite + Unpin&gt; AsyncRead <span class="kw">for </span>TlsStream&lt;C&gt; {
+    <span class="kw">fn </span>poll_read(
+        <span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;,
+        cx: <span class="kw-2">&amp;mut </span>Context,
+        buf: <span class="kw-2">&amp;mut </span>ReadBuf,
+    ) -&gt; Poll&lt;io::Result&lt;()&gt;&gt; {
+        <span class="kw">let </span>pin = <span class="self">self</span>.get_mut();
+        <span class="kw">let </span>accept = <span class="kw">match </span><span class="kw-2">&amp;mut </span>pin.state {
+            State::Handshaking(accept) =&gt; accept,
+            State::Streaming(stream) =&gt; <span class="kw">return </span>Pin::new(stream).poll_read(cx, buf),
+        };
+
+        <span class="kw">let </span><span class="kw-2">mut </span>stream = <span class="kw">match </span><span class="macro">ready!</span>(Pin::new(accept).poll(cx)) {
+            <span class="prelude-val">Ok</span>(stream) =&gt; stream,
+            <span class="prelude-val">Err</span>(err) =&gt; <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Err</span>(err)),
+        };
+
+        <span class="kw">let </span>result = Pin::new(<span class="kw-2">&amp;mut </span>stream).poll_read(cx, buf);
+        pin.state = State::Streaming(stream);
+        result
+    }
+}
+
+<span class="kw">impl</span>&lt;C: AsyncRead + AsyncWrite + Unpin&gt; AsyncWrite <span class="kw">for </span>TlsStream&lt;C&gt; {
+    <span class="kw">fn </span>poll_write(
+        <span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;,
+        cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;,
+        buf: <span class="kw-2">&amp;</span>[u8],
+    ) -&gt; Poll&lt;io::Result&lt;usize&gt;&gt; {
+        <span class="kw">let </span>pin = <span class="self">self</span>.get_mut();
+        <span class="kw">let </span>accept = <span class="kw">match </span><span class="kw-2">&amp;mut </span>pin.state {
+            State::Handshaking(accept) =&gt; accept,
+            State::Streaming(stream) =&gt; <span class="kw">return </span>Pin::new(stream).poll_write(cx, buf),
+        };
+
+        <span class="kw">let </span><span class="kw-2">mut </span>stream = <span class="kw">match </span><span class="macro">ready!</span>(Pin::new(accept).poll(cx)) {
+            <span class="prelude-val">Ok</span>(stream) =&gt; stream,
+            <span class="prelude-val">Err</span>(err) =&gt; <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Err</span>(err)),
+        };
+
+        <span class="kw">let </span>result = Pin::new(<span class="kw-2">&amp;mut </span>stream).poll_write(cx, buf);
+        pin.state = State::Streaming(stream);
+        result
+    }
+
+    <span class="kw">fn </span>poll_flush(<span class="kw-2">mut </span><span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;io::Result&lt;()&gt;&gt; {
+        <span class="kw">match </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.state {
+            State::Handshaking(<span class="kw">_</span>) =&gt; Poll::Ready(<span class="prelude-val">Ok</span>(())),
+            State::Streaming(stream) =&gt; Pin::new(stream).poll_flush(cx),
+        }
+    }
+
+    <span class="kw">fn </span>poll_shutdown(<span class="kw-2">mut </span><span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;io::Result&lt;()&gt;&gt; {
+        <span class="kw">match </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.state {
+            State::Handshaking(<span class="kw">_</span>) =&gt; Poll::Ready(<span class="prelude-val">Ok</span>(())),
+            State::Streaming(stream) =&gt; Pin::new(stream).poll_shutdown(cx),
+        }
+    }
+}
+
+<span class="kw">enum </span>State&lt;C&gt; {
+    Handshaking(tokio_rustls::Accept&lt;C&gt;),
+    Streaming(tokio_rustls::server::TlsStream&lt;C&gt;),
 }
 </code></pre></div></section></main></body></html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/git/checkouts/kube-26c6657b93f4f767/4444211/kube-client/src/client/auth/oidc.rs`."><title>oidc.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="kube_client" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (e3abbd499 2023-09-06)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../kube_client/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/git/checkouts/kube-rs-dadc88118c00dde1/44725f9/kube-client/src/client/auth/oidc.rs`."><title>oidc.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="kube_client" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (e3abbd499 2023-09-06)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../kube_client/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -530,20 +530,8 @@
 <a href="#530" id="530">530</a>
 <a href="#531" id="531">531</a>
 <a href="#532" id="532">532</a>
-<a href="#533" id="533">533</a>
-<a href="#534" id="534">534</a>
-<a href="#535" id="535">535</a>
-<a href="#536" id="536">536</a>
-<a href="#537" id="537">537</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::collections::HashMap;
 
-<span class="kw">use </span>base64::{
-    alphabet,
-    engine::{
-        fast_portable::{FastPortable, FastPortableConfig},
-        DecodePaddingMode,
-    },
-};
 <span class="kw">use </span>chrono::{Duration, TimeZone, Utc};
 <span class="kw">use </span>form_urlencoded::Serializer;
 <span class="kw">use </span>http::{
@@ -674,12 +662,14 @@
     }
 }
 
-<span class="kw">const </span>BASE64_ENGINE: FastPortable = FastPortable::from(
-    <span class="kw-2">&amp;</span>alphabet::URL_SAFE,
-    FastPortableConfig::new()
+<span class="kw">use </span>base64::Engine <span class="kw">as _</span>;
+<span class="kw">const </span>JWT_BASE64_ENGINE: base64::engine::GeneralPurpose = base64::engine::GeneralPurpose::new(
+    <span class="kw-2">&amp;</span>base64::alphabet::URL_SAFE,
+    base64::engine::GeneralPurposeConfig::new()
         .with_decode_allow_trailing_bits(<span class="bool-val">true</span>)
-        .with_decode_padding_mode(DecodePaddingMode::Indifferent),
+        .with_decode_padding_mode(base64::engine::DecodePaddingMode::Indifferent),
 );
+<span class="kw">use </span>base64::engine::general_purpose::STANDARD <span class="kw">as </span>STANDARD_BASE64_ENGINE;
 
 <span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span>Oidc {
@@ -701,7 +691,7 @@
             .split(<span class="string">&#39;.&#39;</span>)
             .nth(<span class="number">1</span>)
             .ok_or(errors::IdTokenError::InvalidFormat)<span class="question-mark">?</span>;
-        <span class="kw">let </span>payload = base64::decode_engine(part, <span class="kw-2">&amp;</span>BASE64_ENGINE)<span class="question-mark">?</span>;
+        <span class="kw">let </span>payload = JWT_BASE64_ENGINE.decode(part)<span class="question-mark">?</span>;
         <span class="kw">let </span>expiry = serde_json::from_slice::&lt;Claims&gt;(<span class="kw-2">&amp;</span>payload)<span class="question-mark">?</span>.expiry;
         <span class="kw">let </span>timestamp = Utc
             .timestamp_opt(expiry, <span class="number">0</span>)
@@ -907,7 +897,7 @@
                     AUTHORIZATION,
                     <span class="macro">format!</span>(
                         <span class="string">&quot;Basic {}&quot;</span>,
-                        base64::encode(<span class="macro">format!</span>(
+                        STANDARD_BASE64_ENGINE.encode(<span class="macro">format!</span>(
                             <span class="string">&quot;{}:{}&quot;</span>,
                             <span class="self">self</span>.client_id.expose_secret(),
                             <span class="self">self</span>.client_secret.expose_secret()
@@ -1018,7 +1008,7 @@
         <span class="kw">let </span>invalid_claims_token = <span class="macro">format!</span>(
             <span class="string">&quot;{}.{}.{}&quot;</span>,
             token_valid.split_once(<span class="string">&#39;.&#39;</span>).unwrap().<span class="number">0</span>,
-            base64::encode(serde_json::to_string(<span class="kw-2">&amp;</span>invalid_claims).unwrap()),
+            JWT_BASE64_ENGINE.encode(serde_json::to_string(<span class="kw-2">&amp;</span>invalid_claims).unwrap()),
             token_valid.rsplit_once(<span class="string">&#39;.&#39;</span>).unwrap().<span class="number">1</span>,
         );
         oidc.id_token = invalid_claims_token.into();

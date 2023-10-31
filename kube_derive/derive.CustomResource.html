@@ -25,10 +25,10 @@ and generate <a href="https://docs.rs/kube/*/kube/core/struct.ApiResource.html">
 </span><span class="kw">let </span>f = Foo::new(<span class="string">&quot;foo-1&quot;</span>, FooSpec {
     info: <span class="string">&quot;informative info&quot;</span>.into(),
 });
-<span class="macro">println!</span>(<span class="string">&quot;foo: {:?}&quot;</span>, f); <span class="comment">// debug print on generated type
+<span class="macro">println!</span>(<span class="string">&quot;foo: {:?}&quot;</span>, f); <span class="comment">// debug print on root type
 </span><span class="macro">println!</span>(<span class="string">&quot;crd: {}&quot;</span>, serde_yaml::to_string(<span class="kw-2">&amp;</span>Foo::crd()).unwrap()); <span class="comment">// crd yaml</span></code></pre></div>
-<p>This example creates a <code>struct Foo</code> containing metadata, the spec,
-and optionally status. The <strong>generated</strong> type <code>Foo</code> can be used with the <a href="https://docs.rs/kube"><code>kube</code></a> crate
+<p>This example generates a <code>struct Foo</code> containing metadata, the spec,
+and optionally status. The <strong>root</strong> struct <code>Foo</code> can be used with the <a href="https://docs.rs/kube"><code>kube</code></a> crate
 as an <code>Api&lt;Foo&gt;</code> object (<code>FooSpec</code> can not be used with <a href="https://docs.rs/kube/*/kube/struct.Api.html"><code>Api</code></a>).</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code> <span class="kw">let </span>foos: Api&lt;Foo&gt; = Api::default_namespaced(client.clone());
@@ -43,15 +43,15 @@ for details on this.</p>
 <h3 id="kubeversion--v1"><a href="#kubeversion--v1"><code>#[kube(version = &quot;v1&quot;)]</code></a></h3>
 <p>Your cr api version. The part after the slash in the top level <code>apiVersion</code> key.</p>
 <h3 id="kubekind--kind"><a href="#kubekind--kind"><code>#[kube(kind = &quot;Kind&quot;)]</code></a></h3>
-<p>Name of your kind and your generated root type.</p>
+<p>Name of your kind, and implied default for your generated root type.</p>
 <h2 id="optional-kube-attributes"><a href="#optional-kube-attributes">Optional <code>#[kube]</code> attributes</a></h2><h3 id="kubesingular--nonstandard-singular"><a href="#kubesingular--nonstandard-singular"><code>#[kube(singular = &quot;nonstandard-singular&quot;)]</code></a></h3>
-<p>To specify the singular name. Defaults to lowercased <code>kind</code>.</p>
+<p>To specify the singular name. Defaults to lowercased <code>.kind</code> value.</p>
 <h3 id="kubeplural--nonstandard-plural"><a href="#kubeplural--nonstandard-plural"><code>#[kube(plural = &quot;nonstandard-plural&quot;)]</code></a></h3>
 <p>To specify the plural name. Defaults to inferring from singular.</p>
 <h3 id="kubenamespaced"><a href="#kubenamespaced"><code>#[kube(namespaced)]</code></a></h3>
 <p>To specify that this is a namespaced resource rather than cluster level.</p>
-<h3 id="kubestruct--structname"><a href="#kubestruct--structname"><code>#[kube(struct = &quot;StructName&quot;)]</code></a></h3>
-<p>Customize the name of the generated root struct (defaults to <code>kind</code>).</p>
+<h3 id="kuberoot--structname"><a href="#kuberoot--structname"><code>#[kube(root = &quot;StructName&quot;)]</code></a></h3>
+<p>Customize the name of the generated root struct (defaults to <code>.kind</code> value).</p>
 <h3 id="kubecrateskube_core--kubecore"><a href="#kubecrateskube_core--kubecore"><code>#[kube(crates(kube_core = &quot;::kube::core&quot;))]</code></a></h3>
 <p>Customize the crate name the generated code will reach into (defaults to <code>::kube::core</code>).
 Should be one of <code>kube::core</code>, <code>kube_client::core</code> or <code>kube_core</code>.</p>
@@ -100,7 +100,7 @@ where you are not responsible for installing the <code>CustomResourceDefinition<
     group = <span class="string">&quot;clux.dev&quot;</span>,
     version = <span class="string">&quot;v1&quot;</span>,
     kind = <span class="string">&quot;Foo&quot;</span>,
-    <span class="kw">struct </span>= <span class="string">&quot;FooCrd&quot;</span>,
+    root = <span class="string">&quot;FooCrd&quot;</span>,
     namespaced,
     status = <span class="string">&quot;FooStatus&quot;</span>,
     derive = <span class="string">&quot;PartialEq&quot;</span>,

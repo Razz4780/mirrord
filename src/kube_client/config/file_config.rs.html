@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/git/checkouts/kube-26c6657b93f4f767/4444211/kube-client/src/config/file_config.rs`."><title>file_config.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="kube_client" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (e3abbd499 2023-09-06)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../kube_client/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/github/home/.cargo/git/checkouts/kube-rs-dadc88118c00dde1/44725f9/kube-client/src/config/file_config.rs`."><title>file_config.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-47e7ab555ef2818a.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="kube_client" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0-nightly (e3abbd499 2023-09-06)" data-channel="nightly" data-search-js="search-5d3eaacf19ebf04f.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-f194925aa375ae96.css" data-theme-dark-css="dark-1dd4d1ce031e15de.css" data-theme-ayu-css="ayu-49e58d069f567085.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-ef3a2de404864b0b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-f194925aa375ae96.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1dd4d1ce031e15de.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../kube_client/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -821,6 +821,105 @@
 <a href="#821" id="821">821</a>
 <a href="#822" id="822">822</a>
 <a href="#823" id="823">823</a>
+<a href="#824" id="824">824</a>
+<a href="#825" id="825">825</a>
+<a href="#826" id="826">826</a>
+<a href="#827" id="827">827</a>
+<a href="#828" id="828">828</a>
+<a href="#829" id="829">829</a>
+<a href="#830" id="830">830</a>
+<a href="#831" id="831">831</a>
+<a href="#832" id="832">832</a>
+<a href="#833" id="833">833</a>
+<a href="#834" id="834">834</a>
+<a href="#835" id="835">835</a>
+<a href="#836" id="836">836</a>
+<a href="#837" id="837">837</a>
+<a href="#838" id="838">838</a>
+<a href="#839" id="839">839</a>
+<a href="#840" id="840">840</a>
+<a href="#841" id="841">841</a>
+<a href="#842" id="842">842</a>
+<a href="#843" id="843">843</a>
+<a href="#844" id="844">844</a>
+<a href="#845" id="845">845</a>
+<a href="#846" id="846">846</a>
+<a href="#847" id="847">847</a>
+<a href="#848" id="848">848</a>
+<a href="#849" id="849">849</a>
+<a href="#850" id="850">850</a>
+<a href="#851" id="851">851</a>
+<a href="#852" id="852">852</a>
+<a href="#853" id="853">853</a>
+<a href="#854" id="854">854</a>
+<a href="#855" id="855">855</a>
+<a href="#856" id="856">856</a>
+<a href="#857" id="857">857</a>
+<a href="#858" id="858">858</a>
+<a href="#859" id="859">859</a>
+<a href="#860" id="860">860</a>
+<a href="#861" id="861">861</a>
+<a href="#862" id="862">862</a>
+<a href="#863" id="863">863</a>
+<a href="#864" id="864">864</a>
+<a href="#865" id="865">865</a>
+<a href="#866" id="866">866</a>
+<a href="#867" id="867">867</a>
+<a href="#868" id="868">868</a>
+<a href="#869" id="869">869</a>
+<a href="#870" id="870">870</a>
+<a href="#871" id="871">871</a>
+<a href="#872" id="872">872</a>
+<a href="#873" id="873">873</a>
+<a href="#874" id="874">874</a>
+<a href="#875" id="875">875</a>
+<a href="#876" id="876">876</a>
+<a href="#877" id="877">877</a>
+<a href="#878" id="878">878</a>
+<a href="#879" id="879">879</a>
+<a href="#880" id="880">880</a>
+<a href="#881" id="881">881</a>
+<a href="#882" id="882">882</a>
+<a href="#883" id="883">883</a>
+<a href="#884" id="884">884</a>
+<a href="#885" id="885">885</a>
+<a href="#886" id="886">886</a>
+<a href="#887" id="887">887</a>
+<a href="#888" id="888">888</a>
+<a href="#889" id="889">889</a>
+<a href="#890" id="890">890</a>
+<a href="#891" id="891">891</a>
+<a href="#892" id="892">892</a>
+<a href="#893" id="893">893</a>
+<a href="#894" id="894">894</a>
+<a href="#895" id="895">895</a>
+<a href="#896" id="896">896</a>
+<a href="#897" id="897">897</a>
+<a href="#898" id="898">898</a>
+<a href="#899" id="899">899</a>
+<a href="#900" id="900">900</a>
+<a href="#901" id="901">901</a>
+<a href="#902" id="902">902</a>
+<a href="#903" id="903">903</a>
+<a href="#904" id="904">904</a>
+<a href="#905" id="905">905</a>
+<a href="#906" id="906">906</a>
+<a href="#907" id="907">907</a>
+<a href="#908" id="908">908</a>
+<a href="#909" id="909">909</a>
+<a href="#910" id="910">910</a>
+<a href="#911" id="911">911</a>
+<a href="#912" id="912">912</a>
+<a href="#913" id="913">913</a>
+<a href="#914" id="914">914</a>
+<a href="#915" id="915">915</a>
+<a href="#916" id="916">916</a>
+<a href="#917" id="917">917</a>
+<a href="#918" id="918">918</a>
+<a href="#919" id="919">919</a>
+<a href="#920" id="920">920</a>
+<a href="#921" id="921">921</a>
+<a href="#922" id="922">922</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     collections::HashMap,
     fs,
@@ -831,6 +930,9 @@
 <span class="kw">use </span>serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 <span class="kw">use super</span>::{KubeconfigError, LoadDataError};
+
+<span class="doccomment">/// [`CLUSTER_EXTENSION_KEY`] is reserved in the cluster extensions list for exec plugin config.
+</span><span class="kw">const </span>CLUSTER_EXTENSION_KEY: <span class="kw-2">&amp;</span>str = <span class="string">&quot;client.authentication.k8s.io/exec&quot;</span>;
 
 <span class="doccomment">/// [`Kubeconfig`] represents information on how to connect to a remote Kubernetes cluster
 ///
@@ -1101,6 +1203,19 @@
     </span><span class="attr">#[serde(rename = <span class="string">&quot;interactiveMode&quot;</span>)]
     #[serde(skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
     </span><span class="kw">pub </span>interactive_mode: <span class="prelude-ty">Option</span>&lt;ExecInteractiveMode&gt;,
+
+    <span class="doccomment">/// ProvideClusterInfo determines whether or not to provide cluster information,
+    /// which could potentially contain very large CA data, to this exec plugin as a
+    /// part of the KUBERNETES_EXEC_INFO environment variable. By default, it is set
+    /// to false. Package k8s.io/client-go/tools/auth/exec provides helper methods for
+    /// reading this environment variable.
+    </span><span class="attr">#[serde(default, rename = <span class="string">&quot;provideClusterInfo&quot;</span>)]
+    </span><span class="kw">pub </span>provide_cluster_info: bool,
+
+    <span class="doccomment">/// Cluster information to pass to the plugin.
+    /// Should be used only when `provide_cluster_info` is True.
+    </span><span class="attr">#[serde(skip)]
+    </span><span class="kw">pub </span>cluster: <span class="prelude-ty">Option</span>&lt;ExecAuthCluster&gt;,
 }
 
 <span class="doccomment">/// ExecInteractiveMode define the interactity of the child process
@@ -1348,6 +1463,60 @@
     }
 }
 
+<span class="doccomment">/// Cluster stores information to connect Kubernetes cluster used with auth plugins
+/// that have `provideClusterInfo`` enabled.
+/// This is a copy of [`kube::config::Cluster`] with certificate_authority passed as bytes without the path.
+</span><span class="attr">#[derive(Clone, Debug, Serialize, Deserialize, Default)]
+#[cfg_attr(test, derive(PartialEq, Eq))]
+</span><span class="kw">pub struct </span>ExecAuthCluster {
+    <span class="doccomment">/// The address of the kubernetes cluster (https://hostname:port).
+    </span><span class="attr">#[serde(skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
+    </span><span class="kw">pub </span>server: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    <span class="doccomment">/// Skips the validity check for the server&#39;s certificate. This will make your HTTPS connections insecure.
+    </span><span class="attr">#[serde(rename = <span class="string">&quot;insecure-skip-tls-verify&quot;</span>)]
+    #[serde(skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
+    </span><span class="kw">pub </span>insecure_skip_tls_verify: <span class="prelude-ty">Option</span>&lt;bool&gt;,
+    <span class="doccomment">/// PEM-encoded certificate authority certificates. Overrides `certificate_authority`
+    </span><span class="attr">#[serde(rename = <span class="string">&quot;certificate-authority-data&quot;</span>)]
+    #[serde(skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
+    #[serde(with = <span class="string">&quot;base64serde&quot;</span>)]
+    </span><span class="kw">pub </span>certificate_authority_data: <span class="prelude-ty">Option</span>&lt;Vec&lt;u8&gt;&gt;,
+    <span class="doccomment">/// URL to the proxy to be used for all requests.
+    </span><span class="attr">#[serde(rename = <span class="string">&quot;proxy-url&quot;</span>)]
+    #[serde(skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
+    </span><span class="kw">pub </span>proxy_url: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    <span class="doccomment">/// Name used to check server certificate.
+    ///
+    /// If `tls_server_name` is `None`, the hostname used to contact the server is used.
+    </span><span class="attr">#[serde(rename = <span class="string">&quot;tls-server-name&quot;</span>)]
+    #[serde(skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
+    </span><span class="kw">pub </span>tls_server_name: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    <span class="doccomment">/// This can be anything
+    </span><span class="attr">#[serde(skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
+    </span><span class="kw">pub </span>config: <span class="prelude-ty">Option</span>&lt;serde_json::Value&gt;,
+}
+
+<span class="kw">impl </span>TryFrom&lt;<span class="kw-2">&amp;</span>Cluster&gt; <span class="kw">for </span>ExecAuthCluster {
+    <span class="kw">type </span>Error = KubeconfigError;
+
+    <span class="kw">fn </span>try_from(cluster: <span class="kw-2">&amp;</span><span class="kw">crate</span>::config::Cluster) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, KubeconfigError&gt; {
+        <span class="kw">let </span>certificate_authority_data = cluster.load_certificate_authority()<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
+            server: cluster.server.clone(),
+            insecure_skip_tls_verify: cluster.insecure_skip_tls_verify,
+            certificate_authority_data,
+            proxy_url: cluster.proxy_url.clone(),
+            tls_server_name: cluster.tls_server_name.clone(),
+            config: cluster.extensions.as_ref().and_then(|extensions| {
+                extensions
+                    .iter()
+                    .find(|extension| extension.name == CLUSTER_EXTENSION_KEY)
+                    .map(|extension| extension.extension.clone())
+            }),
+        })
+    }
+}
+
 <span class="kw">fn </span>load_from_base64_or_file&lt;P: AsRef&lt;Path&gt;&gt;(
     value: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
     file: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;P&gt;,
@@ -1360,7 +1529,10 @@
 }
 
 <span class="kw">fn </span>load_from_base64(value: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;u8&gt;, LoadDataError&gt; {
-    base64::decode(value).map_err(LoadDataError::DecodeBase64)
+    <span class="kw">use </span>base64::Engine;
+    base64::engine::general_purpose::STANDARD
+        .decode(value)
+        .map_err(LoadDataError::DecodeBase64)
 }
 
 <span class="kw">fn </span>load_from_file&lt;P: AsRef&lt;Path&gt;&gt;(file: <span class="kw-2">&amp;</span>P) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;u8&gt;, LoadDataError&gt; {
@@ -1379,6 +1551,33 @@
 <span class="doccomment">/// Returns kubeconfig path from `$HOME/.kube/config`.
 </span><span class="kw">fn </span>default_kube_path() -&gt; <span class="prelude-ty">Option</span>&lt;PathBuf&gt; {
     home::home_dir().map(|h| h.join(<span class="string">&quot;.kube&quot;</span>).join(<span class="string">&quot;config&quot;</span>))
+}
+
+<span class="kw">mod </span>base64serde {
+    <span class="kw">use </span>base64::Engine;
+    <span class="kw">use </span>serde::{Deserialize, Deserializer, Serialize, Serializer};
+
+    <span class="kw">pub fn </span>serialize&lt;S: Serializer&gt;(v: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;Vec&lt;u8&gt;&gt;, s: S) -&gt; <span class="prelude-ty">Result</span>&lt;S::Ok, S::Error&gt; {
+        <span class="kw">match </span>v {
+            <span class="prelude-val">Some</span>(v) =&gt; {
+                <span class="kw">let </span>encoded = base64::engine::general_purpose::STANDARD.encode(v);
+                String::serialize(<span class="kw-2">&amp;</span>encoded, s)
+            }
+            <span class="prelude-val">None </span>=&gt; &lt;<span class="prelude-ty">Option</span>&lt;String&gt;&gt;::serialize(<span class="kw-2">&amp;</span><span class="prelude-val">None</span>, s),
+        }
+    }
+
+    <span class="kw">pub fn </span>deserialize&lt;<span class="lifetime">&#39;de</span>, D: Deserializer&lt;<span class="lifetime">&#39;de</span>&gt;&gt;(d: D) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;Vec&lt;u8&gt;&gt;, D::Error&gt; {
+        <span class="kw">let </span>data = &lt;<span class="prelude-ty">Option</span>&lt;String&gt;&gt;::deserialize(d)<span class="question-mark">?</span>;
+        <span class="kw">match </span>data {
+            <span class="prelude-val">Some</span>(data) =&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(
+                base64::engine::general_purpose::STANDARD
+                    .decode(data.as_bytes())
+                    .map_err(serde::de::Error::custom)<span class="question-mark">?</span>,
+            )),
+            <span class="prelude-val">None </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
+        }
+    }
 }
 
 <span class="attr">#[cfg(test)]
@@ -1590,7 +1789,6 @@ users:
     client-certificate-data: aGVsbG8K
     client-key-data: aGVsbG8K
 &quot;#</span>;
-
 
         <span class="kw">let </span>kubeconfig1 = Kubeconfig::from_yaml(config1)<span class="question-mark">?</span>;
         <span class="kw">let </span>kubeconfig2 = Kubeconfig::from_yaml(config2)<span class="question-mark">?</span>;
