@@ -126,13 +126,22 @@
 <a href="#126" id="126">126</a>
 <a href="#127" id="127">127</a>
 <a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::time::Duration;
 
 <span class="kw">use </span>mirrord_analytics::AnalyticsReporter;
 <span class="kw">use </span>mirrord_config::{feature::network::outgoing::OutgoingFilterConfig, LayerConfig};
 <span class="kw">use </span>mirrord_intproxy::agent_conn::AgentConnectInfo;
 <span class="kw">use </span>mirrord_kube::api::{kubernetes::KubernetesAPI, AgentManagment};
-<span class="kw">use </span>mirrord_operator::client::{OperatorApi, OperatorApiError, OperatorSessionInformation};
+<span class="kw">use </span>mirrord_operator::client::{OperatorApi, OperatorApiError, OperatorSessionConnection};
 <span class="kw">use </span>mirrord_progress::Progress;
 <span class="kw">use </span>mirrord_protocol::{ClientMessage, DaemonMessage};
 <span class="kw">use </span>tokio::sync::mpsc;
@@ -149,23 +158,16 @@
     config: <span class="kw-2">&amp;</span>LayerConfig,
     progress: <span class="kw-2">&amp;</span>P,
     analytics: <span class="kw-2">&amp;mut </span>AnalyticsReporter,
-) -&gt; <span class="prelude-ty">Result</span>&lt;
-    <span class="prelude-ty">Option</span>&lt;(
-        mpsc::Sender&lt;ClientMessage&gt;,
-        mpsc::Receiver&lt;DaemonMessage&gt;,
-        OperatorSessionInformation,
-    )&gt;,
-    CliError,
-&gt;
+) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;OperatorSessionConnection&gt;, CliError&gt;
 <span class="kw">where
     </span>P: Progress + Send + Sync,
 {
     <span class="kw">let </span><span class="kw-2">mut </span>sub_progress = progress.subtask(<span class="string">&quot;checking operator&quot;</span>);
 
     <span class="kw">match </span>OperatorApi::create_session(config, progress, analytics).<span class="kw">await </span>{
-        <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(connection)) =&gt; {
+        <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(session)) =&gt; {
             sub_progress.success(<span class="prelude-val">Some</span>(<span class="string">&quot;connected to operator&quot;</span>));
-            <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(connection))
+            <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(session))
         }
         <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>) =&gt; {
             sub_progress.success(<span class="prelude-val">Some</span>(<span class="string">&quot;no operator detected&quot;</span>));
@@ -176,6 +178,17 @@
             sub_progress.failure(<span class="prelude-val">Some</span>(<span class="string">&quot;operator concurrent port steal lock&quot;</span>));
 
             <span class="prelude-val">Err</span>(CliError::OperatorConcurrentSteal)
+        }
+        <span class="prelude-val">Err</span>(OperatorApiError::UnsupportedFeature {
+            feature,
+            operator_version,
+        }) =&gt; {
+            sub_progress.failure(<span class="prelude-val">Some</span>(<span class="string">&quot;unsupported operator feature&quot;</span>));
+
+            <span class="prelude-val">Err</span>(CliError::FeatureNotSupportedInOperatorError {
+                feature,
+                operator_version,
+            })
         }
         <span class="prelude-val">Err</span>(err) =&gt; {
             sub_progress.failure(<span class="prelude-val">Some</span>(
@@ -213,18 +226,23 @@
         }
     }
 
-    <span class="kw">if </span>config.operator &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>((sender, receiver, operator_information)) = create_operator_session(config, progress, analytics).<span class="kw">await</span><span class="question-mark">? </span>{
+    <span class="kw">if </span>config.operator &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>(session) = create_operator_session(config, progress, analytics).<span class="kw">await</span><span class="question-mark">? </span>{
         <span class="prelude-val">Ok</span>((
-            AgentConnectInfo::Operator(operator_information),
-            AgentConnection { sender, receiver },
+            AgentConnectInfo::Operator(session.info),
+            AgentConnection { sender: session.tx, receiver: session.rx },
         ))
     } <span class="kw">else </span>{
+        <span class="kw">if </span>config.feature.copy_target {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(CliError::FeatureRequiresOperatorError(<span class="string">&quot;copy pod&quot;</span>.into()));
+        }
+
         <span class="kw">if </span><span class="macro">matches!</span>(config.target, mirrord_config::target::TargetConfig{ path: <span class="prelude-val">Some</span>(mirrord_config::target::Target::Deployment{..}), ..}) {
             <span class="comment">// This is CLI Only because the extensions also implement this check with better messaging.
             </span>progress.print( <span class="string">&quot;When targeting multi-pod deployments, mirrord impersonates the first pod in the deployment.&quot;</span>);
             progress.print(<span class="string">&quot;Support for multi-pod impersonation requires the mirrord operator, which is part of mirrord for Teams.&quot;</span>);
             progress.print(<span class="string">&quot;To try it out, join the waitlist with `mirrord waitlist &lt;email address&gt;`, or at this link: https://metalbear.co/#waitlist-form&quot;</span>);
         }
+
         <span class="kw">let </span>k8s_api = KubernetesAPI::create(config)
             .<span class="kw">await
             </span>.map_err(CliError::KubernetesApiFailed)<span class="question-mark">?</span>;

@@ -692,6 +692,10 @@
 <a href="#692" id="692">692</a>
 <a href="#693" id="693">693</a>
 <a href="#694" id="694">694</a>
+<a href="#695" id="695">695</a>
+<a href="#696" id="696">696</a>
+<a href="#697" id="697">697</a>
+<a href="#698" id="698">698</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{collections::BTreeMap, convert::Infallible, io::Write, str::FromStr, sync::LazyLock};
 
 <span class="kw">use </span>k8s_openapi::{
@@ -1127,7 +1131,7 @@
                 PolicyRule {
                     api_groups: <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[<span class="string">&quot;batch&quot;</span>.to_owned()]),
                     resources: <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[<span class="string">&quot;jobs&quot;</span>.to_owned()]),
-                    verbs: <span class="macro">vec!</span>[<span class="string">&quot;create&quot;</span>.to_owned()],
+                    verbs: <span class="macro">vec!</span>[<span class="string">&quot;create&quot;</span>.to_owned(), <span class="string">&quot;delete&quot;</span>.to_owned()],
                     ..Default::default()
                 },
                 PolicyRule {
@@ -1341,6 +1345,7 @@
                 PolicyRule {
                     api_groups: <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[<span class="string">&quot;operator.metalbear.co&quot;</span>.to_owned()]),
                     resources: <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[
+                        <span class="string">&quot;copytargets&quot;</span>.to_owned(),
                         <span class="string">&quot;mirrordoperators&quot;</span>.to_owned(),
                         <span class="string">&quot;targets&quot;</span>.to_owned(),
                         <span class="string">&quot;targets/port-locks&quot;</span>.to_owned(),
@@ -1350,13 +1355,16 @@
                 },
                 PolicyRule {
                     api_groups: <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[<span class="string">&quot;operator.metalbear.co&quot;</span>.to_owned()]),
-                    resources: <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[<span class="string">&quot;mirrordoperators/certificate&quot;</span>.to_owned()]),
+                    resources: <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[
+                        <span class="string">&quot;mirrordoperators/certificate&quot;</span>.to_owned(),
+                        <span class="string">&quot;copytargets&quot;</span>.to_owned(),
+                    ]),
                     verbs: <span class="macro">vec!</span>[<span class="string">&quot;create&quot;</span>.to_owned()],
                     ..Default::default()
                 },
                 PolicyRule {
                     api_groups: <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[<span class="string">&quot;operator.metalbear.co&quot;</span>.to_owned()]),
-                    resources: <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[<span class="string">&quot;targets&quot;</span>.to_owned()]),
+                    resources: <span class="prelude-val">Some</span>(<span class="macro">vec!</span>[<span class="string">&quot;targets&quot;</span>.to_owned(), <span class="string">&quot;copytargets&quot;</span>.to_owned()]),
                     verbs: <span class="macro">vec!</span>[<span class="string">&quot;proxy&quot;</span>.to_owned()],
                     ..Default::default()
                 },

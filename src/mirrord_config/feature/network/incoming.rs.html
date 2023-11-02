@@ -936,7 +936,7 @@
 /// - `&quot;continue&quot;`: Continue with normal execution
 /// - `&quot;override&quot;`: If port lock detected then override it with new lock and force close the
 ///   original locking connection.
-</span><span class="attr">#[derive(Default, Serialize, Deserialize, Clone, Debug, PartialEq, Eq, JsonSchema)]
+</span><span class="attr">#[derive(Default, Serialize, Deserialize, Clone, Copy, Debug, PartialEq, Eq, JsonSchema)]
 #[serde(rename_all = <span class="string">&quot;lowercase&quot;</span>)]
 </span><span class="kw">pub enum </span>ConcurrentSteal {
     <span class="doccomment">/// &lt;!--${internal}--&gt;

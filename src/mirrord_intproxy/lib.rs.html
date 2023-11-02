@@ -458,7 +458,7 @@
     /// [`TcpListener`].
     </span><span class="kw">pub async fn </span>new(
         config: <span class="kw-2">&amp;</span>LayerConfig,
-        agent_connect_info: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>AgentConnectInfo&gt;,
+        agent_connect_info: <span class="prelude-ty">Option</span>&lt;AgentConnectInfo&gt;,
         listener: TcpListener,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, IntProxyError&gt; {
         <span class="kw">let </span>agent_conn = AgentConnection::new(config, agent_connect_info).<span class="kw">await</span><span class="question-mark">?</span>;

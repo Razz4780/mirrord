@@ -828,7 +828,6 @@
 <a href="#828" id="828">828</a>
 <a href="#829" id="829">829</a>
 <a href="#830" id="830">830</a>
-<a href="#831" id="831">831</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(result_option_inspect)]
 #![feature(hash_extract_if)]
 #![feature(let_chains)]
@@ -951,8 +950,7 @@
                 <span class="comment">// If we are in an ephemeral container, we use pid 1.
                 </span>(<span class="bool-val">true</span>, <span class="prelude-val">Some</span>(container_handle), pid)
             }
-            <span class="comment">// if not, we use the pid of the target container or fallback to self
-            </span>cli::Mode::Targetless | cli::Mode::BlackboxTest =&gt; (<span class="bool-val">false</span>, <span class="prelude-val">None</span>, <span class="string">&quot;self&quot;</span>.to_string()),
+            cli::Mode::Targetless | cli::Mode::BlackboxTest =&gt; (<span class="bool-val">false</span>, <span class="prelude-val">None</span>, <span class="string">&quot;self&quot;</span>.to_string()),
         };
 
         <span class="kw">let </span>environ_path = PathBuf::from(<span class="string">&quot;/proc&quot;</span>).join(pid).join(<span class="string">&quot;environ&quot;</span>);

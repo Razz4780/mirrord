@@ -309,6 +309,9 @@
 <a href="#309" id="309">309</a>
 <a href="#310" id="310">310</a>
 <a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Internal proxy is accepting connection from local layers and forward it to agent
 //! while having 1:1 relationship - each layer connection is another agent connection.
 //!
@@ -332,7 +335,9 @@
 <span class="kw">use </span>mirrord_config::LayerConfig;
 <span class="kw">use </span>mirrord_intproxy::{agent_conn::AgentConnectInfo, IntProxy};
 <span class="kw">use </span>mirrord_kube::api::{kubernetes::KubernetesAPI, wrap_raw_connection, AgentManagment};
-<span class="kw">use </span>mirrord_operator::client::{OperatorApi, OperatorSessionInformation};
+<span class="kw">use </span>mirrord_operator::client::{
+    OperatorApi, OperatorSessionConnection, OperatorSessionInformation,
+};
 <span class="kw">use </span>mirrord_protocol::{pause::DaemonPauseTarget, ClientMessage, DaemonMessage};
 <span class="kw">use </span>nix::libc;
 <span class="kw">use </span>tokio::{
@@ -499,7 +504,7 @@
     <span class="kw">let </span>first_connection_timeout = Duration::from_secs(config.internal_proxy.start_idle_timeout);
     <span class="kw">let </span>consecutive_connection_timeout = Duration::from_secs(config.internal_proxy.idle_timeout);
 
-    IntProxy::new(<span class="kw-2">&amp;</span>config, agent_connect_info.as_ref(), listener)
+    IntProxy::new(<span class="kw-2">&amp;</span>config, agent_connect_info, listener)
         .<span class="kw">await</span><span class="question-mark">?
         </span>.run(first_connection_timeout, consecutive_connection_timeout)
         .<span class="kw">await</span><span class="question-mark">?</span>;
@@ -599,10 +604,11 @@
     <span class="prelude-ty">Option</span>&lt;OperatorSessionInformation&gt;,
 )&gt; {
     <span class="kw">match </span>agent_connect_info {
-        <span class="prelude-val">Some</span>(AgentConnectInfo::Operator(operator_session_information)) =&gt; <span class="prelude-val">Ok</span>((
-            OperatorApi::connect(config, <span class="kw-2">&amp;</span>operator_session_information, analytics).<span class="kw">await</span><span class="question-mark">?</span>,
-            <span class="prelude-val">Some</span>(operator_session_information),
-        )),
+        <span class="prelude-val">Some</span>(AgentConnectInfo::Operator(operator_session_information)) =&gt; {
+            <span class="kw">let </span>OperatorSessionConnection { tx, rx, info } =
+                OperatorApi::connect(config, operator_session_information, analytics).<span class="kw">await</span><span class="question-mark">?</span>;
+            <span class="prelude-val">Ok</span>(((tx, rx), <span class="prelude-val">Some</span>(info)))
+        }
         <span class="prelude-val">Some</span>(AgentConnectInfo::DirectKubernetes(connect_info)) =&gt; {
             <span class="kw">let </span>k8s_api = KubernetesAPI::create(config).<span class="kw">await</span><span class="question-mark">?</span>;
             <span class="kw">let </span>connection = k8s_api.create_connection(connect_info).<span class="kw">await</span><span class="question-mark">?</span>;
