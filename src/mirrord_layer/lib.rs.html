@@ -529,12 +529,6 @@
 <a href="#529" id="529">529</a>
 <a href="#530" id="530">530</a>
 <a href="#531" id="531">531</a>
-<a href="#532" id="532">532</a>
-<a href="#533" id="533">533</a>
-<a href="#534" id="534">534</a>
-<a href="#535" id="535">535</a>
-<a href="#536" id="536">536</a>
-<a href="#537" id="537">537</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(c_variadic)]
 #![feature(result_option_inspect)]
 #![feature(naked_functions)]
@@ -614,10 +608,7 @@
 <span class="kw">use </span>load::ExecutableName;
 <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
 </span><span class="kw">use </span>mirrord_config::feature::fs::FsConfig;
-<span class="kw">use </span>mirrord_config::{
-    feature::{fs::FsModeConfig, network::incoming::IncomingMode},
-    LayerConfig,
-};
+<span class="kw">use </span>mirrord_config::{feature::fs::FsModeConfig, LayerConfig};
 <span class="kw">use </span>mirrord_intproxy::protocol::NewSessionRequest;
 <span class="kw">use </span>mirrord_layer_macro::{hook_fn, hook_guard_fn};
 <span class="kw">use </span>proxy_connection::ProxyConnection;
@@ -803,15 +794,6 @@
         .parse()
         .unwrap_or(<span class="bool-val">false</span>);
 
-    <span class="comment">// Disable all features that require the agent
-    </span><span class="kw">if </span>trace_only {
-        config.feature.fs.mode = FsModeConfig::Local;
-        config.feature.network.dns = <span class="bool-val">false</span>;
-        config.feature.network.incoming.mode = IncomingMode::Off;
-        config.feature.network.outgoing.tcp = <span class="bool-val">false</span>;
-        config.feature.network.outgoing.udp = <span class="bool-val">false</span>;
-    }
-
     <span class="comment">// does not need to be atomic because on the first call there are never other threads.
     // Will be false when manually called from fork hook.
     </span><span class="kw">if </span>SETUP.get().is_none() {
@@ -819,7 +801,7 @@
         </span>init_tracing();
 
         <span class="kw">let </span>debugger_ports = DebuggerPorts::from_env();
-        <span class="kw">let </span>state = LayerSetup::new(config, debugger_ports);
+        <span class="kw">let </span>state = LayerSetup::new(config, debugger_ports, trace_only);
         SETUP.set(state).unwrap();
 
         <span class="kw">let </span>state = setup();
@@ -1003,17 +985,21 @@
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>fork_detour() -&gt; pid_t {
     <span class="macro">tracing::debug!</span>(<span class="string">&quot;Process {} forking!.&quot;</span>, std::process::id());
 
-    <span class="kw">let </span>parent_connection = PROXY_CONNECTION.get().expect(<span class="string">&quot;PROXY_CONNECTION not set&quot;</span>);
-
-    <span class="comment">// After fork, this new connection lives both in the parent and in the child.
-    // The child will have access to cloned file descriptor of the underlying socket.
-    // The parent will close its descriptor at the end of this scope.
-    </span><span class="kw">let </span>new_connection = ProxyConnection::new(
-        parent_connection.proxy_addr(),
-        NewSessionRequest::Forked(parent_connection.layer_id()),
-        Duration::from_secs(<span class="number">5</span>),
-    )
-    .expect(<span class="string">&quot;failed to establish proxy connection for child&quot;</span>);
+    <span class="kw">let </span>new_connection = <span class="kw">if </span>setup().trace_only() {
+        <span class="prelude-val">None
+    </span>} <span class="kw">else </span>{
+        <span class="kw">let </span>parent_connection = PROXY_CONNECTION.get().expect(<span class="string">&quot;PROXY_CONNECTION not set&quot;</span>);
+        <span class="comment">// After fork, this new connection lives both in the parent and in the child.
+        // The child will have access to cloned file descriptor of the underlying socket.
+        // The parent will close its descriptor at the end of this scope.
+        </span>ProxyConnection::new(
+            parent_connection.proxy_addr(),
+            NewSessionRequest::Forked(parent_connection.layer_id()),
+            Duration::from_secs(<span class="number">5</span>),
+        )
+        .expect(<span class="string">&quot;failed to establish proxy connection for child&quot;</span>)
+        .into()
+    };
 
     <span class="kw">let </span>res = FN_FORK();
 
@@ -1021,10 +1007,12 @@
         Ordering::Equal =&gt; {
             <span class="macro">tracing::debug!</span>(<span class="string">&quot;Child process initializing layer.&quot;</span>);
 
-            PROXY_CONNECTION.take();
-            PROXY_CONNECTION
-                .set(new_connection)
-                .expect(<span class="string">&quot;setting PROXY_CONNECTION&quot;</span>);
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(new_connection) = new_connection {
+                PROXY_CONNECTION.take();
+                PROXY_CONNECTION
+                    .set(new_connection)
+                    .expect(<span class="string">&quot;setting PROXY_CONNECTION&quot;</span>);
+            }
 
             mirrord_layer_entry_point()
         }
