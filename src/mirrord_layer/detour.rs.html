@@ -442,10 +442,6 @@
 <a href="#442" id="442">442</a>
 <a href="#443" id="443">443</a>
 <a href="#444" id="444">444</a>
-<a href="#445" id="445">445</a>
-<a href="#446" id="446">446</a>
-<a href="#447" id="447">447</a>
-<a href="#448" id="448">448</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! The layer uses features from this module to check if it should bypass one of its hooks, and call
 //! the original [`libc`] function.
 //!
@@ -649,10 +645,6 @@
 
     <span class="doccomment">/// Incoming traffic is disabled, bypass.
     </span>DisabledIncoming,
-
-    <span class="doccomment">/// Hostname should be resolved locally.
-    /// Currently this is the case only when the layer operates in the `trace only` mode.
-    </span>LocalHostname,
 }
 
 <span class="doccomment">/// [`ControlFlow`](std::ops::ControlFlow)-like enum to be used by hooks.
