@@ -588,6 +588,35 @@
 <a href="#588" id="588">588</a>
 <a href="#589" id="589">589</a>
 <a href="#590" id="590">590</a>
+<a href="#591" id="591">591</a>
+<a href="#592" id="592">592</a>
+<a href="#593" id="593">593</a>
+<a href="#594" id="594">594</a>
+<a href="#595" id="595">595</a>
+<a href="#596" id="596">596</a>
+<a href="#597" id="597">597</a>
+<a href="#598" id="598">598</a>
+<a href="#599" id="599">599</a>
+<a href="#600" id="600">600</a>
+<a href="#601" id="601">601</a>
+<a href="#602" id="602">602</a>
+<a href="#603" id="603">603</a>
+<a href="#604" id="604">604</a>
+<a href="#605" id="605">605</a>
+<a href="#606" id="606">606</a>
+<a href="#607" id="607">607</a>
+<a href="#608" id="608">608</a>
+<a href="#609" id="609">609</a>
+<a href="#610" id="610">610</a>
+<a href="#611" id="611">611</a>
+<a href="#612" id="612">612</a>
+<a href="#613" id="613">613</a>
+<a href="#614" id="614">614</a>
+<a href="#615" id="615">615</a>
+<a href="#616" id="616">616</a>
+<a href="#617" id="617">617</a>
+<a href="#618" id="618">618</a>
+<a href="#619" id="619">619</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::io;
 
 <span class="kw">use </span>base64::{engine::general_purpose, Engine <span class="kw">as _</span>};
@@ -599,7 +628,9 @@
     certificate::Certificate, credential_store::CredentialStoreSync, error::AuthenticationError,
 };
 <span class="kw">use </span>mirrord_config::{
-    feature::network::incoming::ConcurrentSteal, target::TargetConfig, LayerConfig,
+    feature::network::incoming::ConcurrentSteal,
+    target::{Target, TargetConfig},
+    LayerConfig,
 };
 <span class="kw">use </span>mirrord_kube::{
     api::kubernetes::{create_kube_api, get_k8s_resource_api},
@@ -623,8 +654,8 @@
 
 <span class="attr">#[derive(Debug, Error)]
 </span><span class="kw">pub enum </span>OperatorApiError {
-    <span class="attr">#[error(<span class="string">&quot;unable to create target for TargetConfig&quot;</span>)]
-    </span>InvalidTarget,
+    <span class="attr">#[error(<span class="string">&quot;invalid target: {reason}&quot;</span>)]
+    </span>InvalidTarget { reason: String },
     <span class="attr">#[error(transparent)]
     </span>HttpError(<span class="attr">#[from] </span>http::Error),
     <span class="attr">#[error(transparent)]
@@ -749,13 +780,21 @@
 
     <span class="doccomment">/// Checks used config against operator specification.
     </span><span class="kw">fn </span>check_config(config: <span class="kw-2">&amp;</span>LayerConfig, operator: <span class="kw-2">&amp;</span>MirrordOperatorCrd) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">if </span>config.feature.copy_target {
+        <span class="kw">if </span>config.feature.copy_target.enabled {
             <span class="kw">let </span>feature_enabled = operator.spec.copy_target_enabled.unwrap_or(<span class="bool-val">false</span>);
 
             <span class="kw">if </span>!feature_enabled {
                 <span class="kw">return </span><span class="prelude-val">Err</span>(OperatorApiError::UnsupportedFeature {
                     feature: <span class="string">&quot;copy target&quot;</span>.into(),
                     operator_version: operator.spec.operator_version.clone(),
+                });
+            }
+
+            <span class="kw">if </span>config.feature.copy_target.scale_down
+                &amp;&amp; !<span class="macro">matches!</span>(config.target.path, <span class="prelude-val">Some</span>(Target::Deployment(..)))
+            {
+                <span class="kw">return </span><span class="prelude-val">Err</span>(OperatorApiError::InvalidTarget {
+                    reason: <span class="string">&quot;scale down feature is enabled, but target is not a deployment&quot;</span>.into(),
                 });
             }
         }
@@ -828,14 +867,29 @@
         }
         version_progress.success(<span class="prelude-val">None</span>);
 
-        <span class="kw">let </span>raw_target = operator_api
-            .fetch_target()
-            .<span class="kw">await</span><span class="question-mark">?
-            </span>.ok_or(OperatorApiError::InvalidTarget)<span class="question-mark">?</span>;
+        <span class="kw">let </span>raw_target =
+            operator_api
+                .fetch_target()
+                .<span class="kw">await</span><span class="question-mark">?
+                </span>.ok_or(OperatorApiError::InvalidTarget {
+                    reason: <span class="string">&quot;not found in the cluster&quot;</span>.into(),
+                })<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>target_to_connect = <span class="kw">if </span>config.feature.copy_target {
+        <span class="kw">let </span>target_to_connect = <span class="kw">if </span>config.feature.copy_target.enabled {
             <span class="kw">let </span><span class="kw-2">mut </span>copy_progress = progress.subtask(<span class="string">&quot;copying target&quot;</span>);
-            <span class="kw">let </span>copied = operator_api.copy_target(<span class="kw-2">&amp;</span>metadata, raw_target).<span class="kw">await</span><span class="question-mark">?</span>;
+
+            <span class="kw">if </span>config.feature.copy_target.scale_down {
+                <span class="kw">let </span>is_deployment = <span class="macro">matches!</span>(config.target.path, <span class="prelude-val">Some</span>(Target::Deployment(..)));
+                <span class="kw">if </span>!is_deployment {
+                    progress.warning(
+                        <span class="string">&quot;cannot scale down while copying target - target is not a deployment&quot;</span>,
+                    )
+                }
+            }
+
+            <span class="kw">let </span>copied = operator_api
+                .copy_target(<span class="kw-2">&amp;</span>metadata, raw_target, config.feature.copy_target.scale_down)
+                .<span class="kw">await</span><span class="question-mark">?</span>;
             copy_progress.success(<span class="prelude-val">None</span>);
 
             OperatorSessionTarget::Copied(copied)
@@ -1055,18 +1109,22 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         session_metadata: <span class="kw-2">&amp;</span>OperatorSessionMetadata,
         target: TargetCrd,
+        scale_down: bool,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;CopyTargetCrd&gt; {
         <span class="kw">let </span>raw_target = target
             .spec
             .target
             .clone()
-            .ok_or(OperatorApiError::InvalidTarget)<span class="question-mark">?</span>;
+            .ok_or(OperatorApiError::InvalidTarget {
+                reason: <span class="string">&quot;copy target feature is not compatible with targetless mode&quot;</span>.into(),
+            })<span class="question-mark">?</span>;
 
         <span class="kw">let </span>requested = CopyTargetCrd::new(
             <span class="kw-2">&amp;</span>target.name(),
             CopyTargetSpec {
                 target: raw_target,
                 idle_ttl: <span class="prelude-val">Some</span>(<span class="self">Self</span>::COPIED_POD_IDLE_TTL),
+                scale_down,
             },
         );
 

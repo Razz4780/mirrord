@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["env","fs","network"],"struct":["FeatureConfig","FeatureFileConfig"]};
+window.SIDEBAR_ITEMS = {"mod":["copy_target","env","fs","network"],"struct":["FeatureConfig","FeatureFileConfig"]};

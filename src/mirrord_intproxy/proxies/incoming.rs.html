@@ -479,6 +479,10 @@
 };
 
 <span class="kw">use </span>hyper::Version;
+<span class="kw">use </span>mirrord_intproxy_protocol::{
+    ConnMetadataRequest, ConnMetadataResponse, IncomingRequest, IncomingResponse, LayerId,
+    MessageId, PortSubscribe, PortSubscription, PortUnsubscribe, ProxyToLayerMessage,
+};
 <span class="kw">use </span>mirrord_protocol::{
     tcp::{DaemonTcp, HttpRequestFallback, HttpResponseFallback, NewTcpConnection},
     ConnectionId, Port,
@@ -494,10 +498,6 @@
 <span class="kw">use crate</span>::{
     background_tasks::{BackgroundTask, BackgroundTasks, MessageBus, TaskSender, TaskUpdate},
     main_tasks::{LayerClosed, LayerForked, ToLayer},
-    protocol::{
-        ConnMetadataRequest, ConnMetadataResponse, IncomingRequest, IncomingResponse, LayerId,
-        MessageId, PortSubscribe, PortSubscription, PortUnsubscribe, ProxyToLayerMessage,
-    },
     remote_resources::RemoteResources,
     request_queue::{RequestQueue, RequestQueueEmpty},
     ProxyMessage,

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["make_async_framed"],"struct":["AsyncDecoder","AsyncEncoder"]};

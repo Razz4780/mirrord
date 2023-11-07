@@ -2,7 +2,7 @@
     sockfd: <a class="type" href="https://doc.rust-lang.org/nightly/std/os/fd/raw/type.RawFd.html" title="type std::os::fd::raw::RawFd">RawFd</a>,
     remote_address: <a class="struct" href="../../../socket2/sockaddr/struct.SockAddr.html" title="struct socket2::sockaddr::SockAddr">SockAddr</a>,
     user_socket_info: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/sync/struct.Arc.html" title="struct alloc::sync::Arc">Arc</a>&lt;<a class="struct" href="../struct.UserSocket.html" title="struct mirrord_layer::socket::UserSocket">UserSocket</a>&gt;,
-    protocol: <a class="enum" href="../../../mirrord_intproxy/protocol/enum.NetProtocol.html" title="enum mirrord_intproxy::protocol::NetProtocol">NetProtocol</a>
+    protocol: <a class="enum" href="../../../mirrord_intproxy_protocol/enum.NetProtocol.html" title="enum mirrord_intproxy_protocol::NetProtocol">NetProtocol</a>
 ) -&gt; <a class="enum" href="../../detour/enum.Detour.html" title="enum mirrord_layer::detour::Detour">Detour</a>&lt;<a class="struct" href="struct.ConnectResult.html" title="struct mirrord_layer::socket::ops::ConnectResult">ConnectResult</a>&gt;</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Common logic between Tcp/Udp <code>connect</code>, when used for the outgoing traffic feature.</p>
 <p>Sends a hook message that will be handled by <code>(Tcp|Udp)OutgoingHandler</code>, starting the request
 interception procedure.

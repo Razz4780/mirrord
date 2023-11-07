@@ -277,6 +277,10 @@
 
 </span><span class="kw">use </span>std::{collections::HashMap, fmt, io};
 
+<span class="kw">use </span>mirrord_intproxy_protocol::{
+    LayerId, MessageId, NetProtocol, OutgoingConnectRequest, OutgoingConnectResponse,
+    ProxyToLayerMessage,
+};
 <span class="kw">use </span>mirrord_protocol::{
     outgoing::{tcp::DaemonTcpOutgoing, udp::DaemonUdpOutgoing, DaemonConnect, DaemonRead},
     ConnectionId, RemoteResult, ResponseError,
@@ -287,10 +291,6 @@
 <span class="kw">use crate</span>::{
     background_tasks::{BackgroundTask, BackgroundTasks, MessageBus, TaskSender, TaskUpdate},
     main_tasks::ToLayer,
-    protocol::{
-        LayerId, MessageId, NetProtocol, OutgoingConnectRequest, OutgoingConnectResponse,
-        ProxyToLayerMessage,
-    },
     proxies::outgoing::net_protocol_ext::NetProtocolExt,
     request_queue::{RequestQueue, RequestQueueEmpty},
     ProxyMessage,

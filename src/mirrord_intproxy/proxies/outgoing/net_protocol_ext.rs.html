@@ -240,7 +240,6 @@
 <a href="#240" id="240">240</a>
 <a href="#241" id="241">241</a>
 <a href="#242" id="242">242</a>
-<a href="#243" id="243">243</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Utilities for handling multiple network protocol stacks within one
 //! [`OutgoingProxy`](super::OutgoingProxy).
 
@@ -250,6 +249,7 @@
     path::PathBuf,
 };
 
+<span class="kw">use </span>mirrord_intproxy_protocol::NetProtocol;
 <span class="kw">use </span>mirrord_protocol::{
     outgoing::{
         tcp::LayerTcpOutgoing, udp::LayerUdpOutgoing, LayerClose, LayerConnect, LayerWrite,
@@ -263,8 +263,6 @@
     io::{AsyncReadExt, AsyncWriteExt},
     net::{TcpListener, TcpStream, UdpSocket, UnixListener, UnixStream},
 };
-
-<span class="kw">use </span><span class="kw">crate</span>::protocol::NetProtocol;
 
 <span class="doccomment">/// Trait for [`NetProtocol`] that handles differences in [`mirrord_protocol::outgoing`] between
 /// network protocols. Allows to unify logic.

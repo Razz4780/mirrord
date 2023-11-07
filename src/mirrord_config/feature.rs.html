@@ -99,9 +99,9 @@
 <span class="kw">use </span>mirrord_config_derive::MirrordConfig;
 <span class="kw">use </span>schemars::JsonSchema;
 
-<span class="kw">use </span><span class="self">self</span>::{env::EnvConfig, fs::FsConfig, network::NetworkConfig};
-<span class="kw">use </span><span class="kw">crate</span>::MirrordConfigSource;
+<span class="kw">use </span><span class="self">self</span>::{copy_target::CopyTargetConfig, env::EnvConfig, fs::FsConfig, network::NetworkConfig};
 
+<span class="kw">pub mod </span>copy_target;
 <span class="kw">pub mod </span>env;
 <span class="kw">pub mod </span>fs;
 <span class="kw">pub mod </span>network;
@@ -176,12 +176,12 @@
     </span><span class="attr">#[config(nested, toggleable)]
     </span><span class="kw">pub </span>network: NetworkConfig,
 
-    <span class="doccomment">/// ## feature.copy_target {#feature-copy-target}
+    <span class="doccomment">/// ## feature.copy_target {#feature-copy_target}
     ///
     /// Creates a new copy of the target. mirrord will use this copy instead of the original target
     /// (e.g. intercept network traffic). This feature requires a [mirrord operator](https://mirrord.dev/docs/teams/introduction/).
-    </span><span class="attr">#[config(default = <span class="bool-val">false</span>, unstable)]
-    </span><span class="kw">pub </span>copy_target: bool,
+    </span><span class="attr">#[config(nested, unstable)]
+    </span><span class="kw">pub </span>copy_target: CopyTargetConfig,
 }
 
 <span class="kw">impl </span>CollectAnalytics <span class="kw">for </span><span class="kw-2">&amp;</span>FeatureConfig {
@@ -189,7 +189,7 @@
         analytics.add(<span class="string">&quot;env&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.env);
         analytics.add(<span class="string">&quot;fs&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.fs);
         analytics.add(<span class="string">&quot;network&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.network);
-        analytics.add(<span class="string">&quot;copy_target&quot;</span>, <span class="self">self</span>.copy_target);
+        analytics.add(<span class="string">&quot;copy_target&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.copy_target);
     }
 }
 </code></pre></div></section></main></body></html>

@@ -21,7 +21,7 @@
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::io;
 
 <span class="kw">use </span>miette::Diagnostic;
-<span class="kw">use </span>mirrord_intproxy::codec::CodecError;
+<span class="kw">use </span>mirrord_intproxy_protocol::codec::CodecError;
 <span class="kw">use </span>thiserror::Error;
 
 <span class="kw">pub type </span><span class="prelude-ty">Result</span>&lt;T, E = ConsoleError&gt; = std::result::Result&lt;T, E&gt;;

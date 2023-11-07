@@ -232,8 +232,8 @@
             AgentConnection { sender: session.tx, receiver: session.rx },
         ))
     } <span class="kw">else </span>{
-        <span class="kw">if </span>config.feature.copy_target {
-            <span class="kw">return </span><span class="prelude-val">Err</span>(CliError::FeatureRequiresOperatorError(<span class="string">&quot;copy pod&quot;</span>.into()));
+        <span class="kw">if </span>config.feature.copy_target.enabled {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(CliError::FeatureRequiresOperatorError(<span class="string">&quot;copy target&quot;</span>.into()));
         }
 
         <span class="kw">if </span><span class="macro">matches!</span>(config.target, mirrord_config::target::TargetConfig{ path: <span class="prelude-val">Some</span>(mirrord_config::target::Target::Deployment{..}), ..}) {

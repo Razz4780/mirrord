@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"macro":["bind_nested","impl_request"],"mod":["agent_conn","background_tasks","codec","error","layer_conn","layer_initializer","main_tasks","ping_pong","protocol","proxies","remote_resources","request_queue"],"struct":["IntProxy","TaskTxs"]};
+window.SIDEBAR_ITEMS = {"mod":["agent_conn","background_tasks","error","layer_conn","layer_initializer","main_tasks","ping_pong","proxies","remote_resources","request_queue"],"struct":["IntProxy","TaskTxs"]};

@@ -112,16 +112,16 @@
 <a href="#112" id="112">112</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::io;
 
+<span class="kw">use </span>mirrord_intproxy_protocol::{
+    codec::{AsyncDecoder, AsyncEncoder, CodecError},
+    LayerId, LayerToProxyMessage, LocalMessage, NewSessionRequest, ProxyToLayerMessage,
+};
 <span class="kw">use </span>thiserror::Error;
 <span class="kw">use </span>tokio::net::{TcpListener, TcpStream};
 
 <span class="kw">use crate</span>::{
     background_tasks::{BackgroundTask, MessageBus},
-    codec::{AsyncDecoder, AsyncEncoder, CodecError},
     main_tasks::NewLayer,
-    protocol::{
-        LayerId, LayerToProxyMessage, LocalMessage, NewSessionRequest, ProxyToLayerMessage,
-    },
     ProxyMessage,
 };
 

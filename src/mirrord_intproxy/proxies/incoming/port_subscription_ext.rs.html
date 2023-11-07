@@ -107,13 +107,13 @@
 <a href="#107" id="107">107</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Utilities for handling toggleable `steal` feature in [`IncomingProxy`](super::IncomingProxy).
 
-</span><span class="kw">use </span>mirrord_protocol::{
+</span><span class="kw">use </span>mirrord_intproxy_protocol::PortSubscription;
+<span class="kw">use </span>mirrord_protocol::{
     tcp::{HttpResponseFallback, LayerTcp, LayerTcpSteal, StealType, TcpData},
     ClientMessage, ConnectionId, Port,
 };
 
 <span class="kw">use </span><span class="kw">super</span>::InterceptorMessageOut;
-<span class="kw">use </span><span class="kw">crate</span>::protocol::PortSubscription;
 
 <span class="doccomment">/// Retrieves subscribed port from the given [`StealType`].
 </span><span class="kw">fn </span>get_port(steal_type: <span class="kw-2">&amp;</span>StealType) -&gt; Port {

@@ -54,7 +54,6 @@
 <a href="#54" id="54">54</a>
 <a href="#55" id="55">55</a>
 <a href="#56" id="56">56</a>
-<a href="#57" id="57">57</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! A request fifo used by the internal proxy to match agent responses with layer requests.
 //!
 //! The layer annotates each message with unique [`MessageId`],
@@ -70,9 +69,8 @@
 
 </span><span class="kw">use </span>std::{collections::VecDeque, fmt};
 
+<span class="kw">use </span>mirrord_intproxy_protocol::{LayerId, MessageId};
 <span class="kw">use </span>thiserror::Error;
-
-<span class="kw">use </span><span class="kw">crate</span>::protocol::{LayerId, MessageId};
 
 <span class="doccomment">/// Erorr returned when the proxy attempts to retrieve [`MessageId`] and [`LayerId`] of a request
 /// corresponding to a response received from the agent, but the [`RequestQueue`] is empty. This

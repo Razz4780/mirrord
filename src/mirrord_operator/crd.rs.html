@@ -141,6 +141,9 @@
 <a href="#141" id="141">141</a>
 <a href="#142" id="142">142</a>
 <a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>chrono::NaiveDate;
 <span class="kw">use </span>kube::CustomResource;
 <span class="kw">use </span>mirrord_config::target::{Target, TargetConfig};
@@ -278,10 +281,13 @@
     namespaced
 )]
 </span><span class="kw">pub struct </span>CopyTargetSpec {
-    <span class="doccomment">/// Original target.
+    <span class="doccomment">/// Original target. Only [`Target::Pod`] and [`Target::Deployment`] are accepted.
     </span><span class="kw">pub </span>target: Target,
     <span class="doccomment">/// How long should the operator keep this pod alive after its creation.
     /// The pod is deleted when this timout has expired and there are no connected clients.
     </span><span class="kw">pub </span>idle_ttl: <span class="prelude-ty">Option</span>&lt;u32&gt;,
+    <span class="doccomment">/// Should the operator scale down target deployment to 0 while this pod is alive.
+    /// Ignored if [`Target`] is not [`Target::Deployment`].
+    </span><span class="kw">pub </span>scale_down: bool,
 }
 </code></pre></div></section></main></body></html>

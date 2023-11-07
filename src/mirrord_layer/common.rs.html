@@ -117,7 +117,7 @@
 </span><span class="kw">use </span>std::{ffi::CStr, fmt::Debug, path::PathBuf};
 
 <span class="kw">use </span>libc::c_char;
-<span class="kw">use </span>mirrord_intproxy::protocol::{IsLayerRequest, IsLayerRequestWithResponse, MessageId};
+<span class="kw">use </span>mirrord_intproxy_protocol::{IsLayerRequest, IsLayerRequestWithResponse, MessageId};
 <span class="kw">use </span>mirrord_protocol::file::OpenOptionsInternal;
 <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
 </span><span class="kw">use </span>mirrord_sip::{MIRRORD_TEMP_BIN_DIR_CANONIC_STRING, MIRRORD_TEMP_BIN_DIR_STRING};

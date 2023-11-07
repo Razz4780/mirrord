@@ -51,18 +51,16 @@
 <a href="#51" id="51">51</a>
 <a href="#52" id="52">52</a>
 <a href="#53" id="53">53</a>
-<a href="#54" id="54">54</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::io;
 
+<span class="kw">use </span>mirrord_intproxy_protocol::{codec::CodecError, LayerToProxyMessage};
 <span class="kw">use </span>mirrord_protocol::DaemonMessage;
 <span class="kw">use </span>thiserror::Error;
 
 <span class="kw">use crate</span>::{
     agent_conn::{AgentChannelError, AgentConnectionError},
-    codec::CodecError,
     layer_initializer::LayerInitializerError,
     ping_pong::PingPongError,
-    protocol::LayerToProxyMessage,
     proxies::{incoming::IncomingProxyError, outgoing::OutgoingProxyError},
     request_queue::RequestQueueEmpty,
     MainTaskId,
