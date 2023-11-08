@@ -1144,6 +1144,13 @@
 <a href="#1144" id="1144">1144</a>
 <a href="#1145" id="1145">1145</a>
 <a href="#1146" id="1146">1146</a>
+<a href="#1147" id="1147">1147</a>
+<a href="#1148" id="1148">1148</a>
+<a href="#1149" id="1149">1149</a>
+<a href="#1150" id="1150">1150</a>
+<a href="#1151" id="1151">1151</a>
+<a href="#1152" id="1152">1152</a>
+<a href="#1153" id="1153">1153</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>alloc::ffi::CString;
 <span class="kw">use </span>core::{ffi::CStr, mem};
 <span class="kw">use </span>std::{
@@ -1400,11 +1407,13 @@
             .bypass(Bypass::LocalFdNotFound(sockfd))<span class="question-mark">?
     </span>};
 
-    <span class="kw">if </span><span class="macro">matches!</span>(<span class="kw">crate</span>::setup().incoming_config().mode, IncomingMode::Off) {
+    <span class="kw">let </span>setup = <span class="kw">crate</span>::setup();
+
+    <span class="kw">if </span><span class="macro">matches!</span>(setup.incoming_config().mode, IncomingMode::Off) {
         <span class="kw">return </span>Detour::Bypass(Bypass::DisabledIncoming);
     }
 
-    <span class="kw">if </span><span class="kw">crate</span>::setup().targetless() {
+    <span class="kw">if </span>setup.targetless() {
         <span class="macro">warn!</span>(
             <span class="string">&quot;Listening while running targetless. A targetless agent is not exposed by \
         any service. Therefore, letting this port bind happen locally instead of on the \
@@ -1427,11 +1436,16 @@
                 <span class="prelude-val">Err</span>(error)<span class="question-mark">?
             </span>}
 
+            <span class="kw">let </span>mapped_port = setup
+                .incoming_config()
+                .port_mapping
+                .get_by_left(<span class="kw-2">&amp;</span>requested_address.port())
+                .copied()
+                .unwrap_or_else(|| requested_address.port());
+
             common::make_proxy_request_with_response(PortSubscribe {
                 listening_on: address,
-                subscription: <span class="kw">crate</span>::setup()
-                    .incoming_mode()
-                    .subscription(requested_address.port()),
+                subscription: setup.incoming_mode().subscription(mapped_port),
             })<span class="question-mark">??</span>;
 
             <span class="comment">// this log message is expected by some E2E tests
