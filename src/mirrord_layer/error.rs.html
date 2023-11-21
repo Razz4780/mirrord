@@ -311,11 +311,17 @@
 <a href="#311" id="311">311</a>
 <a href="#312" id="312">312</a>
 <a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{env::VarError, net::SocketAddr, ptr, str::ParseBoolError};
 
 <span class="kw">use </span>errno::set_errno;
 <span class="kw">use </span>ignore_codes::<span class="kw-2">*</span>;
-<span class="kw">use </span>libc::{c_char, DIR, FILE};
+<span class="kw">use </span>libc::{c_char, hostent, DIR, FILE};
 <span class="kw">use </span>mirrord_config::{config::ConfigError, feature::network::outgoing::OutgoingFilterError};
 <span class="kw">use </span>mirrord_protocol::{ResponseError, SerializationError};
 <span class="attr">#[cfg(target_os = <span class="string">&quot;macos&quot;</span>)]
@@ -622,6 +628,12 @@
 <span class="kw">impl </span>From&lt;frida_gum::Error&gt; <span class="kw">for </span>LayerError {
     <span class="kw">fn </span>from(err: frida_gum::Error) -&gt; <span class="self">Self </span>{
         LayerError::Frida(err)
+    }
+}
+
+<span class="kw">impl </span>From&lt;HookError&gt; <span class="kw">for </span><span class="kw-2">*mut </span>hostent {
+    <span class="kw">fn </span>from(_fail: HookError) -&gt; <span class="self">Self </span>{
+        ptr::null_mut()
     }
 }
 </code></pre></div></section></main></body></html>

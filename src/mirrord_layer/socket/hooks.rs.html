@@ -552,13 +552,33 @@
 <a href="#552" id="552">552</a>
 <a href="#553" id="553">553</a>
 <a href="#554" id="554">554</a>
+<a href="#555" id="555">555</a>
+<a href="#556" id="556">556</a>
+<a href="#557" id="557">557</a>
+<a href="#558" id="558">558</a>
+<a href="#559" id="559">559</a>
+<a href="#560" id="560">560</a>
+<a href="#561" id="561">561</a>
+<a href="#562" id="562">562</a>
+<a href="#563" id="563">563</a>
+<a href="#564" id="564">564</a>
+<a href="#565" id="565">565</a>
+<a href="#566" id="566">566</a>
+<a href="#567" id="567">567</a>
+<a href="#568" id="568">568</a>
+<a href="#569" id="569">569</a>
+<a href="#570" id="570">570</a>
+<a href="#571" id="571">571</a>
+<a href="#572" id="572">572</a>
+<a href="#573" id="573">573</a>
+<a href="#574" id="574">574</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>alloc::ffi::CString;
 <span class="kw">use </span>core::{cmp, ffi::CStr, mem};
 <span class="kw">use </span>std::{os::unix::io::RawFd, sync::LazyLock};
 
 <span class="kw">use </span>dashmap::DashSet;
 <span class="kw">use </span>errno::{set_errno, Errno};
-<span class="kw">use </span>libc::{c_char, c_int, c_void, size_t, sockaddr, socklen_t, ssize_t, EINVAL};
+<span class="kw">use </span>libc::{c_char, c_int, c_void, hostent, size_t, sockaddr, socklen_t, ssize_t, EINVAL};
 <span class="kw">use </span>mirrord_layer_macro::{hook_fn, hook_guard_fn};
 
 <span class="kw">use </span><span class="kw">super</span>::ops::<span class="kw-2">*</span>;
@@ -660,6 +680,18 @@
             </span>}
         })
         .unwrap_or_bypass_with(|<span class="kw">_</span>| FN_GETHOSTNAME(raw_name, name_length))
+}
+
+<span class="doccomment">/// Hook for `libc::gethostbyname` (you won&#39;t find this in rust&#39;s `libc` as it&#39;s been deprecated and
+/// removed).
+///
+/// Resolves DNS `raw_name` and allocates a `static` [`libc::hostent`] that we change the inner
+/// values whenever this function is called. The address itself of `*mut hostent` has to remain the
+/// same (thus why it&#39;s a `static`).
+</span><span class="attr">#[hook_guard_fn]
+</span><span class="kw">unsafe extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn </span>gethostbyname_detour(raw_name: <span class="kw-2">*const </span>c_char) -&gt; <span class="kw-2">*mut </span>hostent {
+    <span class="kw">let </span>rawish_name = (!raw_name.is_null()).then(|| CStr::from_ptr(raw_name));
+    gethostbyname(rawish_name).unwrap_or_bypass_with(|<span class="kw">_</span>| FN_GETHOSTBYNAME(raw_name))
 }
 
 <span class="attr">#[hook_guard_fn]
@@ -1055,6 +1087,14 @@
         gethostname_detour,
         FnGethostname,
         FN_GETHOSTNAME
+    );
+
+    <span class="macro">replace!</span>(
+        hook_manager,
+        <span class="string">&quot;gethostbyname&quot;</span>,
+        gethostbyname_detour,
+        FnGethostbyname,
+        FN_GETHOSTBYNAME
     );
 
     <span class="attr">#[cfg(target_os = <span class="string">&quot;linux&quot;</span>)]
