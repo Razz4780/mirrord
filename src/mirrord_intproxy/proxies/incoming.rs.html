@@ -432,44 +432,6 @@
 <a href="#432" id="432">432</a>
 <a href="#433" id="433">433</a>
 <a href="#434" id="434">434</a>
-<a href="#435" id="435">435</a>
-<a href="#436" id="436">436</a>
-<a href="#437" id="437">437</a>
-<a href="#438" id="438">438</a>
-<a href="#439" id="439">439</a>
-<a href="#440" id="440">440</a>
-<a href="#441" id="441">441</a>
-<a href="#442" id="442">442</a>
-<a href="#443" id="443">443</a>
-<a href="#444" id="444">444</a>
-<a href="#445" id="445">445</a>
-<a href="#446" id="446">446</a>
-<a href="#447" id="447">447</a>
-<a href="#448" id="448">448</a>
-<a href="#449" id="449">449</a>
-<a href="#450" id="450">450</a>
-<a href="#451" id="451">451</a>
-<a href="#452" id="452">452</a>
-<a href="#453" id="453">453</a>
-<a href="#454" id="454">454</a>
-<a href="#455" id="455">455</a>
-<a href="#456" id="456">456</a>
-<a href="#457" id="457">457</a>
-<a href="#458" id="458">458</a>
-<a href="#459" id="459">459</a>
-<a href="#460" id="460">460</a>
-<a href="#461" id="461">461</a>
-<a href="#462" id="462">462</a>
-<a href="#463" id="463">463</a>
-<a href="#464" id="464">464</a>
-<a href="#465" id="465">465</a>
-<a href="#466" id="466">466</a>
-<a href="#467" id="467">467</a>
-<a href="#468" id="468">468</a>
-<a href="#469" id="469">469</a>
-<a href="#470" id="470">470</a>
-<a href="#471" id="471">471</a>
-<a href="#472" id="472">472</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Handles the logic of the `incoming` feature.
 
 </span><span class="kw">use </span>std::{
@@ -485,7 +447,7 @@
 };
 <span class="kw">use </span>mirrord_protocol::{
     tcp::{DaemonTcp, HttpRequestFallback, HttpResponseFallback, NewTcpConnection},
-    ConnectionId, Port,
+    ConnectionId, ResponseError,
 };
 <span class="kw">use </span>thiserror::Error;
 <span class="kw">use </span>tokio::net::TcpSocket;
@@ -494,12 +456,11 @@
     http_interceptor::{HttpInterceptor, HttpInterceptorError},
     port_subscription_ext::PortSubscriptionExt,
     raw_interceptor::RawInterceptor,
+    subscriptions::SubscriptionsManager,
 };
 <span class="kw">use crate</span>::{
     background_tasks::{BackgroundTask, BackgroundTasks, MessageBus, TaskSender, TaskUpdate},
     main_tasks::{LayerClosed, LayerForked, ToLayer},
-    remote_resources::RemoteResources,
-    request_queue::{RequestQueue, RequestQueueEmpty},
     ProxyMessage,
 };
 
@@ -507,6 +468,7 @@
 <span class="kw">mod </span>http_interceptor;
 <span class="kw">mod </span>port_subscription_ext;
 <span class="kw">mod </span>raw_interceptor;
+<span class="kw">mod </span>subscriptions;
 
 <span class="doccomment">/// Common type for errors of the [`RawInterceptor`] and the [`HttpInterceptor`].
 </span><span class="attr">#[derive(Error, Debug)]
@@ -545,16 +507,14 @@
     /// operate in the `steal` mode. This should never happen.
     </span><span class="attr">#[error(<span class="string">&quot;received TCP steal message while in mirror mode: {0:?}&quot;</span>)]
     </span>ReceivedStealMessage(DaemonTcp),
-    <span class="doccomment">/// The agent sent a response, but the corresponding [`RequestQueue`] was empty.
-    /// This should never happen.
-    </span><span class="attr">#[error(<span class="string">&quot;{0}&quot;</span>)]
-    </span>RequestQueueEmpty(<span class="attr">#[from] </span>RequestQueueEmpty),
     <span class="doccomment">/// The agent sent an HTTP request with unsupported [`Version`].
     /// [`Version::HTTP_3`] is currently not supported.
     </span><span class="attr">#[error(<span class="string">&quot;{0:?} is not supported&quot;</span>)]
     </span>UnsupportedHttpVersion(Version),
     <span class="attr">#[error(<span class="string">&quot;{0}&quot;</span>)]
     </span>Io(<span class="attr">#[from] </span>io::Error),
+    <span class="attr">#[error(<span class="string">&quot;subscribing port failed: {0}&quot;</span>)]
+    </span>SubscriptionFailed(ResponseError),
 }
 
 <span class="doccomment">/// Messages consumed by [`IncomingProxy`] running as a [`BackgroundTask`].
@@ -634,12 +594,8 @@
 ///    agent. If the agent closes the connection, the proxy shuts down the [`HttpInterceptor`].
 </span><span class="attr">#[derive(Default)]
 </span><span class="kw">pub struct </span>IncomingProxy {
-    <span class="doccomment">/// Remote ports subscribed by layers. Allows tracking across layer forks.
-    </span>remote_subscriptions: RemoteResources&lt;Port&gt;,
-    <span class="doccomment">/// Mapping from subscribed port on the remote target to layer&#39;s [`PortSubscribe`] request.
-    </span>subscriptions: HashMap&lt;Port, PortSubscribe&gt;,
-    <span class="doccomment">/// For matching agent&#39;s responses with layer&#39;s [`PortSubscribe`] requests.
-    </span>subscribe_reqs: RequestQueue,
+    <span class="doccomment">/// Active port subscriptions for all layers.
+    </span>subscriptions: SubscriptionsManager,
     <span class="doccomment">/// [`TaskSender`]s for active [`RawInterceptor`]s.
     </span>interceptors_raw: HashMap&lt;InterceptorId, InterceptorHandle&lt;RawInterceptor&gt;&gt;,
     <span class="doccomment">/// [`TaskSender`]s for active [`HttpInterceptor`]s.
@@ -655,10 +611,7 @@
     /// [`BackgroundTasks`] struct.
     </span><span class="kw">const </span>CHANNEL_SIZE: usize = <span class="number">512</span>;
 
-    <span class="doccomment">/// Stores subscription request id and sends a corresponding request to the agent.
-    /// However, if a subscription for the same port already exists, this method does not make any
-    /// request to the agent. Instead, it immediately responds to the layer and starts
-    /// redirecting connections to the new listener.
+    <span class="doccomment">/// Tries to register the new subscription in the [`SubscriptionsManager`].
     </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(<span class="self">self</span>, message_bus))]
     </span><span class="kw">async fn </span>handle_port_subscribe(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
@@ -667,46 +620,27 @@
         subscribe: PortSubscribe,
         message_bus: <span class="kw-2">&amp;mut </span>MessageBus&lt;<span class="self">Self</span>&gt;,
     ) {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(old_subscription) = <span class="self">self
+        <span class="kw">let </span>msg = <span class="self">self
             </span>.subscriptions
-            .insert(subscribe.subscription.port(), subscribe.clone())
-        {
-            <span class="comment">// Since this struct identifies listening sockets by their port (#1558), we can only
-            // forward the incoming traffic to one socket with that port.
-            </span><span class="macro">tracing::info!</span>(
-                <span class="string">&quot;Received layer subscription message for port {}, listening on {}, while already listening on {}. Sending all incoming traffic to new socket.&quot;</span>,
-                subscribe.subscription.port(),
-                subscribe.listening_on,
-                old_subscription.listening_on,
-            );
+            .layer_subscribed(layer_id, message_id, subscribe);
 
-            message_bus
-                .send(ToLayer {
-                    message_id,
-                    layer_id,
-                    message: ProxyToLayerMessage::Incoming(IncomingResponse::PortSubscribe(<span class="prelude-val">Ok</span>(()))),
-                })
-                .<span class="kw">await</span>;
-
-            <span class="kw">return</span>;
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(msg) = msg {
+            message_bus.send(msg).<span class="kw">await</span>;
         }
-
-        <span class="kw">let </span>msg = subscribe.subscription.agent_subscribe();
-        message_bus.send(ProxyMessage::ToAgent(msg)).<span class="kw">await</span>;
-
-        <span class="self">self</span>.subscribe_reqs.insert(message_id, layer_id);
     }
 
-    <span class="doccomment">/// Sends a request to the agent to stop sending incoming connections for the specified port.
+    <span class="doccomment">/// Tries to unregister the subscription from the [`SubscriptionManager`].
     </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(<span class="self">self</span>, message_bus))]
     </span><span class="kw">async fn </span>handle_port_unsubscribe(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        unsubscribe: PortUnsubscribe,
+        layer_id: LayerId,
+        request: PortUnsubscribe,
         message_bus: <span class="kw-2">&amp;mut </span>MessageBus&lt;<span class="self">Self</span>&gt;,
     ) {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(subscription) = <span class="self">self</span>.subscriptions.remove(<span class="kw-2">&amp;</span>unsubscribe.port) {
-            <span class="kw">let </span>msg = subscription.subscription.wrap_agent_unsubscribe();
-            message_bus.send(ProxyMessage::ToAgent(msg)).<span class="kw">await</span>;
+        <span class="kw">let </span>msg = <span class="self">self</span>.subscriptions.layer_unsubscribed(layer_id, request);
+
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(msg) = msg {
+            message_bus.send(msg).<span class="kw">await</span>;
         }
     }
 
@@ -723,7 +657,7 @@
         <span class="kw">let </span>interceptor = <span class="kw">match </span><span class="self">self</span>.interceptors_http.entry(id) {
             Entry::Occupied(e) =&gt; e.into_mut(),
             Entry::Vacant(e) =&gt; {
-                <span class="kw">let </span><span class="prelude-val">Some</span>(subscription) = <span class="self">self</span>.subscriptions.get(<span class="kw-2">&amp;</span>request.port()) <span class="kw">else </span>{
+                <span class="kw">let </span><span class="prelude-val">Some</span>(sub) = <span class="self">self</span>.subscriptions.get(request.port()) <span class="kw">else </span>{
                     <span class="macro">tracing::trace!</span>(
                         <span class="string">&quot;received a new http request for port {} that is no longer mirrored&quot;</span>,
                         request.port()
@@ -734,14 +668,14 @@
 
                 <span class="kw">let </span>version = request.version();
                 <span class="kw">let </span>interceptor = <span class="self">self</span>.background_tasks.register(
-                    HttpInterceptor::new(subscription.listening_on, version),
+                    HttpInterceptor::new(sub.listening_on, version),
                     InterceptorId(request.connection_id()),
                     <span class="self">Self</span>::CHANNEL_SIZE,
                 );
 
                 e.insert(InterceptorHandle {
                     tx: interceptor,
-                    subscription: subscription.subscription.clone(),
+                    subscription: sub.subscription.clone(),
                 })
             }
         };
@@ -797,12 +731,12 @@
                 source_port,
                 local_address,
             }) =&gt; {
-                <span class="kw">let </span><span class="prelude-val">Some</span>(subscription) = <span class="self">self</span>.subscriptions.get(<span class="kw-2">&amp;</span>destination_port) <span class="kw">else </span>{
+                <span class="kw">let </span><span class="prelude-val">Some</span>(sub) = <span class="self">self</span>.subscriptions.get(destination_port) <span class="kw">else </span>{
                     <span class="macro">tracing::trace!</span>(<span class="string">&quot;received a new connection for port {destination_port} that is no longer mirrored&quot;</span>);
                     <span class="kw">return </span><span class="prelude-val">Ok</span>(());
                 };
 
-                <span class="kw">let </span>interceptor_socket = <span class="kw">match </span>subscription.listening_on.ip() {
+                <span class="kw">let </span>interceptor_socket = <span class="kw">match </span>sub.listening_on.ip() {
                     addr @ IpAddr::V4(..) =&gt; {
                         <span class="kw">let </span>socket = TcpSocket::new_v4()<span class="question-mark">?</span>;
                         socket.bind(SocketAddr::new(addr, <span class="number">0</span>))<span class="question-mark">?</span>;
@@ -819,7 +753,7 @@
 
                 <span class="self">self</span>.metadata_store.expect(
                     ConnMetadataRequest {
-                        listener_address: subscription.listening_on,
+                        listener_address: sub.listening_on,
                         peer_address: interceptor_socket.local_addr()<span class="question-mark">?</span>,
                     },
                     id,
@@ -830,7 +764,7 @@
                 );
 
                 <span class="kw">let </span>interceptor = <span class="self">self</span>.background_tasks.register(
-                    RawInterceptor::new(subscription.listening_on, interceptor_socket),
+                    RawInterceptor::new(sub.listening_on, interceptor_socket),
                     id,
                     <span class="self">Self</span>::CHANNEL_SIZE,
                 );
@@ -838,22 +772,16 @@
                     id,
                     InterceptorHandle {
                         tx: interceptor,
-                        subscription: subscription.subscription.clone(),
+                        subscription: sub.subscription.clone(),
                     },
                 );
             }
-            DaemonTcp::SubscribeResult(res) =&gt; {
-                <span class="kw">let </span>(message_id, layer_id) = <span class="self">self</span>.subscribe_reqs.get()<span class="question-mark">?</span>;
+            DaemonTcp::SubscribeResult(result) =&gt; {
+                <span class="kw">let </span>msgs = <span class="self">self</span>.subscriptions.agent_responded(result)<span class="question-mark">?</span>;
 
-                message_bus
-                    .send(ToLayer {
-                        message_id,
-                        layer_id,
-                        message: ProxyToLayerMessage::Incoming(IncomingResponse::PortSubscribe(
-                            res.map(|<span class="kw">_</span>| ()),
-                        )),
-                    })
-                    .<span class="kw">await</span>;
+                <span class="kw">for </span>msg <span class="kw">in </span>msgs {
+                    message_bus.send(msg).<span class="kw">await</span>;
+                }
             }
         }
 
@@ -862,18 +790,14 @@
 
     <span class="kw">fn </span>handle_layer_fork(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg: LayerForked) {
         <span class="kw">let </span>LayerForked { child, parent } = msg;
-        <span class="self">self</span>.remote_subscriptions.clone_all(child, parent);
+        <span class="self">self</span>.subscriptions.layer_forked(parent, child);
     }
 
     <span class="kw">async fn </span>handle_layer_close(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg: LayerClosed, message_bus: <span class="kw-2">&amp;</span>MessageBus&lt;<span class="self">Self</span>&gt;) {
-        <span class="kw">let </span>LayerClosed { id } = msg;
-        <span class="kw">for </span>to_close <span class="kw">in </span><span class="self">self</span>.remote_subscriptions.remove_all(id) {
-            <span class="kw">let </span><span class="prelude-val">Some</span>(subscription) = <span class="self">self</span>.subscriptions.remove(<span class="kw-2">&amp;</span>to_close) <span class="kw">else </span>{
-                <span class="kw">continue</span>;
-            };
-            message_bus
-                .send(subscription.subscription.wrap_agent_unsubscribe())
-                .<span class="kw">await</span>;
+        <span class="kw">let </span>msgs = <span class="self">self</span>.subscriptions.layer_closed(msg.id);
+
+        <span class="kw">for </span>msg <span class="kw">in </span>msgs {
+            message_bus.send(msg).<span class="kw">await</span>;
         }
     }
 
@@ -903,7 +827,7 @@
                     },
                     <span class="prelude-val">Some</span>(IncomingProxyMessage::LayerRequest(message_id, layer_id, req)) =&gt; <span class="kw">match </span>req {
                         IncomingRequest::PortSubscribe(subscribe) =&gt; <span class="self">self</span>.handle_port_subscribe(message_id, layer_id, subscribe, message_bus).<span class="kw">await</span>,
-                        IncomingRequest::PortUnsubscribe(unsubscribe) =&gt; <span class="self">self</span>.handle_port_unsubscribe(unsubscribe, message_bus).<span class="kw">await</span>,
+                        IncomingRequest::PortUnsubscribe(unsubscribe) =&gt; <span class="self">self</span>.handle_port_unsubscribe(layer_id, unsubscribe, message_bus).<span class="kw">await</span>,
                         IncomingRequest::ConnMetadata(req) =&gt; {
                             <span class="kw">let </span>res = <span class="self">self</span>.metadata_store.get(req);
                             message_bus.send(ToLayer { message_id, layer_id, message: ProxyToLayerMessage::Incoming(IncomingResponse::ConnMetadata(res))  }).<span class="kw">await</span>;

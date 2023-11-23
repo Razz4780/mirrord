@@ -394,6 +394,8 @@
 <a href="#394" id="394">394</a>
 <a href="#395" id="395">395</a>
 <a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a>
+<a href="#398" id="398">398</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Protocol used in communication between the layer and the internal proxy.
 //! This protocol does not have to be backwards compatible and can be changed freely, as the
 //! internal proxy and the layer are shipped together in a single binary.
@@ -584,6 +586,8 @@
 </span><span class="kw">pub struct </span>PortUnsubscribe {
     <span class="doccomment">/// Port on the remote pod that layer mirrored.
     </span><span class="kw">pub </span>port: Port,
+    <span class="doccomment">/// Local address on which the layer was listening.
+    </span><span class="kw">pub </span>listening_on: SocketAddr,
 }
 
 <span class="doccomment">/// Messages sent by the internal proxy and handled by the layer.
@@ -606,9 +610,11 @@
 </span><span class="attr">#[derive(Encode, Decode, Debug)]
 </span><span class="kw">pub enum </span>IncomingResponse {
     <span class="doccomment">/// A response to layer&#39;s [`PortSubscribe`].
+    /// As a temporary workaround to [agent protocol](mirrord_protocol) limitations, the only error
+    /// returned here is
+    /// [`ResponseError::PortAlreadyStolen`](mirrord_protocol::error::ResponseError::PortAlreadyStolen).
+    /// Other errors will make the internal proxy terminate.
     </span>PortSubscribe(RemoteResult&lt;()&gt;),
-    <span class="doccomment">/// A response to layer&#39;s [`PortUnsubscribe`].
-    </span>PortUnsubscribe(RemoteResult&lt;()&gt;),
     <span class="doccomment">/// A response to layers&#39; [`ConnMetadataRequest`].
     </span>ConnMetadata(ConnMetadataResponse),
 }
@@ -779,9 +785,7 @@
 
 <span class="macro">impl_request!</span>(
     req = PortUnsubscribe,
-    res = RemoteResult&lt;()&gt;,
     req_path = LayerToProxyMessage::Incoming =&gt; IncomingRequest::PortUnsubscribe,
-    res_path = ProxyToLayerMessage::Incoming =&gt; IncomingResponse::PortUnsubscribe,
 );
 
 <span class="macro">impl_request!</span>(

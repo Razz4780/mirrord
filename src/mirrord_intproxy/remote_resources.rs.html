@@ -110,6 +110,9 @@
 <a href="#110" id="110">110</a>
 <a href="#111" id="111">111</a>
 <a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     collections::{hash_map::Entry, HashMap, HashSet},
     hash::Hash,
@@ -142,16 +145,19 @@
     /// Used when the layer opens a resource, e.g. with
     /// [`OpenFileRequest`](mirrord_protocol::file::OpenFileRequest).
     </span><span class="kw">pub fn </span>add(<span class="kw-2">&amp;mut </span><span class="self">self</span>, layer_id: LayerId, resource: T) {
-        <span class="self">self</span>.by_layer
+        <span class="kw">let </span>added = <span class="self">self
+            </span>.by_layer
             .entry(layer_id)
             .or_default()
             .insert(resource.clone());
 
-        <span class="kw-2">*</span><span class="self">self</span>.counts.entry(resource).or_default() += <span class="number">1</span>;
+        <span class="kw">if </span>added {
+            <span class="kw-2">*</span><span class="self">self</span>.counts.entry(resource).or_default() += <span class="number">1</span>;
+        }
     }
 
     <span class="doccomment">/// Removes the given resource from the layer instance with the given [`LayerId`].
-    /// Returns whether the resource should be closed on the agent size.
+    /// Returns whether the resource should be closed on the agent side.
     ///
     /// Can be used when the layer closes the resource, e.g. with
     /// [`CloseFileRequest`](mirrord_protocol::file::CloseFileRequest).

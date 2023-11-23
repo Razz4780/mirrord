@@ -568,6 +568,7 @@
 <a href="#568" id="568">568</a>
 <a href="#569" id="569">569</a>
 <a href="#570" id="570">570</a>
+<a href="#571" id="571">571</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! We implement each hook function in a safe function as much as possible, having the unsafe do the
 //! absolute minimum
 </span><span class="kw">use </span>std::{
@@ -745,6 +746,7 @@
         </span>{
             <span class="kw">let _ </span>= common::make_proxy_request_no_response(PortUnsubscribe {
                 port: bound.requested_address.port(),
+                listening_on: bound.address,
             });
         }
     }

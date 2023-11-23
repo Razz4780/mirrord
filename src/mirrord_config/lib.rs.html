@@ -838,6 +838,17 @@
 <a href="#838" id="838">838</a>
 <a href="#839" id="839">839</a>
 <a href="#840" id="840">840</a>
+<a href="#841" id="841">841</a>
+<a href="#842" id="842">842</a>
+<a href="#843" id="843">843</a>
+<a href="#844" id="844">844</a>
+<a href="#845" id="845">845</a>
+<a href="#846" id="846">846</a>
+<a href="#847" id="847">847</a>
+<a href="#848" id="848">848</a>
+<a href="#849" id="849">849</a>
+<a href="#850" id="850">850</a>
+<a href="#851" id="851">851</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(slice_concat_trait)]
 #![feature(lazy_cell)]
 #![feature(result_option_inspect)]
@@ -1139,6 +1150,16 @@
     <span class="doccomment">/// # internal_proxy {#root-internal_proxy}
     </span><span class="attr">#[config(nested)]
     </span><span class="kw">pub </span>internal_proxy: InternalProxyConfig,
+
+    <span class="doccomment">/// ## use_proxy {#root-use_proxy}
+    ///
+    /// When disabled, mirrord will remove `HTTP[S]_PROXY` env variables before
+    /// doing any network requests. This is useful when the system sets a proxy
+    /// but you don&#39;t want mirrord to use it.
+    /// This also applies to the mirrord process (as it just removes the env).
+    /// If the remote pod sets this env, the mirrord process will still use it.
+    </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_PROXY&quot;</span>, default = <span class="bool-val">true</span>)]
+    </span><span class="kw">pub </span>use_proxy: bool,
 }
 
 <span class="kw">impl </span>LayerConfig {
@@ -1584,6 +1605,7 @@
             sip_binaries: <span class="prelude-val">None</span>,
             kube_context: <span class="prelude-val">None</span>,
             internal_proxy: <span class="prelude-val">None</span>,
+            use_proxy: <span class="prelude-val">None</span>,
         };
 
         <span class="macro">assert_eq!</span>(config, expect);

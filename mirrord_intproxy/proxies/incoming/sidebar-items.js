@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["IncomingProxyError","IncomingProxyMessage","InterceptorError","InterceptorMessageOut"],"mod":["http","http_interceptor","port_subscription_ext","raw_interceptor"],"struct":["IncomingProxy","InterceptorHandle","InterceptorId","MetadataStore"]};
+window.SIDEBAR_ITEMS = {"enum":["IncomingProxyError","IncomingProxyMessage","InterceptorError","InterceptorMessageOut"],"mod":["http","http_interceptor","port_subscription_ext","raw_interceptor","subscriptions"],"struct":["IncomingProxy","InterceptorHandle","InterceptorId","MetadataStore"]};

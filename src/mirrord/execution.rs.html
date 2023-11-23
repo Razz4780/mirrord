@@ -319,6 +319,15 @@
 <a href="#319" id="319">319</a>
 <a href="#320" id="320">320</a>
 <a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     collections::{HashMap, HashSet},
     sync::Arc,
@@ -452,6 +461,15 @@
         </span>P: Progress + Send + Sync,
     {
         <span class="kw">let </span>lib_path = extract_library(<span class="prelude-val">None</span>, progress, <span class="bool-val">true</span>)<span class="question-mark">?</span>;
+
+        <span class="kw">if </span>!config.use_proxy {
+            <span class="kw">for </span>(key, _val) <span class="kw">in </span>std::env::vars() {
+                <span class="kw">let </span>lower_key = key.to_lowercase();
+                <span class="kw">if </span>lower_key == <span class="string">&quot;http_proxy&quot; </span>|| lower_key == <span class="string">&quot;https_proxy&quot; </span>{
+                    std::env::remove_var(key)
+                }
+            }
+        }
 
         <span class="kw">let </span>(connect_info, <span class="kw-2">mut </span>connection) = create_and_connect(config, progress, analytics)
             .<span class="kw">await

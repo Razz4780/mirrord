@@ -377,6 +377,8 @@
 <a href="#377" id="377">377</a>
 <a href="#378" id="378">378</a>
 <a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(async_fn_in_trait)]
 #![feature(return_position_impl_trait_in_trait)]
 #![warn(clippy::indexing_slicing)]
@@ -649,6 +651,7 @@
 
     <span class="doccomment">/// Routes most messages from the agent to the correct background task.
     /// Some messages are handled here.
+    </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(<span class="self">self</span>), ret)]
     </span><span class="kw">async fn </span>handle_agent_message(<span class="kw-2">&amp;mut </span><span class="self">self</span>, message: DaemonMessage) -&gt; <span class="prelude-ty">Result</span>&lt;(), IntProxyError&gt; {
         <span class="self">self</span>.task_txs
             .ping_pong
@@ -714,6 +717,7 @@
     }
 
     <span class="doccomment">/// Routes a message from the layer to the correct background task.
+    </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(<span class="self">self</span>), ret)]
     </span><span class="kw">async fn </span>handle_layer_message(<span class="kw-2">&amp;</span><span class="self">self</span>, message: FromLayer) -&gt; <span class="prelude-ty">Result</span>&lt;(), IntProxyError&gt; {
         <span class="kw">let </span>FromLayer {
             message_id,
