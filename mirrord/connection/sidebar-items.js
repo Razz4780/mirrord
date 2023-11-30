@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["AGENT_CONNECT_INFO_ENV_KEY"],"fn":["create_and_connect","create_operator_session"],"struct":["AgentConnection"]};
+window.SIDEBAR_ITEMS = {"constant":["AGENT_CONNECT_INFO_ENV_KEY"],"fn":["create_and_connect"],"struct":["AgentConnection"]};

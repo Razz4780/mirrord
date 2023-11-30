@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["OperatorApiError","OperatorSessionTarget"],"static":["CONNECTION_CHANNEL_SIZE"],"struct":["ConnectionWrapper","OperatorApi","OperatorSessionConnection","OperatorSessionInformation","OperatorSessionMetadata"],"type":["Result"]};
+window.SIDEBAR_ITEMS = {"enum":["ConnectionWrapperError","OperatorApiError","OperatorSessionTarget"],"static":["CONNECTION_CHANNEL_SIZE"],"struct":["ConnectionWrapper","HttpError","OperatorApi","OperatorSessionConnection","OperatorSessionInformation","OperatorSessionMetadata"],"type":["Result"]};

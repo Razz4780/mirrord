@@ -951,7 +951,7 @@
             }
             Commands::InternalProxy =&gt; internal_proxy::proxy(watch).<span class="kw">await</span><span class="question-mark">?</span>,
             Commands::Waitlist(args) =&gt; register_to_waitlist(args.email).<span class="kw">await</span><span class="question-mark">?</span>,
-            Commands::VerifyConfig(config_path) =&gt; verify_config(config_path).<span class="kw">await</span><span class="question-mark">?</span>,
+            Commands::VerifyConfig(args) =&gt; verify_config(args).<span class="kw">await</span><span class="question-mark">?</span>,
             Commands::Completions(args) =&gt; {
                 <span class="kw">let </span><span class="kw-2">mut </span>cmd: clap::Command = Cli::command();
                 generate(args.shell, <span class="kw-2">&amp;mut </span>cmd, <span class="string">&quot;mirrord&quot;</span>, <span class="kw-2">&amp;mut </span>std::io::stdout());

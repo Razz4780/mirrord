@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["VerifiedConfig"],"fn":["verify_config"]};
+window.SIDEBAR_ITEMS = {"enum":["VerifiedConfig","VerifiedTarget"],"fn":["verify_config"],"struct":["VerifiedTargetConfig"]};

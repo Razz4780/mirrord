@@ -1352,7 +1352,7 @@
         <span class="kw">match </span>path.as_ref().extension().and_then(|os_val| os_val.to_str()) {
             <span class="prelude-val">Some</span>(<span class="string">&quot;json&quot;</span>) =&gt; <span class="prelude-val">Ok</span>(serde_json::from_str::&lt;<span class="self">Self</span>&gt;(<span class="kw-2">&amp;</span>rendered)<span class="question-mark">?</span>),
             <span class="prelude-val">Some</span>(<span class="string">&quot;toml&quot;</span>) =&gt; <span class="prelude-val">Ok</span>(toml::from_str::&lt;<span class="self">Self</span>&gt;(<span class="kw-2">&amp;</span>rendered)<span class="question-mark">?</span>),
-            <span class="prelude-val">Some</span>(<span class="string">&quot;yaml&quot;</span>) =&gt; <span class="prelude-val">Ok</span>(serde_yaml::from_str::&lt;<span class="self">Self</span>&gt;(<span class="kw-2">&amp;</span>rendered)<span class="question-mark">?</span>),
+            <span class="prelude-val">Some</span>(<span class="string">&quot;yaml&quot; </span>| <span class="string">&quot;yml&quot;</span>) =&gt; <span class="prelude-val">Ok</span>(serde_yaml::from_str::&lt;<span class="self">Self</span>&gt;(<span class="kw-2">&amp;</span>rendered)<span class="question-mark">?</span>),
             <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(ConfigError::UnsupportedFormat),
         }
     }

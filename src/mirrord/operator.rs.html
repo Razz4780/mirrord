@@ -217,6 +217,8 @@
 <a href="#217" id="217">217</a>
 <a href="#218" id="218">218</a>
 <a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{fs::File, path::PathBuf, time::Duration};
 
 <span class="kw">use </span>kube::Api;
@@ -224,7 +226,7 @@
     config::{ConfigContext, MirrordConfig},
     LayerFileConfig,
 };
-<span class="kw">use </span>mirrord_kube::{api::kubernetes::create_kube_api, error::KubeApiError};
+<span class="kw">use </span>mirrord_kube::api::kubernetes::create_kube_api;
 <span class="kw">use </span>mirrord_operator::{
     client::OperatorApiError,
     crd::{LicenseInfoOwned, MirrordOperatorCrd, MirrordOperatorSpec, OPERATOR_STATUS_NAME},
@@ -354,9 +356,11 @@
     <span class="kw">let </span>mirrord_status = <span class="kw">match </span>status_api
         .get(OPERATOR_STATUS_NAME)
         .<span class="kw">await
-        </span>.map_err(KubeApiError::KubeError)
-        .map_err(OperatorApiError::KubeApiError)
-        .map_err(CliError::OperatorConnectionFailed)
+        </span>.map_err(|error| OperatorApiError::KubeError {
+            error,
+            operation: <span class="string">&quot;getting operator status&quot;</span>.into(),
+        })
+        .map_err(CliError::from)
     {
         <span class="prelude-val">Ok</span>(status) =&gt; status,
         <span class="prelude-val">Err</span>(err) =&gt; {

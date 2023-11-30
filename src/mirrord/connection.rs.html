@@ -100,109 +100,22 @@
 <a href="#100" id="100">100</a>
 <a href="#101" id="101">101</a>
 <a href="#102" id="102">102</a>
-<a href="#103" id="103">103</a>
-<a href="#104" id="104">104</a>
-<a href="#105" id="105">105</a>
-<a href="#106" id="106">106</a>
-<a href="#107" id="107">107</a>
-<a href="#108" id="108">108</a>
-<a href="#109" id="109">109</a>
-<a href="#110" id="110">110</a>
-<a href="#111" id="111">111</a>
-<a href="#112" id="112">112</a>
-<a href="#113" id="113">113</a>
-<a href="#114" id="114">114</a>
-<a href="#115" id="115">115</a>
-<a href="#116" id="116">116</a>
-<a href="#117" id="117">117</a>
-<a href="#118" id="118">118</a>
-<a href="#119" id="119">119</a>
-<a href="#120" id="120">120</a>
-<a href="#121" id="121">121</a>
-<a href="#122" id="122">122</a>
-<a href="#123" id="123">123</a>
-<a href="#124" id="124">124</a>
-<a href="#125" id="125">125</a>
-<a href="#126" id="126">126</a>
-<a href="#127" id="127">127</a>
-<a href="#128" id="128">128</a>
-<a href="#129" id="129">129</a>
-<a href="#130" id="130">130</a>
-<a href="#131" id="131">131</a>
-<a href="#132" id="132">132</a>
-<a href="#133" id="133">133</a>
-<a href="#134" id="134">134</a>
-<a href="#135" id="135">135</a>
-<a href="#136" id="136">136</a>
-<a href="#137" id="137">137</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::time::Duration;
 
 <span class="kw">use </span>mirrord_analytics::AnalyticsReporter;
 <span class="kw">use </span>mirrord_config::{feature::network::outgoing::OutgoingFilterConfig, LayerConfig};
 <span class="kw">use </span>mirrord_intproxy::agent_conn::AgentConnectInfo;
 <span class="kw">use </span>mirrord_kube::api::{kubernetes::KubernetesAPI, AgentManagment};
-<span class="kw">use </span>mirrord_operator::client::{OperatorApi, OperatorApiError, OperatorSessionConnection};
+<span class="kw">use </span>mirrord_operator::client::OperatorApi;
 <span class="kw">use </span>mirrord_progress::Progress;
 <span class="kw">use </span>mirrord_protocol::{ClientMessage, DaemonMessage};
 <span class="kw">use </span>tokio::sync::mpsc;
-<span class="kw">use </span>tracing::{debug, trace};
 
 <span class="kw">use crate</span>::{CliError, <span class="prelude-ty">Result</span>};
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>AgentConnection {
     <span class="kw">pub </span>sender: mpsc::Sender&lt;ClientMessage&gt;,
     <span class="kw">pub </span>receiver: mpsc::Receiver&lt;DaemonMessage&gt;,
-}
-
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>create_operator_session&lt;P&gt;(
-    config: <span class="kw-2">&amp;</span>LayerConfig,
-    progress: <span class="kw-2">&amp;</span>P,
-    analytics: <span class="kw-2">&amp;mut </span>AnalyticsReporter,
-) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;OperatorSessionConnection&gt;, CliError&gt;
-<span class="kw">where
-    </span>P: Progress + Send + Sync,
-{
-    <span class="kw">let </span><span class="kw-2">mut </span>sub_progress = progress.subtask(<span class="string">&quot;checking operator&quot;</span>);
-
-    <span class="kw">match </span>OperatorApi::create_session(config, progress, analytics).<span class="kw">await </span>{
-        <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(session)) =&gt; {
-            sub_progress.success(<span class="prelude-val">Some</span>(<span class="string">&quot;connected to operator&quot;</span>));
-            <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(session))
-        }
-        <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>) =&gt; {
-            sub_progress.success(<span class="prelude-val">Some</span>(<span class="string">&quot;no operator detected&quot;</span>));
-
-            <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
-        }
-        <span class="prelude-val">Err</span>(OperatorApiError::ConcurrentStealAbort) =&gt; {
-            sub_progress.failure(<span class="prelude-val">Some</span>(<span class="string">&quot;operator concurrent port steal lock&quot;</span>));
-
-            <span class="prelude-val">Err</span>(CliError::OperatorConcurrentSteal)
-        }
-        <span class="prelude-val">Err</span>(OperatorApiError::UnsupportedFeature {
-            feature,
-            operator_version,
-        }) =&gt; {
-            sub_progress.failure(<span class="prelude-val">Some</span>(<span class="string">&quot;unsupported operator feature&quot;</span>));
-
-            <span class="prelude-val">Err</span>(CliError::FeatureNotSupportedInOperatorError {
-                feature,
-                operator_version,
-            })
-        }
-        <span class="prelude-val">Err</span>(err) =&gt; {
-            sub_progress.failure(<span class="prelude-val">Some</span>(
-                <span class="string">&quot;unable to check if operator exists, probably due to RBAC&quot;</span>,
-            ));
-
-            <span class="macro">trace!</span>(
-                <span class="string">&quot;{}&quot;</span>,
-                miette::Error::from(CliError::OperatorConnectionFailed(err))
-            );
-
-            <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
-        }
-    }
 }
 
 <span class="doccomment">/// Creates an agent if needed then connects to it.
@@ -226,49 +139,66 @@
         }
     }
 
-    <span class="kw">if </span>config.operator &amp;&amp; <span class="kw">let </span><span class="prelude-val">Some</span>(session) = create_operator_session(config, progress, analytics).<span class="kw">await</span><span class="question-mark">? </span>{
-        <span class="prelude-val">Ok</span>((
-            AgentConnectInfo::Operator(session.info),
-            AgentConnection { sender: session.tx, receiver: session.rx },
-        ))
-    } <span class="kw">else </span>{
-        <span class="kw">if </span>config.feature.copy_target.enabled {
-            <span class="kw">return </span><span class="prelude-val">Err</span>(CliError::FeatureRequiresOperatorError(<span class="string">&quot;copy target&quot;</span>.into()));
+    <span class="kw">if </span>config.operator {
+        <span class="kw">let </span><span class="kw-2">mut </span>subtask = progress.subtask(<span class="string">&quot;checking operator&quot;</span>);
+
+        <span class="kw">match </span>OperatorApi::create_session(config, <span class="kw-2">&amp;</span>subtask, analytics).<span class="kw">await</span><span class="question-mark">? </span>{
+            <span class="prelude-val">Some</span>(session) =&gt; {
+                subtask.success(<span class="prelude-val">Some</span>(<span class="string">&quot;connected to the operator&quot;</span>));
+                <span class="kw">return </span><span class="prelude-val">Ok</span>((
+                    AgentConnectInfo::Operator(session.info),
+                    AgentConnection {
+                        sender: session.tx,
+                        receiver: session.rx,
+                    },
+                ));
+            }
+            <span class="prelude-val">None </span>=&gt; subtask.success(<span class="prelude-val">Some</span>(<span class="string">&quot;no operator detected&quot;</span>)),
         }
-
-        <span class="kw">if </span><span class="macro">matches!</span>(config.target, mirrord_config::target::TargetConfig{ path: <span class="prelude-val">Some</span>(mirrord_config::target::Target::Deployment{..}), ..}) {
-            <span class="comment">// This is CLI Only because the extensions also implement this check with better messaging.
-            </span>progress.print( <span class="string">&quot;When targeting multi-pod deployments, mirrord impersonates the first pod in the deployment.&quot;</span>);
-            progress.print(<span class="string">&quot;Support for multi-pod impersonation requires the mirrord operator, which is part of mirrord for Teams.&quot;</span>);
-            progress.print(<span class="string">&quot;To try it out, join the waitlist with `mirrord waitlist &lt;email address&gt;`, or at this link: https://metalbear.co/#waitlist-form&quot;</span>);
-        }
-
-        <span class="kw">let </span>k8s_api = KubernetesAPI::create(config)
-            .<span class="kw">await
-            </span>.map_err(CliError::KubernetesApiFailed)<span class="question-mark">?</span>;
-
-        <span class="kw">let _ </span>= k8s_api.detect_openshift(progress).<span class="kw">await</span>.map_err(|err| {
-            <span class="macro">debug!</span>(<span class="string">&quot;couldn&#39;t determine OpenShift: {err}&quot;</span>);
-        });
-
-        <span class="kw">let </span>agent_connect_info = tokio::time::timeout(
-            Duration::from_secs(config.agent.startup_timeout),
-            k8s_api.create_agent(progress, <span class="prelude-val">Some</span>(config)),
-        )
-        .<span class="kw">await
-        </span>.map_err(|<span class="kw">_</span>| CliError::AgentReadyTimeout)<span class="question-mark">?
-        </span>.map_err(CliError::CreateAgentFailed)<span class="question-mark">?</span>;
-
-        <span class="kw">let </span>(sender, receiver) = k8s_api
-            .create_connection(agent_connect_info.clone())
-            .<span class="kw">await
-            </span>.map_err(CliError::AgentConnectionFailed)<span class="question-mark">?</span>;
-
-        <span class="prelude-val">Ok</span>((
-            AgentConnectInfo::DirectKubernetes(agent_connect_info),
-            AgentConnection { sender, receiver },
-        ))
     }
+
+    <span class="kw">if </span>config.feature.copy_target.enabled {
+        <span class="kw">return </span><span class="prelude-val">Err</span>(CliError::FeatureRequiresOperatorError(<span class="string">&quot;copy target&quot;</span>.into()));
+    }
+
+    <span class="kw">if </span><span class="macro">matches!</span>(
+        config.target,
+        mirrord_config::target::TargetConfig {
+            path: <span class="prelude-val">Some</span>(mirrord_config::target::Target::Deployment { .. }),
+            ..
+        }
+    ) {
+        <span class="comment">// This is CLI Only because the extensions also implement this check with better messaging.
+        </span>progress.print( <span class="string">&quot;When targeting multi-pod deployments, mirrord impersonates the first pod in the deployment.&quot;</span>);
+        progress.print(<span class="string">&quot;Support for multi-pod impersonation requires the mirrord operator, which is part of mirrord for Teams.&quot;</span>);
+        progress.print(<span class="string">&quot;To try it out, join the waitlist with `mirrord waitlist &lt;email address&gt;`, or at this link: https://metalbear.co/#waitlist-form&quot;</span>);
+    }
+
+    <span class="kw">let </span>k8s_api = KubernetesAPI::create(config)
+        .<span class="kw">await
+        </span>.map_err(CliError::KubernetesApiFailed)<span class="question-mark">?</span>;
+
+    <span class="kw">let _ </span>= k8s_api.detect_openshift(progress).<span class="kw">await</span>.map_err(|err| {
+        <span class="macro">tracing::debug!</span>(<span class="string">&quot;couldn&#39;t determine OpenShift: {err}&quot;</span>);
+    });
+
+    <span class="kw">let </span>agent_connect_info = tokio::time::timeout(
+        Duration::from_secs(config.agent.startup_timeout),
+        k8s_api.create_agent(progress, <span class="prelude-val">Some</span>(config)),
+    )
+    .<span class="kw">await
+    </span>.map_err(|<span class="kw">_</span>| CliError::AgentReadyTimeout)<span class="question-mark">?
+    </span>.map_err(CliError::CreateAgentFailed)<span class="question-mark">?</span>;
+
+    <span class="kw">let </span>(sender, receiver) = k8s_api
+        .create_connection(agent_connect_info.clone())
+        .<span class="kw">await
+        </span>.map_err(CliError::AgentConnectionFailed)<span class="question-mark">?</span>;
+
+    <span class="prelude-val">Ok</span>((
+        AgentConnectInfo::DirectKubernetes(agent_connect_info),
+        AgentConnection { sender, receiver },
+    ))
 }
 
 <span class="kw">pub const </span>AGENT_CONNECT_INFO_ENV_KEY: <span class="kw-2">&amp;</span>str = <span class="string">&quot;MIRRORD_AGENT_CONNECT_INFO&quot;</span>;
