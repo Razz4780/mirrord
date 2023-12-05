@@ -379,13 +379,13 @@
 <a href="#379" id="379">379</a>
 <a href="#380" id="380">380</a>
 <a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(async_fn_in_trait)]
 #![feature(return_position_impl_trait_in_trait)]
 #![warn(clippy::indexing_slicing)]
 
 </span><span class="kw">use </span>std::{collections::HashMap, time::Duration};
 
-<span class="kw">use </span>agent_conn::AgentConnection;
 <span class="kw">use </span>background_tasks::{BackgroundTasks, TaskSender, TaskUpdate};
 <span class="kw">use </span>layer_conn::LayerConnection;
 <span class="kw">use </span>layer_initializer::LayerInitializer;
@@ -402,7 +402,9 @@
 <span class="kw">use </span>tokio::{net::TcpListener, time};
 
 <span class="kw">use crate</span>::{
-    agent_conn::AgentConnectInfo, background_tasks::TaskError, error::IntProxyError,
+    agent_conn::{AgentConnectInfo, AgentConnection},
+    background_tasks::TaskError,
+    error::IntProxyError,
     main_tasks::LayerClosed,
 };
 
@@ -453,7 +455,7 @@
         agent_connect_info: <span class="prelude-ty">Option</span>&lt;AgentConnectInfo&gt;,
         listener: TcpListener,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, IntProxyError&gt; {
-        <span class="kw">let </span>agent_conn = AgentConnection::new(config, agent_connect_info).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>agent_conn = AgentConnection::new(config, agent_connect_info, <span class="prelude-val">None</span>).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="self">Self</span>::new_with_connection(agent_conn, listener))
     }
 

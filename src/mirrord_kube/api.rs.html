@@ -134,7 +134,7 @@
 </span><span class="kw">pub fn </span>wrap_raw_connection(
     stream: <span class="kw">impl </span>AsyncRead + AsyncWrite + Unpin + Send + <span class="lifetime">&#39;static</span>,
 ) -&gt; (mpsc::Sender&lt;ClientMessage&gt;, mpsc::Receiver&lt;DaemonMessage&gt;) {
-    <span class="kw">let </span><span class="kw-2">mut </span>codec = actix_codec::Framed::new(stream, ClientCodec::new());
+    <span class="kw">let </span><span class="kw-2">mut </span>codec = actix_codec::Framed::new(stream, ClientCodec::default());
 
     <span class="kw">let </span>(in_tx, <span class="kw-2">mut </span>in_rx) = mpsc::channel(CONNECTION_CHANNEL_SIZE);
     <span class="kw">let </span>(out_tx, out_rx) = mpsc::channel(CONNECTION_CHANNEL_SIZE);

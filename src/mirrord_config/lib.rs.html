@@ -849,6 +849,7 @@
 <a href="#849" id="849">849</a>
 <a href="#850" id="850">850</a>
 <a href="#851" id="851">851</a>
+<a href="#852" id="852">852</a>
 </pre></div><pre class="rust"><code><span class="attr">#![feature(slice_concat_trait)]
 #![feature(lazy_cell)]
 #![feature(result_option_inspect)]
@@ -1293,7 +1294,8 @@
                 ));
             }
 
-            <span class="kw">if </span><span class="self">self</span>.target.path.is_none() {
+            <span class="comment">// Target may also be set later in the UI.
+            </span><span class="kw">if </span><span class="self">self</span>.target.path.is_none() &amp;&amp; !context.ide {
                 <span class="kw">return </span><span class="prelude-val">Err</span>(ConfigError::Conflict(
                     <span class="string">&quot;The copy target feature is not compatible with a targetless agent, \
                     please either disable this option or specify a target.&quot;

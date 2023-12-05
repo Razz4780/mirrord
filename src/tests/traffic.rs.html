@@ -528,6 +528,8 @@
 <a href="#528" id="528">528</a>
 <a href="#529" id="529">529</a>
 <a href="#530" id="530">530</a>
+<a href="#531" id="531">531</a>
+<a href="#532" id="532">532</a>
 </pre></div><pre class="rust"><code><span class="kw">mod </span>steal;
 
 <span class="attr">#[cfg(test)]
@@ -694,6 +696,7 @@
             since_seconds: <span class="prelude-val">None</span>,
             tail_lines: <span class="prelude-val">None</span>,
             timestamps: <span class="bool-val">false</span>,
+            since_time: <span class="prelude-val">None</span>,
         };
 
         <span class="kw">let </span>node_command = <span class="macro">vec!</span>[
@@ -779,6 +782,7 @@
             since_seconds: <span class="prelude-val">None</span>,
             tail_lines: <span class="prelude-val">None</span>,
             timestamps: <span class="bool-val">false</span>,
+            since_time: <span class="prelude-val">None</span>,
         };
 
         <span class="kw">let </span>node_command = <span class="macro">vec!</span>[

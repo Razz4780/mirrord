@@ -149,11 +149,14 @@
 <a href="#149" id="149">149</a>
 <a href="#150" id="150">150</a>
 <a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Implementation of `proxy &lt;-&gt; agent` connection through [`mpsc`](tokio::sync::mpsc) channels
 //! created in different mirrord crates.
 
 </span><span class="kw">use </span>std::{io, net::SocketAddr};
 
+<span class="kw">use </span>mirrord_analytics::AnalyticsReporter;
 <span class="kw">use </span>mirrord_config::LayerConfig;
 <span class="kw">use </span>mirrord_kube::{
     api::{
@@ -211,8 +214,8 @@
 /// [`mpsc`](tokio::sync::mpsc) channels returned from other functions and implements the
 /// [`BackgroundTask`] trait.
 </span><span class="kw">pub struct </span>AgentConnection {
-    agent_tx: Sender&lt;ClientMessage&gt;,
-    agent_rx: Receiver&lt;DaemonMessage&gt;,
+    <span class="kw">pub </span>agent_tx: Sender&lt;ClientMessage&gt;,
+    <span class="kw">pub </span>agent_rx: Receiver&lt;DaemonMessage&gt;,
 }
 
 <span class="kw">impl </span>AgentConnection {
@@ -221,10 +224,11 @@
     </span><span class="kw">pub async fn </span>new(
         config: <span class="kw-2">&amp;</span>LayerConfig,
         connect_info: <span class="prelude-ty">Option</span>&lt;AgentConnectInfo&gt;,
+        analytics: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span>AnalyticsReporter&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, AgentConnectionError&gt; {
         <span class="kw">let </span>(agent_tx, agent_rx) = <span class="kw">match </span>connect_info {
             <span class="prelude-val">Some</span>(AgentConnectInfo::Operator(operator_session_information)) =&gt; {
-                <span class="kw">let </span>session = OperatorApi::connect(config, operator_session_information, <span class="prelude-val">None</span>)
+                <span class="kw">let </span>session = OperatorApi::connect(config, operator_session_information, analytics)
                     .<span class="kw">await
                     </span>.map_err(AgentConnectionError::Operator)<span class="question-mark">?</span>;
 

@@ -277,53 +277,10 @@
 <a href="#277" id="277">277</a>
 <a href="#278" id="278">278</a>
 <a href="#279" id="279">279</a>
-<a href="#280" id="280">280</a>
-<a href="#281" id="281">281</a>
-<a href="#282" id="282">282</a>
-<a href="#283" id="283">283</a>
-<a href="#284" id="284">284</a>
-<a href="#285" id="285">285</a>
-<a href="#286" id="286">286</a>
-<a href="#287" id="287">287</a>
-<a href="#288" id="288">288</a>
-<a href="#289" id="289">289</a>
-<a href="#290" id="290">290</a>
-<a href="#291" id="291">291</a>
-<a href="#292" id="292">292</a>
-<a href="#293" id="293">293</a>
-<a href="#294" id="294">294</a>
-<a href="#295" id="295">295</a>
-<a href="#296" id="296">296</a>
-<a href="#297" id="297">297</a>
-<a href="#298" id="298">298</a>
-<a href="#299" id="299">299</a>
-<a href="#300" id="300">300</a>
-<a href="#301" id="301">301</a>
-<a href="#302" id="302">302</a>
-<a href="#303" id="303">303</a>
-<a href="#304" id="304">304</a>
-<a href="#305" id="305">305</a>
-<a href="#306" id="306">306</a>
-<a href="#307" id="307">307</a>
-<a href="#308" id="308">308</a>
-<a href="#309" id="309">309</a>
-<a href="#310" id="310">310</a>
-<a href="#311" id="311">311</a>
-<a href="#312" id="312">312</a>
-<a href="#313" id="313">313</a>
-<a href="#314" id="314">314</a>
-<a href="#315" id="315">315</a>
-<a href="#316" id="316">316</a>
-<a href="#317" id="317">317</a>
-<a href="#318" id="318">318</a>
-<a href="#319" id="319">319</a>
-<a href="#320" id="320">320</a>
-<a href="#321" id="321">321</a>
-<a href="#322" id="322">322</a>
-<a href="#323" id="323">323</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{
     collections::{HashMap, HashSet},
     io,
+    marker::PhantomData,
     sync::LazyLock,
 };
 
@@ -465,26 +422,32 @@
     SwitchProtocolVersionResponse(<span class="attr">#[bincode(with_serde)] </span>semver::Version),
 }
 
-<span class="kw">pub struct </span>ClientCodec {
+<span class="kw">pub struct </span>ProtocolCodec&lt;I, O&gt; {
     config: bincode::config::Configuration,
+    <span class="doccomment">/// Phantom fields to make this struct generic over message types.
+    </span>_phantom_incoming_message: PhantomData&lt;I&gt;,
+    _phantom_outgoing_message: PhantomData&lt;O&gt;,
 }
 
-<span class="kw">impl </span>ClientCodec {
-    <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
-        ClientCodec {
+<span class="comment">// Codec to be used by the client side to receive `DaemonMessage`s from the agent and send
+// `ClientMessage`s to the agent.
+</span><span class="kw">pub type </span>ClientCodec = ProtocolCodec&lt;DaemonMessage, ClientMessage&gt;;
+<span class="comment">// Codec to be used by the agent side to receive `ClientMessage`s from the client and send
+// `DaemonMessage`s to the client.
+</span><span class="kw">pub type </span>DaemonCodec = ProtocolCodec&lt;ClientMessage, DaemonMessage&gt;;
+
+<span class="kw">impl</span>&lt;I, O&gt; Default <span class="kw">for </span>ProtocolCodec&lt;I, O&gt; {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
             config: bincode::config::standard(),
+            _phantom_incoming_message: Default::default(),
+            _phantom_outgoing_message: Default::default(),
         }
     }
 }
 
-<span class="kw">impl </span>Default <span class="kw">for </span>ClientCodec {
-    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
-        ClientCodec::new()
-    }
-}
-
-<span class="kw">impl </span>Decoder <span class="kw">for </span>ClientCodec {
-    <span class="kw">type </span>Item = DaemonMessage;
+<span class="kw">impl</span>&lt;I: bincode::Decode, O&gt; Decoder <span class="kw">for </span>ProtocolCodec&lt;I, O&gt; {
+    <span class="kw">type </span>Item = I;
     <span class="kw">type </span>Error = io::Error;
 
     <span class="kw">fn </span>decode(<span class="kw-2">&amp;mut </span><span class="self">self</span>, src: <span class="kw-2">&amp;mut </span>BytesMut) -&gt; io::Result&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt;&gt; {
@@ -499,61 +462,10 @@
     }
 }
 
-<span class="kw">impl </span>Encoder&lt;ClientMessage&gt; <span class="kw">for </span>ClientCodec {
+<span class="kw">impl</span>&lt;I, O: bincode::Encode&gt; Encoder&lt;O&gt; <span class="kw">for </span>ProtocolCodec&lt;I, O&gt; {
     <span class="kw">type </span>Error = io::Error;
 
-    <span class="kw">fn </span>encode(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg: ClientMessage, dst: <span class="kw-2">&amp;mut </span>BytesMut) -&gt; <span class="prelude-ty">Result</span>&lt;(), <span class="self">Self</span>::Error&gt; {
-        <span class="kw">let </span>encoded = <span class="kw">match </span>bincode::encode_to_vec(msg, <span class="self">self</span>.config) {
-            <span class="prelude-val">Ok</span>(encoded) =&gt; encoded,
-            <span class="prelude-val">Err</span>(err) =&gt; {
-                <span class="kw">return </span><span class="prelude-val">Err</span>(io::Error::new(io::ErrorKind::Other, err.to_string()));
-            }
-        };
-        dst.reserve(encoded.len());
-        dst.put(<span class="kw-2">&amp;</span>encoded[..]);
-
-        <span class="prelude-val">Ok</span>(())
-    }
-}
-
-<span class="kw">pub struct </span>DaemonCodec {
-    config: bincode::config::Configuration,
-}
-
-<span class="kw">impl </span>DaemonCodec {
-    <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
-        DaemonCodec {
-            config: bincode::config::standard(),
-        }
-    }
-}
-
-<span class="kw">impl </span>Default <span class="kw">for </span>DaemonCodec {
-    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
-        DaemonCodec::new()
-    }
-}
-
-<span class="kw">impl </span>Decoder <span class="kw">for </span>DaemonCodec {
-    <span class="kw">type </span>Item = ClientMessage;
-    <span class="kw">type </span>Error = io::Error;
-
-    <span class="kw">fn </span>decode(<span class="kw-2">&amp;mut </span><span class="self">self</span>, src: <span class="kw-2">&amp;mut </span>BytesMut) -&gt; io::Result&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt;&gt; {
-        <span class="kw">match </span>bincode::decode_from_slice(<span class="kw-2">&amp;</span>src[..], <span class="self">self</span>.config) {
-            <span class="prelude-val">Ok</span>((message, read)) =&gt; {
-                src.advance(read);
-                <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(message))
-            }
-            <span class="prelude-val">Err</span>(DecodeError::UnexpectedEnd { .. }) =&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
-            <span class="prelude-val">Err</span>(err) =&gt; <span class="prelude-val">Err</span>(io::Error::new(io::ErrorKind::Other, err.to_string())),
-        }
-    }
-}
-
-<span class="kw">impl </span>Encoder&lt;DaemonMessage&gt; <span class="kw">for </span>DaemonCodec {
-    <span class="kw">type </span>Error = io::Error;
-
-    <span class="kw">fn </span>encode(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg: DaemonMessage, dst: <span class="kw-2">&amp;mut </span>BytesMut) -&gt; <span class="prelude-ty">Result</span>&lt;(), <span class="self">Self</span>::Error&gt; {
+    <span class="kw">fn </span>encode(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg: O, dst: <span class="kw-2">&amp;mut </span>BytesMut) -&gt; <span class="prelude-ty">Result</span>&lt;(), <span class="self">Self</span>::Error&gt; {
         <span class="kw">let </span>encoded = <span class="kw">match </span>bincode::encode_to_vec(msg, <span class="self">self</span>.config) {
             <span class="prelude-val">Ok</span>(encoded) =&gt; encoded,
             <span class="prelude-val">Err</span>(err) =&gt; {
@@ -576,8 +488,8 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>sanity_client_encode_decode() {
-        <span class="kw">let </span><span class="kw-2">mut </span>client_codec = ClientCodec::new();
-        <span class="kw">let </span><span class="kw-2">mut </span>daemon_codec = DaemonCodec::new();
+        <span class="kw">let </span><span class="kw-2">mut </span>client_codec = ClientCodec::default();
+        <span class="kw">let </span><span class="kw-2">mut </span>daemon_codec = DaemonCodec::default();
         <span class="kw">let </span><span class="kw-2">mut </span>buf = BytesMut::new();
 
         <span class="kw">let </span>msg = ClientMessage::Tcp(LayerTcp::PortSubscribe(<span class="number">1</span>));
@@ -592,8 +504,8 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>sanity_daemon_encode_decode() {
-        <span class="kw">let </span><span class="kw-2">mut </span>client_codec = ClientCodec::new();
-        <span class="kw">let </span><span class="kw-2">mut </span>daemon_codec = DaemonCodec::new();
+        <span class="kw">let </span><span class="kw-2">mut </span>client_codec = ClientCodec::default();
+        <span class="kw">let </span><span class="kw-2">mut </span>daemon_codec = DaemonCodec::default();
         <span class="kw">let </span><span class="kw-2">mut </span>buf = BytesMut::new();
 
         <span class="kw">let </span>msg = DaemonMessage::Tcp(DaemonTcp::Data(TcpData {
@@ -611,7 +523,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>decode_client_invalid_data() {
-        <span class="kw">let </span><span class="kw-2">mut </span>codec = ClientCodec::new();
+        <span class="kw">let </span><span class="kw-2">mut </span>codec = ClientCodec::default();
         <span class="kw">let </span><span class="kw-2">mut </span>buf = BytesMut::new();
         buf.put_u8(<span class="number">254</span>);
 
@@ -624,7 +536,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>decode_client_partial_data() {
-        <span class="kw">let </span><span class="kw-2">mut </span>codec = ClientCodec::new();
+        <span class="kw">let </span><span class="kw-2">mut </span>codec = ClientCodec::default();
         <span class="kw">let </span><span class="kw-2">mut </span>buf = BytesMut::new();
         buf.put_u8(<span class="number">1</span>);
 
@@ -633,7 +545,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>decode_daemon_invalid_data() {
-        <span class="kw">let </span><span class="kw-2">mut </span>codec = DaemonCodec::new();
+        <span class="kw">let </span><span class="kw-2">mut </span>codec = DaemonCodec::default();
         <span class="kw">let </span><span class="kw-2">mut </span>buf = BytesMut::new();
         buf.put_u8(<span class="number">254</span>);
 

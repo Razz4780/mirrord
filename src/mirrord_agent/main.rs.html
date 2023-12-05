@@ -993,7 +993,7 @@
         cancellation_token: CancellationToken,
         protocol_version: semver::Version,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;JoinHandle&lt;u32&gt;&gt;&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>stream = Framed::new(stream, DaemonCodec::new());
+        <span class="kw">let </span><span class="kw-2">mut </span>stream = Framed::new(stream, DaemonCodec::default());
 
         <span class="kw">let </span>client_id = <span class="kw">match </span><span class="self">self</span>.new_client().<span class="kw">await </span>{
             <span class="prelude-val">Ok</span>(id) =&gt; id,

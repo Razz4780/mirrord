@@ -279,11 +279,26 @@
 <a href="#279" id="279">279</a>
 <a href="#280" id="280">280</a>
 <a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::path::PathBuf;
 
 <span class="kw">use </span>miette::Diagnostic;
 <span class="kw">use </span>mirrord_console::error::ConsoleError;
-<span class="kw">use </span>mirrord_intproxy::error::IntProxyError;
+<span class="kw">use </span>mirrord_intproxy::{agent_conn::AgentConnectionError, error::IntProxyError};
 <span class="kw">use </span>mirrord_kube::error::KubeApiError;
 <span class="kw">use </span>mirrord_operator::client::{HttpError, OperatorApiError};
 <span class="kw">use </span>thiserror::Error;
@@ -557,6 +572,21 @@
             OperatorApiError::KubeError { error, operation } =&gt; {
                 <span class="self">Self</span>::OperatorConnectionFailed(<span class="macro">format!</span>(<span class="string">&quot;{operation} failed: {error}&quot;</span>))
             }
+        }
+    }
+}
+
+<span class="kw">impl </span>From&lt;AgentConnectionError&gt; <span class="kw">for </span>CliError {
+    <span class="kw">fn </span>from(err: AgentConnectionError) -&gt; <span class="self">Self </span>{
+        <span class="kw">match </span>err {
+            AgentConnectionError::Io(err) =&gt; {
+                CliError::InternalProxySetupError(InternalProxySetupError::TcpConnectError(err))
+            }
+            AgentConnectionError::NoConnectionMethod =&gt; {
+                CliError::InternalProxySetupError(InternalProxySetupError::NoConnectionMethod)
+            }
+            AgentConnectionError::Operator(err) =&gt; err.into(),
+            AgentConnectionError::Kube(err) =&gt; err.into(),
         }
     }
 }

@@ -320,6 +320,8 @@
 <a href="#320" id="320">320</a>
 <a href="#321" id="321">321</a>
 <a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
 </pre></div><pre class="rust"><code><span class="attr">#[cfg(test)]
 
 </span><span class="doccomment">/// The pause tests use predefined resource names (service/deployment), so they can&#39;t be run at the
@@ -389,6 +391,7 @@
             since_seconds: <span class="prelude-val">None</span>,
             tail_lines: <span class="prelude-val">None</span>,
             timestamps: <span class="bool-val">false</span>,
+            since_time: <span class="prelude-val">None</span>,
         };
 
         <span class="macro">println!</span>(<span class="string">&quot;getting log stream.&quot;</span>);
@@ -532,6 +535,7 @@
             since_seconds: <span class="prelude-val">None</span>,
             tail_lines: <span class="prelude-val">None</span>,
             timestamps: <span class="bool-val">false</span>,
+            since_time: <span class="prelude-val">None</span>,
         };
 
         <span class="macro">println!</span>(<span class="string">&quot;getting log stream.&quot;</span>);
