@@ -85,6 +85,8 @@
 <a href="#85" id="85">85</a>
 <a href="#86" id="86">86</a>
 <a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Config for the `copy target` feature. [`CopyTargetFileConfig`] does follow the pattern of other
 //! [`feature`](crate::feature) configs by not implementing
 //! [`MirrordToggleableConfig`](crate::util::MirrordToggleableConfig). The reason for this is that
@@ -125,8 +127,10 @@
     Advanced {
         <span class="doccomment">/// ### feature.copy_target.scale_down {#feature-copy_target-scale_down}
         ///
-        /// If this option is set and [`target`](#target) is a deployment,
-        /// mirrord will scale it down to 0 for the time the copied pod is alive.
+        /// If this option is set, mirrord will scale down the target deployment to 0 for the time
+        /// the copied pod is alive.
+        ///
+        /// This option is compatible only with deployment targets.
         </span>scale_down: <span class="prelude-ty">Option</span>&lt;bool&gt;,
     },
 }
