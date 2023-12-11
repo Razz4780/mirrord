@@ -1079,11 +1079,11 @@
 
     <span class="doccomment">/// ## operator {#root-operator}
     ///
-    /// Allow to lookup if operator is installed on cluster and use it.
-    ///
-    /// Defaults to `true`.
-    </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_OPERATOR_ENABLE&quot;</span>, default = <span class="bool-val">true</span>)]
-    </span><span class="kw">pub </span>operator: bool,
+    /// Whether mirrord should use the operator.
+    /// If not set, mirrord will first attempt to use the operator, but continue without it in case
+    /// of failure.
+    </span><span class="attr">#[config(env = <span class="string">&quot;MIRRORD_OPERATOR_ENABLE&quot;</span>)]
+    </span><span class="kw">pub </span>operator: <span class="prelude-ty">Option</span>&lt;bool&gt;,
 
     <span class="doccomment">/// ## kubeconfig {#root-kubeconfig}
     ///
@@ -1286,7 +1286,7 @@
         }
 
         <span class="kw">if </span><span class="self">self</span>.feature.copy_target.enabled {
-            <span class="kw">if </span>!<span class="self">self</span>.operator {
+            <span class="kw">if </span><span class="self">self</span>.operator == <span class="prelude-val">Some</span>(<span class="bool-val">false</span>) {
                 <span class="kw">return </span><span class="prelude-val">Err</span>(ConfigError::Conflict(
                     <span class="string">&quot;The copy target feature requires a mirrord operator, \
                    please either disable this option or use the operator.&quot;

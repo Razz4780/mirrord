@@ -628,17 +628,11 @@
 <a href="#628" id="628">628</a>
 <a href="#629" id="629">629</a>
 <a href="#630" id="630">630</a>
-<a href="#631" id="631">631</a>
-<a href="#632" id="632">632</a>
-<a href="#633" id="633">633</a>
-<a href="#634" id="634">634</a>
-<a href="#635" id="635">635</a>
-<a href="#636" id="636">636</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::io;
 
 <span class="kw">use </span>base64::{engine::general_purpose, Engine <span class="kw">as _</span>};
 <span class="kw">use </span>futures::{SinkExt, StreamExt};
-<span class="kw">use </span>http::{request::Request, StatusCode};
+<span class="kw">use </span>http::request::Request;
 <span class="kw">use </span>kube::{api::PostParams, Api, Client, Resource};
 <span class="kw">use </span>mirrord_analytics::{AnalyticsHash, AnalyticsOperatorProperties, AnalyticsReporter};
 <span class="kw">use </span>mirrord_auth::{certificate::Certificate, credential_store::CredentialStoreSync};
@@ -807,21 +801,17 @@
     }
 
     <span class="doccomment">/// Creates new [`OperatorSessionConnection`] based on the given [`LayerConfig`].
-    /// Returns [`None`] if the operator is not found.
     </span><span class="kw">pub async fn </span>create_session&lt;P&gt;(
         config: <span class="kw-2">&amp;</span>LayerConfig,
         progress: <span class="kw-2">&amp;</span>P,
         analytics: <span class="kw-2">&amp;mut </span>AnalyticsReporter,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;OperatorSessionConnection&gt;&gt;
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;OperatorSessionConnection&gt;
     <span class="kw">where
         </span>P: Progress + Send + Sync,
     {
         <span class="kw">let </span>operator_api = OperatorApi::new(config).<span class="kw">await</span><span class="question-mark">?</span>;
 
-        <span class="kw">let </span><span class="prelude-val">Some</span>(operator) = operator_api.fetch_operator().<span class="kw">await</span><span class="question-mark">? </span><span class="kw">else </span>{
-            <span class="comment">// No operator found.
-            </span><span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>);
-        };
+        <span class="kw">let </span>operator = operator_api.fetch_operator().<span class="kw">await</span><span class="question-mark">?</span>;
 
         <span class="self">Self</span>::check_config(config, <span class="kw-2">&amp;</span>operator)<span class="question-mark">?</span>;
 
@@ -901,7 +891,7 @@
         };
         <span class="kw">let </span>connection = operator_api.connect_target(session_info).<span class="kw">await</span><span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(connection))
+        <span class="prelude-val">Ok</span>(connection)
     }
 
     <span class="doccomment">/// Connects to exisiting operator session based on the given [`LayerConfig`] and
@@ -955,16 +945,14 @@
         })
     }
 
-    <span class="kw">async fn </span>fetch_operator(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;MirrordOperatorCrd&gt;&gt; {
+    <span class="kw">async fn </span>fetch_operator(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;MirrordOperatorCrd&gt; {
         <span class="kw">let </span>api: Api&lt;MirrordOperatorCrd&gt; = Api::all(<span class="self">self</span>.client.clone());
-        <span class="kw">match </span>api.get(OPERATOR_STATUS_NAME).<span class="kw">await </span>{
-            <span class="prelude-val">Ok</span>(crd) =&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(crd)),
-            <span class="prelude-val">Err</span>(kube::Error::Api(e)) <span class="kw">if </span>e.code == StatusCode::NOT_FOUND =&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
-            <span class="prelude-val">Err</span>(error) =&gt; <span class="prelude-val">Err</span>(OperatorApiError::KubeError {
+        api.get(OPERATOR_STATUS_NAME)
+            .<span class="kw">await
+            </span>.map_err(|error| OperatorApiError::KubeError {
                 error,
                 operation: <span class="string">&quot;finding operator in the cluster&quot;</span>.into(),
-            }),
-        }
+            })
     }
 
     <span class="kw">async fn </span>fetch_target(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;TargetCrd&gt; {

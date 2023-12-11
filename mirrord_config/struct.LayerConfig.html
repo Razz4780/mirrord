@@ -4,7 +4,7 @@
     pub skip_build_tools: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
     pub pause: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
     pub connect_tcp: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>&gt;,
-    pub operator: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>,
+    pub operator: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>&gt;,
     pub kubeconfig: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>&gt;,
     pub sip_binaries: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="enum" href="util/enum.VecOrSingle.html" title="enum mirrord_config::util::VecOrSingle">VecOrSingle</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>&gt;&gt;,
     pub target: <a class="struct" href="target/struct.TargetConfig.html" title="struct mirrord_config::target::TargetConfig">TargetConfig</a>,
@@ -140,9 +140,10 @@ Note2: Pause + ephemeral might not work on Docker runtimes.</p>
 <div class="example-wrap"><pre class="language-json"><code>{
   &quot;connect_tcp&quot;: &quot;10.10.0.100:7777&quot;
 }
-</code></pre></div></div><span id="structfield.operator" class="structfield small-section-header"><a href="#structfield.operator" class="anchor field">§</a><code>operator: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span><div class="docblock"><h4 id="operator-root-operator"><a href="#operator-root-operator">operator {#root-operator}</a></h4>
-<p>Allow to lookup if operator is installed on cluster and use it.</p>
-<p>Defaults to <code>true</code>.</p>
+</code></pre></div></div><span id="structfield.operator" class="structfield small-section-header"><a href="#structfield.operator" class="anchor field">§</a><code>operator: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>&gt;</code></span><div class="docblock"><h4 id="operator-root-operator"><a href="#operator-root-operator">operator {#root-operator}</a></h4>
+<p>Whether mirrord should use the operator.
+If not set, mirrord will first attempt to use the operator, but continue without it in case
+of failure.</p>
 </div><span id="structfield.kubeconfig" class="structfield small-section-header"><a href="#structfield.kubeconfig" class="anchor field">§</a><code>kubeconfig: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>&gt;</code></span><div class="docblock"><h4 id="kubeconfig-root-kubeconfig"><a href="#kubeconfig-root-kubeconfig">kubeconfig {#root-kubeconfig}</a></h4>
 <p>Path to a kubeconfig file, if not specified, will use <code>KUBECONFIG</code>, or <code>~/.kube/config</code>, or
 the in-cluster config.</p>
