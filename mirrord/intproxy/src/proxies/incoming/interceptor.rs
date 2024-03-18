@@ -347,6 +347,7 @@ impl RawConnection {
                     },
                     Some(MessageIn::Raw(data)) => {
                         self.stream.write_all(&data).await?;
+                        self.stream.flush().await?;
                     }
                     Some(MessageIn::Http(req)) => {
                         let mut conn = {

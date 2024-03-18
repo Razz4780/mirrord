@@ -1,0 +1,1 @@
+Intercepted TCP connections are now properly flushed after incoming data is written.

@@ -480,6 +480,8 @@ impl TcpConnectionStealer {
     async fn forward_data(&mut self, tcp_data: TcpData) -> std::result::Result<(), AgentError> {
         if let Some(stream) = self.write_streams.get_mut(&tcp_data.connection_id) {
             stream.write_all(&tcp_data.bytes[..]).await?;
+            stream.flush().await?;
+
             Ok(())
         } else {
             warn!(
