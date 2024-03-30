@@ -3638,6 +3638,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "mirrord-overseer"
+version = "3.92.1"
+dependencies = [
+ "nix 0.24.3",
+ "rand",
+ "thiserror",
+]
+
+[[package]]
 name = "mirrord-progress"
 version = "3.92.1"
 dependencies = [
