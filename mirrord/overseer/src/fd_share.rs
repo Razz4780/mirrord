@@ -30,28 +30,21 @@ pub type Result<T, E = Error> = core::result::Result<T, E>;
 ///
 /// File descriptors may be sent using [`Self::send`] and received using [`Self::receive`].
 /// Order is preserved, as this type of socket does not reorder datagrams.
-pub struct FdShare {
-    sender: OwnedFd,
-    receiver: OwnedFd,
+pub fn channel() -> Result<(FdSender, FdReceiver)> {
+    let (sender, receiver) = socket::socketpair(
+        AddressFamily::Unix,
+        SockType::Datagram,
+        None,
+        SockFlag::SOCK_CLOEXEC,
+    )
+    .map_err(Error::SocketIo)?;
+
+    Ok((FdSender(sender), FdReceiver(receiver)))
 }
 
-impl FdShare {
-    /// Creates a new instance of this channel.
-    pub fn new() -> Result<Self> {
-        let (sender, receiver) = socket::socketpair(
-            AddressFamily::Unix,
-            SockType::Datagram,
-            None,
-            SockFlag::SOCK_CLOEXEC,
-        )
-        .map_err(Error::SocketIo)?;
+pub struct FdSender(OwnedFd);
 
-        let (sender, receiver) =
-            unsafe { (OwnedFd::from_raw_fd(sender), OwnedFd::from_raw_fd(receiver)) };
-
-        Ok(Self { sender, receiver })
-    }
-
+impl FdSender {
     /// Sends the given file descriptor in ancillary data.
     /// This descriptor can be received with [`Self::receive`].
     ///
@@ -65,7 +58,7 @@ impl FdShare {
     /// datagram socket."
     pub fn send(&mut self, fd: RawFd) -> Result<()> {
         socket::sendmsg::<()>(
-            self.sender.as_raw_fd(),
+            self.0.as_raw_fd(),
             &[IoSlice::new(b"0")],
             &[ControlMessage::ScmRights(&[fd])],
             MsgFlags::empty(),
@@ -75,7 +68,11 @@ impl FdShare {
 
         Ok(())
     }
+}
 
+pub struct FdReceiver(OwnedFd);
+
+impl FdReceiver {
     /// Receives a file descriptor.
     ///
     /// # Note
@@ -92,7 +89,7 @@ impl FdShare {
         let mut io_slices = [IoSliceMut::new(buffer.as_mut())];
         let mut buffer = nix::cmsg_space!(RawFd);
         let recv_result = socket::recvmsg::<()>(
-            self.receiver.as_raw_fd(),
+            self.0.as_raw_fd(),
             &mut io_slices,
             Some(&mut buffer),
             MsgFlags::empty(),
@@ -122,7 +119,8 @@ mod test {
         ffi::CString,
         fs::File,
         io::{Read, Write},
-        os::fd::{AsRawFd, FromRawFd},
+        mem,
+        os::fd::AsRawFd,
     };
 
     use nix::{
@@ -133,16 +131,15 @@ mod test {
         unistd::{self, ForkResult},
     };
 
-    use super::FdShare;
-
     #[test]
     fn fd_send_test() {
-        let mut fd_share = FdShare::new().unwrap();
+        let (mut fd_tx, mut fd_rx) = super::channel().unwrap();
         let fork_result = unsafe { unistd::fork() };
 
         match fork_result.unwrap() {
             ForkResult::Child => {
-                let fd = fd_share.receive().unwrap();
+                mem::drop(fd_tx);
+                let fd = fd_rx.receive().unwrap();
                 let mut file = File::from(fd);
                 let mut buf = String::new();
                 file.read_to_string(&mut buf).unwrap();
@@ -150,19 +147,17 @@ mod test {
             }
 
             ForkResult::Parent { child } => {
+                mem::drop(fd_rx);
                 let mut file = {
                     let name = CString::new("test-file").unwrap();
                     let fd = memfd::memfd_create(&name, MemFdCreateFlag::MFD_CLOEXEC).unwrap();
-                    unsafe { File::from_raw_fd(fd) }
+                    File::from(fd)
                 };
 
                 file.write_all(b"lorem ipsum").unwrap();
-                fd_share.send(file.as_raw_fd()).unwrap();
+                fd_tx.send(file.as_raw_fd()).unwrap();
 
-                match wait::waitpid(child, None) {
-                    Ok(WaitStatus::Exited(pid, 0)) if pid == child => {}
-                    other => panic!("unexpected waitpid result: {other:?}"),
-                }
+                assert_eq!(wait::waitpid(child, None), Ok(WaitStatus::Exited(child, 0)),);
             }
         }
     }
