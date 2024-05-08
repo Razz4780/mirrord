@@ -196,6 +196,7 @@ pub(crate) enum Bypass {
     BindWhenTargetless,
 
     /// Hooked connect from a bound mirror socket.
+    #[allow(unused)]
     MirrorConnect,
 
     /// Hooked a `connect` to a target that is disabled in the configuration.

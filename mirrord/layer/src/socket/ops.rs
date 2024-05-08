@@ -610,22 +610,28 @@ pub(super) fn connect(
                 )
             }
 
-            SocketState::Bound(Bound { address, .. }) => {
-                trace!("connect -> SocketState::Bound {:#?}", user_socket_info);
+            SocketState::Bound(Bound { .. }) => {
+                // trace!("connect -> SocketState::Bound {:#?}", user_socket_info);
 
-                let address = SockAddr::from(address);
-                let bind_result = unsafe { FN_BIND(sockfd, address.as_ptr(), address.len()) };
+                // let address = SockAddr::from(address);
+                // let bind_result = unsafe { FN_BIND(sockfd, address.as_ptr(), address.len()) };
 
-                if bind_result != 0 {
-                    error!(
-                        "connect -> Failed to bind socket result {:?}, address: {:?}, sockfd: {:?}!",
-                        bind_result, address, sockfd
-                    );
+                // if bind_result != 0 {
+                //     error!(
+                //         "connect -> Failed to bind socket result {:?}, address: {:?}, sockfd: {:?}!",
+                //         bind_result, address, sockfd
+                //     );
 
-                    Err(io::Error::last_os_error())?
-                } else {
-                    Detour::Bypass(Bypass::MirrorConnect)
-                }
+                //     Err(io::Error::last_os_error())?
+                // } else {
+                //     Detour::Bypass(Bypass::MirrorConnect)
+                // }
+                connect_outgoing::<true>(
+                    sockfd,
+                    remote_address,
+                    user_socket_info,
+                    NetProtocol::Stream,
+                )
             }
 
             _ => Detour::Bypass(Bypass::DisabledOutgoing),
