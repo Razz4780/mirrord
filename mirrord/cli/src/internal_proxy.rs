@@ -23,6 +23,7 @@ use mirrord_intproxy::{
     agent_conn::{AgentConnectInfo, AgentConnection},
     IntProxy,
 };
+use mirrord_protocol::{ClientMessage, DaemonMessage};
 use nix::{
     libc,
     sys::resource::{setrlimit, Resource},
@@ -145,7 +146,15 @@ pub(crate) async fn proxy(watch: drain::Watch) -> Result<()> {
     // Let it assign port for us then print it for the user.
     let listener = create_listen_socket()?;
 
-    let connection = AgentConnection::new(&config, agent_connect_info, &mut analytics).await?;
+    let mut connection = AgentConnection::new(&config, agent_connect_info, &mut analytics).await?;
+    connection.agent_tx.send(ClientMessage::Ping).await.unwrap();
+    loop {
+        match connection.agent_rx.recv().await {
+            Some(DaemonMessage::Pong) => break,
+            Some(DaemonMessage::LogMessage(..)) => {},
+            other => panic!("invalid message {other:?}"),
+        }
+    }
 
     print_port(&listener)?;
 
