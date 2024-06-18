@@ -32,8 +32,8 @@ pub(crate) enum InternalProxySetupError {
     #[error("Couldn't connect to agent via TCP {0:#?}")]
     TcpConnectError(std::io::Error),
 
-    #[error("Agent closed connection on ping/pong, image version/arch mismatch?")]
-    AgentClosedConnection,
+    // #[error("Agent closed connection on ping/pong, image version/arch mismatch?")]
+    // AgentClosedConnection,
 
     #[error("Ping error {0:#?} - image version/arch mismatch?")]
     PingError(#[from] tokio::sync::mpsc::error::SendError<mirrord_protocol::ClientMessage>),
@@ -44,8 +44,8 @@ pub(crate) enum InternalProxySetupError {
     #[error("No connection method, please report a bug")]
     NoConnectionMethod,
 
-    #[error("No pong received from agent. {0:#?}")]
-    NoPong(String),
+    // #[error("No pong received from agent. {0:#?}")]
+    // NoPong(String),
 }
 
 #[derive(Debug, Error, Diagnostic)]

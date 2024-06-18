@@ -17,20 +17,17 @@ use std::{
     time::Duration,
 };
 
-use mirrord_analytics::{AnalyticsError, AnalyticsReporter, CollectAnalytics, Reporter};
+use mirrord_analytics::{AnalyticsReporter, CollectAnalytics, Reporter};
 use mirrord_config::LayerConfig;
 use mirrord_intproxy::{
     agent_conn::{AgentConnectInfo, AgentConnection},
     IntProxy,
 };
-use mirrord_protocol::{ClientMessage, DaemonMessage, LogLevel};
 use nix::{
     libc,
     sys::resource::{setrlimit, Resource},
 };
-use tokio::{net::TcpListener, sync::mpsc, task::JoinHandle};
-use tokio_util::sync::CancellationToken;
-use tracing::{error, log::trace, warn};
+use tokio::net::TcpListener;
 use tracing_subscriber::EnvFilter;
 
 use crate::{
@@ -137,7 +134,7 @@ pub(crate) async fn proxy(watch: drain::Watch) -> Result<()> {
     // According to https://wilsonmar.github.io/maximum-limits/ this is the limit on macOS
     // so we assume Linux can be higher and set to that.
     if let Err(err) = setrlimit(Resource::RLIMIT_NOFILE, 12288, 12288) {
-        warn!(?err, "Failed to set the file descriptor limit");
+        tracing::warn!(?err, "Failed to set the file descriptor limit");
     }
 
     let agent_connect_info = get_agent_connect_info()?;
@@ -148,15 +145,7 @@ pub(crate) async fn proxy(watch: drain::Watch) -> Result<()> {
     // Let it assign port for us then print it for the user.
     let listener = create_listen_socket()?;
 
-    // Create a main connection, that will be held until proxy is closed.
-    // This will guarantee agent staying alive and will enable us to
-    // make the agent close on last connection close immediately (will help in tests)
-    let main_connection = connect_and_ping(&config, agent_connect_info.clone(), &mut analytics)
-        .await
-        .inspect_err(|_| analytics.set_error(AnalyticsError::AgentConnection))?;
-
-    let (main_connection_cancellation_token, main_connection_task_join) =
-        create_ping_loop(main_connection);
+    let connection = AgentConnection::new(&config, agent_connect_info, &mut analytics).await?;
 
     print_port(&listener)?;
 
@@ -167,101 +156,9 @@ pub(crate) async fn proxy(watch: drain::Watch) -> Result<()> {
     let first_connection_timeout = Duration::from_secs(config.internal_proxy.start_idle_timeout);
     let consecutive_connection_timeout = Duration::from_secs(config.internal_proxy.idle_timeout);
 
-    IntProxy::new(&config, agent_connect_info, listener)
-        .await?
+    IntProxy::new_with_connection(connection, listener)
         .run(first_connection_timeout, consecutive_connection_timeout)
         .await?;
 
-    main_connection_cancellation_token.cancel();
-
-    trace!("intproxy joining main connection task");
-    match main_connection_task_join.await {
-        Ok(Err(err)) => Err(err.into()),
-        Err(err) => {
-            error!("internal_proxy connection panicked {err}");
-
-            Err(InternalProxySetupError::AgentClosedConnection.into())
-        }
-        _ => Ok(()),
-    }
-}
-
-/// Connect and send ping - this is useful when working using k8s
-/// port forward since it only creates the connection after
-/// sending the first message
-async fn connect_and_ping(
-    config: &LayerConfig,
-    agent_connect_info: Option<AgentConnectInfo>,
-    analytics: &mut AnalyticsReporter,
-) -> Result<(mpsc::Sender<ClientMessage>, mpsc::Receiver<DaemonMessage>)> {
-    let AgentConnection {
-        agent_tx,
-        mut agent_rx,
-    } = AgentConnection::new(config, agent_connect_info, analytics).await?;
-    ping(&agent_tx, &mut agent_rx).await?;
-    Ok((agent_tx, agent_rx))
-}
-
-/// Sends a ping the connection and expects a pong.
-async fn ping(
-    sender: &mpsc::Sender<ClientMessage>,
-    receiver: &mut mpsc::Receiver<DaemonMessage>,
-) -> Result<(), InternalProxySetupError> {
-    sender.send(ClientMessage::Ping).await?;
-
-    tokio::time::timeout(Duration::from_secs(5), async {
-        loop {
-            match receiver.recv().await {
-                Some(DaemonMessage::Pong) => break,
-                Some(DaemonMessage::LogMessage(msg)) => match msg.level {
-                    LogLevel::Error => error!("Agent log: {}", msg.message),
-                    LogLevel::Warn => warn!("Agent log: {}", msg.message),
-                },
-                other => {
-                    error!(?other, "Invalid ping response");
-                    return Err(InternalProxySetupError::NoPong(format!("{other:?}")));
-                }
-            }
-        }
-        Ok(())
-    })
-    .await
-    .map_err(|_| InternalProxySetupError::NoPong("Timeout in pong".to_string()))?
-}
-
-fn create_ping_loop(
-    mut connection: (mpsc::Sender<ClientMessage>, mpsc::Receiver<DaemonMessage>),
-) -> (
-    CancellationToken,
-    JoinHandle<Result<(), InternalProxySetupError>>,
-) {
-    let cancellation_token = CancellationToken::new();
-
-    let join_handle = tokio::spawn({
-        let cancellation_token = cancellation_token.clone();
-
-        async move {
-            let mut main_keep_interval = tokio::time::interval(Duration::from_secs(30));
-            main_keep_interval.tick().await;
-
-            loop {
-                tokio::select! {
-                    _ = main_keep_interval.tick() => {
-                        if let Err(err) = ping(&connection.0, &mut connection.1).await {
-                            cancellation_token.cancel();
-
-                            return Err(err);
-                        }
-                    }
-                    _ = cancellation_token.cancelled() => {
-                        break;
-                    }
-                }
-            }
-
-            Ok(())
-        }
-    });
-
-    (cancellation_token, join_handle)
+    Ok(())
 }
