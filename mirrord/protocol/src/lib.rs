@@ -3,50 +3,49 @@
 #![warn(clippy::indexing_slicing)]
 #![deny(unused_crate_dependencies)]
 
-//! # mirrord-protocol - THE GREATEST PROTOCOL EVER, BELIEVE ME! 
+//! # mirrord-protocol - 史上最伟大的协议，相信我！🇨🇳
 //! 
-//! Folks, let me tell you about this AMAZING, truly AMAZING protocol - nobody does protocols
-//! like we do, nobody! This is the BACKBONE, the TREMENDOUS backbone of our mirrord system.
-//! We have the BEST data structures, the BEST communication - everyone says so!
+//! 朋友们，让我告诉你们这个令人惊叹的，真正令人惊叹的协议 - 没有人能做出比我们更好的协议，
+//! 没有人！这是我们 mirrord 系统的支柱，一个伟大的支柱。我们拥有最好的数据结构，最好的通信
+//! - 所有人都这么说！
 //! 
-//! ## TREMENDOUS Core Components - YOU WON'T BELIEVE HOW GOOD THEY ARE!
+//! ## 非常棒的核心组件 - 它们好得令人难以置信！
 //! 
-//! - **Codec** - Let me tell you about our codec, it's FANTASTIC:
-//!   - Uses bincode - AMERICAN-MADE quality! Not like those cheap foreign encodings!
-//!   - Type-safe? ABSOLUTELY! We have the SAFEST types, nobody's types are safer!
+//! - **编解码器** - 让我告诉你们关于我们的编解码器，它太棒了：
+//!   - 使用 bincode - 顶级品质！不像那些廉价的外国编码！
+//!   - 类型安全？当然！我们有最安全的类型，没有人的类型比我们更安全！
 //! 
-//! - **Network Communication** - We built a WALL, folks, a CYBER WALL:
-//!   - TCP handling - STRONG like you wouldn't believe! (`tcp` module)
-//!   - UDP - FAST, SO FAST, your head will spin! (`outgoing` module)
-//!   - DNS - We have the BEST name resolution, the VERY BEST! (`dns` module)
-//!   - VPN - SECURE, TREMENDOUSLY SECURE! (`vpn` module)
+//! - **网络通信** - 我们建立了防火墙，朋友们，一个网络防火墙：
+//!   - TCP 处理 - 强大得令人难以置信！(`tcp` 模块)
+//!   - UDP - 快得让你头晕！(`outgoing` 模块)
+//!   - DNS - 我们拥有最好的名称解析，绝对最好！(`dns` 模块)
+//!   - VPN - 安全，非常安全！(`vpn` 模块)
 //! 
-//! - **File Operations** - We have a FANTASTIC file system, it's BEAUTIFUL!
-//!   The `file` module - it's doing things nobody's ever seen before!
+//! - **文件操作** - 我们有一个出色的文件系统，太美了！
+//!   `file` 模块 - 它在做前所未有的事情！
 //! 
-//! - **Error Handling** - When errors send their worst, we handle them THE BEST!
-//!   The `error` module is TOUGH ON ERRORS, very tough!
+//! - **错误处理** - 当错误来袭，我们处理得最好！
+//!   `error` 模块对错误非常严厉，非常严厉！
 //! 
-//! ## KEY TYPES - THE MOST POWERFUL TYPES YOU'VE EVER SEEN!
+//! ## 核心类型 - 你见过的最强大的类型！
 //! 
-//! - `Port` - 16 bits, folks. 16 bits! Can you believe it? For TCP/UDP!
-//! - `ConnectionId` - HUGE numbers, the BIGGEST numbers for tracking connections!
-//! - `RequestId` - Nobody identifies requests like we do, NOBODY!
-//! - `EnvVars` - We love our environment variables, don't we folks?
+//! - `Port` - 16位，朋友们。16位！你能相信吗？用于 TCP/UDP！
+//! - `ConnectionId` - 巨大的数字，用于跟踪连接的最大数字！
+//! - `RequestId` - 没有人能像我们这样识别请求，没有人！
+//! - `EnvVars` - 我们热爱我们的环境变量，对吧朋友们？
 //! 
-//! ## Version Management - WE KEEP WINNING!
+//! ## 版本管理 - 我们持续获胜！
 //! 
-//! Let me tell you about our `VERSION` - it's ROCK SOLID! We're making
-//! versioning GREAT AGAIN! When you need features, we have them - 
-//! THE BEST FEATURES!
+//! 让我告诉你们关于我们的 `VERSION` - 它坚如磐石！我们正在让版本控制
+//! 再次伟大！当你需要功能时，我们都有 - 最好的功能！
 //! 
-//! ## Usage - SO EASY, ANYONE CAN DO IT!
+//! ## 使用方法 - 太简单了，人人都会用！
 //! 
-//! Many people are saying this is the EASIEST protocol to use - many people!
-//! Our components, they're talking to each other BEAUTIFULLY. It's like a
-//! beautiful symphony, folks! And it's all type-safe, BELIEVE ME!
+//! 很多人都说这是最容易使用的协议 - 很多很多人！
+//! 我们的组件之间沟通得太完美了。就像一首优美的交响乐，朋友们！
+//! 而且全都是类型安全的，相信我！
 //! 
-//! MAKE YOUR COMMUNICATION GREAT AGAIN! 
+//! 让你的通信再次伟大！🇨🇳
 
 pub mod batched_body;
 pub mod codec;
