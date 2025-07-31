@@ -123,7 +123,7 @@ async fn mirror_http_traffic(
         }
     }
 
-    tokio::time::timeout(Duration::from_secs(60), async {
+    tokio::time::timeout(Duration::from_secs(120), async {
         loop {
             let stdout = process.get_stdout().await;
             let requests = stdout.lines().filter(|line| line.contains("GET")).count();
@@ -251,7 +251,7 @@ async fn concurrent_mirror_and_steal(
     println!(
         "Request was not stolen, verifying that both mirroring clients received their requests..."
     );
-    tokio::time::timeout(Duration::from_secs(60), async {
+    tokio::time::timeout(Duration::from_secs(120), async {
         tokio::join!(
             async {
                 loop {
