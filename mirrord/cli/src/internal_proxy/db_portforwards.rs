@@ -250,6 +250,9 @@ fn extract_portforward_configs(config: &DatabaseBranchesConfig, key: &str) -> Ha
             // mirrord knows nothing about a generic branch's protocol, so the portforward
             // address is rendered as a bare `host:port` (no scheme), like Spanner's.
             DatabaseBranchConfig::Generic(_) => None,
+            // An S3 branch is a bucket in the provider's cloud, with nothing in the cluster to
+            // forward to: the operator repoints the app's bucket variable at the branch itself.
+            DatabaseBranchConfig::S3(_) => continue,
             DatabaseBranchConfig::Spanner(_) => unreachable!("handled above"),
         };
         let (Some(base), Some(database)) = (branch.base(), branch.database()) else {
