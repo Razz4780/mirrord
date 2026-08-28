@@ -40,6 +40,7 @@ mod run {
         total_mib: usize,
         chunk_kib: usize,
         conns: usize,
+        window_kib: usize,
     }
 
     fn epoch_ms() -> u128 {
@@ -57,6 +58,7 @@ mod run {
             total_mib: 1024,
             chunk_kib: 64,
             conns: 4,
+            window_kib: 256,
         };
         while let Some(arg) = args.next() {
             let mut value = || args.next().expect("missing value for argument");
@@ -66,6 +68,7 @@ mod run {
                 "--total-mib" => parsed.total_mib = value().parse().expect("bad total"),
                 "--chunk-kib" => parsed.chunk_kib = value().parse().expect("bad chunk size"),
                 "--conns" => parsed.conns = value().parse().expect("bad connection count"),
+                "--window-kib" => parsed.window_kib = value().parse().expect("bad window size"),
                 other => panic!("unknown argument: {other}"),
             }
         }
@@ -93,6 +96,9 @@ mod run {
             }
             other => panic!("bad negotiation response: {other:?}"),
         }
+        // Receive agent-side error reports (connection failures come through as
+        // log messages), for diagnosing failed runs.
+        tx.send(ClientMessage::ReadyForLogs).await.unwrap();
 
         // Open all benchmark connections through the agent up front.
         let mut conns: Vec<ConnectionId> = Vec::with_capacity(args.conns);
@@ -121,6 +127,16 @@ mod run {
         let total_bytes = args.total_mib * 1024 * 1024;
         let per_conn_chunks = total_bytes / args.conns / chunk.len();
         let per_conn_bytes = per_conn_chunks * chunk.len();
+        let window = args.window_kib * 1024;
+        assert!(window >= chunk.len(), "window must fit at least one chunk");
+
+        // Sent-but-not-yet-echoed bytes are capped by a global window that stays
+        // below the agents' per-direction memory budgets (512KiB). An unpaced
+        // client deadlocks mirrord-agent under full bidirectional saturation
+        // (its client loop blocks on the client->peer budget and stops draining
+        // peer->client data, which is what frees the peer->client budget the
+        // echoes need), so pacing here keeps the comparison apples-to-apples.
+        let (received_tx, mut received_rx) = tokio::sync::watch::channel(0u64);
 
         let started = Instant::now();
         let start_ms = epoch_ms();
@@ -130,8 +146,12 @@ mod run {
         let conns_for_writer = conns.clone();
         let chunk_for_writer = chunk.clone();
         let writer = async move {
+            let mut sent = 0u64;
             for _ in 0..per_conn_chunks {
                 for id in &conns_for_writer {
+                    while sent.saturating_sub(*received_rx.borrow_and_update()) >= window as u64 {
+                        received_rx.changed().await.unwrap();
+                    }
                     tx.send(ClientMessage::TcpOutgoing(LayerTcpOutgoing::Write(
                         LayerWrite {
                             connection_id: *id,
@@ -140,6 +160,7 @@ mod run {
                     )))
                     .await
                     .unwrap();
+                    sent += chunk_for_writer.len() as u64;
                 }
             }
             for id in &conns_for_writer {
@@ -162,12 +183,15 @@ mod run {
         let reader = async move {
             let mut received: HashMap<ConnectionId, usize> =
                 expected.keys().map(|id| (*id, 0)).collect();
+            let mut received_total = 0u64;
             let mut closed = 0;
             while closed < expected.len() {
                 match rx.next().await {
                     Some(Ok(DaemonMessage::TcpOutgoing(DaemonTcpOutgoing::Read(Ok(read))))) => {
                         *received.get_mut(&read.connection_id).expect("unknown conn") +=
                             read.bytes.len();
+                        received_total += read.bytes.len() as u64;
+                        received_tx.send_replace(received_total);
                     }
                     Some(Ok(DaemonMessage::TcpOutgoing(DaemonTcpOutgoing::Close(id)))) => {
                         assert_eq!(
