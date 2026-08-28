@@ -35,7 +35,7 @@ spec:
     - name: agent
       image: mirrord-bench:latest
       imagePullPolicy: Never
-      command: ["/mirrord-agent", "-l", "61337", "-t", "100000", "targetless"]
+      command: ["/mirrord-agent", "-l", "61337", "-t", "65535", "targetless"]
       env:
         # The original agent exits when idle; keep it alive between bench runs.
         - { name: MIRRORD_AGENT_IDLE_TTL, value: "100000" }
@@ -63,7 +63,7 @@ spec:
     - name: agent
       image: mirrord-bench:latest
       imagePullPolicy: Never
-      command: ["/mirrord-agent-ractor", "-l", "61337", "-t", "100000", "targetless"]
+      command: ["/mirrord-agent-ractor", "-l", "61337", "-t", "65535", "targetless"]
       env:
         - { name: RUST_LOG, value: "warn" }
         # Self-sample CPU from procfs into the pod log, see cpu_sample.rs.
