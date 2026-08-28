@@ -14,9 +14,19 @@ Everything runs in a kind cluster:
 
 The `bench_client` bin runs on the host and speaks raw mirrord-protocol to an
 agent through its NodePort. It opens N outgoing connections to the echo service
-through the agent, saturates them with fixed-size write chunks, and drains the
+through the agent, pumps fixed-size write chunks into them, and drains the
 echoes; every payload byte therefore crosses the agent four times on two sockets
 (client->agent->echo, echo->agent->client).
+
+The client caps sent-but-not-yet-echoed bytes at a window (`--window-kib`,
+default 256KiB) kept below the agents' 512KiB per-direction memory budgets.
+This is not just politeness: an unpaced client deadlocks mirrord-agent under
+full bidirectional saturation (its single client loop blocks acquiring the
+client->peer budget and stops draining peer->client data, which is what frees
+the peer->client budget the echoes need), stalling connections until the 30s
+write timeout kills them. mirrord-agent-ractor is structurally immune - the
+actor that writes to the client keeps running while the dispatcher is blocked -
+so the window exists purely to give both agents the same completable workload.
 
 Agent CPU is self-sampled: both agents run with
 `MIRRORD_AGENT_CPU_SAMPLE_MS=100`, which makes them log a
@@ -84,3 +94,35 @@ chmod +x /usr/local/sbin/runc'
 ```
 
 Not needed on normal Linux hosts.
+
+## Results (2026-08-28, 4-core sandbox VM, kind v1.29.2)
+
+Full data in `results-2026-08-28.csv` (3 reps per cell; medians below).
+`cpu_ms_per_mib` is agent CPU milliseconds per MiB of payload pushed through.
+
+| workload          | original | ractor | ractor vs original |
+|-------------------|----------|--------|--------------------|
+| 64KiB chunks, 4 conns | 1.60 ms/MiB @ 599 MiB/s | 1.24 ms/MiB @ 738 MiB/s | **-23% CPU**, +23% throughput |
+| 4KiB chunks, 4 conns  | 2.77 ms/MiB @ 350 MiB/s | 3.46 ms/MiB @ 278 MiB/s | **+25% CPU**, -21% throughput |
+| 64KiB chunks, 1 conn  | 1.38 ms/MiB @ 574 MiB/s | 1.19 ms/MiB @ 724 MiB/s | **-14% CPU**, +26% throughput |
+
+Reading: on bulk traffic the actor version is *cheaper* - one mailbox hop
+replaces the original's throttle/buffer/SelectAll wrapper stack, and
+`write_all` replaces the vectored sink machinery. On small chunks the
+per-message actor tax (3 mailbox hops client->peer, each with a boxed message
+and an unbounded-channel node, plus a budget reservation per chunk) outweighs
+those savings: at 4KiB every MiB costs 256 messages each way, ~2.7us more CPU
+per relayed chunk than the original path. Both agents saturate one core in the
+4KiB workload, so CPU-per-MiB and throughput are two views of the same number.
+
+Benchmarking also surfaced two pre-existing mirrord-agent issues, both fixed
+on this branch:
+
+1. **Data corruption on partial vectored writes** (`IoVecThrottledSink`): the
+   buffered chunk was replaced with the already-written prefix instead of the
+   remainder, resending up to `written` bytes and dropping the tail.
+2. **Budget deadlock under bidirectional saturation** (not fixed, worked
+   around by client pacing): the client loop blocks on the client->peer budget
+   and stops draining peer->client data, which is what frees the peer->client
+   budget; connections stall until the 30s write timeout kills them. The actor
+   topology is structurally immune.
