@@ -18,9 +18,12 @@ through the agent, saturates them with fixed-size write chunks, and drains the
 echoes; every payload byte therefore crosses the agent four times on two sockets
 (client->agent->echo, echo->agent->client).
 
-Agent CPU is sampled around each run from `/proc/1/stat` (utime+stime of the
-agent process, so exec probes and the pause container are excluded), with
-cgroup v2 `cpu.stat` as a cross-check.
+Agent CPU is self-sampled: both agents run with
+`MIRRORD_AGENT_CPU_SAMPLE_MS=100`, which makes them log a
+`CPUSAMPLE <epoch_ms> <cumulative cpu ticks>` series from `/proc/self/stat`
+(see `cpu_sample.rs`; the identical module is planted in both agents). The
+client stamps each run's start/end, and `run_bench.sh` interpolates the series
+at those points - nothing execs into the pods during measurement.
 
 ## Running
 
@@ -54,3 +57,30 @@ The matrix covers 64KiB chunks (bulk relaying) and 4KiB chunks (per-message
 overhead, where an actor framework's mailbox hops cost the most), with 4
 connections and a single-connection case. No CPU limits are set on any pod -
 throttling would distort the measurement.
+
+## Hardened-sandbox quirk
+
+Some sandboxed hosts (custom kernels) refuse writes of *negative*
+`/proc/*/oom_score_adj` even with `CAP_SYS_RESOURCE`, while kubelet hard-codes
+`-998` for sandboxes - every pod then fails with runc's
+`can't get final child's PID from pipe: EOF`. On such hosts, wrap runc inside
+the kind node to clamp the value before `create`:
+
+```bash
+docker exec bench-control-plane bash -c '
+mv /usr/local/sbin/runc /usr/local/sbin/runc.real
+cat > /usr/local/sbin/runc <<"EOF"
+#!/bin/bash
+args=("$@")
+for ((i=0; i<${#args[@]}; i++)); do
+  if [[ "${args[i]}" == "--bundle" || "${args[i]}" == "-b" ]]; then
+    b="${args[i+1]}"
+    [[ -f "$b/config.json" ]] && sed -i "s/\"oomScoreAdj\":-[0-9]*/\"oomScoreAdj\":0/g" "$b/config.json"
+  fi
+done
+exec /usr/local/sbin/runc.real "$@"
+EOF
+chmod +x /usr/local/sbin/runc'
+```
+
+Not needed on normal Linux hosts.

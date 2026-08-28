@@ -40,6 +40,8 @@ spec:
         # The original agent exits when idle; keep it alive between bench runs.
         - { name: MIRRORD_AGENT_IDLE_TTL, value: "100000" }
         - { name: RUST_LOG, value: "warn" }
+        # Self-sample CPU from procfs into the pod log, see cpu_sample.rs.
+        - { name: MIRRORD_AGENT_CPU_SAMPLE_MS, value: "100" }
 ---
 apiVersion: v1
 kind: Service
@@ -64,6 +66,8 @@ spec:
       command: ["/mirrord-agent-ractor", "-l", "61337", "-t", "100000", "targetless"]
       env:
         - { name: RUST_LOG, value: "warn" }
+        # Self-sample CPU from procfs into the pod log, see cpu_sample.rs.
+        - { name: MIRRORD_AGENT_CPU_SAMPLE_MS, value: "100" }
 ---
 apiVersion: v1
 kind: Service

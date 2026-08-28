@@ -96,6 +96,7 @@ fn init_tracing() {
 #[tokio::main(flavor = "current_thread")]
 async fn main() -> ExitCode {
     init_tracing();
+    mirrord_agent_ractor::cpu_sample::spawn_if_configured();
 
     let args = Args::parse();
     tracing::info!(?args, "Starting mirrord-agent-ractor");

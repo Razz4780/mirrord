@@ -14,6 +14,8 @@ mod client_connection;
 #[cfg(target_os = "linux")]
 mod container_handle;
 #[cfg(target_os = "linux")]
+mod cpu_sample;
+#[cfg(target_os = "linux")]
 mod dns;
 #[cfg(target_os = "linux")]
 mod entrypoint;

@@ -35,6 +35,8 @@ pub mod client;
 #[cfg(target_os = "linux")]
 pub mod codec;
 #[cfg(target_os = "linux")]
+pub mod cpu_sample;
+#[cfg(target_os = "linux")]
 pub mod dns;
 #[cfg(target_os = "linux")]
 pub mod outgoing;

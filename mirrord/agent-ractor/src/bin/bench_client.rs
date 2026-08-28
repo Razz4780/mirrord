@@ -13,7 +13,12 @@
 
 #[cfg(target_os = "linux")]
 mod run {
-    use std::{collections::HashMap, net::SocketAddr, process::ExitCode, time::Instant};
+    use std::{
+        collections::HashMap,
+        net::SocketAddr,
+        process::ExitCode,
+        time::{Instant, SystemTime, UNIX_EPOCH},
+    };
 
     use bytes::Bytes;
     use futures::{SinkExt, StreamExt};
@@ -35,6 +40,13 @@ mod run {
         total_mib: usize,
         chunk_kib: usize,
         conns: usize,
+    }
+
+    fn epoch_ms() -> u128 {
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("clock before epoch")
+            .as_millis()
     }
 
     fn parse_args() -> Args {
@@ -111,6 +123,7 @@ mod run {
         let per_conn_bytes = per_conn_chunks * chunk.len();
 
         let started = Instant::now();
+        let start_ms = epoch_ms();
 
         // Writer: round-robin chunks over all connections, then shut each
         // connection's write side down so the echo server closes it back.
@@ -175,6 +188,7 @@ mod run {
 
         let (mut tx, received_bytes) = tokio::join!(writer, reader);
         let elapsed = started.elapsed();
+        let end_ms = epoch_ms();
 
         let _ = tx.send(ClientMessage::Close).await;
 
@@ -182,7 +196,7 @@ mod run {
         let received_mib = received_bytes as f64 / 1024.0 / 1024.0;
         let throughput = sent_mib / elapsed.as_secs_f64();
         println!(
-            "RESULT sent_mib={sent_mib:.1} received_mib={received_mib:.1} wall_s={:.3} throughput_mib_s={throughput:.1} conns={} chunk_kib={}",
+            "RESULT sent_mib={sent_mib:.1} received_mib={received_mib:.1} wall_s={:.3} throughput_mib_s={throughput:.1} conns={} chunk_kib={} start_ms={start_ms} end_ms={end_ms}",
             elapsed.as_secs_f64(),
             conns.len(),
             args.chunk_kib,

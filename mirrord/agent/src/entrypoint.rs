@@ -1318,6 +1318,8 @@ pub async fn main() -> AgentResult<()> {
             .init();
     }
 
+    crate::cpu_sample::spawn_if_configured();
+
     debug!(
         "main -> Initializing mirrord-agent, version {}.",
         env!("CARGO_PKG_VERSION")

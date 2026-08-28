@@ -7,9 +7,13 @@
 #
 # For every (agent, chunk size, connection count) combination this script runs
 # the spam client REPS times and reports, per run, the agent's CPU time consumed
-# per MiB pushed through it. CPU time is read from /proc/1/stat (utime+stime) of
-# the agent process itself, so pause containers, exec probes etc. are excluded;
-# cgroup cpu.stat is captured too as a cross-check.
+# per MiB pushed through it.
+#
+# CPU time comes from the agent itself: both agents run with
+# MIRRORD_AGENT_CPU_SAMPLE_MS=100, making them log a `CPUSAMPLE <epoch_ms>
+# <cumulative cpu ticks>` series (see cpu_sample.rs). The client prints its
+# start/end timestamps, and this script interpolates the series at those points.
+# The host and the kind node share a clock, so the timestamps line up.
 
 set -euo pipefail
 
@@ -28,19 +32,39 @@ declare -A AGENT_PODS=(
   [ractor]=agent-ractor
 )
 
-# agent_cpu_ticks <pod>: cumulative utime+stime of the agent process, in USER_HZ
-# (100/s) ticks. PID 1 in the container is the agent itself.
-agent_cpu_ticks() {
-  kubectl exec "$1" -- cat /proc/1/stat | awk '{ print $14 + $15 }'
-}
+# cpu_seconds <pod> <start_ms> <end_ms>: CPU seconds the agent burned in the
+# window, from its self-sampled CPUSAMPLE log lines (linear interpolation at the
+# window edges; ticks are USER_HZ = 100).
+cpu_seconds() {
+  kubectl logs "$1" --tail 100000 | grep ^CPUSAMPLE | python3 -c '
+import sys
+start, end = float(sys.argv[1]), float(sys.argv[2])
+samples = []
+for line in sys.stdin:
+    _, ms, ticks = line.split()
+    samples.append((float(ms), int(ticks)))
 
-# agent_cgroup_usec <pod>: cumulative container CPU from cgroup v2, microseconds.
-agent_cgroup_usec() {
-  kubectl exec "$1" -- sh -c 'grep ^usage_usec /sys/fs/cgroup/cpu.stat' | awk '{ print $2 }'
+def at(t):
+    prev = next_ = None
+    for s in samples:
+        if s[0] <= t:
+            prev = s
+        elif next_ is None:
+            next_ = s
+            break
+    if prev is None:
+        return next_[1]
+    if next_ is None or next_[0] == prev[0]:
+        return prev[1]
+    frac = (t - prev[0]) / (next_[0] - prev[0])
+    return prev[1] + frac * (next_[1] - prev[1])
+
+print(f"{(at(end) - at(start)) / 100:.2f}")
+' "$2" "$3"
 }
 
 echo "node=$NODE_IP echo=$ECHO_IP client=$BENCH_CLIENT reps=$REPS"
-echo "agent,run,chunk_kib,conns,sent_mib,wall_s,throughput_mib_s,proc_cpu_s,cgroup_cpu_s,proc_cpu_ms_per_mib" | tee "$RESULTS"
+echo "agent,run,chunk_kib,conns,sent_mib,wall_s,throughput_mib_s,cpu_s,cpu_ms_per_mib" | tee "$RESULTS"
 
 # Matrix: 64KiB chunks measure bulk relaying, 4KiB chunks stress the
 # per-message machinery, which is where an actor framework's overhead lives.
@@ -48,7 +72,7 @@ for agent in original ractor; do
   pod="${AGENT_PODS[$agent]}"
   port="${AGENT_PORTS[$agent]}"
 
-  # Warmup: populates page cache, JITs nothing but settles allocators and TCP.
+  # Warmup: settles allocators, TCP windows and the page cache.
   "$BENCH_CLIENT" --agent "$NODE_IP:$port" --target "$ECHO_IP:7777" \
     --total-mib 256 --chunk-kib 64 --conns 4 > /dev/null
 
@@ -56,21 +80,21 @@ for agent in original ractor; do
     read -r chunk conns <<< "$spec"
     total_mib=$(( chunk >= 64 ? 2048 : 512 ))
     for rep in $(seq 1 "$REPS"); do
-      cpu0="$(agent_cpu_ticks "$pod")"
-      cg0="$(agent_cgroup_usec "$pod")"
       out="$("$BENCH_CLIENT" --agent "$NODE_IP:$port" --target "$ECHO_IP:7777" \
         --total-mib "$total_mib" --chunk-kib "$chunk" --conns "$conns" | grep ^RESULT)"
-      cpu1="$(agent_cpu_ticks "$pod")"
-      cg1="$(agent_cgroup_usec "$pod")"
 
       sent_mib="$(sed -n 's/.*sent_mib=\([0-9.]*\).*/\1/p' <<< "$out")"
       wall_s="$(sed -n 's/.*wall_s=\([0-9.]*\).*/\1/p' <<< "$out")"
       tput="$(sed -n 's/.*throughput_mib_s=\([0-9.]*\).*/\1/p' <<< "$out")"
-      proc_cpu_s="$(awk -v a="$cpu0" -v b="$cpu1" 'BEGIN { printf "%.2f", (b-a)/100 }')"
-      cgroup_cpu_s="$(awk -v a="$cg0" -v b="$cg1" 'BEGIN { printf "%.2f", (b-a)/1000000 }')"
-      cpu_ms_per_mib="$(awk -v c="$proc_cpu_s" -v m="$sent_mib" 'BEGIN { printf "%.3f", c*1000/m }')"
+      start_ms="$(sed -n 's/.*start_ms=\([0-9]*\).*/\1/p' <<< "$out")"
+      end_ms="$(sed -n 's/.*end_ms=\([0-9]*\).*/\1/p' <<< "$out")"
 
-      echo "$agent,$rep,$chunk,$conns,$sent_mib,$wall_s,$tput,$proc_cpu_s,$cgroup_cpu_s,$cpu_ms_per_mib" | tee -a "$RESULTS"
+      # Let the sampler write a data point past the window end.
+      sleep 0.5
+      cpu_s="$(cpu_seconds "$pod" "$start_ms" "$end_ms")"
+      cpu_ms_per_mib="$(awk -v c="$cpu_s" -v m="$sent_mib" 'BEGIN { printf "%.3f", c*1000/m }')"
+
+      echo "$agent,$rep,$chunk,$conns,$sent_mib,$wall_s,$tput,$cpu_s,$cpu_ms_per_mib" | tee -a "$RESULTS"
     done
   done
 done
