@@ -1,0 +1,35 @@
+[package]
+name = "mirrord-agent-ractor"
+version.workspace = true
+authors.workspace = true
+description.workspace = true
+documentation.workspace = true
+readme.workspace = true
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+keywords.workspace = true
+categories.workspace = true
+publish.workspace = true
+edition.workspace = true
+
+[lints]
+workspace = true
+
+[target.'cfg(target_os = "linux")'.dependencies]
+mirrord-protocol = { path = "../protocol" }
+
+ractor = { version = "0.16", default-features = false, features = ["tokio_runtime"] }
+
+tokio = { workspace = true, features = ["rt", "net", "macros", "fs", "time", "signal"] }
+tokio-util = { workspace = true, features = ["codec"] }
+actix-codec.workspace = true
+bytes.workspace = true
+futures.workspace = true
+clap = { workspace = true, features = ["env"] }
+hickory-resolver.workspace = true
+semver.workspace = true
+socket2.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
