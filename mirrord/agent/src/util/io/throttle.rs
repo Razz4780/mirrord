@@ -9,7 +9,7 @@ use std::{
     task::{Context, Poll},
 };
 
-use bytes::Bytes;
+use bytes::{Buf, Bytes};
 use futures::{Sink, SinkExt, Stream};
 use pin_project_lite::pin_project;
 use tokio::{
@@ -267,7 +267,7 @@ where
                     if chunk.len() <= written {
                         return true;
                     }
-                    chunk.data = chunk.data.split_to(written);
+                    chunk.data.advance(written);
                     false
                 });
                 if let Some(popped) = popped {
@@ -279,6 +279,94 @@ where
         }
 
         Poll::Ready(Ok(()))
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use std::task::ready;
+
+    use futures::SinkExt;
+    use tokio::io::AsyncWrite;
+
+    use super::*;
+
+    /// Accepts at most a fixed number of bytes per write call, forcing the sink
+    /// to handle partial writes of buffered chunks.
+    struct ShortWriter {
+        max_per_write: usize,
+        written: Vec<u8>,
+    }
+
+    impl AsyncWrite for ShortWriter {
+        fn poll_write(
+            self: Pin<&mut Self>,
+            _: &mut Context<'_>,
+            buf: &[u8],
+        ) -> Poll<io::Result<usize>> {
+            let this = self.get_mut();
+            let accepted = buf.len().min(this.max_per_write);
+            this.written
+                .extend_from_slice(buf.get(..accepted).expect("accepted <= len"));
+            Poll::Ready(Ok(accepted))
+        }
+
+        fn poll_flush(self: Pin<&mut Self>, _: &mut Context<'_>) -> Poll<io::Result<()>> {
+            Poll::Ready(Ok(()))
+        }
+
+        fn poll_shutdown(self: Pin<&mut Self>, _: &mut Context<'_>) -> Poll<io::Result<()>> {
+            Poll::Ready(Ok(()))
+        }
+
+        fn poll_write_vectored(
+            mut self: Pin<&mut Self>,
+            cx: &mut Context<'_>,
+            bufs: &[io::IoSlice<'_>],
+        ) -> Poll<io::Result<usize>> {
+            let mut total = 0;
+            for buf in bufs {
+                let before = self.as_mut().get_mut().written.len();
+                ready!(self.as_mut().poll_write(cx, buf))?;
+                let accepted = self.as_mut().get_mut().written.len() - before;
+                total += accepted;
+                if accepted < buf.len() {
+                    break;
+                }
+            }
+            Poll::Ready(Ok(total))
+        }
+
+        fn is_write_vectored(&self) -> bool {
+            true
+        }
+    }
+
+    /// Data written through the sink must come out exactly once and in order,
+    /// also when the underlying writer keeps accepting only part of each write.
+    #[tokio::test]
+    async fn survives_partial_writes() {
+        let throttle = Throttle::new(1024 * 1024);
+        let mut sink = ThrottledSink::new(
+            IoVecThrottledSink::new(ShortWriter {
+                max_per_write: 7,
+                written: Vec::new(),
+            }),
+            throttle,
+        );
+
+        let mut expected = Vec::new();
+        for chunk_no in 0u8..100 {
+            let chunk = vec![chunk_no; 100];
+            expected.extend_from_slice(&chunk);
+            sink.feed(Bytes::from(chunk)).await.unwrap();
+        }
+        sink.flush().await.unwrap();
+
+        // Reach through the wrappers to compare against everything the writer got.
+        let written = &sink.sink.writer.written;
+        assert_eq!(written.len(), expected.len());
+        assert_eq!(*written, expected);
     }
 }
 
