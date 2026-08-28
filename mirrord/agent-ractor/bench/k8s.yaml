@@ -1,0 +1,76 @@
+# Benchmark topology: one echo server, both agents (targetless), all in-cluster.
+# The bench client runs on the host and reaches the agents through NodePorts;
+# the agents reach the echo server through its ClusterIP service.
+#
+# No CPU limits anywhere: throttling would distort the CPU-per-MiB measurement.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: echo-server
+  labels: { app: echo-server }
+spec:
+  containers:
+    - name: echo
+      image: mirrord-bench:latest
+      imagePullPolicy: Never
+      command: ["/echo_server", "7777"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echo-server
+spec:
+  selector: { app: echo-server }
+  ports:
+    - { name: tcp, protocol: TCP, port: 7777, targetPort: 7777 }
+    - { name: udp, protocol: UDP, port: 7777, targetPort: 7777 }
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: agent-original
+  labels: { app: agent-original }
+spec:
+  containers:
+    - name: agent
+      image: mirrord-bench:latest
+      imagePullPolicy: Never
+      command: ["/mirrord-agent", "-l", "61337", "-t", "100000", "targetless"]
+      env:
+        # The original agent exits when idle; keep it alive between bench runs.
+        - { name: MIRRORD_AGENT_IDLE_TTL, value: "100000" }
+        - { name: RUST_LOG, value: "warn" }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: agent-original
+spec:
+  type: NodePort
+  selector: { app: agent-original }
+  ports:
+    - { protocol: TCP, port: 61337, targetPort: 61337, nodePort: 30061 }
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: agent-ractor
+  labels: { app: agent-ractor }
+spec:
+  containers:
+    - name: agent
+      image: mirrord-bench:latest
+      imagePullPolicy: Never
+      command: ["/mirrord-agent-ractor", "-l", "61337", "-t", "100000", "targetless"]
+      env:
+        - { name: RUST_LOG, value: "warn" }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: agent-ractor
+spec:
+  type: NodePort
+  selector: { app: agent-ractor }
+  ports:
+    - { protocol: TCP, port: 61337, targetPort: 61337, nodePort: 30062 }

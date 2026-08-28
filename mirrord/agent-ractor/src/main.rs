@@ -1,32 +1,4 @@
-//! # mirrord-agent-ractor
-//!
-//! A spike port of the mirrord-agent DNS + outgoing traffic features onto the
-//! [`ractor`] actor framework, replacing the hand-rolled mix of tokio channels,
-//! `SelectAll`s, abort handles and buffered stream/sink wrappers with a
-//! supervision tree of small, single-purpose actors.
-//!
-//! ## Actor tree
-//!
-//! ```text
-//! agent                               (accepts client TCP connections)
-//! └── client-{N}                      (owns the client socket write half + session state)
-//!     ├── client-{N}.dns              (per-client DNS lookups, ordered responses)
-//!     ├── client-{N}.tcp-out          (routes TCP/UNIX outgoing traffic)
-//!     │   └── client-{N}.tcp-out.conn-{M}   (one actor per outgoing connection)
-//!     └── client-{N}.udp-out          (routes UDP outgoing traffic)
-//!         └── client-{N}.udp-out.conn-{M}
-//! ```
-//!
-//! Socket reads cannot live inside an actor's message loop, so each actor that
-//! reads from a socket owns a plain tokio task that decodes/reads and casts the
-//! results to the right actor. Those tasks are aborted via [`util::TaskGuard`]s
-//! held in actor state, which also covers the hard-kill path (ractor kills the
-//! whole subtree when a supervisor exits, skipping `post_stop`).
-//!
-//! Only the targetless mode is supported: no iptables, no network namespace
-//! switching, no incoming traffic features.
-
-#![cfg_attr(not(target_os = "linux"), allow(unused))]
+//! mirrord-agent-ractor entrypoint. See the crate docs (`lib.rs`) for the design.
 
 #[cfg(target_os = "linux")]
 use std::{
@@ -38,29 +10,13 @@ use std::{
 #[cfg(target_os = "linux")]
 use clap::{Parser, Subcommand};
 #[cfg(target_os = "linux")]
+use mirrord_agent_ractor::agent::{AgentActor, AgentArgs};
+#[cfg(target_os = "linux")]
 use socket2::SockRef;
 #[cfg(target_os = "linux")]
 use tokio::net::{TcpListener, TcpSocket};
 #[cfg(target_os = "linux")]
 use tracing_subscriber::prelude::*;
-
-#[cfg(target_os = "linux")]
-use crate::agent::{AgentActor, AgentArgs};
-
-#[cfg(target_os = "linux")]
-mod agent;
-#[cfg(target_os = "linux")]
-mod budget;
-#[cfg(target_os = "linux")]
-mod client;
-#[cfg(target_os = "linux")]
-mod codec;
-#[cfg(target_os = "linux")]
-mod dns;
-#[cfg(target_os = "linux")]
-mod outgoing;
-#[cfg(target_os = "linux")]
-mod util;
 
 #[cfg(target_os = "linux")]
 #[derive(Parser, Debug)]
